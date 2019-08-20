@@ -9,24 +9,21 @@ if __name__=='__main__':
         description="MetaCatalog management CLI"
     )
     parser.add_argument("-v", "--version", action="store_true", help="Returns the module version")
+    parser.add_argument("-C", "--connection", type=str, 
+        help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database"
+    )
+    parser.add_argument("-V", "--verbose", action="store_true", help="Activate extended output.")
     parser.set_defaults(func=empty)
 
     # add subparsers
     subparsers = parser.add_subparsers(title="Commands", description="CLI commands")
 
     # create parser
-    create_parser = subparsers.add_parser('create', help="Create a new Metacatalog instance.")
-    create_parser.add_argument("-C", "--connection", type=str, 
-        help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database"
-    )
-    create_parser.add_argument("-V", "--verbose", action="store_true", help="Activate extended output.")
+    create_parser = subparsers.add_parser('create', parents=[parser], add_help=False, help="Create a new Metacatalog instance.")
     create_parser.set_defaults(func=create)
 
-    populate parser
-    pop_parser = subparsers.add_parser('populate', help="Populate the database with default auxiliary data.")
-    pop_parser.add_argument("-C", "--connection", type=str, 
-        help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database"
-    )
+    # populate parser
+    pop_parser = subparsers.add_parser('populate', parents=[parser], add_help=False, help="Populate the database with default auxiliary data.")
     pop_parser.set_defaults(func=populate)
 
     # parse the arguments
