@@ -1,0 +1,3 @@
+id,name,description
+1,internal,Table inside the same database instance
+2,csv,Standard csv file source on the database server machine
