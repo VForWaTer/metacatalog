@@ -21,7 +21,7 @@ setup(
     author="Mirko Mälicke",
     author_email="mirko.maelicke@kit.edu",
     license="GPL v3",
-    install_requirements=requirements(),
+    install_requires=requirements(),
     version=version(),
     description="Metadata model management module.",
     long_description=readme(),
