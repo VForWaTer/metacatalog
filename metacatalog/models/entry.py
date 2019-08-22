@@ -1,10 +1,10 @@
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta as rd
 
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
 from geoalchemy2 import Geometry
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, object_session
 
 from metacatalog.db import Base
 
@@ -27,6 +27,8 @@ class Entry(Base):
     geom = Column(Geometry)
     start = Column(DateTime)
     end = Column(DateTime)
+    version = Column(Integer, default=1, nullable=False)
+    latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=False)
     
     license_id = Column(Integer, ForeignKey('licenses.id'))
     variable_id = Column(Integer, ForeignKey('variables.id'), nullable=False)
@@ -65,3 +67,17 @@ class Entry(Base):
             self.title[:20], 
             self.variable.name
             )
+
+@event.listens_for(Entry, 'after_insert')
+def insert_event_latest_version(mapper, connection, entry):
+    """
+    iIf entry does not reference a latest version it should 
+    reference itself to mark itself being up to date.
+    """
+    if entry.latest_version_id is None:
+        entry.latest_version_id = entry.id
+    
+    # make changes
+    session = object_session(entry)
+    session.add(entry)
+    session.commit()
