@@ -12,6 +12,7 @@ class Unit(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     symbol = Column(String(12), nullable=False)
+    si = Column(String(), nullable=True)
 
     # relationships
     variables = relationship("Variable", back_populates='unit')

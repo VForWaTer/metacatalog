@@ -1,4 +1,4 @@
-from metacatalog import Base
+from metacatalog.api import create_tables
 from ._util import connect
 
 
@@ -8,5 +8,5 @@ def create(args):
 
     # create all tables
     print("Creating Tables.")
-    Base.metadata.create_all(session.bind)
+    create_tables(session=session)
     print("Done.")

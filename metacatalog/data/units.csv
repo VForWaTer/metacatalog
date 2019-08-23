@@ -1,0 +1,35 @@
+id,name,symbol,si
+1,second,s,s
+2,meter,m,m
+3,kilogram,kg,kg
+4,ampere,A,A
+5,kelvin,K,K
+6,mole,mol,mol
+7,candela,cd,cd
+8,radian,rad,1
+9,degree,deg,1
+10,hertz,Hz,s^-1
+11,newton,N,kg*m*s^-2
+12,pascal,Pa,kg*m^-1*s^-2
+13,joule,J,kg*m^2*s^-2
+14,watt,W,kg*m^2*s^-3
+15,coulomb,C,s*a
+16,volt,V,kg*m^3*s^-3*A^-1
+17,farad,F,kg^-1*m^-2*s^4*A^2
+18,ohm,ohm,kg*m^2*s^-3*A^-2
+19,siemens,S,kg^-1*m^-2*s^3*A^2
+20,lux,lx,m^-2*cd
+101,degree Celsius,C,K
+102,milimeter,10^-3*m
+103,mm per day,mm/d,10^-3*m*86400^-1*s^-1
+104,hectopascal,10^2*Pa
+105,mm per hour,mm/h,10^-3*m*3600^-1*s^-1
+106,mm per second,mm/s,10^-3*m**s^-1
+107,meter per second,m/s,m*s^-1
+108,cubicmeter per second,m3/s,m^3*s^-1
+109,liter per second,l/s,10^-3*m^3*s^-1
+110,degree,deg.,0.0174533*rad
+112,percent,%,10^-2
+113,cm3/cm3,cm3/cm3,1
+114,kg/kg,kg/kg,1
+115,watt per sqauaremeter,W/m2,kg*m^2*s^-3*m^-2

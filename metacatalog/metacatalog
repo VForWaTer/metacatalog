@@ -2,7 +2,7 @@ if __name__=='__main__':
     import argparse
 
     from metacatalog import __version__ as VERSION
-    from metacatalog.cmd import empty, create, populate
+    from metacatalog.cmd import empty, create, populate, connection
 
     # build the main Argument parser
     parser = argparse.ArgumentParser(
@@ -25,6 +25,12 @@ if __name__=='__main__':
     # populate parser
     pop_parser = subparsers.add_parser('populate', parents=[parser], add_help=False, help="Populate the database with default auxiliary data.")
     pop_parser.set_defaults(func=populate)
+
+    # connection parser
+    conn_parser = subparsers.add_parser('connection', help="Manage stored connections")
+    conn_parser.add_argument("--save", help="Saves the given connection string. Follows the syntax:\ndriver://user:password@host:port/database")
+    conn_parser.add_argument("--name", help="If used with --save, specifies the name for the connection string. Else, only this string will be returned.")
+    conn_parser.set_defaults(func=connection)
 
     # parse the arguments
     args = parser.parse_args()

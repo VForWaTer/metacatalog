@@ -1,0 +1,13 @@
+id,name,symbol,unit_id
+1,air temperature,Ta,101
+2,soil temperature,Ts,101
+3,water temperature,Tw,101
+4,discharge,Q,108
+5,air pressure,p,104
+6,relative humidity,RH,112
+7,daily rainfall sum,P,103
+8,rainfall intensity,Pi,105
+9,solar irradiance,SI,115
+10,net radiation,Rn,115
+11,gravimetric water content,u,114
+12,volumnetric water content,theta,113
