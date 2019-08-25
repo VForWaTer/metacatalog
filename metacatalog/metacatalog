@@ -2,7 +2,7 @@ if __name__=='__main__':
     import argparse
 
     from metacatalog import __version__ as VERSION
-    from metacatalog.cmd import empty, create, populate, connection
+    from metacatalog.cmd import empty, create, populate, connection, init
 
     # build the main Argument parser
     parser = argparse.ArgumentParser(
@@ -24,7 +24,12 @@ if __name__=='__main__':
 
     # populate parser
     pop_parser = subparsers.add_parser('populate', parents=[parser], add_help=False, help="Populate the database with default auxiliary data.")
+    # TODO:add the --ignore -I option to ignore tables from population
     pop_parser.set_defaults(func=populate)
+
+    # init parser
+    init_parser = subparsers.add_parser('init', parents=[pop_parser], add_help=False, help="Runs the create and and the populate command.")
+    init_parser.set_defaults(func=init)
 
     # connection parser
     conn_parser = subparsers.add_parser('connection', help="Manage stored connections")
