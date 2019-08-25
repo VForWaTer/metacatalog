@@ -1,5 +1,5 @@
 from sqlalchemy import Column
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import relationship
 
 from metacatalog.db import Base
@@ -10,9 +10,14 @@ class License(Base):
 
     # columns
     id = Column(Integer, primary_key=True)
-    title = Column(String(128), nullable=False)
+    short_title = Column(String(128), nullable=False)
+    title= Column(String, nullable=False)
+    summary = Column(String)
     full_text = Column(String)
     link = Column(String)
+    by_attribution = Column(Boolean, default=True, nullable=False)
+    share_alike = Column(Boolean, default=True, nullable=False)
+    commercial_use = Column(Boolean, default=True, nullable=False)
 
     # relationships
     entries = relationship("Entry", back_populates='license')
