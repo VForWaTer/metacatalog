@@ -5,13 +5,14 @@ import pandas as pd
 from metacatalog import Base
 from metacatalog.db import get_session
 from metacatalog import DATAPATH
-from metacatalog.models import DataSourceType, Unit, Variable, License
+from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword
 
 IMPORTABLE_TABLES = dict(
     datasource_types=DataSourceType,
     units=Unit,
     variables=Variable,
-    licenses=License
+    licenses=License,
+    keywords=Keyword
 )
 
 def connect_database(*args, **kwargs):
@@ -47,12 +48,31 @@ def create_tables(session):
     Base.metadata.create_all(session.bind)
 
 
+def _remove_nan_from_dict(d):
+    out_d = dict()
+    for k,v in d.items():
+        if v is None:
+            continue
+        elif isinstance(v, dict):
+            out_d[k] = _remove_nan_from_dict(v)
+        else:
+            out_d[k] = v
+    return out_d
+
+
 def import_table_data(fname, InstanceClass):
     df = pd.read_csv(os.path.join(DATAPATH, fname))
 
     # build an instance for each line and return
-    return [InstanceClass(**d) for d in df.to_dict(orient='record')]
+    return [InstanceClass(**_remove_nan_from_dict(d)) for d in df.to_dict(orient='record')]
 
+
+def import_direct(session, table_name, file_name):
+    # load the data
+    df = pd.read_csv(file_name)
+
+    # directly inject into db
+    df.to_sql(table_name, session.bind, index=False, if_exists='append')
 
 def populate_defaults(session, ignore_tables=[]):
     """Import default data
@@ -80,6 +100,11 @@ def populate_defaults(session, ignore_tables=[]):
     """
     for table, InstanceClass in IMPORTABLE_TABLES.items():
         if table in ignore_tables:
+            continue
+
+        # keywords has to be handled extra as there is a self-reference
+        if table == 'keywords':
+            import_direct(session, table, os.path.join(DATAPATH, '%s.csv' % table))
             continue
         
         # get the classes

@@ -12,7 +12,7 @@ def empty():
 
 def connect(args):
     # check if a connection string was set
-    conn = args.connection if args.connection is not None else 'postgresql://postgres@localhost:5432/metacatalog'
+    conn = args.connection if args.connection is not None else 'default'
     echo = args.verbose if args.verbose is not None else False
     
     session = connect_database(conn, echo=echo)

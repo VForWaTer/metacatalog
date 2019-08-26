@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, backref
 
+
 from metacatalog.db import Base
 
 
@@ -24,7 +25,7 @@ class Keyword(Base):
         Returns the full keyword path for the given level. 
         The levels are separated by a '>' sign. The levels are:
 
-        Topic > Term > Variable_Level_1 > Variable_Level_2 > Detailed_Variable
+        Topic > Term > Variable_Level_1 > Variable_Level_2 > Variable_Level_3 > Detailed_Variable
 
         Returns
         -------
@@ -37,7 +38,7 @@ class Keyword(Base):
 
         while parent is not None:
             path.append(parent.value)
-            parent = self.parent
+            parent = parent.parent
         
         return ' > '.join(reversed(path))
 

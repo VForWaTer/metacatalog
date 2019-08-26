@@ -25,6 +25,7 @@ if __name__=='__main__':
     # populate parser
     pop_parser = subparsers.add_parser('populate', parents=[parser], add_help=False, help="Populate the database with default auxiliary data.")
     # TODO:add the --ignore -I option to ignore tables from population
+    pop_parser.add_argument("--ignore", "-I", nargs='+', help="List tables to be ignored for default population.")
     pop_parser.set_defaults(func=populate)
 
     # init parser

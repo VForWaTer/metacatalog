@@ -7,8 +7,7 @@ def populate(args):
     session = connect(args)
 
     # now, populate
-    # TODO get ignored tables from args
-    ignored = []
+    ignored = args.ignore if args.ignore is not None else []
 
     populate_defaults(session=session,ignore_tables=ignored)
     
