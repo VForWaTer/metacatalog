@@ -21,7 +21,7 @@ class Entry(Base):
     # columns
     id = Column(Integer, primary_key=True)
     title = Column(String(512), nullable=False)
-    abstract = Column(String())
+    abstract = Column(String)
     external_id = Column(String)
     location = Column(Geometry('POINT'), nullable=False)
     geom = Column(Geometry)
@@ -37,8 +37,8 @@ class Entry(Base):
     embargo = Column(Boolean, default=False, nullable=False)
     embargo_end = Column(DateTime, default=get_embargo_end)
 
-    created = Column(DateTime, default=dt.utcnow)
-    edited = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
+    publication = Column(DateTime, default=dt.utcnow)
+    lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
     contributors = relationship("PersonAssociation", back_populates='entry')
@@ -46,6 +46,12 @@ class Entry(Base):
     license = relationship("License", back_populates='entries')
     variable = relationship("Variable", back_populates='entries')
     datasource = relationship("DataSource", back_populates='entries')
+    other_versions = relationship("Entry", back_populates="latest_version")
+    latest_version = relationship("Entry", back_populates="other_versions")
+
+    @property
+    def is_latest_version(self):
+        self.latest_version_id == self.id
 
     def keywords_list(self):
         """Metadata Keyword list
@@ -68,10 +74,11 @@ class Entry(Base):
             self.variable.name
             )
 
+
 @event.listens_for(Entry, 'after_insert')
 def insert_event_latest_version(mapper, connection, entry):
     """
-    iIf entry does not reference a latest version it should 
+    If entry does not reference a latest version it should 
     reference itself to mark itself being up to date.
     """
     if entry.latest_version_id is None:
