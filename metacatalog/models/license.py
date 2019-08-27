@@ -22,5 +22,5 @@ class License(Base):
     # relationships
     entries = relationship("Entry", back_populates='license')
 
-    def __str__(self):
-        return "%s <%d>" % (self.title, self.id)
+    def __repr__(self):
+        return "%s <ID=%d>" % (self.title, self.id)
