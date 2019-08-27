@@ -5,14 +5,15 @@ import pandas as pd
 from metacatalog import Base
 from metacatalog.db import get_session
 from metacatalog import DATAPATH
-from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword
+from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole
 
 IMPORTABLE_TABLES = dict(
     datasource_types=DataSourceType,
     units=Unit,
     variables=Variable,
     licenses=License,
-    keywords=Keyword
+    keywords=Keyword,
+    person_roles=PersonRole
 )
 
 def connect_database(*args, **kwargs):
