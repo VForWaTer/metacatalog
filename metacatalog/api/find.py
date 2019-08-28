@@ -31,9 +31,8 @@ def find_keyword(session, id=None, value=None, return_iterator=False):
     
     Returns
     -------
-    record : metacatalog.Keyword
-        matched Keyword instance. If more than one is found 
-        a list of Keywords is returned
+    records : list of metacatalog.Keyword
+        List of matched Keyword instance.
     """
     # base query
     query = session.query(Keyword)
@@ -83,9 +82,8 @@ def find_license(session, id=None, short_title=None, by_attribution=None, share_
     
     Returns
     -------
-    record : metacatalog.License
-        matched License instance. If more than one is found 
-        a list of License is returned
+    records : list of metacatalog.License
+        List of matched License instance.
     """
     # base query
     query = session.query(License)
@@ -114,8 +112,7 @@ def find_unit(session, id=None, name=None, symbol=None, return_iterator=False):
 
     Return one unit entry from the database on 
     exact matches. It makes only sense to set one of the 
-    attributes (id, name, symbol). The function will throw and 
-    Exception if many records match. 
+    attributes (id, name, symbol).
 
     Params
     ------
@@ -134,8 +131,8 @@ def find_unit(session, id=None, name=None, symbol=None, return_iterator=False):
     
     Returns
     -------
-    record : metacatalog.Unit
-        matched Unit instance. 
+    records : list of metacatalog.Unit
+        List of matched Unit instance. 
 
     """
     # base query
@@ -152,7 +149,7 @@ def find_unit(session, id=None, name=None, symbol=None, return_iterator=False):
     if return_iterator:
         return query
     else:
-        return query.first()
+        return query.all()
 
 
 def find_variable(session, id=None, name=None, symbol=None, return_iterator=False):
@@ -160,8 +157,7 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
 
     Return one vriable entry from the database on 
     exact matches. It makes only sense to set one of the 
-    attributes (id, name, symbol). The function will throw and 
-    Exception if many records match. 
+    attributes (id, name, symbol).
 
     Params
     ------
@@ -180,8 +176,8 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
     
     Returns
     -------
-    record : metacatalog.Variable
-        matched Variable instance. 
+    records : list of metacatalog.Variable
+        List of matched Variable instance. 
 
     """
     # base query
@@ -198,4 +194,4 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
     if return_iterator:
         return query
     else:
-        return query.first()
+        return query.all()

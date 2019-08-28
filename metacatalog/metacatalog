@@ -2,29 +2,38 @@ if __name__=='__main__':
     import argparse
 
     from metacatalog import __version__ as VERSION
-    from metacatalog.cmd import empty, create, populate, connection, init
+    from metacatalog.cmd import (
+        empty, 
+        create, 
+        populate, 
+        connection, 
+        init,
+        find,
+        show
+    )
+
+    default_options = argparse.ArgumentParser(add_help=False)
+    default_options.add_argument("--version", "-v", action="store_true", help="Returns the module version")
+    default_options.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database")
+    default_options.add_argument("--verbose", "-V", action="store_true", help="Activate extended output.")
+
 
     # build the main Argument parser
-    parser = argparse.ArgumentParser(
-        description="MetaCatalog management CLI"
-    )
-    parser.add_argument("-v", "--version", action="store_true", help="Returns the module version")
-    parser.add_argument("-C", "--connection", type=str, 
-        help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database"
-    )
-    parser.add_argument("-V", "--verbose", action="store_true", help="Activate extended output.")
+    parser = argparse.ArgumentParser(description="MetaCatalog management CLI", add_help=False)
+#    parser.add_argument("--version", "-v", action="store_true", help="Returns the module version")
+#    parser.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database")
+#    parser.add_argument("--verbose", "-V", action="store_true", help="Activate extended output.")
     parser.set_defaults(func=empty)
 
     # add subparsers
-    subparsers = parser.add_subparsers(title="Commands", description="CLI commands")
+    subparsers = parser.add_subparsers(title="Commands", description="CLI commands", dest='func')
 
     # create parser
-    create_parser = subparsers.add_parser('create', parents=[parser], add_help=False, help="Create a new Metacatalog instance.")
+    create_parser = subparsers.add_parser('create', parents=[default_options], add_help=True, help="Create a new Metacatalog instance.")
     create_parser.set_defaults(func=create)
 
     # populate parser
-    pop_parser = subparsers.add_parser('populate', parents=[parser], add_help=False, help="Populate the database with default auxiliary data.")
-    # TODO:add the --ignore -I option to ignore tables from population
+    pop_parser = subparsers.add_parser('populate', parents=[default_options], add_help=True, help="Populate the database with default auxiliary data.")
     pop_parser.add_argument("--ignore", "-I", nargs='+', help="List tables to be ignored for default population.")
     pop_parser.set_defaults(func=populate)
 
@@ -38,9 +47,23 @@ if __name__=='__main__':
     conn_parser.add_argument("--name", help="If used with --save, specifies the name for the connection string. Else, only this string will be returned.")
     conn_parser.set_defaults(func=connection)
 
+    # find parser
+    find_parser = subparsers.add_parser('find', parents=[default_options], add_help=True, help="Find records in the database on exact matches.")
+    find_parser.add_argument('entity', type=str, help="Name of the requested database entity.")
+    find_parser.add_argument('--by', type=str, action="append", nargs=2, help="key value pair to be used for finding record(s) in the database. Flag can be used multiple times.")
+    find_parser.set_defaults(func=find)
+
+    # show subparsers
+    show_parser = subparsers.add_parser('show', parents=[default_options], help="Show database structure or records.")
+    show_parser.add_argument('action', choices=['attributes'], help="Element to be shown.\nattributes\nShow table attributes")
+    show_parser.add_argument('--table', help="Table name. Only valid with 'attribute' action")
+    show_parser.add_argument('--names-only', dest="name_only", action="store_true", default=False, help="Show only the attribute names. Only valid with 'attribute' action.")
+    show_parser.set_defaults(func=show)
+
+
     # parse the arguments
     args = parser.parse_args()
-    if args.version:
+    if hasattr(args, 'version') and args.version:
         print(VERSION)
     else:
         args.func(args)
