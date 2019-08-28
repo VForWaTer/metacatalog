@@ -52,7 +52,7 @@ class Keyword(Base):
         }
 
     def __str__(self):
-        return self.path()
+        return "%s <ID=%d>" % (self.path(), self.id)
 
 
 class KeywordAssociation(Base):

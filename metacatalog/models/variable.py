@@ -18,7 +18,7 @@ class Unit(Base):
     variables = relationship("Variable", back_populates='unit')
 
     def __str__(self):
-        return self.name
+        return "%s <ID=%d>" % (self.name, self.id)
 
 
 class Variable(Base):
@@ -35,4 +35,4 @@ class Variable(Base):
     unit = relationship("Unit", back_populates='variables')
 
     def __str__(self):
-        return "%s [%s]" % (self.name, self.unit.symbol)
+        return "%s [%s] <ID=%d>" % (self.name, self.unit.symbol,self.id)

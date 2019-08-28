@@ -35,7 +35,7 @@ class Person(Base):
             self.first_name = None
 
     def __str__(self):
-        return self.full_name
+        return "%s <ID=%d>" % (self.full_name, self.id)
 
 
 class PersonRole(Base):
@@ -49,7 +49,7 @@ class PersonRole(Base):
     persons_with_role = relationship("PersonAssociation", back_populates='role')
 
     def __str__(self):
-        return self.name
+        return "%s <ID=%d>" % (self.name, self.id)
 
 
 class PersonAssociation(Base):

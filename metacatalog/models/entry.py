@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta as rd
 from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
 from geoalchemy2 import Geometry
-from sqlalchemy.orm import relationship, object_session
+from sqlalchemy.orm import relationship, backref, object_session
 
 from metacatalog.db import Base
 
@@ -46,8 +46,7 @@ class Entry(Base):
     license = relationship("License", back_populates='entries')
     variable = relationship("Variable", back_populates='entries')
     datasource = relationship("DataSource", back_populates='entries')
-    other_versions = relationship("Entry", back_populates="latest_version")
-    latest_version = relationship("Entry", back_populates="other_versions")
+    other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
 
     @property
     def is_latest_version(self):

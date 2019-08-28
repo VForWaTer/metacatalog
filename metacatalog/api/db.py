@@ -105,7 +105,9 @@ def populate_defaults(session, ignore_tables=[]):
 
         # keywords has to be handled extra as there is a self-reference
         if table == 'keywords':
+            print('Populating %s' % table)
             import_direct(session, table, os.path.join(DATAPATH, '%s.csv' % table))
+            print('Finished %s' % table)
             continue
         
         # get the classes
