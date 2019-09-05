@@ -7,6 +7,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy.orm import relationship, backref, object_session
 
 from metacatalog.db import Base
+from metacatalog.models.entrygroup import EntryGroupAssociation
 
 
 def get_embargo_end(datetime=None):
@@ -25,8 +26,8 @@ class Entry(Base):
     external_id = Column(String)
     location = Column(Geometry('POINT'), nullable=False)
     geom = Column(Geometry)
-    start = Column(DateTime)
-    end = Column(DateTime)
+    creation = Column(DateTime)
+    end = Column(DateTime) # TODO: nachschalgen
     version = Column(Integer, default=1, nullable=False)
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=False)
     
@@ -47,11 +48,20 @@ class Entry(Base):
     variable = relationship("Variable", back_populates='entries')
     datasource = relationship("DataSource", back_populates='entries')
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
+    associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
 
     @property
     def is_latest_version(self):
         self.latest_version_id == self.id
 
+    @property
+    def projects(self):
+        return [group for group in self.associated_groups if group.type.name.lower() == 'project']
+
+    @property
+    def composite_entries(self):
+        return [group for group in self.associated_groups if group.type.name.lower() == 'composite']
+    
     def keywords_list(self):
         """Metadata Keyword list
 

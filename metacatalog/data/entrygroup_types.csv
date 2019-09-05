@@ -1,0 +1,3 @@
+id,name,description
+1,Project,"A Project groups datasets into a lager collection of datasets that have been collected or used in the same Campaign."
+2,Composite,"A composite dataset groups a number of datasets that are inseparable."
