@@ -58,8 +58,8 @@ class PersonAssociation(Base):
     # columns 
     person_id = Column(Integer, ForeignKey('persons.id'), primary_key=True)
     entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)
-    relationship_type_id = Column(Integer, ForeignKey('person_roles.id'))
-    order = Column(Integer)
+    relationship_type_id = Column(Integer, ForeignKey('person_roles.id'), nullable=False)
+    order = Column(Integer, nullable=False)
 
     # relationships
     role = relationship("PersonRole", back_populates='persons_with_role')

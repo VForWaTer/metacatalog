@@ -2,20 +2,7 @@
 The Show API endpoint can be used to pretty print database records 
 or show the database structure, like attributes.
 """
-from metacatalog import models
-
-
-TABLE_MAPPING = dict(
-    datasource_types=models.datasource.DataSourceType,
-    datasources=models.datasource.DataSource,
-    entries=models.entry.Entry,
-    keywords=models.keyword.Keyword,
-    licenses=models.license.License,
-    persons=models.person.Person,
-    person_roles=models.person.PersonRole,
-    units=models.variable.Unit,
-    variables=models.variable.Variable
-)
+from ._mapping import TABLE_MAPPING
 
 
 def show_attributes(table_name, add_type=False):
