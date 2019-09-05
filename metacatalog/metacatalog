@@ -17,9 +17,8 @@ if __name__=='__main__':
     default_options.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database")
     default_options.add_argument("--verbose", "-V", action="store_true", help="Activate extended output.")
 
-
     # build the main Argument parser
-    parser = argparse.ArgumentParser(description="MetaCatalog management CLI", add_help=False)
+    parser = argparse.ArgumentParser(description="MetaCatalog management CLI", parents=[default_options], add_help=True)
 #    parser.add_argument("--version", "-v", action="store_true", help="Returns the module version")
 #    parser.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database")
 #    parser.add_argument("--verbose", "-V", action="store_true", help="Activate extended output.")
