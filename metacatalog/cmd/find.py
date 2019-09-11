@@ -1,5 +1,5 @@
 from ._util import connect
-from metacatalog.api import find_unit, find_variable, find_license, find_keyword
+from metacatalog import api
 
 def find(args):
     # get the session
@@ -21,13 +21,17 @@ def find(args):
 
     # switch entity
     if entity.lower() == 'units':
-        results = find_unit(session, **kwargs)
+        results = api.find_unit(session, **kwargs)
     elif entity.lower() == 'variables':
-        results = find_variable(session, **kwargs)
+        results = api.find_variable(session, **kwargs)
     elif entity.lower() == 'licenses':
-        results = find_license(session, **kwargs)
+        results = api.find_license(session, **kwargs)
     elif entity.lower() == 'keywords':
-        results = find_keyword(session, **kwargs)
+        results = api.find_keyword(session, **kwargs)
+    elif entity.lower() == 'role':
+        results = api.find_role(session, **kwargs)
+    elif entity.lower() == 'person':
+        results = api.find_person(session, **kwargs)
     else:
         print('Oops. Finding %s is not supported.' % entity)
         exit(0)

@@ -6,7 +6,7 @@ At the current stage, the following objects can be found by a FIND operation:
 * keywords
 
 """
-from metacatalog import Keyword, License, Unit, Variable
+from metacatalog import models
 
 
 def find_keyword(session, id=None, value=None, return_iterator=False):
@@ -35,13 +35,13 @@ def find_keyword(session, id=None, value=None, return_iterator=False):
         List of matched Keyword instance.
     """
     # base query
-    query = session.query(Keyword)
+    query = session.query(models.Keyword)
 
     # add needed filter
     if id is not None:
-        query = query.filter(Keyword.id==id)
+        query = query.filter(models.Keyword.id==id)
     if value is not None:
-        query = query.filter(Keyword.value==value)
+        query = query.filter(models.Keyword.value==value)
     
     # return
     if return_iterator:
@@ -86,19 +86,19 @@ def find_license(session, id=None, short_title=None, by_attribution=None, share_
         List of matched License instance.
     """
     # base query
-    query = session.query(License)
+    query = session.query(models.License)
 
     # add needed filter
     if id is not None:
-        query = query.filter(License.id==id)
+        query = query.filter(models.License.id==id)
     if short_title is not None:
-        query = query.filter(License.short_title==short_title)
+        query = query.filter(models.License.short_title==short_title)
     if by_attribution is not None:
-        query = query.filter(License.by_attribution==by_attribution)
+        query = query.filter(models.License.by_attribution==by_attribution)
     if share_alike is not None:
-        query = query.filter(License.share_alike==share_alike)
+        query = query.filter(models.License.share_alike==share_alike)
     if commercial_use is not None:
-        query = query.filter(License.commercial_use==commercial_use)
+        query = query.filter(models.License.commercial_use==commercial_use)
     
     # return
     if return_iterator:
@@ -136,14 +136,14 @@ def find_unit(session, id=None, name=None, symbol=None, return_iterator=False):
 
     """
     # base query
-    query = session.query(Unit)
+    query = session.query(models.Unit)
 
     if id is not None:
-        query = query.filter(Unit.id==id)
+        query = query.filter(models.Unit.id==id)
     if name is not None:
-        query = query.filter(Unit.name==name)
+        query = query.filter(models.Unit.name==name)
     if symbol is not None:
-        query = query.filter(Unit.symbol==symbol)
+        query = query.filter(models.Unit.symbol==symbol)
 
     # return
     if return_iterator:
@@ -159,8 +159,8 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
     exact matches. It makes only sense to set one of the 
     attributes (id, name, symbol).
 
-    Params
-    ------
+    Parameters
+    ----------
     session : sqlalchemy.Session
         SQLAlchemy session connected to the database.
     id : integer
@@ -181,14 +181,115 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
 
     """
     # base query
-    query = session.query(Variable)
+    query = session.query(models.Variable)
 
     if id is not None:
-        query = query.filter(Variable.id==id)
+        query = query.filter(models.Variable.id==id)
     if name is not None:
-        query = query.filter(Variable.name==name)
+        query = query.filter(models.Variable.name==name)
     if symbol is not None:
-        query = query.filter(Variable.symbol==symbol)
+        query = query.filter(models.Variable.symbol==symbol)
+
+    # return
+    if return_iterator:
+        return query
+    else:
+        return query.all()
+
+def find_role(session, id=None, name=None, return_iterator=False):
+    """Find Person Role
+
+    Return one person role record on exact matches. 
+    Roles can be identified by id or name.
+
+    Parameters
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    id : integer
+        Database unique ID of the requested record. Will 
+        return only one record.
+    name : str
+        name attribute of the requested role. 
+    return_iterator : bool
+        If True, an iterator returning the requested objects 
+        instead of the objects themselves is returned.
+    
+    Returns
+    -------
+    records : list of metacatalog.PersonRole
+        List of matched PersonRole instance. 
+
+    """
+    # base query
+    query = session.query(models.PersonRole)
+
+    if id is not None:
+        query = query.filter(models.PersonRole.id==id)
+    if name is not None:
+        query = query.filter(models.PersonRole.name==name)
+
+    # return
+    if return_iterator:
+        return query
+    else:
+        return query.all()
+
+
+def find_person(session, id=None, first_name=None, last_name=None, role=None, return_iterator=False):
+    """Find Person
+
+    Return person record on exact matches. Persons can be 
+    identified by id, first_name, last_name or associated roles.
+
+    Parameters
+    ----------
+    session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    id : integer
+        Database unique ID of the requested record. Will 
+        return only one record.
+    first_name : str
+        First name attribute of the requested person. 
+    last_name : str
+        Last name attribute of the requested person.
+    role : int, str
+        Role id or name (exact match) that is associated to 
+        a person. Will most likely return many persons.
+    return_iterator : bool
+        If True, an iterator returning the requested objects 
+        instead of the objects themselves is returned.
+    
+    Returns
+    -------
+    records : list of metacatalog.Person
+        List of matched Person instance. 
+
+    """
+    # base query
+    query = session.query(models.Person)
+
+    if id is not None:
+        query = query.filter(models.Person.id==id)
+    
+    if first_name is not None:
+        query = query.filter(models.Person.first_name==first_name)
+    
+    if last_name is not None:
+        query = query.filter(models.Person.last_name==last_name)
+    
+    if role is not None:
+        # get the roles
+        if isinstance(role, int):
+            role_id = session.query(models.PersonRole.id).filter(models.PersonRole.id==role).one()
+        else isinstance(role, str):
+            role_id = session.query(models.PersonRole.id).filter(models.PersonRole.name==role).first()
+        
+        # find the associations
+        ids = session.query(models.PersonAssociation.person_id).filter(models.PersonAssociation.relationship_type_id==role_id).all()
+
+        # filter by these ids
+        query = query.filter(models.Person.id.in_(ids))
 
     # return
     if return_iterator:
