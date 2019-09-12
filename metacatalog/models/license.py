@@ -10,7 +10,7 @@ class License(Base):
 
     # columns
     id = Column(Integer, primary_key=True)
-    short_title = Column(String(128), nullable=False)
+    short_title = Column(String(40), nullable=False)
     title= Column(String, nullable=False)
     summary = Column(String)
     full_text = Column(String)
