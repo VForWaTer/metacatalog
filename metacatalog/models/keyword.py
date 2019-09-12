@@ -1,6 +1,6 @@
-from sqlalchemy import Column, ForeignKey, event
+from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String
-from sqlalchemy.orm import relationship, backref, object_session
+from sqlalchemy.orm import relationship, backref
 
 
 from metacatalog.db import Base
@@ -12,7 +12,7 @@ class Keyword(Base):
     # columns
     id = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey('keywords.id'))
-    value = Column(String(1024))
+    value = Column(String(1024), nullable=False)
     uuid = Column(String(64), unique=True)
     full_path = Column(String)
 
@@ -52,7 +52,7 @@ class Keyword(Base):
         }
 
     def __str__(self):
-        return "%s <ID=%d>" % (self.path(), self.id)
+        return "%s <ID=%d>" % (self.path, self.id)
 
 
 class KeywordAssociation(Base):
@@ -71,17 +71,3 @@ class KeywordAssociation(Base):
     def __str__(self):
         return "<Entry ID=%d> tagged %s" % (self.entry.id, self.keyword.value)
 
-
-@event.listens_for(Keyword, 'after_insert')
-def insert_full_path(mapper, connection, keyword):
-    """
-    Create the full path to the current entry in Python and
-    save it as a string back into the database.
-    """
-    if keyword.full_path is None:
-        keyword.full_path = keyword.path()
-    
-    # commit changes
-    session = object_session(keyword)
-    session.add(keyword)
-    session.commit()

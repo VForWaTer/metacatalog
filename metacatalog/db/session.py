@@ -1,7 +1,9 @@
 import os, json
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
+
+from metacatalog.models import Keyword
 
 CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
 
@@ -78,5 +80,19 @@ def get_session(*args, **kwargs):
     # create the Session class
     Session = sessionmaker(bind=engine)
 
+    # create the instance
+    session = Session()
+
+    # hook up some event listeners
+    @event.listens_for(session, 'before_flush')
+    def update_keywords_full_path(session, context, instances):
+        # new  Keyword instances get updated
+        for instance in session.new:
+            # just look for Keywords
+            if isinstance(instance, Keyword):
+                instance.full_path = instance.path
+                session.add(instance)
+        # TODO: if keywords in session.dirty, it was a update and other keywords might need an update as,well
+        
     # return an instance
-    return Session()
+    return session
