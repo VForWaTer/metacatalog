@@ -151,3 +151,63 @@ EARTH SCIENCE > LAND SURFACE > SOILS > SOIL TEMPERATURE
 ```
 
 Any of these keywords might be suitable to append them to your metadata to make your soil temperature data set findable on that keyword.
+
+## Add data
+
+The CLI and API can also be used to add new data into the database. This does not work for all entity types yet. If the API is used, 
+the objects need to be created as Python dictionaries. The CLI accepts three different data origin flags:
+
+```bash
+metacatalog add -h
+```
+```
+usage: metacatalog add [-h] [--version] [--connection CONNECTION] [--verbose]
+                       [--csv CSV] [--txt TXT] [--json JSON]
+                       entity
+
+positional arguments:
+  entity                Name of the record entity to be added.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version, -v         Returns the module version
+  --connection CONNECTION, -C CONNECTION
+                        Connection string to the database instance.Follows the
+                        syntax: driver://user:password@host:port/database
+  --verbose, -V         Activate extended output.
+  --csv CSV             Data Origin Flag. Pass a CSV filename or content
+                        containing the data. Column header have to match the
+                        ADD API keywords.
+  --txt TXT             Data Origin Flag. Pass a text filename or content
+                        containing whitespace separated key=value pairs where
+                        key has to match the ADD API keywords. If used
+                        directly remember to quote accordingly.
+  --json JSON           Data Origin Flag. Pass a JSON filename or content
+                        containing the data. Must contain a list of objects
+                        matchin the ADD API keywords.
+```
+
+To add a new unit, we can use the `show` cli action to read the available attributes of the `units` table:
+
+```bash
+metacatalog show attributes --table units --names-only
+```
+```
+Attributes of units
+-------------------
+id
+name
+symbol
+si
+```
+
+The `si` attribute is optional. Let's create a few new units, using a csv syntax. 
+For the `---csv` flag, we can specify a file name or give the data directly:
+
+```bash
+metacatalog add unit --csv 'name,symbol\nnfoo,F\nbar,B'
+```
+```
+Added 2 unit records.
+Done.
+```
