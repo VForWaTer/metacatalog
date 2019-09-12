@@ -1,5 +1,9 @@
 if __name__=='__main__':
     import argparse
+    import codecs
+
+    def unescaped(arg_str):
+        return codecs.decode(str(arg_str), 'unicode_escape')
 
     from metacatalog import __version__ as VERSION
     from metacatalog.cmd import (
@@ -9,7 +13,8 @@ if __name__=='__main__':
         connection, 
         init,
         find,
-        show
+        show,
+        add
     )
 
     default_options = argparse.ArgumentParser(add_help=False)
@@ -59,6 +64,13 @@ if __name__=='__main__':
     show_parser.add_argument('--names-only', dest="name_only", action="store_true", default=False, help="Show only the attribute names. Only valid with 'attribute' action.")
     show_parser.set_defaults(func=show)
 
+    # add parser
+    add_parser = subparsers.add_parser('add', parents=[default_options], help="Add new records to the database.\nHas to be combined with one of the data origin flags.")
+    add_parser.add_argument('entity', type=str, help="Name of the record entity to be added.")
+    add_parser.add_argument('--csv', type=unescaped, help="Data Origin Flag. Pass a CSV filename or content containing the data. Column header have to match the ADD API keywords.")
+    add_parser.add_argument('--txt', type=unescaped, help="Data Origin Flag. Pass a text filename or content containing whitespace separated key=value pairs where key has to match the ADD API keywords. If used directly remember to quote accordingly.")
+    add_parser.add_argument('--json', type=unescaped, help="Data Origin Flag. Pass a JSON filename or content containing the data. Must contain a list of objects matchin the ADD API keywords.")
+    add_parser.set_defaults(func=add)
 
     # parse the arguments
     args = parser.parse_args()

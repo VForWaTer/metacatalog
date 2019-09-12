@@ -11,6 +11,23 @@ import json
 import pandas as pd
 
 
+def __infer_data_type(value):
+    v = value.lower()
+    if v == 'true':
+        return True
+    elif v == 'false':
+        return False
+    elif v == 'null' or v == 'none' or v == 'nan':
+        return None
+    elif value.isdecimal():
+        return int(value)
+    else:
+        try:
+            return float(value)
+        except ValueError:
+            return value
+
+
 def from_csv(file_name_or_content, as_record=True):
     """
     """
@@ -19,7 +36,7 @@ def from_csv(file_name_or_content, as_record=True):
         #file does not exist, thus content is assumed
         fs = io.StringIO()
         fs.write(file_name_or_content)
-        fs.seek()
+        fs.seek(0)
     else:
         # this is already a file path
         fs = file_name_or_content
@@ -55,7 +72,7 @@ def from_text(file_name_or_content):
         # build the record
         for chunk in chunks:
             vals = chunk.split('=')
-            record[vals[0].strip()] = vals[1].strip()
+            record[vals[0].strip()] = __infer_data_type(vals[1].strip())
         records.append(record)
 
     return records
@@ -69,7 +86,7 @@ def from_json(file_name_or_content):
         # file does not exist, thus content is assumed
         fs = io.StringIO()
         fs.write(file_name_or_content)
-        fs.seek()
+        fs.seek(0)
     else:
         # this is alread a file path
         fs = file_name_or_content
