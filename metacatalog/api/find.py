@@ -282,8 +282,10 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, re
         # get the roles
         if isinstance(role, int):
             role_id = session.query(models.PersonRole.id).filter(models.PersonRole.id==role).one()
-        else isinstance(role, str):
+        elif isinstance(role, str):
             role_id = session.query(models.PersonRole.id).filter(models.PersonRole.name==role).first()
+        else:
+            raise AttributeError('Role has to be an id (integer) or name (string).')
         
         # find the associations
         ids = session.query(models.PersonAssociation.person_id).filter(models.PersonAssociation.relationship_type_id==role_id).all()
@@ -291,6 +293,97 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, re
         # filter by these ids
         query = query.filter(models.Person.id.in_(ids))
 
+    # return
+    if return_iterator:
+        return query
+    else:
+        return query.all()
+
+
+def find_group_type(session, id=None, name=None, return_iterator=False):
+    """Find entry group types
+
+    Find a group type on exact matches. The group types
+    describes a collection of entries. 
+
+    Parameters
+    ----------
+    session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    id : integer
+        Database unique ID of the requested record. Will 
+        return only one record.
+    name : str
+        Name attribute of the group type.
+    return_iterator : bool
+        If True, an iterator returning the requested objects 
+        instead of the objects themselves is returned.
+    
+    Returns
+    -------
+    records : list of metacatalog.EntryGroupType
+        List of matched EntryGroupType instance. 
+
+    """
+    # base query
+    query = session.query(models.EntryGroupType)
+
+    if id is not None:
+        query = query.filter(models.EntryGroupType.id==id)
+    if name is not None:
+        query = query.filter(models.EntryGroupType.name==name)
+
+    # return 
+    if return_iterator:
+        return query
+    else:
+        return query.all()
+
+
+def find_group(session, id=None, title=None, type=None, return_iterator=False):
+    """Find group
+
+    Find a group of entries on exact matches. Groups can be 
+    identified by id, title or its type.
+
+    Parameters
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    id : integer
+        Database unique ID of the requested record. Will 
+        return only one record.
+    title : str
+        Title attribute of the group.
+    type : int, str
+        Either the id or name of a group type to exact match.
+    return_iterator : bool
+        If True, an iterator returning the requested objects 
+        instead of the objects themselves is returned.
+    
+    Returns
+    -------
+    records : list of metacatalog.EntryGroupType
+        List of matched EntryGroupType instance. 
+
+    """
+    # base query
+    query = session.query(models.EntryGroup)
+
+    if id is not None:
+        query = query.filter(models.EntryGroup.id==id)
+    if title is not None:
+        query = query.filter(models.EntryGroup.title==title)
+    if type is not None:
+        if isinstance(type, int):
+            grouptype = find_group_type(session=session, id=type, return_iterator=True).one()
+        elif isinstance(type, str):
+            grouptype = find_group_type(session=session, name=type, return_iterator=True).first()
+        else:
+            raise AttributeError('Type has to be an id (integer) or type name (string).')
+
+        query = query.filter(models.EntryGroup.type_id==grouptype.id)
+    
     # return
     if return_iterator:
         return query

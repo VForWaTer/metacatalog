@@ -32,6 +32,10 @@ def find(args):
         results = api.find_role(session, **kwargs)
     elif entity.lower() == 'person':
         results = api.find_person(session, **kwargs)
+    elif entity.lower() == 'group_type':
+        results = api.find_group_type(session, **kwargs)
+    elif entity.lower() == 'group':
+        results = api.find_group(session, **kwargs)
     else:
         print('Oops. Finding %s is not supported.' % entity)
         exit(0)
