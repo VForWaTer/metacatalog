@@ -8,11 +8,11 @@ from metacatalog import DATAPATH
 from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole, EntryGroupType
 
 IMPORTABLE_TABLES = dict(
+    keywords=Keyword,
     datasource_types=DataSourceType,
     units=Unit,
     variables=Variable,
     licenses=License,
-    keywords=Keyword,
     person_roles=PersonRole,
     entrygroup_types=EntryGroupType
 )
@@ -65,6 +65,9 @@ def _remove_nan_from_dict(d):
 def import_table_data(fname, InstanceClass):
     df = pd.read_csv(os.path.join(DATAPATH, fname))
 
+    # replace nan with None
+    df = df.where(df.notnull(), None)
+
     # build an instance for each line and return
     return [InstanceClass(**_remove_nan_from_dict(d)) for d in df.to_dict(orient='record')]
 
@@ -73,8 +76,27 @@ def import_direct(session, table_name, file_name):
     # load the data
     df = pd.read_csv(file_name)
 
+    # replace nan with None
+    df = df.where(df.notnull(), None)
+
     # directly inject into db
     df.to_sql(table_name, session.bind, index=False, if_exists='append')
+
+
+def update_sequence(session, table_name, sequence_name=None):
+    """
+    On insert with given id, PostgreSQL does not update the sequence 
+    for autoincrement. Thus tables with defaults cannot use autoincremented
+    PK anymore. Thus, the sequence is set to the current value
+    """
+    if sequence_name is None:
+        sequence_name = '%s_id_seq' % table_name
+    sql = "SELECT setval('%s', (SELECT MAX(id) from %s), true);" % (sequence_name, table_name)
+
+    res = session.execute(sql)
+    return res.scalar()
+    
+
 
 def populate_defaults(session, ignore_tables=[]):
     """Import default data
@@ -123,5 +145,11 @@ def populate_defaults(session, ignore_tables=[]):
             print('Failed.\n%s' % str(e))
             session.rollback()
         print('Finished %s' % table)
+    
+    for table in IMPORTABLE_TABLES.keys():
+        if table in ignore_tables:
+            continue
+        last_id = update_sequence(session, table)
+        print('Set %s_id_seq to %d' % (table, last_id))
     print('Done.')
  

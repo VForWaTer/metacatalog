@@ -13,9 +13,11 @@ class Unit(Base):
     name = Column(String(64), nullable=False)
     symbol = Column(String(12), nullable=False)
     si = Column(String(), nullable=True)
+    keyword_id = Column(Integer, ForeignKey('keywords.id'))
 
     # relationships
     variables = relationship("Variable", back_populates='unit')
+    keyword = relationship("Keyword")
 
     def __str__(self):
         return "%s <ID=%d>" % (self.name, self.id)
