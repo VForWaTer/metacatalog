@@ -50,7 +50,6 @@ def find_keyword(session, id=None, value=None, return_iterator=False):
         return query.all()
 
 
-
 def find_license(session, id=None, short_title=None, by_attribution=None, share_alike=None, commercial_use=None, return_iterator=False):
     """Find license
 
@@ -195,6 +194,7 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
         return query
     else:
         return query.all()
+
 
 def find_role(session, id=None, name=None, return_iterator=False):
     """Find Person Role
@@ -384,6 +384,57 @@ def find_group(session, id=None, title=None, type=None, return_iterator=False):
 
         query = query.filter(models.EntryGroup.type_id==grouptype.id)
     
+    # return
+    if return_iterator:
+        return query
+    else:
+        return query.all()
+
+
+def find_entry(session, id=None, title=None, external_id=None, version=None, return_iterator=False):
+    """Find Entry
+
+    Find an meta data Entry on exact matches. Entries can be 
+    identified by id, title, external_id and version. The 
+    version can be added to all other matching types, which 
+    are mutually exclusive.
+
+    Parameters
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    id : integer
+        Database unique ID of the requested record. Will 
+        return only one record.
+    title : str
+        Title attribute of the Entry.
+    external_id : str
+        External id attrinbute of the Entry.
+    version : int
+        Version number of the Entry. Can be combined with 
+        the other matching parameters, as they might not be 
+        different between versions.
+    return_iterator : bool
+        If True, an iterator returning the requested objects 
+        instead of the objects themselves is returned.
+    
+    Returns
+    -------
+    records : list of metacatalog.Entry
+        List of matched Entry instance. 
+    """
+    # base query
+    query = session.query(models.Entry)
+
+    if id is not None:
+        query = query.filter(models.Entry.id==id)
+    if title is not None:
+        query = query.filter(models.Entry.title==title)
+    if external_id is not None:
+        query = query.filter(models.Entry.external_id==external_id)
+    if version is not None:
+        query = query.filter(models.Entry.version==version)
+
     # return
     if return_iterator:
         return query

@@ -36,6 +36,8 @@ def find(args):
         results = api.find_group_type(session, **kwargs)
     elif entity.lower() == 'group':
         results = api.find_group(session, **kwargs)
+    elif entity.lower() == 'entry':
+        results = api.find_entry(session, **kwargs)
     else:
         print('Oops. Finding %s is not supported.' % entity)
         exit(0)
