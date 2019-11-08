@@ -29,7 +29,7 @@ class Entry(Base):
     creation = Column(DateTime)
     end = Column(DateTime) # TODO: nachschalgen
     version = Column(Integer, default=1, nullable=False)
-    latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=False)
+    latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)
     
     license_id = Column(Integer, ForeignKey('licenses.id'))
     variable_id = Column(Integer, ForeignKey('variables.id'), nullable=False)
@@ -62,7 +62,7 @@ class Entry(Base):
     def composite_entries(self):
         return [group for group in self.associated_groups if group.type.name.lower() == 'composite']
     
-    def keywords_list(self):
+    def plain_keywords_list(self):
         """Metadata Keyword list
 
         Returns list of controlled keywords associated with this 
@@ -71,10 +71,19 @@ class Entry(Base):
         keywords, use the keywords_dict function
 
         """
-        return [keyword.path for keyword in self.keywords]
+        return [kw.keyword.path() for kw in self.keywords]
+    
+    def plain_keywords_dict(self):
+        return [kw.keyword.as_dict() for kw in self.keywords]
     
     def keywords_dict(self):
-        return [kw.as_dict() for kw in self.keywords]
+        return [
+            dict(
+                path=kw.keyword.full_path, 
+                alias=kw.alias,
+                value=kw.associated_value
+            ) for kw in self.keywords
+        ]
 
     def __str__(self):
         return "<ID=%d %s [%s] >" % (
@@ -84,16 +93,16 @@ class Entry(Base):
             )
 
 
-@event.listens_for(Entry, 'after_insert')
-def insert_event_latest_version(mapper, connection, entry):
-    """
-    If entry does not reference a latest version it should 
-    reference itself to mark itself being up to date.
-    """
-    if entry.latest_version_id is None:
-        entry.latest_version_id = entry.id
-    
-    # make changes
-    session = object_session(entry)
-    session.add(entry)
-    session.commit()
+#@event.listens_for(Entry, 'after_insert')
+#def insert_event_latest_version(mapper, connection, entry):
+#   """
+#    If entry does not reference a latest version it should 
+#    reference itself to mark itself being up to date.
+#    """
+#    if entry.latest_version_id is None:
+#        entry.latest_version_id = entry.id
+#    
+#    # make changes
+#    session = object_session(entry)
+#    session.add(entry)
+#    session.commit()

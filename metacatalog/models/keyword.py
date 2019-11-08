@@ -45,7 +45,7 @@ class Keyword(Base):
 
     def as_dict(self):
         return {
-            'path': self.path,
+            'path': self.path(),
             'alias': self.alias,
             'value': self.value,
             'uuid': self.uuid

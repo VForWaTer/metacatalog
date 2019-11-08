@@ -418,6 +418,10 @@ def find_entry(session, id=None, title=None, external_id=None, version=None, ret
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
     
+    TODO
+    ----
+    if version is None, use the lastest version
+
     Returns
     -------
     records : list of metacatalog.Entry

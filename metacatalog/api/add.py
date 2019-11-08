@@ -190,3 +190,174 @@ def add_keyword(session, path):
     
     # return 
     return keywords
+
+def add_entry(session, title, location, variable, abstract=None, external_id=None, geom=None, license=None, embargo=False, **kwargs):
+    """Add new Entry
+
+    Adds a new metadata Entry to the database. This method will create the core
+    entry. Usually, more steps are necessary, which will need the newly created 
+    database ID. Such steps are: 
+    
+    * adding contributors   (mandatory)
+    * adding data           (extremly useful)
+    * adding keywords       (recommended)
+
+    Parameters
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    title : str
+        Title of the Entry
+    location : str, tuple
+        Can be either a WKT of a EPSG:4326 location, or the coordinates as a 
+        tuple. It has to be (X,Y), to (longitude, latitude)
+    variable : int, str
+        **Full** variable name (str) or ID (int) of the data described by the Entry. 
+    abstract : str
+        Description of the data. Be as detailed as possible
+    external_id : str
+        If the data described by Entry has another unique identifier, 
+        usually supplied by the data provider, it can be stored for reference reasons.
+    geom : str
+        WKT of any additional geoinformation in EPSG:4326
+    license : str, int
+        Either the id or **full** name of the license to be linked to this Entry.
+    embargo : bool
+        If True, this Entry will **not** be publicly available until the embargo ends
+        The embargo period is usually 2 years but can be modified using the kwargs.
+    Returns
+    -------
+    entry: metacatalog.Entry
+        Entry instance of the added entry entity
+
+
+    """
+    # create the attribute dict
+    attr = dict(
+        title=title, 
+        abstract=abstract, 
+        external_id=external_id,
+        embargo=embargo
+    )
+    attr.update(kwargs)
+
+    # parse the location and geom
+    if isinstance(location, str):
+        attr['location'] = location
+    elif isinstance(location, (tuple, list)):
+        attr['location'] = 'POINT (%f %f)' % (location[0], location[1])
+
+    if geom is not None and isinstance(geom, str):
+        attr['geom'] = geom
+    
+    # handle variable
+    if isinstance(variable, int):
+        variable = api.find_variable(session=session, id=variable, return_iterator=True).one()
+    elif isinstance(variable, str):
+        variable = api.find_variable(session=session, name=variable, return_iterator=True).first()
+    else:
+        raise AttributeError('variable has to be of type integer or string.')
+    attr['variable_id'] = variable.id
+
+    # handle license
+    if isinstance(license, int):
+        license = api.find_license(session=session, id=license, return_iterator=True).one()
+    elif isinstance(license, str):
+        license = api.find_license(session=session, short_title=license, return_iterator=True).first()
+    if license is not None:
+        attr['license_id'] = license.id
+
+    # add the entry
+    return add_record(session=session, tablename='entries', **attr)
+
+
+def add_keywords_to_entries(session, entries, keywords, alias=None, values=None):
+    """Associate keyword(s) to entrie(s)
+
+    Adds associations between entries and keywords. The Entry and Keyword
+    instances have to already exist in the database. Keywords are usually 
+    prepopulated. You might want to alias an keyword or associate a value to 
+    it. Use the alias and value lists for this.
+
+    Parameters
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    entries : list
+        List of identifier or single identifier to load entries. 
+        If int, the Entry.id is assumed. If str, title is assumed.
+        Can also pass a metacatalog.Entry object. 
+    keywords : list
+        List of identifier or single identifier to load keywords.
+        If int, Keyword.id is assumed, If str, Keyword.value is assumed.
+        Can also pass a metacatalog.Keyword object.
+    alias : list
+        List of, or single alias names. The shape has to match the 
+        keywords parameter. These alias will rename the keywords on 
+        association. In case one instance should not recive an alias, 
+        pass None instead.
+    values : list
+        List of, or single value. The shape has to match the 
+        keywords parameter. These values will be stored along with the
+        association to the entries. In case one instance should not 
+        be associated to a value pass None instead.
+
+    Returns
+    -------
+    void
+
+    See Also
+    --------
+    metacatalog.Entry
+    metacatalog.Keyword
+
+    """
+    # check the input shapes
+    if not isinstance(entries, list):
+        entries = [entries]
+    if not isinstance(keywords, list):
+        keywords = [keywords]
+    if not isinstance(alias, list):
+        alias = [alias] * len(keywords)
+    if not isinstance(values, list):
+        values = [values] * len(keywords)
+
+    # add for each entry
+    for entry_id in entries:
+        # load the entry
+        if isinstance(entry_id, models.Entry):
+            entry = entry_id
+        elif isinstance(entry_id, int):
+            # TODO sort by version descending to get the lastest
+            entry = api.find_entry(session=session, id=entry_id, return_iterator=True).first()
+        elif isinstance(entry_id, str):
+            # TODO sort by version descending to get the lastest
+            entry = api.find_variable(session=session, title=entry_id, return_iterator=True).first()
+        else:
+            raise AttributeError("Value '%s' not allowed for entries" % str(type(entry_id)))
+        
+        # add each keyword
+        assocs = []
+        for keyword_id, alias_name, value in zip(keywords, alias, values):
+            # load the keyword
+            if isinstance(keyword_id, models.Keyword):
+                keyword = keyword_id
+            elif isinstance(keyword_id, int):
+                keyword = api.find_keyword(session=session, id=keyword_id, return_iterator=True).first()
+            elif isinstance(keyword_id, str):
+                keyword = api.find_keyword(session=session, value=keyword_id, return_iterator=True).first()
+            else:
+                raise AttributeError("Value '%s' not allowed for keywords" % str(type(keyword_id)))
+        
+            # create a new keyword association
+            assocs.append(models.KeywordAssociation(entry=entry, keyword=keyword, alias=alias_name, associated_value=value))
+        
+        # add keyword to current entry
+        try:
+#            session.add(assocs)
+            entry.keywords.extend(assocs)
+            session.add(entry)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
