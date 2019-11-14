@@ -54,6 +54,9 @@ setup(
         'develop': PostDevelopCommand,
         'install': PostInstallCommand
     },
+    entrypoints={
+        'console_scripts': ['metacatalog = metacatalog.command_line:main']
+    },
     include_package_data=True,
     zip_safe=False
 )
