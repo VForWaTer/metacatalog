@@ -191,7 +191,41 @@ def add_keyword(session, path):
     # return 
     return keywords
 
-def add_entry(session, title, location, variable, abstract=None, external_id=None, geom=None, license=None, embargo=False, **kwargs):
+
+def add_person(session, first_name, last_name, affiliation=None):
+    """Add new Person
+
+    Add a new Person to the database. A person can be a real Person
+    or an institution. Then, the institution name goes into the 
+    last_name column and first_name can actively be set to None.
+    An affiliation can be added to both as a single string.
+
+    Parameters
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    first_name : str
+        A real persons first name. If omitted, the 'Person' is 
+        assumed to be an institution
+    last_name : str
+        A real persions last name. If first_name is NULL, 
+        last_name is assumned to be an institution.
+    affiliation : str
+        Affiliation if applicable. Has to go into a single string
+        of 1024 bytes.
+    
+    Returns
+    -------
+    entry: metacatalog.Person
+        Entry instance of the added Person entity
+  
+    """
+    attr = dict(first_name=first_name, last_name=last_name, affiliation=affiliation)
+
+    return add_record(session=session, tablename='persons', **attr)
+
+
+def add_entry(session, title, author, location, variable, abstract=None, external_id=None, geom=None, license=None, embargo=False, **kwargs):
     """Add new Entry
 
     Adds a new metadata Entry to the database. This method will create the core
@@ -208,6 +242,9 @@ def add_entry(session, title, location, variable, abstract=None, external_id=Non
         SQLAlchemy session connected to the database.
     title : str
         Title of the Entry
+    author : int, str
+        First author of the Entry. The Person record has to exist already in the 
+        database and can be found by exact match on id (int) or last_name (str).
     location : str, tuple
         Can be either a WKT of a EPSG:4326 location, or the coordinates as a 
         tuple. It has to be (X,Y), to (longitude, latitude)
@@ -241,6 +278,14 @@ def add_entry(session, title, location, variable, abstract=None, external_id=Non
     )
     attr.update(kwargs)
 
+    # parse the author
+    if isinstance(author, int):
+        author = api.find_person(session=session, id=author, return_iterator=True).one()
+    elif isinstance(author, str):
+        author = api.find_person(session=session, last_name=author, return_iterator=True).first()
+    else:
+        raise AttributeError('author has to be of type int or str')
+
     # parse the location and geom
     if isinstance(location, str):
         attr['location'] = location
@@ -268,7 +313,12 @@ def add_entry(session, title, location, variable, abstract=None, external_id=Non
         attr['license_id'] = license.id
 
     # add the entry
-    return add_record(session=session, tablename='entries', **attr)
+    entry = add_record(session=session, tablename='entries', **attr)
+
+    # reference the person using 'First Author' (ID=1) Role
+    add_persons_to_entries(session, entry, author, 1, 1)
+
+    return entry
 
 
 def add_keywords_to_entries(session, entries, keywords, alias=None, values=None):
@@ -354,8 +404,107 @@ def add_keywords_to_entries(session, entries, keywords, alias=None, values=None)
         
         # add keyword to current entry
         try:
-#            session.add(assocs)
             entry.keywords.extend(assocs)
+            session.add(entry)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
+
+
+def add_persons_to_entries(session, entries, persons, roles, order):
+    """Add person(s) to entrie(s)
+
+    Adds associations between entries and persons. The Entry and Person
+    instances have to already exist in the database. Each association 
+    has to further define the role of the person for the respective entry.
+
+    Parameters
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    entries : list
+        List of identifier or single identifier to load entries. 
+        If int, the Entry.id is assumed. If str, title is assumed.
+        Can also pass a metacatalog.Entry object. 
+    persons : list
+        List of identifier or single identifier to load persons.
+        If int, Person.id is assumed, If str, Person.last_name is assumed.
+        Can also pass a metacatalog.Person object.
+    roles : list
+        List of, or single role. The shape has to match the 
+        persons parameter. The role has to be identifies by id (int) or
+        role name (str).
+    order : list
+        List of, or single order. The shape has to match the 
+        persons parameter. The order gives the ascending order of 
+        contributors on the respecive entry (after the author).
+
+    Returns
+    -------
+    void
+
+    See Also
+    --------
+    metacatalog.Entry
+    metacatalog.Person
+    metacatalog.PersonRole
+    
+    """
+    # check the input shapes
+    if not isinstance(entries, list):
+        entries = [entries]
+    if not isinstance(persons, list):
+        persons = [persons]
+    if not isinstance(roles, list):
+        roles = [roles]
+    if not isinstance(order, list):
+        order = [order] * len(persons)
+
+    # add for each entry
+    for entry_id in entries:
+        # load the entry
+        if isinstance(entry_id, models.Entry):
+            entry = entry_id
+        elif isinstance(entry_id, int):
+            # TODO sort by version descending to get the lastest
+            entry = api.find_entry(session=session, id=entry_id, return_iterator=True).first()
+        elif isinstance(entry_id, str):
+            # TODO sort by version descending to get the lastest
+            entry = api.find_variable(session=session, title=entry_id, return_iterator=True).first()
+        else:
+            raise AttributeError("Value '%s' not allowed for entries" % str(type(entry_id)))
+
+        # add each person
+        assocs = []
+        for person_id, role_id, order_num in zip(persons, roles, order):
+            # load the person
+            if isinstance(person_id, models.Person):
+                person = person_id
+            elif isinstance(person_id, int):
+                person = api.find_person(session=session, id=person_id, return_iterator=True).one()
+            elif isinstance(person_id, str):
+                person = api.find_person(session=session, last_name=person_id, return_iterator=True).first()
+            else:
+                raise AttributeError('Persons can only be identified by id or last_name')
+
+            # load the role
+            if isinstance(role_id, models.PersonRole):
+                role = role_id
+            elif isinstance(role_id, int):
+                role = api.find_role(session=session, id=role_id, return_iterator=True).one()
+            elif isinstance(role_id, str):
+                role = api.find_role(session=session, name=role_id, return_iterator=True).first()
+            else:
+                raise AttributeError('Roles can only be identified by id or name')
+
+            # create the new association
+            assocs.append(models.PersonAssociation(entry=entry, person=person, role=role, order=order_num))
+
+
+        # add each person to entry
+        try:
+            entry.contributors.extend(assocs)
             session.add(entry)
             session.commit()
         except Exception as e:

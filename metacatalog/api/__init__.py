@@ -6,7 +6,9 @@ from .add import (
     add_license, 
     add_keyword, 
     add_unit, 
-    add_variable, 
+    add_variable,
+    add_person, 
     add_entry,
-    add_keywords_to_entries
+    add_keywords_to_entries,
+    add_persons_to_entries
 )
