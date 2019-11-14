@@ -5,7 +5,9 @@ ADD_MAPPING = dict(
     license=api.add_license,
     keyword=api.add_keyword,
     unit=api.add_unit,
-    variable=api.add_variable
+    variable=api.add_variable,
+    person=api.add_person,
+    entry=api.add_entry
 )
 
 def add(args):
