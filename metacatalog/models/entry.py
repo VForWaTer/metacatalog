@@ -1,3 +1,13 @@
+"""
+Entry
+-----
+
+The Entry is the core class of metacatalog. It represents the core logical unit of the meta data model.
+In principle, an Entry needs a first Author, a title, position and a license to describe 
+one type of environmental variable. It can hold a reference and interface to the actual data.
+If a supported data format is used, Entry can load the data.
+
+"""
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta as rd
 

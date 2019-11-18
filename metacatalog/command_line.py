@@ -75,7 +75,6 @@ def main():
     # parse the arguments
     args = parser.parse_args()
 
-    print(args)
     if hasattr(args, 'version') and args.version:
         print(VERSION)
     else:
