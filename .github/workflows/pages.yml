@@ -16,6 +16,12 @@ jobs:
          with:
            python-version: 3.6
       -
+         name: install Postgres
+         uses: Harmon758/postgresql-action@v1.0.0
+      - 
+        name: Install package
+        run: python setup.py install
+      - 
         name: Build Sphinx
         run: |
           pip install sphinx pandoc
