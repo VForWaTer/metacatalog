@@ -30,7 +30,7 @@ jobs:
            taget_branch: gh-pages
            build_dir: docs/_build/html
          env:
-           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}}
+           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
 
 
 
