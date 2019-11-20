@@ -29,7 +29,8 @@ jobs:
           pip install sphinx pandoc
           cd docs
           make html
-          cd ..
+          cd _build/html
+          touch .nojekyll
       -
          name: Deploy
          if: success()
