@@ -10,14 +10,21 @@ jobs:
       - 
         name: Checkout
         uses: actions/checkout@v1
-      - 
-          name: Build Sphinx
-          run: | 
-            pip install sphinx psycopg2-binary
-            pip install -r requirements.txt
-            pip install .
+      -
+        name: Install Postgres
+        uses: Harmon758/postgresql-action@v1.0.0
+      -
+        name: Install Requirements
+        run: | 
+          pip install psycopg2-binary
+          pip install -r requirements.txt
+          pip install .   
+      -
+        name: Build Sphinx
+        run: | 
             cd docs
             make html
+            cd ..
       -
          name: Deploy
          if: success()
