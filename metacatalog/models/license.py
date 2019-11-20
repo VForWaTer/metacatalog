@@ -2,7 +2,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import relationship
 
-from metacatalog.db import Base
+from metacatalog.db.base import Base
 
 
 class License(Base):

@@ -2,13 +2,13 @@ from metacatalog import models
 
 
 TABLE_MAPPING = dict(
-    datasource_types=models.datasource.DataSourceType,
-    datasources=models.datasource.DataSource,
-    entries=models.entry.Entry,
-    keywords=models.keyword.Keyword,
-    licenses=models.license.License,
-    persons=models.person.Person,
-    person_roles=models.person.PersonRole,
-    units=models.variable.Unit,
-    variables=models.variable.Variable
+    datasource_types=models.DataSourceType,
+    datasources=models.DataSource,
+    entries=models.Entry,
+    keywords=models.Keyword,
+    licenses=models.License,
+    persons=models.Person,
+    person_roles=models.PersonRole,
+    units=models.Unit,
+    variables=models.Variable
 )

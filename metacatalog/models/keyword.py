@@ -3,7 +3,7 @@ from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, backref
 
 
-from metacatalog.db import Base
+from metacatalog.db.base import Base
 
 
 class Keyword(Base):

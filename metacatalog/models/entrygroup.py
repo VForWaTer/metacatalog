@@ -2,7 +2,7 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship
 
-from metacatalog.db import Base
+from metacatalog.db.base import Base
 
 
 class EntryGroupAssociation(Base):

@@ -16,8 +16,14 @@ from sqlalchemy import Integer, String, Boolean, DateTime
 from geoalchemy2 import Geometry
 from sqlalchemy.orm import relationship, backref, object_session
 
-from metacatalog.db import Base
-from metacatalog.models.entrygroup import EntryGroupAssociation
+from metacatalog.db.base import Base
+from metacatalog import models
+from metacatalog import api
+from metacatalog.util.exceptions import (
+    MetadataMissingError,
+    NoImporterFoundWarning,
+    NoReaderFoundWarning
+)
 
 
 def get_embargo_end(datetime=None):
@@ -30,7 +36,7 @@ class Entry(Base):
     __tablename__ = 'entries'
 
     # columns
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(512), nullable=False)
     abstract = Column(String)
     external_id = Column(String)
@@ -59,6 +65,10 @@ class Entry(Base):
     datasource = relationship("DataSource", back_populates='entries')
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
     associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
+
+    @classmethod
+    def is_valid(cls, entry):
+        return isinstance(entry, Entry) and entry.id is not None
 
     @property
     def is_latest_version(self):
@@ -94,6 +104,87 @@ class Entry(Base):
                 value=kw.associated_value
             ) for kw in self.keywords
         ]
+
+    def create_datasource(self, path, type, commit=False, **args):
+        """
+        """
+        # 
+        if self.datasource is not None:
+            raise MetadataMissingError('Datasource already exists. You can edit that one.')
+
+        # get a session
+        session = object_session(self)
+
+        # load the datasource type
+        if isinstance(type, int):
+            ds_type = api.find_datasource_type(session=session, id=type, return_iterator=True).one()
+        elif isinstance(type, str):
+            ds_type = api.find_datasource_type(session=session, name=type, return_iterator=True).first()
+        else:
+            raise AttributeError('type has to be of type int or str')
+        
+        # build the datasource object
+        ds = models.DataSource(type=ds_type, path=path)
+
+        # add the args
+        ds.save_args_from_dict(args)
+
+        # append to self
+        self.datasource = ds
+
+        if commit:
+            try:
+                session.add(self)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
+        
+        # return
+        return ds
+
+    def get_data(self, **kwargs):
+        """
+        """
+        if self.datasource is None:
+            raise MetadataMissingError('Entry need datasource information')
+            
+        try:
+            reader = self.datasource.get_source_reader()
+        except NoReaderFoundWarning as w:
+            print('[WARNING] %s' % str(w))
+        
+        # get the args and update with kwargs
+        args = self.datasource.parse_args()
+        args.update(kwargs)
+
+        # use the reader and return
+        return reader(self, **args)
+
+    def import_data(self, data, **kwargs):
+        """
+        """
+        if self.datasource is None:
+            raise MetadataMissingError('Entry need datasource information')
+
+        try:
+            importer = self.datasource.get_source_importer()
+        except NoImporterFoundWarning as w:
+            print('[WARNING] %s' % str(w))
+            return 
+        
+        # get the args and update with kwargs
+        args = self.datasource.parse_args()
+        args.update(kwargs)
+
+        # import the data 
+        importer(self, data, **args)
+
+
+    def add_data(self):
+        """
+        """
+        raise NotImplementedError
 
     def __str__(self):
         return "<ID=%d %s [%s] >" % (
