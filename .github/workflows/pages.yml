@@ -1,0 +1,33 @@
+name: Documentation
+
+on: push
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - 
+        name: Checkout
+        uses: actions/checkout@v1
+      - 
+          name: Build Sphinx
+          run: | 
+            pip install sphinx sphinx-autodoc
+            pip install -r requirements.txt
+            pip install .
+            cd docs
+            make html
+      -
+         name: Deploy
+         if: success()
+         uses: crazy-max/ghaction-github-pages@v1
+         with:
+           taget_branch: gh-pages
+           build_dir: docs/_build/html
+         env:
+           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}}
+
+
+
+
