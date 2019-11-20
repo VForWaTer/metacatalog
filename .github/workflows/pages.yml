@@ -13,7 +13,7 @@ jobs:
       - 
           name: Build Sphinx
           run: | 
-            pip install sphinx
+            pip install sphinx psycopg2-binary
             pip install -r requirements.txt
             pip install .
             cd docs
