@@ -13,7 +13,7 @@ jobs:
       - 
           name: Build Sphinx
           run: | 
-            pip install sphinx sphinx-autodoc
+            pip install sphinx
             pip install -r requirements.txt
             pip install .
             cd docs
