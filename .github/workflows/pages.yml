@@ -12,10 +12,11 @@ jobs:
         uses: actions/checkout@v1
       -
         name: Build Sphinx
-        run: | 
-            cd docs
-            make html
-            cd ..
+        run: |
+          pip install sphinx 
+          cd docs
+          make html
+          cd ..
       -
          name: Deploy
          if: success()
