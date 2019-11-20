@@ -20,7 +20,9 @@ jobs:
          uses: Harmon758/postgresql-action@v1.0.0
       - 
         name: Install package
-        run: python setup.py install
+        run: | 
+          pip install pandas sqlalchemy
+          python setup.py install
       - 
         name: Build Sphinx
         run: |
