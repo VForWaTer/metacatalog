@@ -196,6 +196,47 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
         return query.all()
 
 
+def find_datasource_type(session, id=None, name=None, return_iterator=False):
+    """Find Datasource Type
+
+    Return one datasource type record on exact matches. 
+    Types can be identified by id or name.
+
+    Parameters
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    id : integer
+        Database unique ID of the requested record. Will 
+        return only one record.
+    name : str
+        name attribute of the requested type. 
+    return_iterator : bool
+        If True, an iterator returning the requested objects 
+        instead of the objects themselves is returned.
+    
+    Returns
+    -------
+    records : list of metacatalog.DataSourceType
+        List of matched DataSourceType instance. 
+
+    """
+    # base query
+    query = session.query(models.DataSourceType)
+
+    if id is not None:
+        query = query.filter(models.DataSourceType.id==id)
+    if name is not None:
+        query = query.filter(models.DataSourceType.name==name)
+
+    # return 
+    if return_iterator:
+        return query
+    else: 
+        return query.all()
+
+
+
 def find_role(session, id=None, name=None, return_iterator=False):
     """Find Person Role
 

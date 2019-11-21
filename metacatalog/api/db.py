@@ -2,8 +2,9 @@ import os
 
 import pandas as pd
 
-from metacatalog import Base
-from metacatalog.db import get_session
+#from metacatalog import Base
+from metacatalog.db.base import Base
+from metacatalog.db.session import get_session
 from metacatalog import DATAPATH
 from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole, EntryGroupType
 

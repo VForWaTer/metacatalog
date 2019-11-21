@@ -64,6 +64,25 @@ create extension postgis;
 
 Now, you are ready to go and let the CLI create all neccessary tables.
 
+## Using metacatalog on Windows
+
+On one of my Windows systems the setuptools scripts does not get recognized 
+properly and thus the CLI does not work properly if not called by full path.
+Therefore with version 0.1.4 the CLI is implemented the module main entrypoint.
+**Wherever the docs call the metacatalog script, you can use the module, like:**
+
+Instead of:
+```bash
+metacatalog [options] <commad>
+```
+you can use:
+```bash
+python -m metacatalog [options] <command>
+```
+This should work cross-platform. Tested on Ubuntu 18, debian 9, Windows 7 and 
+Windows 10. 
+
+
 ## Create Tables and load Defaults
 
 The `create`command can be used to create all needed tables in the connected database.
