@@ -2,3 +2,4 @@ sqlalchemy
 geoalchemy2
 pandas
 psycopg2
+tabulate

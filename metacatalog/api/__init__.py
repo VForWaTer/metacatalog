@@ -11,7 +11,7 @@ from .find import (
     find_group, 
     find_entry
 )
-from .show import show_attributes
+from .show import show_attributes, show_records
 from .io import from_csv, from_text, from_json
 from .add import (
     add_license, 
