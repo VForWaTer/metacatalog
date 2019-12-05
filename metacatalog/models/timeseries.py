@@ -16,3 +16,17 @@ class TimeseriesPoint(Base):
     @classmethod
     def is_valid_timeseries(cls, data):
         return isinstance(data, (pd.DataFrame, pd.Series)) and isinstance(data.index, pd.DatetimeIndex)
+
+
+class TimeseriesPoint2D(Base):
+    __tablename__ = 'timeseries_2d'
+
+    # columns
+    entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)
+    tstamp = Column(DateTime, primary_key=True)
+    value1 = Column(Numeric, nullable=False)
+    value2 = Column(Numeric, nullable=False)
+
+    @classmethod
+    def is_valid_timeseries(cls, data):
+        return isinstance(data, pd.DataFrame) and isinstance(data.index, pd.DatetimeIndex) and len(data.columns) == 2

@@ -58,11 +58,11 @@ class Entry(Base):
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
-    contributors = relationship("PersonAssociation", back_populates='entry')
-    keywords = relationship("KeywordAssociation", back_populates='entry')
+    contributors = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
+    keywords = relationship("KeywordAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
     license = relationship("License", back_populates='entries')
     variable = relationship("Variable", back_populates='entries')
-    datasource = relationship("DataSource", back_populates='entries')
+    datasource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
     associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
 

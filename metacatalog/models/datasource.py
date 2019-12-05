@@ -8,11 +8,11 @@ from sqlalchemy.orm import relationship, object_session
 from metacatalog.db.base import Base
 from metacatalog.util.exceptions import NoImporterFoundWarning, NoReaderFoundWarning
 from metacatalog.util.importer import (
-    import_to_interal_table,
+    import_to_internal_table,
     import_to_local_csv_file
 )
 from metacatalog.util.reader import (
-    read_from_interal_table,
+    read_from_internal_table,
     read_from_local_csv_file
 )
 
@@ -23,6 +23,7 @@ class DataSourceType(Base):
     # columns
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
+    title = Column(String, nullable=False)
     description = Column(String)
 
     # relationships
@@ -94,7 +95,7 @@ class DataSource(Base):
 
         """
         if self.type.name == 'internal':
-            func = import_to_interal_table
+            func = import_to_internal_table
         elif self.type.name == 'csv':
             func = import_to_local_csv_file
         else:
@@ -111,7 +112,7 @@ class DataSource(Base):
         """
         """
         if self.type.name == 'internal':
-            func = read_from_interal_table
+            func = read_from_internal_table
         elif self.type.name == 'csv':
             func = read_from_local_csv_file
         else:
