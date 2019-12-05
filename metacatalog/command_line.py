@@ -59,9 +59,13 @@ def main():
 
     # show subparsers
     show_parser = subparsers.add_parser('show',parents=[default_options], add_help=True, help="Show database structure or records.")
-    show_parser.add_argument('action', choices=['attributes'], help="Element to be shown.\nattributes\nShow table attributes")
-    show_parser.add_argument('--table', help="Table name. Only valid with 'attribute' action")
+    show_parser.add_argument('action', choices=['attributes', 'records'], help="Element to be shown.\nattributes\tShow table attributes.\nrecords\tShow raw table records")
+    show_parser.add_argument('table', help="Table name.")
     show_parser.add_argument('--names-only', dest="name_only", action="store_true", default=False, help="Show only the attribute names. Only valid with 'attribute' action.")
+    show_parser.add_argument('--limit', '-L', type=int, help="Only valid with 'records' action. Will limit the number of records returned")
+    show_parser.add_argument('--where', type=str, help="Only valid with 'records' action. Raw SQL WHERE clause to filter the results. Use carefully.")
+    show_parser.add_argument('--truncate', '-T', action="store_true", help="Only valid with 'records' action. Truncates string output to 12 signs.")
+
     show_parser.set_defaults(func=show)
 
     # add parser

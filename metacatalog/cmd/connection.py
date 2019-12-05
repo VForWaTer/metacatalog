@@ -1,4 +1,8 @@
-from metacatalog.db import get_connection_names, save_connection, load_connection
+from metacatalog.db.session import (
+    get_connection_names,
+    save_connection,
+    load_connection
+)
 
 def connection(args):
     # check if the save flag is given
