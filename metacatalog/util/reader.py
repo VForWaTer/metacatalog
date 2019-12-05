@@ -5,7 +5,7 @@ from sqlalchemy.orm import object_session
 
 from metacatalog.models.entry import Entry
 
-def read_from_interal_table(entry, datasource, **kwargs):
+def read_from_internal_table(entry, datasource, **kwargs):
     # check data validity
     assert Entry.is_valid(entry)
 
@@ -24,11 +24,23 @@ def read_from_interal_table(entry, datasource, **kwargs):
             sql += " AND tstamp <= '%s'" % (dt.strftime(kwargs['end'], '%Y-%m-%d %H:%M:%S'))
     else:
         sql = tablename
-    
-    # load data
-    df = pd.read_sql(sql, session.bind, index_col=['tstamp'], columns=['value'])
 
-    df.columns = [entry.variable.name]
+    # infer table column names order
+    sql = 'select * from %s limit 0' % tablename
+    col_names = list(pd.read_sql_query(sql, session.bind).columns.values)
+    col_names.remove('entry_id')
+    if 'index' in col_names:
+        index_col = ['index']
+        col_names.remove('index')
+    elif 'tstamp' in col_names:
+        index_col = ['tstamp']
+        col_names.remove('tstamp')
+
+    # load data
+    df = pd.read_sql(sql, session.bind, index_col=index_col, columns=col_names)
+
+    if len(df.columns) == 1:
+        df.columns = [entry.variable.name]
 
     return df
 
@@ -41,12 +53,15 @@ def read_from_local_csv_file(entry, datasource, **kwargs):
     fname = datasource.path
 
     # read the file
-    timeseries = pd.read_csv(fname)
+    data = pd.read_csv(fname, index=None)
 
     # create index if needed
-    if 'tstamp' in timeseries.columns:
-        timeseries.set_index('tstamp', inplace=True)
+    if 'tstamp' in data.columns:
+        data.set_index('tstamp', inplace=True)
+    elif 'index' in data:
+        data.set_index('index', inplace=True)
     
-    timeseries.columns = [entry.variable.name]
+    if len(data.columns) == 1:
+        data.columns = [entry.variable.name]
 
-    return timeseries
+    return data

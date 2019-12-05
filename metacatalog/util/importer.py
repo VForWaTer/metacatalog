@@ -7,58 +7,55 @@ from metacatalog.models.entry import Entry
 from metacatalog.models.timeseries import TimeseriesPoint
 
 
-def import_to_interal_table(entry, timeseries, datasource, value_col='value', date_col='tstamp', **kwargs):
-    """Import to DB
+def import_to_internal_table(entry, data, datasource, mapping=None, **kwargs):
+    """Import to internal DB
 
-    Saves the given timeseries into a table. 
-    The data should have a datetime index called tstamp and 
-    the values column called 'values'.
-
+    The given data is imported into the table 
+    as specified in the datasource. The data column names need to
+    fit the names as implemented in the database. The mapping 
+    keyword can be used to rename
     """
-    #check_valid_entry(entry)
-    #check_valid_timeseries(timeseries)
+    # check that entry is valid
     assert Entry.is_valid(entry)
-    assert TimeseriesPoint.is_valid_timeseries(timeseries)
+    
+    if isinstance(data, pd.Series):
+        data = pd.DataFrame(data)
 
-    if isinstance(timeseries, pd.Series):
-        timeseries = pd.DataFrame(timeseries)
+    # reset the index
+    imp = data.reset_index(level=0, inplace=False)
+    
+    # rename if mapping is given
+    if mapping is not None and isinstance(mapping, dict):
+        imp.rename(columns=mapping, inplace=True)
 
-    # reset the datetime index
-    data = timeseries.reset_index(level=0, inplace=False)
+    # set entry_id
+    if 'entry_id' not in imp.columns:
+        imp['entry_id'] = entry.id
 
-    # add the entry_id column
-    data['entry_id'] = entry.id
-
-    # rename columns:
-    data.rename(columns={value_col: 'value', date_col: 'tstamp'}, inplace=True)
-
-    # check
-    if not 'value' in data.columns or not 'tstamp' in data.columns:
-        raise AttributeError('Could not parse correct columns. Use the value_col and date_col arguments')
-
-    # now all columns are present, set the index
-    data.set_index(['entry_id', 'tstamp'], inplace=True)
-
-    # extract the needed columns
-    data = data[['value']].copy()
-
-    # upload into the new table
+    # check if a session was passed
     if 'session' in kwargs.keys():
         session = kwargs['session']
     else:
         session = object_session(entry)
 
-    # if tablename not set, ifer
     if datasource.path is None:
-        tablename = 'timeseries_data_%d' % entry.id
+        tablename = 'data_entry_%d' % entry.id
     else:
         tablename = datasource.path
 
-    # upload
-    data.to_sql(tablename, session.bind, if_exists='append')
+    # get the available column names from the database
+    sql = 'select * from %s limit 0' % tablename
+    col_names = pd.read_sql_query(sql, session.bind).columns.values
+
+    if not all([col in col_names for col in imp.columns.values]):
+        raise ValueError('The input data has columns, that are not present in the database.\n %s' % ', '.join(col_names))
+    
+    # else import 
+    if_exists = kwargs.get('if_exists', 'append')
+    imp.to_sql(tablename, session.bind, index=None, if_exists=if_exists)
 
 
-def import_to_local_csv_file(entry, timeseries, datasource, **kwargs):
+def import_to_local_csv_file(entry, data, datasource, **kwargs):
     """Import to CSV
 
     Saves timeseries data to a local CSV file.
@@ -67,7 +64,6 @@ def import_to_local_csv_file(entry, timeseries, datasource, **kwargs):
 
     """
     assert Entry.is_valid(entry)
-    assert TimeseriesPoint.is_valid_timeseries(timeseries)
 
     # get the path
     if datasource.path is None:
@@ -87,9 +83,25 @@ def import_to_local_csv_file(entry, timeseries, datasource, **kwargs):
             session.rollback()
             raise e
 
-    if_exists = kwargs.get('if_exists', 'overwrite')
-    if not if_exists == 'overwrite':
-        raise NotImplementedError("Only 'overwrite' supported for now.")
-    
+    # reset the index
+    imp = data.reset_index(level=0, inplace=False)
+
+    if_exists = kwargs.get('if_exists', 'replace')
+
     # save the data
-    timeseries.to_csv(path)
+    if if_exists == 'replace':
+        imp.to_csv(path, index=None)
+        
+    elif if_exists == 'append':
+        df = pd.read_csv(path, index=None)
+        new_df = df.append(imp, ignore_index=True)
+        new_df.to_csv(path, index=False)
+
+    elif if_exists == 'fail':
+        if os.path.exists(path):
+            raise ValueError('%s already exists.' % path)
+        else:
+            data.to_csv(path, index=None)
+    
+    else:
+        raise ValueError("if_exists has to be one of ['fail', 'append', 'replace']")

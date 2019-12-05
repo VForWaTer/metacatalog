@@ -13,10 +13,12 @@ is supported. This may change in a future version.
 
 """
 from .entry import Entry
+from .entrygroup import EntryGroup, EntryGroupType
 from .keyword import Keyword, KeywordAssociation
 from .person import Person, PersonRole, PersonAssociation
 from .license import License
 from .variable import Variable, Unit
 from .datasource import DataSource, DataSourceType
-from .timeseries import TimeseriesPoint
-from .entrygroup import EntryGroup, EntryGroupType
+from .timeseries import TimeseriesPoint, TimeseriesPoint2D
+from .generic_data import DataPoint, DataPoint2D
+from .geometry_data import GeometryTimeseries, GenericGeometryData
