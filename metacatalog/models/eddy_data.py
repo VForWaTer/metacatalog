@@ -9,9 +9,6 @@ class EddyData(Base):
 
     # columns
     entry_id  = Column(Integer, ForeignKey('entries.id'), primary_key=True)
-
-    # TODO: Datentypen überprüfuen, welche Werte sind nicht nullable? Gibt es weitere keys?
-
     t_begin = Column(DateTime, nullable = False)
     t_end = Column(DateTime, nullable = False)
     u = Column(Numeric)
@@ -54,11 +51,11 @@ class EddyData(Base):
     lve = Column(Numeric)
     zl = Column(Numeric)
     zl_v = Column(Numeric)
-    flag_ustar = Column(Integer)        # ist in Daten 0, 1 oder 2 -> Integer? Oder kann das auch andere Werte annehmen?
-    flag_hts = Column(Integer)          # ist in Daten 0, 1 oder 2 -> Integer? Oder kann das auch andere Werte annehmen?
-    flag_htp = Column(Integer)          # ist in Daten 0, 1 oder 2 -> Integer? Oder kann das auch andere Werte annehmen?
-    flag_lve = Column(Integer)          # ist in Daten 0, 1 oder 2 -> Integer? Oder kann das auch andere Werte annehmen?
-    flag_wco = Column(Integer)          # ist in Daten 0, 1 oder 2 -> Integer? Oder kann das auch andere Werte annehmen?
+    flag_ustar = Column(Integer)
+    flag_hts = Column(Integer)
+    flag_htp = Column(Integer)
+    flag_lve = Column(Integer)
+    flag_wco = Column(Integer)
     t_mid = Column(DateTime)
     fcstor = Column(Numeric)
     nee = Column(Numeric)
