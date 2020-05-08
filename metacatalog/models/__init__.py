@@ -22,3 +22,12 @@ from .datasource import DataSource, DataSourceType
 from .timeseries import TimeseriesPoint, TimeseriesPoint2D
 from .generic_data import DataPoint, DataPoint2D
 from .geometry_data import GeometryTimeseries, GenericGeometryData
+
+
+__all__ = [
+    'Entry',
+    'EntryGroup',
+    'EntryGroupType',
+    'Keyword',
+    'KeywordAssociation'
+]
