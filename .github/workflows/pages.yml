@@ -23,7 +23,7 @@ jobs:
           pip install sphinx pandoc
           cd docs
           make html
-          cd _build/html
+          cd build/html
           touch .nojekyll
       
       -  name: Deploy
@@ -31,7 +31,7 @@ jobs:
          uses: crazy-max/ghaction-github-pages@v1
          with:
            taget_branch: gh-pages
-           build_dir: docs/_build/html
+           build_dir: docs/build/html
          env:
            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -15,8 +15,8 @@ def find_keyword(session, id=None, value=None, return_iterator=False):
     Return one or many keyword entries from the database on 
     exact matches.
 
-    Params
-    ------
+    Parameters
+    ----------
     session : sqlalchemy.Session
         SQLAlchemy session connected to the database.
     id : integer
@@ -56,8 +56,8 @@ def find_license(session, id=None, short_title=None, by_attribution=None, share_
     Return one or many license entries from the database on 
     exact matches.
 
-    Params
-    ------
+    Parameters
+    ----------
     session : sqlalchemy.Session
         SQLAlchemy session connected to the database.
     id : integer
@@ -113,8 +113,8 @@ def find_unit(session, id=None, name=None, symbol=None, return_iterator=False):
     exact matches. It makes only sense to set one of the 
     attributes (id, name, symbol).
 
-    Params
-    ------
+    Parameters
+    ----------
     session : sqlalchemy.Session
         SQLAlchemy session connected to the database.
     id : integer
