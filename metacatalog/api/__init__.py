@@ -30,5 +30,11 @@ from .add import (
 
 __all__ = [
     'connect_database', 'create_tables', 'populate_defaults', 
-    'find_keyword', 'find_license'
+    'find_keyword', 'find_license', 'find_unit', 'find_variable',
+    'find_datasource_type', 'find_role', 'find_person', 
+    'find_group', 'find_group_type', 'find_entry',
+    'show_attributes', 'show_records', 'from_csv', 'from_text',
+    'from_json', 'add_license', 'add_keyword', 'add_unit', 
+    'add_variable', 'add_person', 'add_entry', 'add_keywords_to_entries',
+    'add_persons_to_entries'
 ]

@@ -29,5 +29,19 @@ __all__ = [
     'EntryGroup',
     'EntryGroupType',
     'Keyword',
-    'KeywordAssociation'
+    'KeywordAssociation',
+    'Person',
+    'PersonRole',
+    'PersonAssociation',
+    'License',
+    'Variable',
+    'Unit',
+    'DataSource',
+    'DataSourceType',
+    'TimeseriesPoint',
+    'TimeseriesPoint2D',
+    'DataPoint',
+    'DataPoint2D',
+    'GeometryTimeseries',
+    'GenericGeometryData'
 ]
