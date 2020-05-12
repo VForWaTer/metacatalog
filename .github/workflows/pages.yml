@@ -20,7 +20,7 @@ jobs:
       
       - name: Build Sphinx
         run: |
-          pip install sphinx pandoc
+          pip install sphinx pandoc pydata_sphinx_theme
           cd docs
           make html
           cd build/html

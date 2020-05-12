@@ -389,7 +389,7 @@ def find_group(session, id=None, title=None, type=None, return_iterator=False):
 
     Parameters
     ----------
-   session : sqlalchemy.Session
+    session : sqlalchemy.Session
         SQLAlchemy session connected to the database.
     id : integer
         Database unique ID of the requested record. Will 
@@ -442,7 +442,7 @@ def find_entry(session, id=None, title=None, external_id=None, version=None, ret
 
     Parameters
     ----------
-   session : sqlalchemy.Session
+    session : sqlalchemy.Session
         SQLAlchemy session connected to the database.
     id : integer
         Database unique ID of the requested record. Will 

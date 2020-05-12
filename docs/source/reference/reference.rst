@@ -3,9 +3,9 @@ Code Reference
 ==============
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Modules:
 
-    api
-    models  
+    api/api
+    models/models  
     

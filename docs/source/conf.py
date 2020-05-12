@@ -50,17 +50,18 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+#html_theme = 'alabaster'
+html_theme = 'pydata_sphinx_theme'
 
 html_theme_options = {
-    'github_user': 'VForWaTer',
-    'github_repo': 'metacatalog',
-    'github_button': True,
-    'fixed_sidebar': True,
-    'body_text_align': 'justify'
+#    'github_user': 'VForWaTer',
+#    'github_repo': 'metacatalog',
+#    'github_button': True,
+#    'fixed_sidebar': True,
+#    'body_text_align': 'justify'
 }
 
-html_sidebars = {
+"""html_sidebars = {
     '**': [
         'about.html',
         'navigation.html',
@@ -68,7 +69,7 @@ html_sidebars = {
         'searchbox.html',
         'donate.html'
     ]
-}
+}"""
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
