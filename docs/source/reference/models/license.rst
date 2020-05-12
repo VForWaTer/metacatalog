@@ -2,7 +2,6 @@
 Data Licenses
 =============
 
-.. automodule:: metacatalog.models.Licenses
+.. automodule:: metacatalog.models.license
     :members:
 
-    

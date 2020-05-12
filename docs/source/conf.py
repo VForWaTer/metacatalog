@@ -33,6 +33,7 @@ release = '0.1.5'
 extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
+    'sphinx.ext.mathjax'
 #    'sphinx.ext.inheritance_diagram',
 ]
 
@@ -59,7 +60,17 @@ html_theme_options = {
 #    'github_button': True,
 #    'fixed_sidebar': True,
 #    'body_text_align': 'justify'
+    'github_url': 'https://github.com/VForWaTer/metacatalog'
 }
+
+html_context = {
+    'github_user': 'VForWaTer',
+    'github_repo': 'metacatalog',
+    'github_version': 'master',
+    'doc_path': 'docs/source'
+}
+
+html_short_title = 'MetaCatalog'
 
 """html_sidebars = {
     '**': [
