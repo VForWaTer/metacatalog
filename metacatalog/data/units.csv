@@ -19,6 +19,7 @@ id,name,symbol,si
 18,ohm,ohm,kg*m^2*s^-3*A^-2
 19,siemens,S,kg^-1*m^-2*s^3*A^2
 20,lux,lx,m^-2*cd
+21,relative,-,1
 101,degree Celsius,C,K
 102,milimeter,10^-3*m
 103,mm per day,mm/d,10^-3*m*86400^-1*s^-1
