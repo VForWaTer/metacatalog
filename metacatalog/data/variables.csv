@@ -11,3 +11,4 @@ id,name,symbol,unit_id,keyword_id
 10,net radiation,Rn,115,5227
 11,gravimetric water content,u,114,5727
 12,volumnetric water content,theta,113,5727
+13,precision,sigma,21,
