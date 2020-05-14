@@ -1,0 +1,45 @@
+# e2e-tests for Metacatalog
+name: e2e Test
+
+on: ['push']
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    
+    # create the postgis service - the version is hardcoded atm
+    services:
+      postgis:
+        image: postgis/postgis:10-2.5
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432/tcp
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    
+    steps:
+    - name: Chechout Repository
+      uses: actions/checkout@v2
+    
+    - name: Install Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+
+    - name: Install dependencies
+      run: | 
+        pip install -r requirements.txt
+        python setup.py develop
+        pip install pytest pytest-depends
+
+    - name: Test
+      run: pytest
+      env:
+        POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}
+#    # This was did work
+#    - name: Test
+#      run: python ./test.py
+#      env:
+#        POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}
