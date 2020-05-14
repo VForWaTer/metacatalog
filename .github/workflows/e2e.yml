@@ -28,18 +28,20 @@ jobs:
       with:
         python-version: 3.6
 
+    # install metacatalog and test dependencies
+    # e2e-tests rely on pytest and pytest-depends so far 
     - name: Install dependencies
       run: | 
         pip install -r requirements.txt
         python setup.py develop
         pip install pytest pytest-depends
 
-    - name: Test
+    # run the actual tests
+    # they need the arbitrary port number which is mapped to 5432
+    # in the VM host 
+    # this has a lot of side-effects, as e2e is run against an 
+    # actual database 
+    - name: e2e Tests
       run: pytest
       env:
         POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}
-#    # This was did work
-#    - name: Test
-#      run: python ./test.py
-#      env:
-#        POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}

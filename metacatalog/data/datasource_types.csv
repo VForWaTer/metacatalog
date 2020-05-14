@@ -1,4 +1,4 @@
 id,name,title,description
-1,internal,"Internal Table,Table inside the same database instance."
-2,external,"External Table,SQL table in an external database instance, but of same structure."
+1,internal,Internal Table,"Table inside the same database instance."
+2,external,External Table,"SQL table in an external database instance, but of same structure."
 3,csv,Local CSV File,"Standard csv file source on the database server machine"
