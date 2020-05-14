@@ -39,8 +39,8 @@ def read_from_internal_table(entry, datasource, **kwargs):
     # load data
     df = pd.read_sql(sql, session.bind, index_col=index_col, columns=col_names)
 
-    if len(df.columns) == 1:
-        df.columns = [entry.variable.name]
+    # map column names
+    df.columns = [entry.variable.name if _col== 'value' else _col for _col in df.columns]
 
     return df
 
@@ -61,7 +61,7 @@ def read_from_local_csv_file(entry, datasource, **kwargs):
     elif 'index' in data:
         data.set_index('index', inplace=True)
     
-    if len(data.columns) == 1:
-        data.columns = [entry.variable.name]
+    # map column names
+    df.columns = [entry.variable.name if _col== 'value' else _col for _col in df.columns]
 
     return data
