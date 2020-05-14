@@ -12,7 +12,7 @@ class TimeseriesPoint(Base):
     entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)
     tstamp = Column(DateTime, primary_key=True)
     value = Column(Numeric, nullable=False)
-    sigma = Column(Numeric, nullable=True)
+    precision = Column(Numeric, nullable=True)
 
     @classmethod
     def is_valid_timeseries(cls, data):
@@ -27,8 +27,8 @@ class TimeseriesPoint2D(Base):
     tstamp = Column(DateTime, primary_key=True)
     value1 = Column(Numeric, nullable=False)
     value2 = Column(Numeric, nullable=False)
-    sigma1 = Column(Numeric, nullable=True)
-    sigma2 = Column(Numeric, nullable=True)
+    precision1 = Column(Numeric, nullable=True)
+    precision2 = Column(Numeric, nullable=True)
 
     @classmethod
     def is_valid_timeseries(cls, data):
