@@ -14,6 +14,7 @@ is supported. This may change in a future version.
 """
 from .entry import Entry
 from .entrygroup import EntryGroup, EntryGroupType
+from .details import Detail
 from .keyword import Keyword, KeywordAssociation
 from .person import Person, PersonRole, PersonAssociation
 from .license import License

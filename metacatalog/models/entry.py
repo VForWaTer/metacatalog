@@ -16,6 +16,9 @@ from sqlalchemy import Integer, String, Boolean, DateTime
 from geoalchemy2 import Geometry
 from sqlalchemy.orm import relationship, backref, object_session
 
+import nltk
+import pandas as pd
+
 from metacatalog.db.base import Base
 from metacatalog import models
 from metacatalog import api
@@ -65,6 +68,7 @@ class Entry(Base):
     datasource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
     associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
+    details = relationship("Detail", back_populates='entry')
 
     @classmethod
     def is_valid(cls, entry):
@@ -104,6 +108,75 @@ class Entry(Base):
                 value=kw.associated_value
             ) for kw in self.keywords
         ]
+
+    def details_dict(self, full=True):
+        """
+        Returns the associated details as dictionary.
+        
+        Parameters
+        ----------
+        full : bool
+            If True (default) the keywords will contain the 
+            full info including key description, ids and 
+            stemmed key. If false, it will be truncated to a
+            plain key:value dict 
+
+        """
+        if full:
+            return {d.stem:d.to_dict() for d in self.details}
+        else:
+            return {d.stem:d.value for d in self.details}
+    
+    def details_table(self, fmt='html'):
+        """
+        Return the associated details as table
+
+        Parameters
+        ----------
+        fmt : string
+            Can be one of:
+            
+            * `html` to return a HTML table
+            * `latex` to return LaTeX table
+            * `markdown` to return Markdown table
+
+        """
+        # get the details
+        df = pd.DataFrame(self.details_dict(full=True)).T
+
+        if fmt.lower() == 'html':
+            return df.to_html()
+        elif fmt.lower() == 'latex':
+            return df.to_latex()
+        elif fmt.lower() == 'markdown' or fmt.lower() == 'md':
+            return df.to_markdown()
+        else:
+            raise ValueError("fmt has to be in ['html', 'latex', 'markdown']")
+    
+    def add_details(self, commit=False, **kwargs):
+        """
+        Adds arbitrary key-value pairs to this entry.
+
+        Parameters
+        ----------
+        commit : bool
+            If True, the Entry session will be added to the 
+            current session and the transaction is commited.
+            Can have side-effects. Defaults to False.
+        
+        """
+        ps = nltk.PorterStemmer()
+        for k, v in kwargs.items():
+            self.details.append(models.Detail(**{'entry_id': self.id, 'key': str(k), 'stem': ps.stem(k), 'value': str(v)}))
+        
+        if commit:
+            session = object_session(self)
+            try:
+                session.add(self)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
 
     def create_datasource(self, path, type, commit=False, **args):
         """
@@ -184,6 +257,9 @@ class Entry(Base):
     def add_data(self):
         """
         """
+        raise NotImplementedError
+
+    def to_dict(self):
         raise NotImplementedError
 
     def __str__(self):
