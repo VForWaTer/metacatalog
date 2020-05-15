@@ -20,7 +20,8 @@ id,name,symbol,si
 19,siemens,S,kg^-1*m^-2*s^3*A^2
 20,lux,lx,m^-2*cd
 21,relative,-,1
-22,mass flux,10^-3*m^3*10^2*m^-2*s*-1
+22,mass flux density per hour,cm^3/cm^2h,10^-3*m^3*10^2*m^-2*3600^-1*s*-1
+23,hour,h,3600*s
 101,degree Celsius,C,K
 102,milimeter,10^-3*m
 103,mm per day,mm/d,10^-3*m*86400^-1*s^-1
