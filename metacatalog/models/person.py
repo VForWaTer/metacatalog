@@ -65,3 +65,6 @@ class PersonAssociation(Base):
     role = relationship("PersonRole", back_populates='persons_with_role')
     person = relationship("Person", back_populates='entries')
     entry = relationship("Entry", back_populates='contributors')
+
+    def __str__(self):
+        return '%s <ID=%d> as %s for Entry <ID=%d>' % (self.person.full_name, self.person.id, self.role.name, self.entry.id)

@@ -29,6 +29,9 @@ class DataSourceType(Base):
     # relationships
     sources = relationship("DataSource", back_populates='type')
 
+    def __str__(self):
+        return '%s data source <ID=%d>' % (self.name, self.id)
+
 
 class DataSource(Base):
     __tablename__ = 'datasources'

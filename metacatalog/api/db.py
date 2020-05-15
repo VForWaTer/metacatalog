@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+from pandas.errors import ParserError
 
 #from metacatalog import Base
 from metacatalog.db.base import Base
@@ -64,7 +65,11 @@ def _remove_nan_from_dict(d):
 
 
 def import_table_data(fname, InstanceClass):
-    df = pd.read_csv(os.path.join(DATAPATH, fname))
+    try:
+        df = pd.read_csv(os.path.join(DATAPATH, fname))
+    except ParserError as e:
+        print('[ERROR] default table data file corrupted.\nFile: %s\nOriginal Exception: %s' % (fname, str(e)))
+        return []
 
     # replace nan with None
     df = df.where(df.notnull(), None)
@@ -115,6 +120,7 @@ def populate_defaults(session, ignore_tables=[]):
 
     Parameters
     ----------
+
     session : sqlalchemy.Session
         Session instance connected to the database.
     ignore_tables : list
@@ -139,9 +145,12 @@ def populate_defaults(session, ignore_tables=[]):
 
         # add
         try:
-            print('Populating %s' % table)
-            session.add_all(instances)
-            session.commit()
+            if len(instances) > 0:
+                print('Populating %s' % table)
+                session.add_all(instances)
+                session.commit()
+            else:
+                print('Can\'t populate %s.' % table)
         except Exception as e:
             print('Failed.\n%s' % str(e))
             session.rollback()
@@ -151,6 +160,9 @@ def populate_defaults(session, ignore_tables=[]):
         if table in ignore_tables:
             continue
         last_id = update_sequence(session, table)
-        print('Set %s_id_seq to %d' % (table, last_id))
+        if last_id is not None:
+            print('Set %s_id_seq to %d' % (table, last_id))
+        else:
+            print('Setting %s_id_seq failed as it seems to have no entries.' % table)
     print('Done.')
  

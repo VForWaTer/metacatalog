@@ -255,6 +255,9 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     external_id : str
         If the data described by Entry has another unique identifier, 
         usually supplied by the data provider, it can be stored for reference reasons.
+    comment : str
+        General purpose comment that should not contain any vital information to 
+        understand the entry. If it's vital, it should go into the abstract.
     geom : str
         WKT of any additional geoinformation in EPSG:4326
     license : str, int
@@ -320,6 +323,55 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
 
     return entry
 
+def add_details_to_entries(session, entries, **kwargs):
+    """Associate detail(s) to entrie(s)
+
+    Add key-value pair details to one, or many Entry(s).
+    The Entry(s) have to already exist in the database.
+
+    Parameters
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    entries : list
+        List of identifier or single identifier to load entries. 
+        If int, the Entry.id is assumed. If str, title is assumed.
+        Can also pass a metacatalog.Entry object. 
+    kwargs : keyword arguments
+        Each keyword argument will be added as a 
+        py:class:`metacatalog.models.Detail` and linked to 
+        each entry
+
+    """
+    # check the input shapes
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    # add for each entry
+    for entry_id in entries:
+        # load the entry
+        if isinstance(entry_id, models.Entry):
+            entry = entry_id
+        elif isinstance(entry_id, int):
+            # TODO sort by version descending to get the lastest
+            entry = api.find_entry(session=session, id=entry_id, return_iterator=True).first()
+        elif isinstance(entry_id, str):
+            # TODO sort by version descending to get the lastest
+            entry = api.find_entry(session=session, title=entry_id, return_iterator=True).first()
+        else:
+            raise AttributeError("Value '%s' not allowed for entries" % str(type(entry_id)))
+
+        # add the details
+        entry.add_details(**kwargs)
+    
+        # try to commit
+        try:
+            session.add(entry)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
+
 
 def add_keywords_to_entries(session, entries, keywords, alias=None, values=None):
     r"""Associate keyword(s) to entrie(s)
@@ -352,6 +404,11 @@ def add_keywords_to_entries(session, entries, keywords, alias=None, values=None)
         association to the entries. In case one instance should not 
         be associated to a value pass None instead.
 
+        .. deprecated:: 0.1.6
+            `values` will be removed in 0.2. Rather use 
+            `metacatalog.models.Detail` to store custom key-values 
+
+
     Returns
     -------
     void
@@ -382,7 +439,7 @@ def add_keywords_to_entries(session, entries, keywords, alias=None, values=None)
             entry = api.find_entry(session=session, id=entry_id, return_iterator=True).first()
         elif isinstance(entry_id, str):
             # TODO sort by version descending to get the lastest
-            entry = api.find_variable(session=session, title=entry_id, return_iterator=True).first()
+            entry = api.find_entry(session=session, title=entry_id, return_iterator=True).first()
         else:
             raise AttributeError("Value '%s' not allowed for entries" % str(type(entry_id)))
         
