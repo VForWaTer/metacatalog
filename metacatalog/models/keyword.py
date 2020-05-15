@@ -56,6 +56,28 @@ class Keyword(Base):
 
 
 class KeywordAssociation(Base):
+    r"""Keyword association
+
+    Association between keyword and entry.
+
+    Attributes
+    ----------
+    keyword_id : int
+        Unique ID of the `metacatalog.models.Keyword`
+    entry_id : int
+        Unique ID of the `metacatalog.models.Entry`
+    alias : str
+        Alias for the Keyword in the context of this
+        Entry
+    associated_value : str
+        A Entry specific value associated to this
+        relation
+
+        .. deprecated:: 0.1.6
+            `associated_value` will be removed in 0.2. Rather use 
+            `metacatalog.models.Detail` to store custom key-values 
+    
+    """
     __tablename__ = 'nm_keywords_entries'
 
     # columns

@@ -20,6 +20,7 @@ from .add import (
     add_variable,
     add_person, 
     add_entry,
+    add_details_to_entries,
     add_keywords_to_entries,
     add_persons_to_entries
 )
