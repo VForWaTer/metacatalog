@@ -17,6 +17,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy.orm import relationship, backref, object_session
 
 import nltk
+import pandas as pd
 
 from metacatalog.db.base import Base
 from metacatalog import models
@@ -126,7 +127,33 @@ class Entry(Base):
         else:
             return {d.stem:d.value for d in self.details}
     
-    def add_details(commit=False, **kwargs):
+    def details_table(self, fmt='html'):
+        """
+        Return the associated details as table
+
+        Parameters
+        ----------
+        fmt : string
+            Can be one of:
+            
+            * `html` to return a HTML table
+            * `latex` to return LaTeX table
+            * `markdown` to return Markdown table
+
+        """
+        # get the details
+        df = pd.DataFrame(self.details_dict(full=True)).T
+
+        if fmt.lower() == 'html':
+            return df.to_html()
+        elif fmt.lower() == 'latex':
+            return df.to_latex()
+        elif fmt.lower() == 'markdown' or fmt.lower() == 'md':
+            return df.to_markdown()
+        else:
+            raise ValueError("fmt has to be in ['html', 'latex', 'markdown']")
+    
+    def add_details(self, commit=False, **kwargs):
         """
         Adds arbitrary key-value pairs to this entry.
 
@@ -140,7 +167,7 @@ class Entry(Base):
         """
         ps = nltk.PorterStemmer()
         for k, v in kwargs.items():
-            self.details.append({'entry_id': self.id, 'key': k, 'stem': ps.stem(k), 'value': v})
+            self.details.append(models.Detail(**{'entry_id': self.id, 'key': str(k), 'stem': ps.stem(k), 'value': str(v)}))
         
         if commit:
             session = object_session(self)
@@ -150,7 +177,6 @@ class Entry(Base):
             except Exception as e:
                 session.rollback()
                 raise e
-
 
     def create_datasource(self, path, type, commit=False, **args):
         """
@@ -231,6 +257,9 @@ class Entry(Base):
     def add_data(self):
         """
         """
+        raise NotImplementedError
+
+    def to_dict(self):
         raise NotImplementedError
 
     def __str__(self):
