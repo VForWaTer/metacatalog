@@ -16,6 +16,8 @@ from sqlalchemy import Integer, String, Boolean, DateTime
 from geoalchemy2 import Geometry
 from sqlalchemy.orm import relationship, backref, object_session
 
+import nltk
+
 from metacatalog.db.base import Base
 from metacatalog import models
 from metacatalog import api
@@ -65,6 +67,7 @@ class Entry(Base):
     datasource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
     associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
+    details = relationship("Detail", back_populates='entry')
 
     @classmethod
     def is_valid(cls, entry):
@@ -104,6 +107,50 @@ class Entry(Base):
                 value=kw.associated_value
             ) for kw in self.keywords
         ]
+
+    def details_dict(self, full=True):
+        """
+        Returns the associated details as dictionary.
+        
+        Parameters
+        ----------
+        full : bool
+            If True (default) the keywords will contain the 
+            full info including key description, ids and 
+            stemmed key. If false, it will be truncated to a
+            plain key:value dict 
+
+        """
+        if full:
+            return {d.stem:d.to_dict() for d in self.details}
+        else:
+            return {d.stem:d.value for d in self.details}
+    
+    def add_details(commit=False, **kwargs):
+        """
+        Adds arbitrary key-value pairs to this entry.
+
+        Parameters
+        ----------
+        commit : bool
+            If True, the Entry session will be added to the 
+            current session and the transaction is commited.
+            Can have side-effects. Defaults to False.
+        
+        """
+        ps = nltk.PorterStemmer()
+        for k, v in kwargs.items():
+            self.details.append({'entry_id': self.id, 'key': k, 'stem': ps.stem(k), 'value': v})
+        
+        if commit:
+            session = object_session(self)
+            try:
+                session.add(self)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
+
 
     def create_datasource(self, path, type, commit=False, **args):
         """
