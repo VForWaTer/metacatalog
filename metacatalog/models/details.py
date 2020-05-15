@@ -21,7 +21,7 @@ class Detail(Base):
     """
     __tablename__ = 'details'
     __table_args__ = (
-        UniqueConstraint('entry_id', 'stem')
+        UniqueConstraint('entry_id', 'stem'),
     )
 
     # columns
@@ -45,3 +45,6 @@ class Detail(Base):
             stem=self.stem,
             value=self.value
         ) 
+
+    def __str__(self):
+        return "%s = %s" % (self.key, self.value) 

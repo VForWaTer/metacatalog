@@ -42,10 +42,13 @@ def check_defaults(session, capsys):
         with capsys.disabled():
             print('Testing table: %s' % tablename)
         
-        # load datafile and table from db
+        # load datafile
         datafile = pd.read_csv(fname, sep=',')
         datafile = datafile.where(datafile.notnull(), None) # replace NaN by None
+        
+        # load table from db
         table = pd.read_sql_table(tablename, session.bind)
+        table = table.where(table.notnull(), None) # replace NaN by None
 
         assert datafile.equals(table)
 
