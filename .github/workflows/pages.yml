@@ -7,31 +7,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - 
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v1
-      -
-         name: Use Python 3.6
-         uses: actions/setup-python@v1
-         with:
-           python-version: 3.6
-      -
-        name: Build Sphinx
+      
+      - name: Use Python 3.6
+        uses: actions/setup-python@v1
+        with: 
+          python-version: 3.6
+      
+      - name: Install
+        run: python setup.py develop
+      
+      - name: Build Sphinx
         run: |
-          pip install sphinx pandoc
+          pip install sphinx pandoc pydata_sphinx_theme
           cd docs
           make html
-          cd _build/html
+          cd build/html
           touch .nojekyll
-      -
-         name: Deploy
+      
+      -  name: Deploy
          if: success()
          uses: crazy-max/ghaction-github-pages@v1
          with:
            taget_branch: gh-pages
-           build_dir: docs/_build/html
+           build_dir: docs/build/html
          env:
-           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
 

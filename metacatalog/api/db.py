@@ -43,8 +43,8 @@ def create_tables(session):
     Create all tables in the database using the given 
     `Session <sqlalchemy.Session>` instance.
 
-    Params
-    ------
+    Parameters
+    ----------
     session : sqlalchemy.Session
         Session instance connected to the database.
     
@@ -118,8 +118,9 @@ def populate_defaults(session, ignore_tables=[]):
     * units
     * variables
 
-    Params
-    ------
+    Parameters
+    ----------
+
     session : sqlalchemy.Session
         Session instance connected to the database.
     ignore_tables : list

@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy import Integer
+from sqlalchemy import Integer, DateTime, Numeric
 
 from metacatalog.db.base import Base
 

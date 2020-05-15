@@ -113,7 +113,7 @@ def add_unit(session, name, symbol, si=None):
 
 
 def add_variable(session, name, symbol, unit):
-    """Add variable record
+    r"""Add variable record
 
     Add a new variable to the database.
 
@@ -154,7 +154,7 @@ def add_variable(session, name, symbol, unit):
 
 
 def add_keyword(session, path):
-    """Add Keyword
+    r"""Add Keyword
 
     Add a new keyword to the database. The keyword is
     added by the full path.
@@ -193,7 +193,7 @@ def add_keyword(session, path):
 
 
 def add_person(session, first_name, last_name, affiliation=None):
-    """Add new Person
+    r"""Add new Person
 
     Add a new Person to the database. A person can be a real Person
     or an institution. Then, the institution name goes into the 
@@ -226,7 +226,7 @@ def add_person(session, first_name, last_name, affiliation=None):
 
 
 def add_entry(session, title, author, location, variable, abstract=None, external_id=None, geom=None, license=None, embargo=False, **kwargs):
-    """Add new Entry
+    r"""Add new Entry
 
     Adds a new metadata Entry to the database. This method will create the core
     entry. Usually, more steps are necessary, which will need the newly created 
@@ -470,7 +470,7 @@ def add_keywords_to_entries(session, entries, keywords, alias=None, values=None)
 
 
 def add_persons_to_entries(session, entries, persons, roles, order):
-    """Add person(s) to entrie(s)
+    r"""Add person(s) to entrie(s)
 
     Adds associations between entries and persons. The Entry and Person
     instances have to already exist in the database. Each association 

@@ -1,3 +1,7 @@
+"""
+This submoule contains all API functions that are available for Python.
+They are directly wrapped into the CLI.
+"""
 from .db import connect_database, create_tables, populate_defaults, update_sequence
 from .find import (
     find_keyword, 
