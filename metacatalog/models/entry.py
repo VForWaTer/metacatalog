@@ -49,6 +49,7 @@ class Entry(Base):
     end = Column(DateTime) # TODO: nachschalgen
     version = Column(Integer, default=1, nullable=False)
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)
+    comment = Column(String, nullable=True)
     
     license_id = Column(Integer, ForeignKey('licenses.id'))
     variable_id = Column(Integer, ForeignKey('variables.id'), nullable=False)

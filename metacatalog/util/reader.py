@@ -16,18 +16,16 @@ def read_from_internal_table(entry, datasource, **kwargs):
     tablename = datasource.path
 
     # check if start and end date are set
+    sql = "SELECT * FROM %s WHERE entry_id=%d" % (tablename, entry.id)
     if 'start' in kwargs.keys() or 'end' in kwargs.keys():
-        sql = "SELECT * FROM %s WHERE entry_id=%d" % (tablename, entry.id)
         if 'start' in kwargs.keys():
             sql += " AND tstamp >= '%s'" % (dt.strftime(kwargs['start'], '%Y-%m-%d %H:%M:%S'))
         if 'end' in kwargs.keys():
             sql += " AND tstamp <= '%s'" % (dt.strftime(kwargs['end'], '%Y-%m-%d %H:%M:%S'))
-    else:
-        sql = tablename
 
     # infer table column names order
-    sql = 'select * from %s limit 0' % tablename
-    col_names = list(pd.read_sql_query(sql, session.bind).columns.values)
+    col_sql = 'select * from %s limit 0' % tablename
+    col_names = list(pd.read_sql_query(col_sql, session.bind).columns.values)
     col_names.remove('entry_id')
     if 'index' in col_names:
         index_col = ['index']

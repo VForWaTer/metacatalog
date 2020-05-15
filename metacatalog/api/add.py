@@ -255,6 +255,9 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     external_id : str
         If the data described by Entry has another unique identifier, 
         usually supplied by the data provider, it can be stored for reference reasons.
+    comment : str
+        General purpose comment that should not contain any vital information to 
+        understand the entry. If it's vital, it should go into the abstract.
     geom : str
         WKT of any additional geoinformation in EPSG:4326
     license : str, int
