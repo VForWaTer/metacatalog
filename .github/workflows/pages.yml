@@ -20,7 +20,8 @@ jobs:
       
       - name: Build Sphinx
         run: |
-          pip install wheel sphinx pandoc pydata_sphinx_theme nbsphinx sphinx-gallery
+          pip install wheel
+          pip install sphinx pandoc pydata_sphinx_theme nbsphinx sphinx-gallery
           cd docs
           make html
           cd build/html
