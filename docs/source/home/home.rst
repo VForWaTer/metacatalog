@@ -1,9 +1,18 @@
-============
+====
+Home
+====
+
+How the docs work
+=================
+
+.. note::
+    More to come soon
+
 Installation
 ============
 
 Prerequisites
-=============
+-------------
 
 First you need to install PostgreSQL and the PostGIS extension. There are preinstalled binaries 
 for windows. 
@@ -27,10 +36,17 @@ console to postgresql or use psql:
     create extension postgis;
 
 Install metacatalog
-===================
+-------------------
 
 You can install metacatalog from PyPI
 
 .. code-block:: bash
 
     pip install metacatalog
+
+
+Getting Started
+===============
+
+.. note::
+    More to come soon
