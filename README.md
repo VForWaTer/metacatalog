@@ -1,5 +1,7 @@
 # metacatalog
 
+![e2e Test](https://github.com/VForWaTer/metacatalog/workflows/e2e%20Test/badge.svg)
+
 Management tool for the V-FOR-WaTer metadata database application.
 
 ## Install
