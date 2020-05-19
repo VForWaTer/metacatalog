@@ -15,12 +15,16 @@ jobs:
         with: 
           python-version: 3.6
       
-      - name: Install
+      - name: Install dependencies
+        run: | 
+          sudo apt install pandoc
+          pip install wheel
+          
+      - name: Install package
         run: python setup.py develop
       
       - name: Build Sphinx
         run: |
-          pip install wheel
           pip install sphinx pandoc pydata_sphinx_theme nbsphinx sphinx-gallery
           cd docs
           make html
