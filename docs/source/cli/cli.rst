@@ -2,6 +2,16 @@
 CLI
 ===
 
+.. toctree::
+    :maxdepth: 1
+    :Caption: Command Overview
+    :hidden:
+
+    cli_connection
+    cli_create
+    cli_populate
+    cli_init
+
 Command Line Interface
 ======================
 
@@ -58,6 +68,9 @@ renders:
         add                 Add new records to the database. Has to be combined
                             with one of the data origin flags.
 
+
+Command Overview
+================
 
 .. nbgallery::
     :caption: Command Overview
