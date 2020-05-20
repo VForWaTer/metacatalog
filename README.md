@@ -1,5 +1,7 @@
 # metacatalog
 
+[![GitHub version](https://badge.fury.io/gh/VForWaTer%2Fmetacatalog.svg)](https://badge.fury.io/gh/VForWaTer%2Fmetacatalog)
+[![PyPI version](https://badge.fury.io/py/metacatalog.svg)](https://pypi.org/project/metacatalog/)
 ![e2e Test](https://github.com/VForWaTer/metacatalog/workflows/e2e%20Test/badge.svg)
 ![Documentation](https://github.com/VForWaTer/metacatalog/workflows/Documentation/badge.svg)
 
