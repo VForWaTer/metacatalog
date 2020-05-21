@@ -11,6 +11,7 @@ CLI
     cli_create
     cli_populate
     cli_init
+    cli_add
 
 Command Line Interface
 ======================
