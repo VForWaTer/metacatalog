@@ -87,11 +87,11 @@ def from_json(file_name_or_content):
         fs = io.StringIO()
         fs.write(file_name_or_content)
         fs.seek(0)
+        records = json.load(fs)
     else:
         # this is alread a file path
         fs = file_name_or_content
-
-    # read
-    records = json.load(fs)
-
+        with open(file_name_or_content, 'r') as js:
+            records = json.load(js)
+    
     return records

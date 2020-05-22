@@ -7,9 +7,10 @@ Welcome to Metacatalog's documentation!
 =======================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
-   install
-   start
-   reference/reference
+   home/home
+   cli/cli
+   api/api
+   models/models

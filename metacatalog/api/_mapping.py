@@ -14,7 +14,7 @@ TABLE_MAPPING = dict(
 )
 
 ENTITY_MAPPING = dict(
-    datasourcetype=models.DataSource,
+    datasourcetype=models.DataSourceType,
     datasource_type=models.DataSourceType,
     datasource=models.DataSource,
     entry=models.Entry,

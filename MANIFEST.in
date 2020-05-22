@@ -4,3 +4,5 @@ include requirements.txt
 include VERSION
 include metacatalog/data
 include metacatalog/metacatalog
+include alembic.ini
+include alembic

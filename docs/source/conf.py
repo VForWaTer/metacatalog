@@ -22,7 +22,7 @@ copyright = '2020, Mirko Mälicke'
 author = 'Mirko Mälicke <mirko.maelicke@kit.edu>'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.5'
+release = '0.1.6'
 
 
 # -- General configuration ---------------------------------------------------
@@ -33,7 +33,9 @@ release = '0.1.5'
 extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
-    'sphinx.ext.mathjax'
+    'sphinx.ext.mathjax',
+    'nbsphinx',
+    'sphinx_gallery.load_style'
 #    'sphinx.ext.inheritance_diagram',
 ]
 
@@ -53,6 +55,7 @@ exclude_patterns = []
 #
 #html_theme = 'alabaster'
 html_theme = 'pydata_sphinx_theme'
+html_logo = '_static/brand.svg'
 
 html_theme_options = {
 #    'github_user': 'VForWaTer',
