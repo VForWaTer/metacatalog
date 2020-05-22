@@ -55,7 +55,7 @@ def check_defaults(session, capsys):
     return True
 
 
-@pytest.mark.depends(on=['db_install'])
+@pytest.mark.depends(on=['db_install'], name='db_init')
 def test_metacatalog_install(capsys):
     """
     Depends on Postgis install.
