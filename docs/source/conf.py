@@ -55,6 +55,7 @@ exclude_patterns = []
 #
 #html_theme = 'alabaster'
 html_theme = 'pydata_sphinx_theme'
+html_logo = '_static/brand.svg'
 
 html_theme_options = {
 #    'github_user': 'VForWaTer',
