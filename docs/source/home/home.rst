@@ -2,51 +2,40 @@
 Home
 ====
 
+..toctree::
+    :maxdepth: 1
+    :hidden:
+
+    install
+    getting_started
+
 How the docs work
 =================
 
-.. note::
-    More to come soon
+Metacatalog is a management tool for a PostgreSQL/PostGIS database that is 
+primarily used to store meta-data of environmental open data. While it can 
+also store the data itself, it is more meant as a Meta-database that should
+rather interface the original data stores.
 
-Installation
-============
+Metacatalog has three main submodules:
 
-Prerequisites
--------------
+* the `Database Models <../models/models.rst>`_
+* a Python `API <../api/api.rst>`_ 
+* a `CLI <../cli/cli.rst>`_
 
-First you need to install PostgreSQL and the PostGIS extension. There are preinstalled binaries 
-for windows. 
-On Linux the commands might look similar to:
+Please refer to each section to learn more about each submodules.
+In general terms, the Models give you great freedom in adding, editing and 
+changing metadata and use `sqlalchemy <https://sqlalchemy.org>`_ to search the
+database. But the models are only the Python classes that model the metadata. 
+You will have to implement all steps to manage the data and check integrity yourself.
 
-.. code-block:: bash
+The command line interface offers some robust functionality to automate some 
+common tasks and quickly add some entries. But the CLI gives you less freedom and 
+some of the API and Model functionality is not implemented in the CLI.
 
-    sudo apt install postgresql postgis
+The Python API gives you the best balance between abstraction and usability. Usually,
+you will import the api and do all necessary work on the database from this entrypoint.
 
+.. code-block:: python 
 
-PostGIS will in many cases be a rather outdated version. This is up to now not a big issue, as 
-metacatalog uses only a limited amount of spatial functions. Anything > v2.0 should be fine.
-
-Next, you need to install the database and create the extension. The database name should fit 
-the one specified in the connection string above (or change the string). You can open a SQL
-console to postgresql or use psql:
-
-.. code-block: sql
-
-    create database metacatalog with encoding='UTF8';
-    create extension postgis;
-
-Install metacatalog
--------------------
-
-You can install metacatalog from PyPI
-
-.. code-block:: bash
-
-    pip install metacatalog
-
-
-Getting Started
-===============
-
-.. note::
-    More to come soon
+    from metacatalog import api
