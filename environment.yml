@@ -1,0 +1,12 @@
+channels:
+  - defaults
+dependencies:
+  - python=3.6
+  - pandas
+  - sqlalchemy
+  - psycopg2
+  - alembic
+  - tabulate
+  - nltk
+  - pip:
+    - geoalchemy2

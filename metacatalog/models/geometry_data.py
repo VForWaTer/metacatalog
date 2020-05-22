@@ -16,7 +16,7 @@ class GeometryTimeseries(Base):
 
 
 class GenericGeometryData(Base):
-    __tablename__ = 'geneic_geometry_data'
+    __tablename__ = 'generic_geometry_data'
 
     # columns
     entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)
