@@ -1,4 +1,5 @@
 from metacatalog import models
+from metacatalog.api import add as api
 
 
 TABLE_MAPPING = dict(
