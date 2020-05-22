@@ -1,5 +1,7 @@
 import os
+import io
 
+import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -36,3 +38,19 @@ def connect(mode='string'):
     elif mode.lower() == 'session':
         Session = sessionmaker(bind=create_engine(URI))
         return Session()
+
+
+def read_to_df(s):
+    """
+    Read a csv formatted string into a file-like-object 
+    and then open using pandas and return dataframe
+
+    This is used to open some data to test against
+    """
+    # create file-like object
+    fs = io.StringIO()
+    fs.write(s)
+    fs.seek(0)
+
+    # read
+    return pd.read_csv(fs)
