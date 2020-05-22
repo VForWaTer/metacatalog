@@ -1,14 +1,7 @@
 from ._util import connect
 from metacatalog import api
+from metacatalog.api._mapping import ADD_MAPPING
 
-ADD_MAPPING = dict(
-    license=api.add_license,
-    keyword=api.add_keyword,
-    unit=api.add_unit,
-    variable=api.add_variable,
-    person=api.add_person,
-    entry=api.add_entry
-)
 
 def add(args):
     # get the session
@@ -34,6 +27,10 @@ def add(args):
 
     # add
     add_func = ADD_MAPPING.get(entity.lower())
+
+    # check if only one entity was added
+    if not isinstance(records, (list, tuple)):
+        records = [records]
 
     try:
         for record in records:
