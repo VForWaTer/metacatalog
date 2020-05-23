@@ -8,5 +8,6 @@ dependencies:
   - alembic
   - tabulate
   - nltk
+  - shapely
   - pip:
     - geoalchemy2
