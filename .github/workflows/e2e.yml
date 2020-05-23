@@ -34,7 +34,7 @@ jobs:
       run: | 
         pip install -r requirements.txt
         python setup.py develop
-        pip install pytest pytest-depends
+        pip install pytest pytest-depends pytest-cov
 
     # run the actual tests
     # they need the arbitrary port number which is mapped to 5432
@@ -42,6 +42,13 @@ jobs:
     # this has a lot of side-effects, as e2e is run against an 
     # actual database 
     - name: e2e Tests
-      run: pytest
+      run: pytest --cov=./ --cov-report=xml
       env:
-        POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}
+        POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}  
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml
+        flags: e2e-tests
+        env_vars: OS,PYTHON
