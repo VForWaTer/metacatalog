@@ -400,9 +400,6 @@ class Entry(Base):
         """
         raise NotImplementedError
 
-    def to_dict(self):
-        raise NotImplementedError
-
     def __str__(self):
         return "<ID=%d %s [%s] >" % (
             self.id, 
