@@ -22,5 +22,43 @@ class License(Base):
     # relationships
     entries = relationship("Entry", back_populates='license')
 
+    def to_dict(self, deep=False) -> dict:
+        """To dict
+
+        Return the model as a python dictionary.
+
+        Parameters
+        ----------
+        deep : bool
+            If True, all related objects will be included as 
+            dictionary. Defaults to False
+
+        Returns
+        -------
+        obj : dict
+            The Model as dict
+
+        """
+        # base dictionary
+        d = dict(
+            id=self.id,
+            short_title=self.short_title,
+            title=self.title,
+            by_attribution=self.by_attribution,
+            share_alike=self.share_alike,
+            commercial_use=self.commercial_use
+        )
+
+        # set optionals
+        for attr in ('summary', 'full_text', 'link'):
+            if hasattr(self, attr) and getattr(self, attr) is not None:
+                d[attr] = getattr(self, attr)
+
+        # deep loading
+        if deep:
+            d['entries'] = [e.to_dict() for e in self.entries]
+
+        return d
+
     def __str__(self):
         return "%s <ID=%d>" % (self.title, self.id)
