@@ -16,6 +16,7 @@ from sqlalchemy.orm import relationship, backref, object_session
 
 import nltk
 import pandas as pd
+import numpy as np
 
 from metacatalog.db.base import Base
 from metacatalog import models
@@ -98,6 +99,20 @@ class Entry(Base):
         license_id attribute.
     license_id : int
         Foreign key to the data license. 
+    author : metacatalog.models.Person
+        :class:`Person <metacatalog.models.Person>` that acts as first author 
+        for the given entry. Only one first author is possible, co-authors can 
+        be requested from either the contributors list or the 
+        :py:attr:`authors` property. `author` is a property and setting a 
+        new author using this property is not supported.
+    authors : list
+        List of :class:`Person <metacatalog.models.Person>`. The first element 
+        is the first author, see :py:attr:`~author`. The others are 
+        :class:`Person <metacatalog.models.Person>`s associated with the 
+        :class:`Role <metacatalog.models.PersonRole>` of ``'coAuthor' ``. 
+        The list of authors is sorted by the `order` attribute.
+        `authors` is a property and setting a new list of authors using this 
+        property is not supported.
 
     Note
     ----
@@ -111,8 +126,8 @@ class Entry(Base):
 
     See Also
     --------
-    EntryGroup
-    EntryGroupType
+    `EntryGroup`
+    `EntryGroupType
     """
     __tablename__ = 'entries'
 
@@ -170,6 +185,8 @@ class Entry(Base):
         d = dict(
             id=self.id,
             title=self.title,
+            author=self.author,
+            authors=self.authors,
             locationShape=self.location_shape.wkt,
             location=self.location_shape.wkt,
             variable=self.variable.to_dict(deep=False),
@@ -210,6 +227,25 @@ class Entry(Base):
     @property
     def is_latest_version(self):
         self.latest_version_id == self.id
+
+    @property
+    def author(self):
+        return [c.person for c in self.contributors if c.role.name == 'author'][0]
+    
+    @property
+    def authors(self):
+        # get all
+        coAuthors = [c for c in self.contributors if c.role.name == 'coAuthor']
+        
+        # order
+        idx = np.argsort([c.order for c in coAuthors])
+
+        # build the author list
+        authors = [self.author]
+        for i in idx:
+            authors.append(coAuthors[i].person)
+
+        return authors
 
     @property
     def projects(self):
