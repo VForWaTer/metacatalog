@@ -7,7 +7,7 @@ Api is the recommended way to use metacatalog.
 
 It is recommended to import the API like:
 
-.. code-block: python
+.. code-block:: python
     
     from metacatalog import api
 

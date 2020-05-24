@@ -10,6 +10,13 @@ API
     api_connect_databases
     api_create_tables
     api_populate_defaults
+    api_add_entry
+    api_add_person
+    api_add_variable
+    api_add_license
+    api_add_keyword
+    api_find_entry
+    api_find_person
 
 Metacatalog API Overview
 ========================
