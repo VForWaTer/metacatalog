@@ -2,14 +2,26 @@
 API
 ===
 
+.. toctree::
+    :maxdepth: 1
+    :Caption: API Overview
+    :hidden:
+
+    api_connect_databases
+
 Metacatalog API Overview
 ========================
 
-.. note:: 
-    More to come soon
+.. automodule:: metacatalog.api
 
 
-First Section
-=============
+Command Overview
+================
 
-Lorem ipsum
+.. nbgallery::
+    :caption: Command Overview
+    :name: api-galery
+    :glob:
+    :reversed:
+
+    api_*

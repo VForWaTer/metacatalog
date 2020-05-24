@@ -1,6 +1,44 @@
 """
-This submoule contains all API functions that are available for Python.
-They are directly wrapped into the CLI.
+Importing
+---------
+The `metacatalog.api` submoule contains all API functions that are 
+available for Python. The CLI also relies on the API and therefore using the 
+Api is the recommended way to use metacatalog.
+
+It is recommended to import the API like:
+
+.. code-block: python
+    
+    from metacatalog import api
+
+If you have other modules present that are called ``api``, it is recommended
+to import the API like:
+
+.. code-block:: python
+
+    from metacatalog import api as mc_api
+
+Functions
+---------
+
+There are three functions that are used to connect to the database and
+create the necessary tables to setup metacatalog These are:
+
+* :py:func:`connect_database`
+* :py:func:`create_tables`
+* :py:func:`populate_defaults`
+
+All other API functions follow a similar pattern. Each of them expect a 
+:class:`Session <sqlalchemy.orm.session.Session>` as the first argument
+(See :py:func:`connect_database`). 
+
+The names of all functions in `metacatalog.api` are prefixed with an 
+*action* identifier:
+
+* ``find_*`` to find entities on exact matches and filters
+* ``add_*`` to add new entitites
+* ``show_*`` to inspect raw table records
+
 """
 from .db import connect_database, create_tables, populate_defaults, update_sequence
 from .find import (
