@@ -50,5 +50,5 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml
-        flags: e2e-tests
+        flags: e2e
         env_vars: OS,PYTHON
