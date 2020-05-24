@@ -22,14 +22,30 @@ IMPORTABLE_TABLES = dict(
 def connect_database(*args, **kwargs):
     """Connect to database
 
-    Returns a `Session <sqlalchemy.Session>` to the database.
-    Either pass args and kwargs as accepted by sqlachemy's 
-    `create_engine <sqlalchemy.create_engine>` method or pass 
-    a name of a stored connection string.
-    Connection strings can be stored using 
-    `save_connection <metacatalog.db.save_connection>` method.
-    Empty arguments will load the default connection string, if 
-    there is any.
+    Returns a 
+    `sqlalchemy Session <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#sqlalchemy.orm.session.Session>`_ 
+    to the database. 
+    
+    You can either pass args and kwargs as accepted by sqlachemy's 
+    `create_engine <sqlalchemy.create_engine>` method or pass a name of a stored connection string. 
+    Connection strings can be stored using `save_connection <metacatalog.db.save_connection>` method.
+    Empty arguments will load the default connection string, if there is any.
+
+    Parameters
+    ----------
+    *args
+        See sqlalchemy `create_engine <https://docs.sqlalchemy.org/en/latest/core/engines.html>`_ for a full list.
+        The only additional  argument is a stored connection string, if any. The function 
+        will first check for a stored connection of given name and only if none is found, pass 
+        *args down to `create_engine`. If `len(args)==0`, a stored connection of name 
+        `'default'` will be loaded.
+    **kwargs
+        Only used if no stored connection is loaded. 
+    
+    See Also
+    --------
+    `save_connection <metacatalog.db.save_connection>`
+    
     """
     # get session
     session = get_session(*args, **kwargs)

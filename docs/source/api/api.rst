@@ -8,6 +8,8 @@ API
     :hidden:
 
     api_connect_databases
+    api_create_tables
+    api_populate_defaults
 
 Metacatalog API Overview
 ========================
