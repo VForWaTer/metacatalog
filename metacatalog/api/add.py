@@ -514,7 +514,7 @@ def add_persons_to_entries(session, entries, persons, roles, order):
     if not isinstance(persons, list):
         persons = [persons]
     if not isinstance(roles, list):
-        roles = [roles]
+        roles = [roles] * len(persons)
     if not isinstance(order, list):
         order = [order] * len(persons)
 

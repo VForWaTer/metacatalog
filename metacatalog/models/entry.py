@@ -11,10 +11,12 @@ from dateutil.relativedelta import relativedelta as rd
 from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
 from geoalchemy2 import Geometry
+from geoalchemy2.shape import to_shape, from_shape
 from sqlalchemy.orm import relationship, backref, object_session
 
 import nltk
 import pandas as pd
+import numpy as np
 
 from metacatalog.db.base import Base
 from metacatalog import models
@@ -33,6 +35,100 @@ def get_embargo_end(datetime=None):
 
 
 class Entry(Base):
+    r"""Entry
+
+    The Entry is the main entity in metacatalog. An object instance models a 
+    set of metadata needed to store and manage a datasource. The Entry is not 
+    the actual data. 
+    The Entry is designed to store all necessary information to be exportable 
+    in ISO19115 in the scope of metacatalog. That means, Properties which are 
+    always the same across metacatalog, or can be derived from the actual 
+    implementation, are not part of an Entry.
+
+    Attributes
+    ----------
+    id : int
+        Unique id of the record. If not specified, the database will assign it.
+    title : str
+        A full title (512) to describe the datasource as well as possible.
+        The truncated title (first 25 signs) is usually used to print an 
+        Entry object to the console.
+    abstract : str
+        Full abstract of the datasource. The abstract should include all 
+        necessary information that is needed to fully understand the data. 
+    external_id : str
+        Any kind of OID that was used to identify the data in the first place. 
+        Usually an unque ID field of other data-storage solutions. The 
+        exernal_id is only stored for reference reasons.       
+    location : str, tuple
+        The location as a POINT Geometry in unprojected WGS84 (EPSG: 4326).
+        The location is primarily used to show all Entry objects on a map, or 
+        perform geo-searches. If the data-source needs to store more complex 
+        Geometries, you can use the ``geom`` argument.
+        The location can be passed as WKT or a tuple of (x, y) coordinates.
+        Note that it will be returned and stored as WKB. The output value will 
+        be reworked in a future release
+    geom : str
+        .. warning::
+            The geom attribute is completely untested so far and might be 
+            reworked or removed in a future release
+            It takes a WKT of any kind of OGC-conform Geometry. The return value 
+            will be the same Geometry as WKB.
+    creation : datetime.datetime
+        Following the ISO19115 the *creation* date is referring to the creation 
+        date of the **data resource** described by the Entry, not the Entry 
+        itself. If creation date is not set, it is assumed, that yet no data 
+        resource is connected to the Entry.
+    end : datetime.datimetime
+        The last date the data source described by this Entry has data for. 
+        The end date is **not** ISO19115-compliant and will be reworked.
+    version : int
+        The version of this Entry. Usually metacatalog will handle the version 
+        itself and there is not need to set the version manually.
+    latest_version_id : int
+        Foreign key to `Entry.id`. This key is self-referencing the another 
+        Entry. This has to be set if the current Entry is not the latest one. 
+        If latest_version_id is None, the Entry is the most recent one and 
+        database operations that find multiple entries will in a future release 
+        filter to 'version duplicates'.
+    comment : str
+        Arbitrary free-text comment to the Entry
+    license : metacatalog.models.License
+        Data License associated to the data and the metadata. You can pass 
+        the `License <metacatalog.models.License>`_ itself, or use the 
+        license_id attribute.
+    license_id : int
+        Foreign key to the data license. 
+    author : metacatalog.models.Person
+        :class:`Person <metacatalog.models.Person>` that acts as first author 
+        for the given entry. Only one first author is possible, co-authors can 
+        be requested from either the contributors list or the 
+        :py:attr:`authors` property. `author` is a property and setting a 
+        new author using this property is not supported.
+    authors : list
+        List of :class:`Person <metacatalog.models.Person>`. The first element 
+        is the first author, see :py:attr:`~author`. The others are 
+        :class:`Person <metacatalog.models.Person>`s associated with the 
+        :class:`Role <metacatalog.models.PersonRole>` of ``'coAuthor' ``. 
+        The list of authors is sorted by the `order` attribute.
+        `authors` is a property and setting a new list of authors using this 
+        property is not supported.
+
+    Note
+    ----
+    One Entry object instance is always described by exactly one variable. 
+    If a datasource is a composite of many datasources, there are two 
+    strategies. Either a new table can be implemented and an abstract 
+    :class:`Variable <metacatalog.models.Variable>` be added. This is done with 
+    Eddy-Covariance data. Secondly, Each variable of the datasource can be 
+    represented by its own Entry, which get then grouped by an 
+    :class:`EntryGroup` of :class:`EntryGroupType` ``'composite'``.
+
+    See Also
+    --------
+    `EntryGroup`
+    `EntryGroupType
+    """
     __tablename__ = 'entries'
 
     # columns
@@ -68,6 +164,62 @@ class Entry(Base):
     associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
     details = relationship("Detail", back_populates='entry')
 
+    def to_dict(self, deep=False) -> dict:
+        """To dict
+
+        Return the model as a python dictionary.
+
+        Parameters
+        ----------
+        deep : bool
+            If True, all related objects will be included as 
+            dictionary. Defaults to False
+
+        Returns
+        -------
+        obj : dict
+            The Model as dict
+
+        """
+        # base dictionary
+        d = dict(
+            id=self.id,
+            title=self.title,
+            author=self.author,
+            authors=self.authors,
+            locationShape=self.location_shape.wkt,
+            location=self.location_shape.wkt,
+            variable=self.variable.to_dict(deep=False),
+            embargo=self.embargo,
+            embargo_end=self.embargo_end,
+            version=self.version,
+            publication=self.publication,
+            lastUpdate=self.lastUpdate,
+            keywords=self.plain_keywords_dict()
+        )
+
+        if self.license is not None:
+            d['license'] = self.license.to_dict(deep=False)
+
+        if self.details is not None:
+            d['details'] = self.details_dict(full=True)
+        
+        # set optional attributes
+        for attr in ('abstract', 'external_id','creation','end','comment'):
+            if hasattr(self, attr) and getattr(self, attr) is not None:
+                d[attr] = getattr(self, attr)
+
+        # lazy loading
+        if deep:
+            projects = self.projects
+            if len(projects) > 0:
+                d['projects'] = [p.to_dict(deep=False) for p in projects]
+            comp = self.composite_entries
+            if len(comp) > 0:
+                d['composite_entries'] = [e.to_dict(deep=False) for e in comp]
+
+        return d
+
     @classmethod
     def is_valid(cls, entry):
         return isinstance(entry, Entry) and entry.id is not None
@@ -77,12 +229,39 @@ class Entry(Base):
         self.latest_version_id == self.id
 
     @property
+    def author(self):
+        return [c.person for c in self.contributors if c.role.name == 'author'][0]
+    
+    @property
+    def authors(self):
+        # get all
+        coAuthors = [c for c in self.contributors if c.role.name == 'coAuthor']
+        
+        # order
+        idx = np.argsort([c.order for c in coAuthors])
+
+        # build the author list
+        authors = [self.author]
+        for i in idx:
+            authors.append(coAuthors[i].person)
+
+        return authors
+
+    @property
     def projects(self):
         return [group for group in self.associated_groups if group.type.name.lower() == 'project']
 
     @property
     def composite_entries(self):
         return [group for group in self.associated_groups if group.type.name.lower() == 'composite']
+    
+    @property
+    def location_shape(self):
+        return to_shape(self.location)
+
+    @location_shape.setter
+    def location_shape(self, shape):
+        self.location = from_shape(shape)
     
     def plain_keywords_list(self):
         """Metadata Keyword list
@@ -255,9 +434,6 @@ class Entry(Base):
     def add_data(self):
         """
         """
-        raise NotImplementedError
-
-    def to_dict(self):
         raise NotImplementedError
 
     def __str__(self):

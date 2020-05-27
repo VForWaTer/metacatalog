@@ -1,9 +1,14 @@
 import os
+from os.path import join as pjoin
 
 import pandas as pd
 from pandas.errors import ParserError
 
+from alembic.config import Config
+from alembic import command
+
 #from metacatalog import Base
+from metacatalog import BASEPATH
 from metacatalog.db.base import Base
 from metacatalog.db.session import get_session
 from metacatalog import DATAPATH
@@ -22,19 +27,59 @@ IMPORTABLE_TABLES = dict(
 def connect_database(*args, **kwargs):
     """Connect to database
 
-    Returns a `Session <sqlalchemy.Session>` to the database.
-    Either pass args and kwargs as accepted by sqlachemy's 
-    `create_engine <sqlalchemy.create_engine>` method or pass 
-    a name of a stored connection string.
-    Connection strings can be stored using 
-    `save_connection <metacatalog.db.save_connection>` method.
-    Empty arguments will load the default connection string, if 
-    there is any.
+    Returns a 
+    `sqlalchemy Session <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#sqlalchemy.orm.session.Session>`_ 
+    to the database. 
+    
+    You can either pass args and kwargs as accepted by sqlachemy's 
+    `create_engine <sqlalchemy.create_engine>` method or pass a name of a stored connection string. 
+    Connection strings can be stored using `save_connection <metacatalog.db.save_connection>` method.
+    Empty arguments will load the default connection string, if there is any.
+
+    Parameters
+    ----------
+    *args
+        See sqlalchemy `create_engine <https://docs.sqlalchemy.org/en/latest/core/engines.html>`_ for a full list.
+        The only additional  argument is a stored connection string, if any. The function 
+        will first check for a stored connection of given name and only if none is found, pass 
+        *args down to `create_engine`. If `len(args)==0`, a stored connection of name 
+        `'default'` will be loaded.
+    **kwargs
+        Only used if no stored connection is loaded. 
+    
+    See Also
+    --------
+    `save_connection <metacatalog.db.save_connection>`
+    
     """
     # get session
     session = get_session(*args, **kwargs)
 
     return session
+
+
+def _set_alembic_head(session):
+    """
+    The alembic version head has to be set to the current release.
+    This has to be updated with each revision of alembic.
+    This is necessary as new installations of metacatalog would 
+    otherwise try to migrate changes that are already reflected in the
+    current installation. This this in place,
+
+    .. code-block:: bash
+    
+        alembic upgrade head
+
+    can safely be run after installation.
+
+    """
+    # get the alembic context
+    config = Config(pjoin(BASEPATH, '..', 'alembic.ini'))
+    config.session = session
+    print(config.session)
+    
+    # set to head
+    command.stamp(config, 'head')
 
 
 def create_tables(session):
@@ -50,6 +95,9 @@ def create_tables(session):
     
     """
     Base.metadata.create_all(session.bind)
+
+    # set the latest version
+    _set_alembic_head(session)
 
 
 def _remove_nan_from_dict(d):

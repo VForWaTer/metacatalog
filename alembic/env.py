@@ -26,7 +26,10 @@ target_metadata = None
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 connection_name = config.get_main_option("metacatalog.connection_name")
-session = api.connect_database(connection_name)
+if not hasattr(config, 'session'):
+    session = api.connect_database(connection_name)
+else:
+    session = config.session
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.

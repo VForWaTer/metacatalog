@@ -8,4 +8,9 @@ DATAPATH = os.path.join(BASEPATH, 'data')
 from metacatalog import api
 from metacatalog import models
 from metacatalog import db
+import os
+
 from metacatalog import util
+
+
+BASEPATH = os.path.abspath(os.path.dirname(__file__))

@@ -16,6 +16,40 @@ class Person(Base):
     # relationships
     entries = relationship("PersonAssociation", back_populates='person')
 
+    def to_dict(self, deep=False) -> dict:
+        """To dict
+
+        Return the model as a python dictionary.
+
+        Parameters
+        ----------
+        deep : bool
+            If True, all related objects will be included as 
+            dictionary. Defaults to False
+
+        Returns
+        -------
+        obj : dict
+            The Model as dict
+
+        """
+        # base dictionary
+        d = dict(
+            id=self.id,
+            last_name=self.last_name
+        )
+
+        # set optionals
+        for attr in ('first_name', 'affiliation'):
+            if hasattr(self, attr) and getattr(self, attr) is not None:
+                d[attr] = getattr(self, attr)
+
+        # deep loading
+        if deep:
+            d['entries'] = [e.to_dict() for e in self.entries]
+
+        return d
+
     @property
     def full_name(self):
         if self.first_name is not None:
@@ -48,6 +82,40 @@ class PersonRole(Base):
     # relationships
     persons_with_role = relationship("PersonAssociation", back_populates='role')
 
+    def to_dict(self, deep=False) -> dict:
+        """To dict
+
+        Return the model as a python dictionary.
+
+        Parameters
+        ----------
+        deep : bool
+            If True, all related objects will be included as 
+            dictionary. Defaults to False
+
+        Returns
+        -------
+        obj : dict
+            The Model as dict
+
+        """
+        # base dictionary
+        d = dict(
+            id=self.id,
+            name=self.name,
+        )
+
+        # set optionals
+        for attr in ('description'):
+            if hasattr(self, attr) and getattr(self, attr) is not None:
+                d[attr] = getattr(self, attr)
+
+        # deep loading
+        if deep:
+            d['persons_with_role'] = [p.to_dict() for p in self.persons_with_role]
+
+        return d
+
     def __str__(self):
         return "%s <ID=%d>" % (self.name, self.id)
 
@@ -65,6 +133,33 @@ class PersonAssociation(Base):
     role = relationship("PersonRole", back_populates='persons_with_role')
     person = relationship("Person", back_populates='entries')
     entry = relationship("Entry", back_populates='contributors')
+
+    def to_dict(self, deep=False) -> dict:
+        """To dict
+
+        Return the model as a python dictionary.
+
+        Parameters
+        ----------
+        deep : bool
+            Parameter will be ignored, but is defined to use the same method
+            interface as all other models
+
+        Returns
+        -------
+        obj : dict
+            The Model as dict
+
+        """
+        # base dictionary
+        d = dict(
+            person=self.person.to_dict(deep=False),
+            entry=self.entry.to_dict(deep=False),
+            role=self.role.to_dict(deep=False),
+            order=self.order
+        )
+
+        return d
 
     def __str__(self):
         return '%s <ID=%d> as %s for Entry <ID=%d>' % (self.person.full_name, self.person.id, self.role.name, self.entry.id)
