@@ -7,6 +7,60 @@ At the current stage, the following objects can be found by a FIND operation:
 
 """
 from metacatalog import models
+from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+
+def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=False) -> BinaryExpression:
+    """
+    Create Column based Compare logic
+
+    For building filters, the Column should be filtered for 
+    records that match the given value. If the compare value 
+    contains a `'%'` or `'*'`, a LIKE clause instrumenting this
+    wildcard will be used, otherwise an exact match.
+    If the string startswith `!`, the filter will be inverted.
+
+    Parameters
+    ----------
+    column_instance : sqlalchemy.Column
+        The column that the filter should be build upon
+    compare_value : str
+        Matching string that should be used.
+    invert : bool
+        If True, a unary `not` will be placed on the comparison. 
+        This is not actually used in the models. Defaults to False.
+    
+    Returns
+    -------
+    expression : sqlalchemy.BinaryExpression
+        The returned BinaryExpression can directly be passed to 
+        sqlalchemy's filter function on Query objects.
+    
+    TODO
+    ----
+    here, we could check the content for `[]` and apply regex.
+     
+    """
+    # check invert
+    if compare_value.startswith('!'):
+        invert = True
+        compare_value = compare_value[1:]
+    
+    # check for asterisk
+    if '*' in compare_value:
+        compare_value = compare_value.replace('*', '%')
+    
+    # check for the right variant
+    if '%' in compare_value:
+        if invert:
+            return column_instance.notlike(compare_value)
+        else:
+            return column_instance.like(compare_value)
+    else:
+        if invert:
+            return column_instance!=compare_value
+        else:
+            return column_instance==compare_value
 
 
 def find_keyword(session, id=None, value=None, return_iterator=False):
@@ -41,7 +95,7 @@ def find_keyword(session, id=None, value=None, return_iterator=False):
     if id is not None:
         query = query.filter(models.Keyword.id==id)
     if value is not None:
-        query = query.filter(models.Keyword.value==value)
+        query = query.filter(_match(models.Keyword.value, value))
     
     # return
     if return_iterator:
@@ -50,11 +104,16 @@ def find_keyword(session, id=None, value=None, return_iterator=False):
         return query.all()
 
 
-def find_license(session, id=None, short_title=None, by_attribution=None, share_alike=None, commercial_use=None, return_iterator=False):
+def find_license(session, id=None, title=None, short_title=None, by_attribution=None, share_alike=None, commercial_use=None, return_iterator=False):
     """Find license
 
     Return one or many license entries from the database on 
-    exact matches.
+    exact matches. You can  use '%'` and `'*'` as wildcards 
+    and prepend a str with `!` to invert the filter.
+
+    .. versionchanged:: 0.1.8
+        string matches now allow `'%'` and `'*'` wildcards and can 
+        be inverted by prepending `!`
 
     Parameters
     ----------
@@ -63,6 +122,10 @@ def find_license(session, id=None, short_title=None, by_attribution=None, share_
     id : integer
         Database unique ID of the requested record. Will 
         return only one record.
+    title : str
+        .. versionadded:: 0.1.8
+        Full title attribute of the requested license(s).
+        Multiple record return is possible.
     short_title : str
         short_title attribute of the requested license(s). 
         Multiple record return is possible.
@@ -90,8 +153,10 @@ def find_license(session, id=None, short_title=None, by_attribution=None, share_
     # add needed filter
     if id is not None:
         query = query.filter(models.License.id==id)
+    if title is not None:
+        query = query.filter(_match(models.License.title, title))
     if short_title is not None:
-        query = query.filter(models.License.short_title==short_title)
+        query = query.filter(_match(models.License.short_title, short_title))
     if by_attribution is not None:
         query = query.filter(models.License.by_attribution==by_attribution)
     if share_alike is not None:
@@ -112,6 +177,10 @@ def find_unit(session, id=None, name=None, symbol=None, return_iterator=False):
     Return one unit entry from the database on 
     exact matches. It makes only sense to set one of the 
     attributes (id, name, symbol).
+
+    .. versionchanged:: 0.1.8
+        string matches now allow `'%'` and `'*'` wildcards and can 
+        be inverted by prepending `!`
 
     Parameters
     ----------
@@ -140,9 +209,9 @@ def find_unit(session, id=None, name=None, symbol=None, return_iterator=False):
     if id is not None:
         query = query.filter(models.Unit.id==id)
     if name is not None:
-        query = query.filter(models.Unit.name==name)
+        query = query.filter(_match(models.Unit.name, name))
     if symbol is not None:
-        query = query.filter(models.Unit.symbol==symbol)
+        query = query.filter(_match(models.Unit.symbol, symbol))
 
     # return
     if return_iterator:
@@ -157,6 +226,10 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
     Return one vriable entry from the database on 
     exact matches. It makes only sense to set one of the 
     attributes (id, name, symbol).
+
+    .. versionchanged:: 0.1.8
+        string matches now allow `'%'` and `'*'` wildcards and can 
+        be inverted by prepending `!`
 
     Parameters
     ----------
@@ -185,9 +258,9 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
     if id is not None:
         query = query.filter(models.Variable.id==id)
     if name is not None:
-        query = query.filter(models.Variable.name==name)
+        query = query.filter(_match(models.Variable.name, name))
     if symbol is not None:
-        query = query.filter(models.Variable.symbol==symbol)
+        query = query.filter(_match(models.Variable.symbol, symbol))
 
     # return
     if return_iterator:
@@ -201,6 +274,10 @@ def find_datasource_type(session, id=None, name=None, return_iterator=False):
 
     Return one datasource type record on exact matches. 
     Types can be identified by id or name.
+
+    .. versionchanged:: 0.1.8
+        string matches now allow `'%'` and `'*'` wildcards and can 
+        be inverted by prepending `!`
 
     Parameters
     ----------
@@ -227,7 +304,7 @@ def find_datasource_type(session, id=None, name=None, return_iterator=False):
     if id is not None:
         query = query.filter(models.DataSourceType.id==id)
     if name is not None:
-        query = query.filter(models.DataSourceType.name==name)
+        query = query.filter(_match(models.DataSourceType.name, name))
 
     # return 
     if return_iterator:
@@ -242,6 +319,10 @@ def find_role(session, id=None, name=None, return_iterator=False):
 
     Return one person role record on exact matches. 
     Roles can be identified by id or name.
+
+    .. versionchanged:: 0.1.8
+        string matches now allow `'%'` and `'*'` wildcards and can 
+        be inverted by prepending `!`
 
     Parameters
     ----------
@@ -268,7 +349,7 @@ def find_role(session, id=None, name=None, return_iterator=False):
     if id is not None:
         query = query.filter(models.PersonRole.id==id)
     if name is not None:
-        query = query.filter(models.PersonRole.name==name)
+        query = query.filter(_match(models.PersonRole.name, name))
 
     # return
     if return_iterator:
@@ -282,6 +363,10 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, re
 
     Return person record on exact matches. Persons can be 
     identified by id, first_name, last_name or associated roles.
+
+    .. versionchanged:: 0.1.8
+        string matches now allow `'%'` and `'*'` wildcards and can 
+        be inverted by prepending `!`
 
     Parameters
     ----------
@@ -314,10 +399,10 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, re
         query = query.filter(models.Person.id==id)
     
     if first_name is not None:
-        query = query.filter(models.Person.first_name==first_name)
+        query = query.filter(_match(models.Person.first_name, first_name))
     
     if last_name is not None:
-        query = query.filter(models.Person.last_name==last_name)
+        query = query.filter(_match(models.Person.last_name, last_name))
     
     if role is not None:
         # get the roles
@@ -347,6 +432,10 @@ def find_group_type(session, id=None, name=None, return_iterator=False):
     Find a group type on exact matches. The group types
     describes a collection of entries. 
 
+    .. versionchanged:: 0.1.8
+        string matches now allow `'%'` and `'*'` wildcards and can 
+        be inverted by prepending `!`
+
     Parameters
     ----------
     session : sqlalchemy.Session
@@ -372,7 +461,7 @@ def find_group_type(session, id=None, name=None, return_iterator=False):
     if id is not None:
         query = query.filter(models.EntryGroupType.id==id)
     if name is not None:
-        query = query.filter(models.EntryGroupType.name==name)
+        query = query.filter(_match(models.EntryGroupType.name, name))
 
     # return 
     if return_iterator:
@@ -386,6 +475,10 @@ def find_group(session, id=None, title=None, type=None, return_iterator=False):
 
     Find a group of entries on exact matches. Groups can be 
     identified by id, title or its type.
+
+    .. versionchanged:: 0.1.8
+        string matches now allow `'%'` and `'*'` wildcards and can 
+        be inverted by prepending `!`
 
     Parameters
     ----------
@@ -414,7 +507,7 @@ def find_group(session, id=None, title=None, type=None, return_iterator=False):
     if id is not None:
         query = query.filter(models.EntryGroup.id==id)
     if title is not None:
-        query = query.filter(models.EntryGroup.title==title)
+        query = query.filter(_match(models.EntryGroup.title, title))
     if type is not None:
         if isinstance(type, int):
             grouptype = find_group_type(session=session, id=type, return_iterator=True).one()
@@ -439,6 +532,10 @@ def find_entry(session, id=None, title=None, external_id=None, version=None, ret
     identified by id, title, external_id and version. The 
     version can be added to all other matching types, which 
     are mutually exclusive.
+
+    .. versionchanged:: 0.1.8
+        string matches now allow `'%'` and `'*'` wildcards and can 
+        be inverted by prepending `!`
 
     Parameters
     ----------
@@ -474,9 +571,9 @@ def find_entry(session, id=None, title=None, external_id=None, version=None, ret
     if id is not None:
         query = query.filter(models.Entry.id==id)
     if title is not None:
-        query = query.filter(models.Entry.title==title)
+        query = query.filter(_match(models.Entry.title, title))
     if external_id is not None:
-        query = query.filter(models.Entry.external_id==external_id)
+        query = query.filter(_match(models.Entry.external_id, external_id))
     if version is not None:
         query = query.filter(models.Entry.version==version)
 
