@@ -547,13 +547,17 @@ def find_entry(session, id=None, title=None, abstract=None, external_id=None, ve
     title : str
         Title attribute of the Entry.
     abstract : str
-        .. versionadded: 0.1.8
+        .. versionadded:: 0.1.8
+        
         Abstract attibute of the Entry.
+        
         .. note::
             The abstract is usually a full text and the FIND operation
             uses **exact** matches. Therefore be sure to use a wildcard
+        
         .. code-block:: python
             api.find_entry(session, abstract='*phrase to find*')
+        
     external_id : str
         External id attrinbute of the Entry.
     version : int
