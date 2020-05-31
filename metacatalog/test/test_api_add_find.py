@@ -1,7 +1,5 @@
 import pytest
 
-
-
 from metacatalog import api
 from ._util import connect, PATH, read_to_df
 
@@ -13,7 +11,8 @@ Homer,Simpson,"University of Non-existent people"
 
 ENTRIES = """title,author,x,y,variable,abstract,license,external_id
 "Dummy 1",Reeves,13,44.5,5,"Lorem ipsum ..",2,abc
-"Dummy 2",Curie,12,41.8,6,"Another dummy entry about abosulte northing",1,foobar
+"Dummy 2",Curie,12,41.8,6,"Another dummy entry about abosulte nothing",1,foobar
+"Dummy 3",Reeves,10.5,44.5,6,"Another dummy entry by Keanu reeves",1,foobar2
 """
 
 def add_person(session):
@@ -49,6 +48,7 @@ def add_entries(session):
     # assert
     assert entries[0].contributors[0].person.first_name == 'Keanu'
     assert entries[1].abstract == df.loc[1].abstract
+    assert entries[2].external_id == 'foobar2'
 
     return True
 
@@ -106,6 +106,26 @@ def check_related_information(session):
     return True
 
 
+def check_find_with_wildcard(session):
+    """
+    Check the wildcard pattern added in version 0.1.8
+    """
+    # match all titles
+    entries = api.find_entry(session, title='Dummy *')
+    assert len(entries) == 3
+
+    # match only the two abstracts
+    entries = api.find_entry(session, abstract='%entry%')
+    assert len(entries) == 2
+    assert entries[0].author.last_name == 'Curie'
+
+    entries = api.find_entry(session, abstract='!*entry*')
+    assert len(entries) == 1
+    assert entries[0].author.first_name == 'Keanu'
+
+    return True
+
+
 @pytest.mark.depends(on=['db_init'])
 def test_add_and_find():
     """
@@ -121,3 +141,4 @@ def test_add_and_find():
     assert add_details(session)
     assert associate_persons(session)
     assert check_related_information(session)
+    assert check_find_with_wildcard(session)
