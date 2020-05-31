@@ -17,6 +17,7 @@ API
     api_add_keyword
     api_find_entry
     api_find_person
+    api_find_variable
 
 Metacatalog API Overview
 ========================
