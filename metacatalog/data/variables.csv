@@ -13,7 +13,7 @@ id,name,symbol,unit_id,keyword_id
 12,volumetric water content,theta,113,5727
 13,precision,sigma,21,
 14,sap flow,Fm,22,7424
-15,matric potential,phi,
+15,matric potential,phi,24,
 16,bulk electrical conductivity,bEC,25,5111
 17,specific electrical conductivity,sEC,25,5111
 18,river water level,L,2,
