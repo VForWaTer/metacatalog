@@ -3,9 +3,8 @@ import os, json
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, object_session
 
-#from metacatalog.models.keyword import Keyword
-#from metacatalog.models.entry import Entry
 from metacatalog import models
+from .migration import check_database_version
 
 CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
 
@@ -65,8 +64,26 @@ def get_engine(*args, **kwargs):
     elif len(args) == 0 and len(kwargs.keys()) == 0:
         args = [load_connection('default')]
 
+    # alembic needs to be able to supress the error raised
+    # otherwise it can't update the version
+    if 'version_mismatch' in kwargs and kwargs['version_mismatch']:
+        MISMATCH = kwargs['version_mismatch']
+        del kwargs['version_mismatch']
+    else:
+        MISMATCH = False
+
     # create a connection
-    engine = create_engine(*args, **kwargs) 
+    engine = create_engine(*args, **kwargs)
+
+    # check alembic version
+    try:
+        check_database_version(engine=engine)
+    except RuntimeError as e:
+        # no missmatch allowed
+        if not MISMATCH:
+            raise e
+        elif MISMATCH == 'print':
+            print(str(e))
 
     return engine
     

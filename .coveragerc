@@ -1,0 +1,17 @@
+[run]
+omit = 
+    metacatalog/test/*
+    alembic/*
+    setup.py
+
+[report]
+exclude_lines = 
+    pragma: no cover
+    def __repr__
+    def __str__
+    if self\.debug
+    raise AssertionError
+    raise NotImplementedError
+    raise ModuleNotFoundError
+    if 0:
+    if __name__ == .__main__.:
