@@ -3,9 +3,8 @@ import os, json
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, object_session
 
-#from metacatalog.models.keyword import Keyword
-#from metacatalog.models.entry import Entry
 from metacatalog import models
+from .migration import check_database_version
 
 CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
 
@@ -66,7 +65,14 @@ def get_engine(*args, **kwargs):
         args = [load_connection('default')]
 
     # create a connection
-    engine = create_engine(*args, **kwargs) 
+    engine = create_engine(*args, **kwargs)
+
+    # check alembic version
+    try:
+        check_database_version(engine=engine)
+    except RuntimeError as e:
+        # TODO we could suppress Errors by env variables here
+        raise e
 
     return engine
     
