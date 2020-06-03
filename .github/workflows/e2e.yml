@@ -42,7 +42,7 @@ jobs:
     # this has a lot of side-effects, as e2e is run against an 
     # actual database 
     - name: e2e Tests
-      run: pytest --cov=./ --cov-report=xml
+      run: pytest --cov-config=.coveragerc --cov=./ --cov-report=xml
       env:
         POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}  
     
