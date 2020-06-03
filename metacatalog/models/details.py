@@ -36,6 +36,11 @@ class Detail(Base):
         key can be used to search for related keys
     value : str
         The actual value of this detail.
+    description : str
+        Description what the key means in the context of the 
+        :class:`Entry <metacatalog.models.Entry>` or 
+        :class:`EntryGroup <metacatalog.models.EntryGroup>`. Optional,
+        can be omitted, if not applicable.
 
     """
     __tablename__ = 'details'
@@ -48,7 +53,8 @@ class Detail(Base):
     entry_id = Column(Integer, ForeignKey('entries.id'))
     key = Column(String(20), nullable=False)
     stem = Column(String(20), nullable=False)
-    value = Column(Text, nullable=False)
+    value = Column(String, nullable=False)
+    description = Column(String, nullable=True)
 
     # relationships
     entry = relationship("Entry", back_populates='details')
@@ -63,8 +69,9 @@ class Detail(Base):
             entry_id=self.entry_id,
             key=self.key,
             stem=self.stem,
-            value=self.value
-        ) 
+            value=self.value,
+            description=self.description if self.description is not None else ''
+        )
 
     def __str__(self):
         return "%s = %s" % (self.key, self.value) 

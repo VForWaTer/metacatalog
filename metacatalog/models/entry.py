@@ -330,12 +330,24 @@ class Entry(Base):
         else:
             raise ValueError("fmt has to be in ['html', 'latex', 'markdown']")
     
-    def add_details(self, commit=False, **kwargs):
+    def add_details(self, details=None, commit=False, **kwargs):
         """
         Adds arbitrary key-value pairs to this entry.
 
         Parameters
         ----------
+        details : list
+            .. versionadded:: 0.1.8
+            List of dict of structure:
+            .. code-block::
+                [{
+                    'key': '',
+                    'value': '',
+                    'description': ''
+                }]
+            where the ``description`` is optional and can be omitted. 
+            If no descriptions are passed at all, you can also use `**kwargs`
+            to pass ``key=value`` pairs.
         commit : bool
             If True, the Entry session will be added to the 
             current session and the transaction is commited.
@@ -343,8 +355,35 @@ class Entry(Base):
         
         """
         ps = nltk.PorterStemmer()
+        
+        # build entries here
+        detail_list = []
+
+        # parse kwargs
         for k, v in kwargs.items():
-            self.details.append(models.Detail(**{'entry_id': self.id, 'key': str(k), 'stem': ps.stem(k), 'value': str(v)}))
+            detail_list.append({
+                'entry_id': self.id, 
+                'key': str(k), 
+                'stem': ps.stem(k), 
+                'value': str(v)
+            })
+        
+        # parse details
+        if details is not None:
+            for detail in details:
+                d = {
+                    'entry_id': self.id,
+                    'key': detail['key'],
+                    'stem': ps.stem(detail['key']),
+                    'value': str(detail['value'])
+                }
+                if 'description' in detail.keys():
+                    d['description'] = detail['description']
+                detail_list.append(d)
+        
+        # build the models
+        for detail in detail_list:
+            self.details.append(models.Detail(**detail))
         
         if commit:
             session = object_session(self)

@@ -323,7 +323,7 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
 
     return entry
 
-def add_details_to_entries(session, entries, **kwargs):
+def add_details_to_entries(session, entries, details=None, **kwargs):
     """Associate detail(s) to entrie(s)
 
     Add key-value pair details to one, or many Entry(s).
@@ -337,6 +337,18 @@ def add_details_to_entries(session, entries, **kwargs):
         List of identifier or single identifier to load entries. 
         If int, the Entry.id is assumed. If str, title is assumed.
         Can also pass a metacatalog.Entry object. 
+    details : list, None
+        .. versionadded:: 0.1.8
+        List of dict of structure:
+        .. code-block::
+            [{
+                'key': '',
+                'value': '',
+                'description': ''
+            }]
+        where the ``description`` is optional and can be omitted. 
+        If no descriptions are passed at all, you can also use `**kwargs`
+        to pass ``key=value`` pairs. You can mix `details` and `kwargs`
     kwargs : keyword arguments
         Each keyword argument will be added as a 
         py:class:`metacatalog.models.Detail` and linked to 
@@ -362,15 +374,7 @@ def add_details_to_entries(session, entries, **kwargs):
             raise AttributeError("Value '%s' not allowed for entries" % str(type(entry_id)))
 
         # add the details
-        entry.add_details(**kwargs)
-    
-        # try to commit
-        try:
-            session.add(entry)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise e
+        entry.add_details(details=details, commit=True, **kwargs)
 
 
 def add_keywords_to_entries(session, entries, keywords, alias=None, values=None):

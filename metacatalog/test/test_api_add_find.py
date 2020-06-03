@@ -61,10 +61,18 @@ def add_details(session):
     e1 = api.find_entry(session, title="Dummy 1")[0]
     e2 = api.find_entry(session, title="Dummy 2")[0]
 
+    # check compability of < v0.1.8 api
     api.add_details_to_entries(session, [e1], **{'foo': 'bar 1'})
     api.add_details_to_entries(session, [e2], **{'foo': 'bar 2'})
     api.add_details_to_entries(session, [e1, e2], **{'banana': 'both love it'})
+    
+    # check the new possibilites:
+    api.add_details_to_entries(session, [e1], 
+        details=[dict(key='baz', value=42, description='Baz is the best kw')])
 
+    d = e1.details_dict(full=True)
+    assert d['baz']['description']=='Baz is the best kw'
+    
     return True
 
 
