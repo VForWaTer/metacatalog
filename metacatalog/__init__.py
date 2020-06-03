@@ -1,6 +1,6 @@
 import os
 
-__version__ = '0.1.8'
+__version__ = '0.1.9'
 __author__ = 'Mirko Mälicke'
 
 BASEPATH = os.path.abspath(os.path.dirname(__file__))
