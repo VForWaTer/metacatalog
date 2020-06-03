@@ -64,6 +64,14 @@ def get_engine(*args, **kwargs):
     elif len(args) == 0 and len(kwargs.keys()) == 0:
         args = [load_connection('default')]
 
+    # alembic needs to be able to supress the error raised
+    # otherwise it can't update the version
+    if 'version_mismatch' in kwargs and kwargs['version_mismatch']:
+        MISMATCH = kwargs['version_mismatch']
+        del kwargs['version_mismatch']
+    else:
+        MISMATCH = False
+
     # create a connection
     engine = create_engine(*args, **kwargs)
 
@@ -71,8 +79,11 @@ def get_engine(*args, **kwargs):
     try:
         check_database_version(engine=engine)
     except RuntimeError as e:
-        # TODO we could suppress Errors by env variables here
-        raise e
+        # no missmatch allowed
+        if not MISMATCH:
+            raise e
+        elif MISMATCH == 'print':
+            print(str(e))
 
     return engine
     

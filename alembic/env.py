@@ -27,7 +27,11 @@ target_metadata = None
 # ... etc.
 connection_name = config.get_main_option("metacatalog.connection_name")
 if not hasattr(config, 'session'):
-    session = api.connect_database(connection_name)
+    try:
+        session = api.connect_database(connection_name)
+    except RuntimeError as e:
+        print('IGNORE THE MISMATCH BELOW!!!')
+        session = api.connect_database(connection_name, version_mismatch='print')
 else:
     session = config.session
 
