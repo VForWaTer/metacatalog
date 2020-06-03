@@ -6,15 +6,7 @@ from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, object_session
 
 from metacatalog.db.base import Base
-from metacatalog.util.exceptions import NoImporterFoundWarning, NoReaderFoundWarning
-from metacatalog.util.importer import (
-    import_to_internal_table,
-    import_to_local_csv_file
-)
-from metacatalog.util.reader import (
-    read_from_internal_table,
-    read_from_local_csv_file
-)
+from metacatalog.util.ext import get_reader, get_importer
 
 
 class DataSourceType(Base):
@@ -238,12 +230,7 @@ class DataSource(Base):
         that will import the data into the correct source.
 
         """
-        if self.type.name == 'internal':
-            func = import_to_internal_table
-        elif self.type.name == 'csv':
-            func = import_to_local_csv_file
-        else:
-            raise NoImporterFoundWarning('Method %s not supported' % self.type.name)
+        func = get_importer(self.type.name)
 
         def injected_func(entry, timeseries, **kwargs):
             return func(entry, timeseries, self, **kwargs)
@@ -255,12 +242,7 @@ class DataSource(Base):
     def get_source_reader(self):
         """
         """
-        if self.type.name == 'internal':
-            func = read_from_internal_table
-        elif self.type.name == 'csv':
-            func = read_from_local_csv_file
-        else:
-            raise NoReaderFoundWarning('Method %s not supported' % self.type.name)
+        func = get_reader(self.type.name)
 
         def injected_func(entry, **kwargs):
             return func(entry, self, **kwargs)
