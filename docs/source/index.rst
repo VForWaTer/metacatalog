@@ -14,3 +14,4 @@ Welcome to Metacatalog's documentation!
    cli/cli
    api/api
    models/models
+   dev/dev
