@@ -18,6 +18,10 @@ API
     api_find_entry
     api_find_person
     api_find_variable
+    api_find_license
+    api_find_keyword
+    api_show_attributes
+    api_show_records
 
 Metacatalog API Overview
 ========================
