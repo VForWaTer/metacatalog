@@ -91,6 +91,15 @@ class Entry(Base):
         If latest_version_id is None, the Entry is the most recent one and 
         database operations that find multiple entries will in a future release 
         filter to 'version duplicates'.
+    is_partial : bool
+        .. versionadded:: 0.1.10
+        If an Entry is partial, it is not self-contained and **has** to be part 
+        of a :class:`EntryGroup <metacatalog.models.EntryGroup>` of type 
+        composite. 
+        .. note::
+            To make it possbile to add partial Entrys via the models submodule, 
+            The Entry class itself will  **not** check integrity. This has to 
+            be done on adding partial Entry records, or by checking the database
     comment : str
         Arbitrary free-text comment to the Entry
     license : metacatalog.models.License
@@ -142,6 +151,7 @@ class Entry(Base):
     end = Column(DateTime) # TODO: nachschalgen
     version = Column(Integer, default=1, nullable=False)
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)
+    is_partial = Column(Boolean, default=False, nullable=False)
     comment = Column(String, nullable=True)
     
     license_id = Column(Integer, ForeignKey('licenses.id'))
@@ -193,6 +203,7 @@ class Entry(Base):
             embargo=self.embargo,
             embargo_end=self.embargo_end,
             version=self.version,
+            isPartial=self.is_partial,
             publication=self.publication,
             lastUpdate=self.lastUpdate,
             keywords=self.plain_keywords_dict()
