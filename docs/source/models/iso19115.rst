@@ -1,0 +1,155 @@
+=========
+ISO 19115
+=========
+
+Overview
+========
+
+Metacatalog makes it possible to store metadata in ISO 19115 standard.
+Some of the required information for ISO 19115 will be the same for the 
+whole metacatalog instance, or, is specific to your installation and use 
+case. Below is a table of ISO 19115 code lists, which are implemented 
+and how they translate into metacatalog.
+
+Metacatalog mappings are based on the CodeList dictionaries published by NOAA
+
+https://www.ngdc.noaa.gov/wiki/index.php/ISO_19115_and_19115-2_CodeList_Dictionaries#CI_DateTypeCode
+
+Code-Lists
+==========
+
+CI_DateTypeCode
+---------------
+
+.. list-table:: 
+  :widths: 25 25 50
+  :header-rows: 1
+
+  * - ISO
+    - metacatalog
+    - description
+  * - creation
+    - Entry.creation
+    - start-date of the *data*
+  * - publication
+    - Entry.publication
+    - creation date of the Entry record
+  * - revision 
+    - /
+    - we use ISO 19115-2 lastUpdate
+  * - adopted
+    - n.a.
+    - not applicable
+  * - deprecated
+    - /
+    - not yet implemented
+  * - distribution
+    - n.a.
+    - not applicable as metacatalog is a distribution system. Will be the same as ``publication`` here.
+  * - expiry
+    - n.a.
+    - not applicable
+  * - inForce
+    - n.a.
+    - not applicable
+  * - lastRevision
+    - /
+    - not yet implemented
+  * - lastUpdate
+    - Entry.lastUpdate
+    - updates on every edit
+  * - nextUpdate
+    - n.a.
+    - not applicable
+  * - release
+    - n.a.
+    - metacatalog is intended for open data
+  * - superseded
+    - /
+    - not yet implemented
+  * - unavailable
+    - n.a.
+    - not applicable
+  * - validityBegins
+    - n.a.
+    - not applicable
+  * - validityExpires
+    - n.a.
+    - not applicable
+
+CI_PresentationFormCode
+-----------------------
+
+The definitions given in this list do not apply to environmental datasets. 
+Depending on the metacatalog instance and the metadata stored, the 
+CI_PresentationFormCode will apply to all data. If applicable it will be one of
+
+* mapDigital
+* modelDigital
+* tableDigital
+* physicalSample
+
+You will have to implement this _after_ metacatalog has exported the 
+:class:`Entry <metacatalog.models.Entry>` information.
+
+CI_RoleCode
+-----------
+.. note::
+
+  The full `CI_RoleCode Codelist <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode>`_ 
+  is implemented exactly into `metacatalog.PersonRole`.
+
+.. csv-table:: Roles
+   :file: ../../../metacatalog/data/person_roles.csv
+   :widths: 20, 20, 60
+   :header-rows: 1
+
+DQ_EvaluationMethodTypeCode
+---------------------------
+
+The `DQ_EvaluationMethodTypeCode <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#DQ_EvaluationMethodTypeCode>`_
+list is not yet implemented.
+
+DS_AssociationTypeCode
+----------------------
+
+The :class:`EntryGroup <metacatalog.models.EntryGroup>` maps some of the 
+DS_AssociationTypeCode. 
+
+.. list-table:: 
+  :widths: 25 25 50
+  :header-rows: 1
+
+  * - ISO
+    - metacatalog
+    - description
+  * - crossReference
+    - n.a.
+    - not applicable
+  * - largerWorkCitation
+    - :class:`EntryGroupType.name=='Project' <metacatalog.models.EntryGroupType>`
+    - 'Citation' might be misleading here. This is only marking belonging.
+  * - partOfSeamlessDatabase
+    - `EntryGroupType.name=='Composite'`
+    - by definition always true for composites.
+  * - source
+    - n.a.
+    - not applicable, as metacatalog does not store dependencies if the data is an image
+  * - stereoMate
+    - /
+    - not yet implemented
+  * - collectiveTitle
+    - :class:`EntryGroup.title <metacatalog.models.EntryGroup>`
+    - for all :class:`Entry` of the Group. May apply only to projects
+  * - dependency
+    - :class:`Entry <metacatalog.models.Entry>` if :class:`Entry.is_partial==True <metacatalog.models.Entry>`
+    - :class:`Entry.id <metacatalog.models.Entry>` of all :class:`Entry.is_partial==False <metacatalog.models.Entry>` for a partial Entry within the same composite
+  * - isComposedOf
+    - :class:`Entry.id <metacatalog.models.Entry>`
+    - :class:`Entry.id <metacatalog.models.Entry>` of all child Entries for a EntryGroup
+  * - revisionOf
+    - /
+    - not yet implemented
+  * - series
+    - n.a.
+    - not applicable. This may apply to Entries that hold the same DataOrigin information. 

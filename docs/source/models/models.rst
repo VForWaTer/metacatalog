@@ -10,6 +10,7 @@ Database Models
    :maxdepth: 1
    :Caption: Models:
 
+   iso19115
    entry
    keyword
    person
