@@ -9,6 +9,7 @@ At the current stage, the following objects can be found by a FIND operation:
 from metacatalog import models
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.expression import false
 
 def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=False) -> BinaryExpression:
     """
@@ -578,7 +579,7 @@ def find_entry(session, id=None, title=None, abstract=None, external_id=None, ve
         List of matched Entry instance. 
     """
     # base query
-    query = session.query(models.Entry).filter(not models.Entry.is_partial)
+    query = session.query(models.Entry).filter(models.Entry.is_partial == false())
 
     if id is not None:
         query = query.filter(models.Entry.id==id)
