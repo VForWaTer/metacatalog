@@ -578,7 +578,7 @@ def find_entry(session, id=None, title=None, abstract=None, external_id=None, ve
         List of matched Entry instance. 
     """
     # base query
-    query = session.query(models.Entry)
+    query = session.query(models.Entry).filter(not models.Entry.is_partial)
 
     if id is not None:
         query = query.filter(models.Entry.id==id)
