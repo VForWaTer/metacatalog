@@ -11,12 +11,144 @@ whole metacatalog instance, or, is specific to your installation and use
 case. Below is a table of ISO 19115 code lists, which are implemented 
 and how they translate into metacatalog.
 
+ISO 19115 Fields
+================
+
+ISO 19115, 19115-1, and 19115-2 define only a few mandatory (M) fields, but a long 
+list of optional (O) and coditional (C) fields. In the table below you find a mapping 
+of ISO names to metacatalog names. If the column *Code List* is filled, metacatalog 
+makes use of published ISO 19115 CodeList values. In the section below you can find 
+for every list, how the single values map into metacatalog.
+
+MD_Metadata
+-----------
+
+.. list-table::
+  :widths:  20 25 20 35
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - fileIdentifier
+    - Entry.id
+    - 
+    - [1]
+    - will be Entry.uuid with next version
+  * - language
+    - ``'en-US'``
+    - ISO 639-2 values are allowed
+    - [1]
+    - metacatalog is not multi-language and therefore a common value should be used
+  * - characterSet
+    - DataSource.encoding
+    - MD_CharacterSetCode
+    - [1]
+    - Not yet implemented
+  * - parentIdentifier
+    - EntryGroup.id if Entry.is_partial
+    - 
+    - [0] or [1]
+    - Only for partial Entries a Parent Entry is mandatory.
+  * - hierachyLevel
+    - ``'dataset'``
+    - MD_ScopeCode
+    - [1]
+    - All other values are not applicable for metacatalog.
+  * - hierachyLevelName
+    - 
+    - 
+    - [0..*]
+    - Conditional: not applicable if ``hierachyLevel == 'dataset'``
+  * - contact
+    - Entry.author | Entry.contributors
+    - CI_ResponsibleParty, CI_RoleCode
+    - [1..*]
+    - In metacatalog, the first author is contact person. 
+  * - dateStamp
+    - Entry.lastUpdate
+    - ISO 19103
+    - [1]
+    - either creation or last edit
+  * - metadataStandardName
+    - ``'ISO19115-2'``
+    -  
+    - [1]
+    - As of now ISO is the only standard used. More can be added here
+  * - metadataStandardVersion
+    - ``ISO19115-2:2019'``
+    -  
+    - [1]
+    - Not entirely sure about this
+  * - locale
+    - ``'en-US.utf8'``
+    - ISO 19139
+    - [0..*]
+    - Not sure about the format
+  * - metadataLinkageURL
+    - 
+    - 
+    - [0..*]
+    - The specific installation of metacatalog has to define this.
+  * - spatialRepresentationInfo
+    - 
+    - MD_SpatialRepresentation
+    - [0..*]
+    - Recommended for INSPIRE topic 'elevation'
+  * - referenceSystemInfo
+    - 
+    - MD_ReferenceSystem
+    - [2]
+    - In ISO this is optional, in INSPIRE [1..*] cardinality. not yet implemented
+  * - metadataExtensionInfo
+    - 
+    - MD_MetadataExtensionInformation
+    - [0..*]
+    - Optional. not yet implemented
+  * - identificationInfo
+    - 
+    - MD_Identification
+    - [1..*]
+    - Many possible. Only the first occarance is used for INSPIRE
+  * - contentInfo
+    - DataSourceType.name & Variable.name
+    - MD_ContentInformation
+    - [1..*]
+    - this does not map exactly, but is optional in ISO anyway
+  * - distributionInfo
+    - 
+    - MD_Distribution
+    - [1]
+    - INSPIRE requires distribution information. Has to be implemented by metacatalog admin.
+  * - dataQualityInfo
+    - 
+    - DQ_DataQuality
+    - [1..*]
+    - not yet implemended
+  * - portrayalCatalogueInfo
+    - 
+    - MD_PortrayalCatalogueReference
+    - [0..*]
+    - This has to be defined outside metacatalog.
+  * - applicationSchemaInfo
+    - 
+    - MD_ApplicationSchema
+    - [0]
+    - Not sure if metacatalog can implement this at all.
+
+
+
+
+
+Code-Lists
+==========
+
 Metacatalog mappings are based on the CodeList dictionaries published by NOAA
 
 https://www.ngdc.noaa.gov/wiki/index.php/ISO_19115_and_19115-2_CodeList_Dictionaries#CI_DateTypeCode
 
-Code-Lists
-==========
 
 CI_DateTypeCode
 ---------------
