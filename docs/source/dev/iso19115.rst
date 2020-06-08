@@ -24,7 +24,7 @@ MD_Metadata
 -----------
 
 .. list-table::
-  :widths:  20 25 20 35
+  :widths:  15 15 20 20 30
   :header-rows: 1
 
   * - ISO field
@@ -138,6 +138,163 @@ MD_Metadata
     - [0]
     - Not sure if metacatalog can implement this at all.
 
+MD_Indentification
+------------------
+
+.. list-table::
+  :widths:  15 15 20 20 30
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - citation
+    - Entry.citation
+    - CI_Citation
+    - [1]
+    - not yet implemented
+  * - abstract
+    - Entry.abstract
+    - 
+    - [1]
+    - The abstract may contain a details table (`Entry.details_table(fmt='markdown')`)
+  * - purpose
+    - 
+    - 
+    - [0]
+    - The purpose goes into the abstract in metacatalog
+  * - status
+    - 
+    - MD_ProgressCode
+    - [0..1]
+    - not yet implemented.
+  * - pointOfContact
+    - 
+    - CI_ResponsibleParty
+    - [1..*]
+    - In metacatalog, this is a double entry to contact. Filled by `Entry.author`
+  * - resourceMaintenance
+    - 
+    - MD_MaintenaceInformation
+    - [0..*]
+    - as of now, no planned implementation
+  * - graphicOverview
+    - 
+    - MD_BrowseGraphic
+    - [0..*]
+    - as of now, no planned implementation. 
+  * - descriptiveKeywords
+    - Keyword
+    - MD_Keywords
+    - [1..*]
+    - I have no idea, what the forced Keyword is...
+  * - resourceSpecificUsage
+    - 
+    - MD_Usage
+    - [0..*]
+    - as of now, no planned implementation
+  * - resourceConstraints
+    - License
+    - MD_Constrains
+    - [1..*]
+    - only a few values are allowed within metacatalog
+  * - aggregationInfo
+    - EntryGroup
+    - MD_AggregationInformation
+    - [0..*]
+    - only a few values are alled within metacatalog
+
+MD_DataIdentification
+---------------------
+
+.. list-table::
+  :widths:  15 15 20 20 30
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - spatialRepresentationType
+    - ``'raster'`` or ``'vector'``
+    - MD_SpatialRepresentation_TypeCode
+    - [1..*]
+    - ``'raster'`` for raster data-types, ``'vector'`` else.
+  * - spatialResolution
+    - 
+    - MD_Resolution
+    - [0..*]
+    - if applicable to data source. not yet implemented.
+  * - language
+    - ``'en-US'``
+    - ISO 639-2
+    - [1]
+    - metacatalog is as of now not multi-language
+  * - characterSet
+    - ``'utf8'``
+    - MD_CharacterSetCode
+    - [1]
+    - it is recommended to only use UTF-8 encodings
+  * - topicCategory
+    - Keyword.value
+    - MD_TopicCategoryCode
+    - [1..*]
+    - This may be mappable from Keywords
+  * - environmentDescription
+    - Entry.abstract
+    - 
+    - [0..1]
+    - If important, should go into the abstract
+  * - extent
+    - 
+    - Ex_Extent
+    - [1..*]
+    - not yet implemented
+  * - supplementalInformation
+    - DataSource.args
+    - 
+    - [0..1]
+    - This may not be helpful on export 
+
+MD_BrowseGraphic
+----------------
+
+.. note::
+
+  The ``MD_Identification.graphicOverview`` is as of now not implemented in metacatalog.
+  Currently, no implementation is planned.
+
+
+MD_Keywords
+-----------
+
+.. list-table::
+  :widths:  15 15 20 20 30
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - keyword
+    - Keyword.full_path
+    - 
+    - [1..*]
+    - Keyword hierachies will always be separated by ``' > '``
+  * - type
+    - 
+    - MD_KeywordTypeCode
+    - [0..1]
+    - in metacatalog keywords are: ``'topic > term > ...'``
+  * - thesaurusName
+    - 
+    - CI_Citation
+    - [0..1]
+    - not yet implemented
 
 
 
