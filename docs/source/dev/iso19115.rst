@@ -24,7 +24,7 @@ MD_Metadata
 -----------
 
 .. list-table::
-  :widths:  15 15 20 20 30
+  :widths:  15 15 20 10 40
   :header-rows: 1
 
   * - ISO field
@@ -142,7 +142,7 @@ MD_Indentification
 ------------------
 
 .. list-table::
-  :widths:  15 15 20 20 30
+  :widths:  15 15 20 10 40
   :header-rows: 1
 
   * - ISO field
@@ -210,7 +210,7 @@ MD_DataIdentification
 ---------------------
 
 .. list-table::
-  :widths:  15 15 20 20 30
+  :widths:  15 15 20 10 40
   :header-rows: 1
 
   * - ISO field
@@ -272,7 +272,7 @@ MD_Keywords
 -----------
 
 .. list-table::
-  :widths:  15 15 20 20 30
+  :widths:  15 15 20 10 40
   :header-rows: 1
 
   * - ISO field
@@ -297,7 +297,46 @@ MD_Keywords
     - not yet implemented
 
 
+MD_RepresentativeFraction
+-------------------------
 
+Has only one field: ``denominator``, which is the ISO 19103 scale. Applies only to 
+raster sources in metacatalog. Not yet implemented.
+
+MD_Resolution
+-------------
+
+Has only of of two fields. The resolution applies only to raster sources in metacatalog 
+and is either a MD_RepresentativeFraction (scale) or a ground distance stored in the 
+field ``distance``. Not yet implemented.
+
+MD_Usage
+--------
+
+.. note::
+
+  Metacatalog does not store the usage information in extra fields, but they can be 
+  extracted from existing ISO fields, that are extended in metacatalog
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - specificUsage  
+    - Entry.abstract
+    - 
+    - [1]
+    - This information is added to the abstract in metacatalog
+  * - userContactInfo
+    - Entry.author
+    - 
+    - [1]
+    - metacatalog defines the first author as a universal contact person
 
 Code-Lists
 ==========
