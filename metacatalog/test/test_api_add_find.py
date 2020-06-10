@@ -144,6 +144,8 @@ def check_has_uuid(session):
     assert len(uuids) > 0
     assert len(uuids) == len(set(uuids))
 
+    return True
+
 
 @pytest.mark.depends(on=['db_init'])
 def test_add_and_find():
