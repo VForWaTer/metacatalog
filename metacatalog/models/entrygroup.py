@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship
@@ -58,10 +60,40 @@ class EntryGroupType(Base):
 
 
 class EntryGroup(Base):
+    """
+    An EntryGroup is an association object between any number of 
+    :class:`Entry <metacatalog.models.Entry>` records. The type 
+    of association is further described by 
+    :class:`EntryGroupType <EntryGroupType>`.
+
+    Attributes
+    ----------
+    id : int
+        Unique id of the record. If not specified, the database will assign it.
+    uuid : str
+        .. versionadded:: 0.1.9
+
+        Version 4 UUID string to identify the Entry across installations. 
+        This field is read-only and will be assigned on creation. It is primarily 
+        used to export Entry into ISO19115 metadata.
+    type : metacatalog.models.EntryGroupType
+        The type is most important to give meaning to a group of
+        entries. Two types ship with metacatalog ``'Project'`` and ``'Composite'``.
+    type_id : int
+        Foreign key to the EntryGroupType
+    title : str
+        A descriptive title for the Group. Maximum of 40 letters.
+    description : str
+        An optional full text description of the EntryGroup. This 
+        description should contain all information necessary to 
+        understand the grouping.
+
+    """
     __tablename__ = 'entrygroups'
 
     # columns
     id = Column(Integer, primary_key=True)
+    uuid = Column(String(36), nullable=False, default=lambda: str(uuid4()))
     type_id = Column(Integer, ForeignKey('entrygroup_types.id'), nullable=False)
     title = Column(String(40))
     description = Column(String)
