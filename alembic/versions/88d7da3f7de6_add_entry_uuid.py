@@ -33,7 +33,7 @@ def upgrade():
         session.commit()
 
     # set not null
-    op.alter_column('entries', 'uuid', nullablee=False)
+    op.alter_column('entries', 'uuid', nullable=False)
 
 
 def downgrade():
