@@ -133,6 +133,17 @@ def check_find_with_wildcard(session):
 
     return True
 
+def check_has_uuid(session):
+    """
+    load UUID of all Entries and check that 
+    they are all different
+    """
+    entries = api.find_entry(session)
+    uuids = [e.uuid for e in entries]
+
+    assert len(uuids) > 0
+    assert len(uuids) == len(set(uuids))
+
 
 @pytest.mark.depends(on=['db_init'])
 def test_add_and_find():
@@ -150,3 +161,4 @@ def test_add_and_find():
     assert associate_persons(session)
     assert check_related_information(session)
     assert check_find_with_wildcard(session)
+    assert check_has_uuid(session)
