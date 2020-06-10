@@ -1,6 +1,6 @@
 import pytest
 
-from metacatalog import api
+from metacatalog import api, models
 from ._util import connect, PATH, read_to_df
 
 PERSONS = """first_name,last_name,affiliation
@@ -147,7 +147,40 @@ def check_has_uuid(session):
     return True
 
 
-@pytest.mark.depends(on=['db_init'])
+def add_project_group(session):
+    """
+    Group two entries into a group
+    """
+    # get the entries
+    e1 = api.find_entry(session, title="Dummy 1")[0]
+    e2 = api.find_entry(session, title="Dummy 2")[0]
+
+    # get the project type
+    group_type = api.find_group_type(session, name='Composite')[0]
+
+    # create a EntryGroup
+    # TODO this needs an api endpoint. until then the models are used
+    project = models.EntryGroup(title='Dummies', type=group_type, description='empty')
+    project.entries.append(e1)
+    project.entries.append(e2)
+    session.add(project)
+    session.commit()
+
+    return True
+
+
+def check_project_group(session):
+    """
+    get the group. Check UUID exists and two entries are connected
+    """
+    dummies = api.find_group(session, title="Dumm*")[0]
+
+    assert len(dummies.uuid) == 36
+    assert len(dummies.entries) == 2
+
+    return True
+
+@pytest.mark.depends(on=['db_init'], name='add_find')
 def test_add_and_find():
     """
     A simple workflow of 3 persons who contributed to two entries.
@@ -164,3 +197,5 @@ def test_add_and_find():
     assert check_related_information(session)
     assert check_find_with_wildcard(session)
     assert check_has_uuid(session)
+    assert add_project_group(session)
+    assert check_project_group(session)
