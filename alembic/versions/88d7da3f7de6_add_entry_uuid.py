@@ -5,9 +5,11 @@ Revises: 648bc46db836
 Create Date: 2020-06-10 14:59:21.722641
 
 """
+from uuid import uuid4
 from alembic import op
-import sqlalchemy as sa
-
+from sqlalchemy import Column, String
+from sqlalchemy.orm.session import Session
+from metacatalog import api
 
 # revision identifiers, used by Alembic.
 revision = '88d7da3f7de6'
@@ -20,8 +22,15 @@ def upgrade():
     # add the column
     op.add_column('entries', Column(String(36), nullable=True))
 
-    # fill for existing entries
-    op.execute('UPDATE entries SET uuid=uuid_generate_v4()')
+    # get a session
+    session = Session(bind=op.get_bind())
+    
+    # load all entries
+    for e in api.find_entry(session):
+        # set UUID
+        e.uuid = str(uuid4())
+        session.add(e)
+        session.commit()
 
     # set not null
     op.alter_column('entries', 'uuid', nullablee=False)
