@@ -20,7 +20,7 @@ depends_on = None
 
 def upgrade():
     # add the column
-    op.add_column('entries', Column(String(36), nullable=True))
+    op.add_column('entries', Column('uuid', String(36), nullable=True))
 
     # get a session
     session = Session(bind=op.get_bind())
