@@ -7,6 +7,7 @@ If a supported data format is used, Entry can load the data.
 """
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta as rd
+from uuid import uuid4
 
 from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
@@ -49,6 +50,12 @@ class Entry(Base):
     ----------
     id : int
         Unique id of the record. If not specified, the database will assign it.
+    uuid : str
+        .. versionadded:: 0.1.9
+
+        Version 4 UUID string to identify the Entry across installations. 
+        This field is read-only and will be assigned on creation. It is primarily 
+        used to export Entry into ISO19115 metadata.
     title : str
         A full title (512) to describe the datasource as well as possible.
         The truncated title (first 25 signs) is usually used to print an 
@@ -142,6 +149,7 @@ class Entry(Base):
 
     # columns
     id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(String(36), nullable=False, default=lambda: str(uuid4()))
     title = Column(String(512), nullable=False)
     abstract = Column(String)
     external_id = Column(String)
