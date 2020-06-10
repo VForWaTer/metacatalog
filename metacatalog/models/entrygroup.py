@@ -1,7 +1,8 @@
 from uuid import uuid4
+from datetime import datetime as dt
 
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from metacatalog.db.base import Base
@@ -21,6 +22,9 @@ class EntryGroupType(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(40), nullable=False)
     description = Column(String, nullable=False)
+
+    publication = Column(DateTime, default=dt.utcnow)
+    lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
     entries = relationship("EntryGroup", back_populates='type')
