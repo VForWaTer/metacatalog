@@ -6,3 +6,4 @@ tabulate
 nltk
 alembic
 shapely
+requests
