@@ -48,6 +48,9 @@ def check_defaults(session, capsys):
         
         # load table from db
         table = pd.read_sql_table(tablename, session.bind)
+
+        # drop publication and lastUpdate columns as they are autofilled
+        table.drop(['publication', 'lastUpdate'], axis=1, errors='ignore', inplace=True)
         table = table.where(table.notnull(), None) # replace NaN by None
 
         assert datafile.equals(table)

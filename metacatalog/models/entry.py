@@ -155,8 +155,6 @@ class Entry(Base):
     external_id = Column(String)
     location = Column(Geometry('POINT'), nullable=False)
     geom = Column(Geometry)
-    creation = Column(DateTime)
-    end = Column(DateTime) # TODO: nachschalgen
     version = Column(Integer, default=1, nullable=False)
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)
     is_partial = Column(Boolean, default=False, nullable=False)
@@ -202,6 +200,7 @@ class Entry(Base):
         # base dictionary
         d = dict(
             id=self.id,
+            uuid=self.uuid,
             title=self.title,
             author=self.author,
             authors=self.authors,
@@ -224,7 +223,7 @@ class Entry(Base):
             d['details'] = self.details_dict(full=True)
         
         # set optional attributes
-        for attr in ('abstract', 'external_id','creation','end','comment'):
+        for attr in ('abstract', 'external_id','comment'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr)
 
