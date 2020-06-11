@@ -197,5 +197,5 @@ def test_add_and_find():
     assert check_related_information(session)
     assert check_find_with_wildcard(session)
    # assert check_has_uuid(session)
-    assert add_project_group(session)
-    assert check_project_group(session)
+    #assert add_project_group(session)
+    #assert check_project_group(session)
