@@ -19,7 +19,7 @@ sql ="""UPDATE entrygroups SET "{column}"=(now() at time zone 'utc')::timestamp 
 def upgrade():
     # add missing datetime columns
     op.add_column('entrygroups', Column('publication', DateTime))
-    op.add_column('entrygroups', Column('lastUpdate', Datetime))
+    op.add_column('entrygroups', Column('lastUpdate', DateTime))
 
     # update the fields
     op.execute(sql.format(column='publication'))
