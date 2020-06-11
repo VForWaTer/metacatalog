@@ -978,35 +978,35 @@ DS_AssociationTypeCode.
     - metacatalog
     - description
   * - crossReference
-    - n.a.
-    - not applicable
+    - /
+    - not implemented yet
   * - largerWorkCitation
-    - :class:`EntryGroupType.name=='Project' <metacatalog.models.EntryGroupType>`
-    - 'Citation' might be misleading here. This is only marking belonging.
+    - :class:`EntryGroupType.name=='Composite' <metacatalog.models.EntryGroupType>`
+    - 'Citation' might be misleading here.
   * - partOfSeamlessDatabase
-    - `EntryGroupType.name=='Composite'`
-    - by definition always true for composites.
+    - n.a.
+    - not sure if this applies to metacatalog
   * - source
     - n.a.
     - not applicable, as metacatalog does not store dependencies if the data is an image
   * - stereoMate
-    - /
-    - not yet implemented
+    - n.a.
+    - not applicable
   * - collectiveTitle
-    - :class:`EntryGroup.title <metacatalog.models.EntryGroup>`
-    - for all :class:`Entry` of the Group. May apply only to projects
+    - `EntryGroupType.name=='Project'`
+    - applies if the Entries are grouped by Project name
   * - dependency
     - :class:`Entry <metacatalog.models.Entry>` if :class:`Entry.is_partial==True <metacatalog.models.Entry>`
-    - :class:`Entry.id <metacatalog.models.Entry>` of all :class:`Entry.is_partial==False <metacatalog.models.Entry>` for a partial Entry within the same composite
+    - :class:`Entry.uuid <metacatalog.models.Entry>` of all :class:`Entry.is_partial==False <metacatalog.models.Entry>` for a partial Entry within the same composite
   * - isComposedOf
-    - :class:`Entry.id <metacatalog.models.Entry>`
-    - :class:`Entry.id <metacatalog.models.Entry>` of all child Entries for a EntryGroup
+    - :class:`Entry.uuid <metacatalog.models.Entry>`
+    - :class:`Entry.uuid <metacatalog.models.Entry>` of all child Entries for a EntryGroup
   * - revisionOf
     - /
     - not yet implemented
   * - series
     - n.a.
-    - not applicable. This may apply to Entries that hold the same DataOrigin information. 
+    - not applicable.
 
 DS_InitiativeTypeCode
 ---------------------
