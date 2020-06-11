@@ -1,8 +1,9 @@
 import json
 from functools import wraps
+from datetime import datetime as dt
 
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import relationship, object_session
 
 from metacatalog.db.base import Base
@@ -126,6 +127,9 @@ class DataSource(Base):
     path = Column(String, nullable=False)
     args = Column(String)
 
+    creation = Column(DateTime, default=dt.utcnow)
+    lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
+
     # relationships
     entries = relationship("Entry", back_populates='datasource')
     type = relationship("DataSourceType", back_populates='sources')
@@ -155,7 +159,9 @@ class DataSource(Base):
         d = dict(
             id = self.id,
             path = self.path,
-            type=self.type.to_dict(deep=False)
+            type=self.type.to_dict(deep=False),
+            creation=self.creation,
+            lastUpdate=self.lastUpdate
         )
 
         # set optionals

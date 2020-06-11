@@ -135,7 +135,10 @@ class EntryGroup(Base):
         # base dictionary
         d = dict(
             id=self.id,
-            type=self.type.to_dict(deep=False)
+            uuid=self.uuid,
+            type=self.type.to_dict(deep=False),
+            publication=self.publication,
+            lastUpdate=self.lastUpdate
         )
 
         # set optionals
