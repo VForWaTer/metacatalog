@@ -14,6 +14,10 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join('.', '..')))
 
+def get_version():
+    B = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.join(B, '..', '..', 'VERSION'), 'r') as f:
+        return f.read().strip()
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +26,7 @@ copyright = '2020, Mirko Mälicke'
 author = 'Mirko Mälicke <mirko.maelicke@kit.edu>'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.9'
+release = get_version()
 
 
 # -- General configuration ---------------------------------------------------
