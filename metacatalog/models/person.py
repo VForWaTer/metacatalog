@@ -6,12 +6,56 @@ from metacatalog.db.base import Base
 
 
 class Person(Base):
+    """
+    Person represents all persons that are associated 
+    in any kind to a dataset. This may be an author, who is
+    mandatory, but also an owners or processors can be 
+    associated. 
+
+    .. note::
+        In metatacatalog, an organisation_name is an optional, but 
+        recommended information. On export to ISO 19115 persons without 
+        affilated organisations can't be exported. Thus, they should 
+        not take the role of ``pointOfContact`` or ``author`` (first author), 
+        because this would result in invalid ISO 19115 metadata then.
+    
+    Attributes
+    ----------
+    id : int
+        Unique id of the record. If not specified, the database will assign it.
+    first_name : str
+        .. versionchanged:: 0.1.10
+            Now mandatory.
+        Person's first name.
+    last_name : str
+        Person's last name.
+    organisation_name : str
+        Optional, but **highly recommended** if applicable. This should be 
+        the name of the head organisation, **without department information**.
+        The full :attr:`affiliation` can be defined in another attribute.
+    affiliation : str
+        Optional. The user may want to further specify a department or 
+        working group for affiliation information. 
+    attribution : str
+        .. versionadded: 0.1.10
+        Optional. The user may define an attribtion recommondation here, 
+        which is associated to all datasets, the user is first author of.
+        If not given, the system running metacatalog should give automatic 
+        and fallback information of how a dataset should be attributed.
+    entries : list
+        List of :class:`Entries <metacatalog.models.Entry>` the user is 
+        associated to. This includes all kinds of associations, not only 
+        author and coAuthor associations.
+        
+    """
     __tablename__ = 'persons'
 
     id = Column(Integer, primary_key=True)
-    first_name = Column(String(128), nullable=True)
+    first_name = Column(String(128), nullable=False)
     last_name = Column(String(128), nullable=False)
+    organisation_name = Column(String(1024), nullable=True)
     affiliation = Column(String(1024))
+    attribution = Column(String(1024))
 
     # relationships
     entries = relationship("PersonAssociation", back_populates='person')
@@ -36,11 +80,12 @@ class Person(Base):
         # base dictionary
         d = dict(
             id=self.id,
+            first_name=self.first_name,
             last_name=self.last_name
         )
 
         # set optionals
-        for attr in ('first_name', 'affiliation'):
+        for attr in ('organisation_name', 'affiliation', 'attribution'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr)
 
