@@ -61,6 +61,12 @@ exclude_patterns = []
 html_theme = 'pydata_sphinx_theme'
 html_logo = '_static/brand.png'
 
+# These paths are either relative to html_static_path
+# or fully qualified paths (eg. https://...)
+html_css_files = [
+    'css/custom.css',
+]
+
 html_theme_options = {
 #    'github_user': 'VForWaTer',
 #    'github_repo': 'metacatalog',
