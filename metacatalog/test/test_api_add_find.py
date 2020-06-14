@@ -3,10 +3,10 @@ import pytest
 from metacatalog import api, models
 from ._util import connect, PATH, read_to_df
 
-PERSONS = """first_name,last_name,affiliation
-Keanu,Reeves,"Institute for matrial arts"
-Marie,Curie,"Institute of awesome scientists"
-Homer,Simpson,"University of Non-existent people"
+PERSONS = """first_name,last_name,organisation_name,affiliation,attribution
+Keanu,Reeves,"Institute for martial arts","Institute for martial arts - department of slow motion",
+Marie,Curie,"Institute of awesome scientists","Insitute of awesome scientists - department for physics","Curie, Marie, Awesome."
+Homer,Simpson,"University of Non-existent people",,
 """
 
 ENTRIES = """title,author,x,y,variable,abstract,license,external_id
@@ -29,6 +29,8 @@ def add_person(session):
     df.set_index('first_name', inplace=True)
     for person in persons:
         assert person.last_name == df.loc[person.first_name].last_name
+    
+    assert persons[1].attribution == "Curie, Marie, Awesome."
     
     return True
 

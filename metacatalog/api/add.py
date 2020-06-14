@@ -192,7 +192,7 @@ def add_keyword(session, path):
     return keywords
 
 
-def add_person(session, first_name, last_name, affiliation=None):
+def add_person(session, first_name, last_name, organisation_name=None, affiliation=None, attribution=None):
     r"""Add new Person
 
     Add a new Person to the database. A person can be a real Person
@@ -210,9 +210,16 @@ def add_person(session, first_name, last_name, affiliation=None):
     last_name : str
         A real persions last name. If first_name is NULL, 
         last_name is assumned to be an institution.
+    organisation_name : str
+        .. versionadded: 0.1.10
+        Optional, but **highly_recommended** if applicable. Name of
+        the head institution, whithout department.
     affiliation : str
         Affiliation if applicable. Has to go into a single string
-        of 1024 bytes.
+        of 1024 bytes. Full attribution including department and group name.
+    attribution : str.
+        Optional. Attribution recommondation for all datasets 
+        this Person is associated to as a first author.
     
     Returns
     -------
@@ -220,7 +227,13 @@ def add_person(session, first_name, last_name, affiliation=None):
         Entry instance of the added Person entity
   
     """
-    attr = dict(first_name=first_name, last_name=last_name, affiliation=affiliation)
+    attr = dict(
+        first_name=first_name, 
+        last_name=last_name,
+        organisation_name=organisation_name, 
+        affiliation=affiliation,
+        attribution=attribution
+    )
 
     return add_record(session=session, tablename='persons', **attr)
 
