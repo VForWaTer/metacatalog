@@ -359,7 +359,7 @@ def find_role(session, id=None, name=None, return_iterator=False):
         return query.all()
 
 
-def find_person(session, id=None, first_name=None, last_name=None, role=None, return_iterator=False):
+def find_person(session, id=None, first_name=None, last_name=None, role=None, organisation_name=None, return_iterator=False):
     """Find Person
 
     Return person record on exact matches. Persons can be 
@@ -383,6 +383,12 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, re
     role : int, str
         Role id or name (exact match) that is associated to 
         a person. Will most likely return many persons.
+    organisation_name :  str
+        .. versionadded:: 0.1.10
+        The name of the head organisation, without department 
+        and group specification.
+        .. note::
+            Not all Persons may have an organisation_name.
     return_iterator : bool
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
@@ -420,6 +426,9 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, re
         # filter by these ids
         query = query.filter(models.Person.id.in_(ids))
 
+    if organisation_name is not None:
+        query = query.filter(_match(models.Person.organisation_name, organisation_name))
+    
     # return
     if return_iterator:
         return query
