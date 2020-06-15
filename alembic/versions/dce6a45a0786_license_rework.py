@@ -13,7 +13,7 @@ from io import StringIO
 
 # revision identifiers, used by Alembic.
 revision = 'dce6a45a0786'
-down_revision = 'e2c9518375a0'
+down_revision = 'a7544dad1e13'
 branch_labels = None
 depends_on = None
 
