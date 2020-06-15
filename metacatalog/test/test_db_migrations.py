@@ -67,7 +67,7 @@ def test_migration():
     # run single tests
     assert check_no_version_mismatch(session)
     # something on the downgrade is not working properly.
-    #assert downgrade(al_config)
-    #assert raise_version_mismatch(session)
+    assert downgrade(al_config)
+    assert raise_version_mismatch(session)
     assert upgrade(al_config)
     assert check_no_version_mismatch(session)

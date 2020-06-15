@@ -76,6 +76,10 @@ def add_license(session, short_title, title, **kwargs):
     kwargs['short_title'] = short_title
     kwargs['title'] = title
 
+    # check if either full text or link is given
+    if 'full_text' not in kwargs and 'link' not in kwargs:
+        raise AttributeError('Either full_text or a link to the license full text has to be given')
+
     # add the license
     return add_record(session=session, tablename='licenses', **kwargs)
 
