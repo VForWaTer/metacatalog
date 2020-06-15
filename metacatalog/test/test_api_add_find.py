@@ -10,9 +10,9 @@ Homer,Simpson,"University of Non-existent people"
 """
 
 ENTRIES = """title,author,x,y,variable,abstract,license,external_id
-"Dummy 1",Reeves,13,44.5,5,"Lorem ipsum ..",2,abc
-"Dummy 2",Curie,12,41.8,6,"Another dummy entry about abosulte nothing",1,foobar
-"Dummy 3",Reeves,10.5,44.5,6,"Another dummy entry by Keanu reeves",1,foobar2
+"Dummy 1",Reeves,13,44.5,5,"Lorem ipsum ..",5,abc
+"Dummy 2",Curie,12,41.8,6,"Another dummy entry about abosulte nothing",4,foobar
+"Dummy 3",Reeves,10.5,44.5,6,"Another dummy entry by Keanu reeves",4,foobar2
 """
 
 def add_person(session):
