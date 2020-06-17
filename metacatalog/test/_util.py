@@ -54,3 +54,20 @@ def read_to_df(s):
 
     # read
     return pd.read_csv(fs)
+
+
+def cleanup():
+    """
+    Right now, only the DBFILE is removed and 
+    a message to the user in printed to screen.
+
+    In a future version, this can optionally also 
+    drop the test database.
+    """
+    with open(DBFILE, 'r') as f:
+        name = f.read()
+    os.remove(DBFILE)
+
+    print('=' * 60)
+    print("Finished.\nThe database '%s' is *not* dropped." % name)
+    print('[DBNAME] %s' % name)

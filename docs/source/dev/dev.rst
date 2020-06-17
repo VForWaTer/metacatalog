@@ -6,13 +6,14 @@ Developers
     :maxdepth: 1
     :hidden:
 
+    tests
     ext
     iso19115
 
 Guide
 =====
 
-YOu will find different guides and how-tos here that help 
+You will find different guides and how-tos here that help 
 database administrators and developers to customize metacatalog to 
 fit their specific requirements. 
 
