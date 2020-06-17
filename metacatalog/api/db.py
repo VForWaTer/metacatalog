@@ -12,9 +12,10 @@ from metacatalog import BASEPATH
 from metacatalog.db.base import Base
 from metacatalog.db.session import get_session
 from metacatalog import DATAPATH
-from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole, EntryGroupType
+from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole, EntryGroupType, Thesaurus
 
 IMPORTABLE_TABLES = dict(
+    thesaurus=Thesaurus,
     keywords=Keyword,
     datasource_types=DataSourceType,
     units=Unit,
@@ -177,6 +178,14 @@ def populate_defaults(session, ignore_tables=[]):
         name of the model in Python.
 
     """
+    # make sure that thesaurus is not ignored, when keywords are imported
+    if 'thesaurus' in ignore_tables and 'keywords' not in ignore_tables:
+        raise AttributeError('You must not ignore thesaurus if keywords is not ignored')
+    
+    # same applies to variables and units
+    if 'units' in ignore_tables and 'variables' not in ignore_tables:
+        raise AttributeError('You must not ignore units if variables not ignored')
+
     for table, InstanceClass in IMPORTABLE_TABLES.items():
         if table in ignore_tables:
             continue

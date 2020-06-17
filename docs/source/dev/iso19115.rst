@@ -33,10 +33,10 @@ MD_Metadata
     - Cardinality
     - description
   * - fileIdentifier
-    - Entry.id
+    - Entry.uuid
     - 
     - [1]
-    - will be Entry.uuid with next version
+    - 
   * - language
     - ``'en-US'``
     - ISO 639-2 values are allowed
@@ -286,16 +286,25 @@ MD_Keywords
     - [1..*]
     - Keyword hierachies will always be separated by ``' > '``
   * - type
-    - 
+    - ``'theme'``
     - MD_KeywordTypeCode
     - [0..1]
     - in metacatalog keywords are: ``'topic > term > ...'``
   * - thesaurusName
-    - 
+    - ``Keyword.thesaurusName``
     - CI_Citation
     - [0..1]
-    - not yet implemented
+    - ``Keyword.thesaurusName`` is a read only
 
+.. note:: 
+    To reference a thesaurus, the thesaurus name is needed.
+    Then, the url of the given Keyword is given as 
+    `thesaurusUrl`. The system, which operates metacatalog 
+    has to be able to create a valid ``CI_Citation``. 
+    The `thesaurusName.citedResponsibleParty` is represented 
+    by an `organisationName` given by `thesaurus_organisation`
+    and `contactInfo`, which is an `OnlineResource` of `linkage` 
+    given as `thesaurus_url`.
 
 MD_RepresentativeFraction
 -------------------------

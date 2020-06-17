@@ -15,7 +15,7 @@ is supported. This may change in a future version.
 from .entry import Entry
 from .entrygroup import EntryGroup, EntryGroupType
 from .details import Detail
-from .keyword import Keyword, KeywordAssociation
+from .keyword import Keyword, KeywordAssociation, Thesaurus
 from .person import Person, PersonRole, PersonAssociation
 from .license import License
 from .variable import Variable, Unit
