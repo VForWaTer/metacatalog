@@ -22,7 +22,13 @@ class Thesaurus(Base):
         Usually, this is created outside of metacatalog. 
     name : str
         Short name of the thesaurus entry. Should be ``'custom'`` for 
-        non-official thesaurii.
+        non-official thesaurii. Example: ``'GCMD'`` for the NASA/GCMD Science
+        Keywords, which can be loaded by default.
+    title : str
+        Full name of the keyword list. The title should contain the full 
+        qualified name. It is best practice to use a title the distiributor  
+        officially uses for the list. A short name can be given as :attr:`name` 
+        attribute.
     organisation : str
         Name of the publishing Organisation for the thesaurus. It has to be 
         the responsible party for the resource given at `url`.
@@ -52,6 +58,7 @@ class Thesaurus(Base):
     id = Column(Integer, primary_key=True)
     uuid = Column(String(64), unique=True, nullable=False)
     name = Column(String(1024), nullable=False)
+    title = Column(String, nullable=False)
     organisation = Column(String, nullable=False)
     description = Column(String, nullable=True)
     url = Column(String, nullable=False)
@@ -81,6 +88,7 @@ class Thesaurus(Base):
             id=self.id,
             uuid=self.uuid,
             name=self.name,
+            title=self.title,
             organisation=self.organisation,
             url=self.url
         )

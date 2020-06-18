@@ -36,6 +36,7 @@ def upgrade():
             "id": 1, 
             "uuid": "2e54668d-8fae-429f-a511-efe529420b12",
             "name": "GCMD",
+            "title": "NASA/GCMD Earth Science Keywords",
             "organisation": "NASA",
             "description": "NASA Global Clime change Master Dictionary Science Keywords",
             "url": "https://gcmdservices.gsfc.nasa.gov/kms/concepts/concept_scheme/sciencekeywords/?format=xml"
