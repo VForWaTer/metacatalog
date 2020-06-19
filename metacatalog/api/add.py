@@ -157,7 +157,7 @@ def add_variable(session, name, symbol, unit):
     return add_record(session=session, tablename='variables', **attrs)
 
 
-def add_keyword(session, path):
+def add_keyword(session, path, thesaurus):
     r"""Add Keyword
 
     Add a new keyword to the database. The keyword is
@@ -171,6 +171,23 @@ def add_keyword(session, path):
         A full path to the keyword, each element connected
         by a ' > ' sequence. E.g.: 
         Topic > Term > Variable_level_1 etc.
+    thesaurus : dict, int
+        .. versionadded:: 0.1.10
+        Either a thesaurus entity, that distributes the 
+        controlled keywords, or an id of the an already 
+        existing thesaurusName. It is highly recommended
+        to use an existing ID.
+
+    Note
+    ----
+    This API endpoint is designed to add custom keywords to 
+    metacatalog. It will use the full path keywords and split 
+    them automatically for convenience. 
+    .. warning::
+        Each keyword part will receive a **new** UUID, thus you 
+        have to use the `metacatalog.models.Keyword` interface 
+        to add **existing** keywords, that already contain a 
+        UUID.
 
     Returns
     -------
@@ -182,18 +199,84 @@ def add_keyword(session, path):
     current_parent_id = None
     keywords = []
 
+    if isinstance(thesaurus, int):
+        thesaurus_id = thesaurus
+    elif isinstance(thesaurus, dict):
+        thesaurus_ = add_record(session=session, tablename='thesaurus', **thesaurus)
+        thesaurus_id = thesaurus_.id
+
     # add each level, if it does not exist
     for i, level in enumerate(levels):
         # does the level exist?
         current = session.query(models.Keyword).filter(models.Keyword.value==level).filter(models.Keyword.parent_id==current_parent_id).first()
         if current is None:
-            attr = dict(parent_id=current_parent_id, value=level, uuid=uuid4(), path=' > '.join(levels[:i + 1]))
+            attr = dict(parent_id=current_parent_id, value=level, uuid=uuid4(), path=' > '.join(levels[:i + 1]), thesaurus_id=thesaurus_id)
             current = add_record(session=session, tablename='keywords', **attr)
         keywords.append(current)
         current_parent_id = current.id
     
     # return 
     return keywords
+
+
+def add_thesaurus(session, name, title, organisation, url, description=None, uuid=None):
+    """
+    .. versionadded:: 0.1.10
+
+    Add a new thesaurus to reference new keywords.
+
+    .. warning::
+        If you want to add existing Thesaurii for reference, 
+        you **have to** to add their existing UUID as well,
+        otherwise this function will assign new ones.
+
+    Attributes
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    uuid : str
+        An UUID version 4 to globally identify the keyword list.
+        If you add a new thesaurus, do not set the UUID as a new 
+        UUID will be set. 
+    name : str
+        Short name of the keyword list. Do not use the full 
+        qualified name here, just the short version used for 
+        filtering.
+    title : str
+        Full qualified name used by the distributor to identify 
+        the keyword list globally.
+    organisation : str
+        The full organisation name to identify the authority 
+        maintaining the thesaurus.
+    description : str
+        Optional. Futher details about the thesaurus, like scope or 
+        implementation details.
+    url : str
+        The permanent URL at which the full keyword list can be 
+        found. **Do not link the organisation or an overview page here**.
+        Usually, this points to an XML representation of the 
+        thesaurus. It may contain a placeholder called UUID to 
+        load specific keyword objects only.
+    
+    Returns
+    -------
+    thesaurus : metacatalog.models.Thesaurus
+        Thesaurus instance of the added thesaurus entity.
+
+    """
+    if uuid is None:
+        uuid = uuid4()
+    
+    attr = dict(
+        uuid=uuid,
+        name=name,
+        title=title,
+        organisation=organisation,
+        description=description,
+        url=url
+    )
+    
+    return add_record(session, tablename='thesaurus', **attr)
 
 
 def add_person(session, first_name, last_name, organisation_name=None, affiliation=None, attribution=None):

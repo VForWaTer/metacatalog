@@ -10,7 +10,8 @@ TABLE_MAPPING = dict(
     persons=models.Person,
     person_roles=models.PersonRole,
     units=models.Unit,
-    variables=models.Variable
+    variables=models.Variable,
+    thesaurus=models.Thesaurus
 )
 
 ENTITY_MAPPING = dict(
@@ -26,5 +27,7 @@ ENTITY_MAPPING = dict(
     person_role=models.PersonRole,
     personrole=models.PersonRole,
     unit=models.Unit,
-    variable=models.Variable
+    variable=models.Variable,
+    thesaurus=models.Thesaurus,
+    thesaurusName=models.Thesaurus
 )

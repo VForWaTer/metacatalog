@@ -64,7 +64,7 @@ def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=Fa
             return column_instance==compare_value
 
 
-def find_keyword(session, id=None, value=None, return_iterator=False):
+def find_keyword(session, id=None, value=None, thesaurus_name=None, return_iterator=False):
     """Find keyword
 
     Return one or many keyword entries from the database on 
@@ -80,6 +80,11 @@ def find_keyword(session, id=None, value=None, return_iterator=False):
     value : str
         Value of the requested keyword(s). Multiple record
         return is possible.
+    thesaurus_name : str
+        .. versionadded:: 0.1.10
+        The name of the thesaurus, the keyword originates from.
+        At the current stage, only 'GCMD' science keywords are
+        implemented.
     return_iterator : bool
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
@@ -97,6 +102,67 @@ def find_keyword(session, id=None, value=None, return_iterator=False):
         query = query.filter(models.Keyword.id==id)
     if value is not None:
         query = query.filter(_match(models.Keyword.value, value))
+    if thesaurus_name is not None:
+        query = query.filer(_match(models.Keyword.thesaurusName.name, thesaurus_name))
+
+    # return
+    if return_iterator:
+        return query
+    else:
+        return query.all()
+
+
+def find_thesaurus(session, id=None, name=None, title=None, organisation=None, description=None, return_iterator=False):
+    """Find Thesaurii
+    ..versionadded:: 0.1.10
+
+    Retun one or many thesaurii references from the database 
+    on exact matches. You can  use `'%'` and `'*'` as wildcards 
+    and prepend a str with `!` to invert the filter.
+
+    Parameters
+    ----------
+    session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    id : integer
+        Database unique ID of the requested record. Will 
+        return only one record.
+    name : str
+        Short name of the Thesaurus. No wildcard use is possible.
+        Names are unique, thus no multiple thesaurii will be found.
+    title : str
+        Full title attribute of the requested thesaurii.
+        Multiple record return is possible.
+    organisation : str
+        Organisation name of the requested thesaurii. 
+        Multiple record return is possible.
+    description : str 
+        Description of the thesaurus. The decription field 
+        is optional and some records may not be found.
+    return_iterator : bool
+        If True, an iterator returning the requested objects 
+        instead of the objects themselves is returned.
+
+    Returns
+    -------
+    records : list of metacatalog.models.Thesaurus
+        List of matched Thesaurus instances.
+
+    """
+    # base query
+    query = session.query(models.Thesaurus)
+
+    # add needed filter
+    if id is not None:
+        query = query.filter(models.Thesaurus.id==id)
+    if name is not None:
+        query = query.filter(models.Thesaurus.name==name)
+    if title is not None:
+        query = query.filter(_match(models.Thesaurus.title, title))
+    if organisation is not None:
+        query = query.filter(_match(models.Thesaurus.organisation, organisation))
+    if description is not None:
+        query = query.filer(_match(models.Thesaurus.description, description))
     
     # return
     if return_iterator:
@@ -109,7 +175,7 @@ def find_license(session, id=None, title=None, short_title=None, by_attribution=
     """Find license
 
     Return one or many license entries from the database on 
-    exact matches. You can  use '%'` and `'*'` as wildcards 
+    exact matches. You can  use `'%'` and `'*'` as wildcards 
     and prepend a str with `!` to invert the filter.
 
     .. versionchanged:: 0.1.8

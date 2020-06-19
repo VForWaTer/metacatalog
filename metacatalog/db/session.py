@@ -72,6 +72,9 @@ def get_engine(*args, **kwargs):
     else:
         MISMATCH = False
 
+    # set an application name
+    kwargs.setdefault('connect_args', {'application_name': 'metacatalog_session'})
+
     # create a connection
     engine = create_engine(*args, **kwargs)
 

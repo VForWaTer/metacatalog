@@ -4,6 +4,7 @@ import io
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
 PATH = os.path.abspath(os.path.dirname(__file__))
 DBFILE = os.path.abspath(os.path.join(PATH, 'DBNAME'))
@@ -34,9 +35,9 @@ def connect(mode='string'):
     elif mode.lower() == 'dict':
         return SETTINGS
     elif mode.lower() == 'engine':
-        return create_engine(URI)
+        return create_engine(URI, poolclass=NullPool)
     elif mode.lower() == 'session':
-        Session = sessionmaker(bind=create_engine(URI))
+        Session = sessionmaker(bind=create_engine(URI, poolclass=NullPool))
         return Session()
 
 
@@ -56,7 +57,7 @@ def read_to_df(s):
     return pd.read_csv(fs)
 
 
-def cleanup():
+def cleanup(drop_db=False):
     """
     Right now, only the DBFILE is removed and 
     a message to the user in printed to screen.

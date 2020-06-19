@@ -2,6 +2,6 @@
 Controlled Keywords
 ===================
 
-.. automodule:: metacatalog.models.entrygroup
+.. automodule:: metacatalog.models.keyword
     :members:
     

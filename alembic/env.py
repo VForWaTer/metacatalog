@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -21,19 +22,30 @@ fileConfig(config.config_file_name)
 # target_metadata = mymodel.Base.metadata
 target_metadata = None
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-connection_name = config.get_main_option("metacatalog.connection_name")
-if not hasattr(config, 'session'):
+# ignore the API version mismatch
+def get_session_on_ignore(connection_name, args):
     try:
-        session = api.connect_database(connection_name)
-    except RuntimeError as e:
+        session = api.connect_database(connection_name, connect_args=args)
+    except RuntimeError:
         print('IGNORE THE MISMATCH BELOW!!!')
-        session = api.connect_database(connection_name, version_mismatch='print')
+        session = api.connect_database(connection_name, version_mismatch='print', connect_args=args)
+        print('IGNORE THE MISMATH WARNING!!!')
+    return session
+
+
+# this does not yet work
+from sqlalchemy.pool import NullPool
+connect_args = {'application_name': 'metacatalog_migrate', 'poolclass': NullPool}
+
+if 'ALEMBIC_CON' in os.environ:
+    connection_name = os.environ['ALEMBIC_CON']
+    session = get_session_on_ignore(connection_name, connect_args)
+elif not hasattr(config, 'session'):
+    connection_name = config.get_main_option("metacatalog.connection_name")
+    session = get_session_on_ignore(connection_name, connect_args)
 else:
     session = config.session
+
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
@@ -75,11 +87,12 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, target_metadata=target_metadata,
+            transaction_per_migration=True
         )
 
-        with context.begin_transaction():
-            context.run_migrations()
+#        with context.begin_transaction():
+        context.run_migrations()
 
 
 if context.is_offline_mode():

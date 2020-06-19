@@ -12,9 +12,10 @@ from metacatalog import BASEPATH
 from metacatalog.db.base import Base
 from metacatalog.db.session import get_session
 from metacatalog import DATAPATH
-from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole, EntryGroupType
+from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole, EntryGroupType, Thesaurus
 
 IMPORTABLE_TABLES = dict(
+    thesaurus=Thesaurus,
     keywords=Keyword,
     datasource_types=DataSourceType,
     units=Unit,
@@ -137,7 +138,7 @@ def import_direct(session, table_name, file_name):
     df.to_sql(table_name, session.bind, index=False, if_exists='append')
 
 
-def update_sequence(session, table_name, sequence_name=None):
+def update_sequence(session, table_name, sequence_name=None, to_value=None):
     """
     On insert with given id, PostgreSQL does not update the sequence 
     for autoincrement. Thus tables with defaults cannot use autoincremented
@@ -177,6 +178,14 @@ def populate_defaults(session, ignore_tables=[]):
         name of the model in Python.
 
     """
+    # make sure that thesaurus is not ignored, when keywords are imported
+    if 'thesaurus' in ignore_tables and 'keywords' not in ignore_tables:
+        raise AttributeError('You must not ignore thesaurus if keywords is not ignored')
+    
+    # same applies to variables and units
+    if 'units' in ignore_tables and 'variables' not in ignore_tables:
+        raise AttributeError('You must not ignore units if variables not ignored')
+
     for table, InstanceClass in IMPORTABLE_TABLES.items():
         if table in ignore_tables:
             continue

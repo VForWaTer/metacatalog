@@ -71,7 +71,7 @@ not drop the database.
 Run the following chunk to delete all databases that follow the 
 naming convention of metacatalog tests:
 
--- code-block:: bash
+.. code-block:: bash
 
     sudo -u postgres psql -d postgres < <( sudo -u postgres psql -Atc "select 'drop database \"' || datname || '\";' from pg_database where datname like 'test_%';")
 
