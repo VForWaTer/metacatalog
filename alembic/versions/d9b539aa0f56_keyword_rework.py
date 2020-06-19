@@ -27,7 +27,9 @@ def upgrade():
         Column('id', Integer, primary_key=True),
         Column('uuid', String(64), unique=True, nullable=False),
         Column('name',String(1024), unique=True, nullable=False),
+        Column('title', String, nullable=False),
         Column('organisation', String, nullable=False),
+        Column('description', String, nullable=True),
         Column('url', String, nullable=False)
     )
 

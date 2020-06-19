@@ -78,6 +78,8 @@ def get_engine(*args, **kwargs):
     # create a connection
     engine = create_engine(*args, **kwargs)
 
+    # need to rebuild this check by hand
+    """
     # check alembic version
     try:
         check_database_version(engine=engine)
@@ -87,7 +89,7 @@ def get_engine(*args, **kwargs):
             raise e
         elif MISMATCH == 'print':
             print(str(e))
-
+    """
     return engine
     
 

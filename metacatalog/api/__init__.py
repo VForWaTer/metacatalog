@@ -42,7 +42,8 @@ The names of all functions in `metacatalog.api` are prefixed with an
 """
 from .db import connect_database, create_tables, populate_defaults, update_sequence
 from .find import (
-    find_keyword, 
+    find_keyword,
+    find_thesaurus,
     find_license, 
     find_unit, 
     find_variable,
@@ -57,7 +58,8 @@ from .show import show_attributes, show_records
 from .io import from_csv, from_text, from_json
 from .add import (
     add_license, 
-    add_keyword, 
+    add_keyword,
+    add_thesaurus, 
     add_unit, 
     add_variable,
     add_person, 

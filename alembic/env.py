@@ -35,7 +35,7 @@ def get_session_on_ignore(connection_name, args):
 
 # this does not yet work
 from sqlalchemy.pool import NullPool
-connect_args = {'application_name': 'metacatalog_migrate', 'poolclass': NullPool}
+connect_args = {'application_name': 'metacatalog_migrate'}
 
 if 'ALEMBIC_CON' in os.environ:
     connection_name = os.environ['ALEMBIC_CON']

@@ -29,7 +29,9 @@ def check_database_version(engine: Engine):
     Based on: https://gist.github.com/m-aciek/118d450ee59a41176214b5f93a02cc6f
     """
     # get the alembic config file
-    config = Config(os.path.join(BASEPATH, '..', 'alembic.ini'))
+    conf_path = os.path.abspath(os.path.join(BASEPATH, '..', 'alembic.ini'))
+    print(conf_path)
+    config = Config(conf_path)
     script_ = script.ScriptDirectory.from_config(config)
 
     # connect to database

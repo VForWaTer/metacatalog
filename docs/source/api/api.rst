@@ -15,11 +15,13 @@ API
     api_add_variable
     api_add_license
     api_add_keyword
+    api_add_thesaurus
     api_find_entry
     api_find_person
     api_find_variable
     api_find_license
     api_find_keyword
+    api_find_thesaurus
     api_show_attributes
     api_show_records
 
