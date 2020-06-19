@@ -57,7 +57,7 @@ class Thesaurus(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(String(64), unique=True, nullable=False)
-    name = Column(String(1024), nullable=False)
+    name = Column(String(1024), unique=True, nullable=False)
     title = Column(String, nullable=False)
     organisation = Column(String, nullable=False)
     description = Column(String, nullable=True)

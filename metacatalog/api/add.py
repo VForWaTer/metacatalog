@@ -219,6 +219,66 @@ def add_keyword(session, path, thesaurus):
     return keywords
 
 
+def add_thesaurus(session, name, title, organisation, url, description=None, uuid=None):
+    """
+    .. versionadded:: 0.1.10
+
+    Add a new thesaurus to reference new keywords.
+
+    .. warning::
+        If you want to add existing Thesaurii for reference, 
+        you **have to** to add their existing UUID as well,
+        otherwise this function will assign new ones.
+
+    Attributes
+    ----------
+   session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    uuid : str
+        An UUID version 4 to globally identify the keyword list.
+        If you add a new thesaurus, do not set the UUID as a new 
+        UUID will be set. 
+    name : str
+        Short name of the keyword list. Do not use the full 
+        qualified name here, just the short version used for 
+        filtering.
+    title : str
+        Full qualified name used by the distributor to identify 
+        the keyword list globally.
+    organisation : str
+        The full organisation name to identify the authority 
+        maintaining the thesaurus.
+    description : str
+        Optional. Futher details about the thesaurus, like scope or 
+        implementation details.
+    url : str
+        The permanent URL at which the full keyword list can be 
+        found. **Do not link the organisation or an overview page here**.
+        Usually, this points to an XML representation of the 
+        thesaurus. It may contain a placeholder called UUID to 
+        load specific keyword objects only.
+    
+    Returns
+    -------
+    thesaurus : metacatalog.models.Thesaurus
+        Thesaurus instance of the added thesaurus entity.
+
+    """
+    if uuid is None:
+        uuid = uuid4()
+    
+    attr = dict(
+        uuid=uuid,
+        name=name,
+        title=title,
+        organisation=organisation,
+        description=description,
+        url=url
+    )
+    
+    return add_record(session, tablename='thesaurus', **attr)
+
+
 def add_person(session, first_name, last_name, organisation_name=None, affiliation=None, attribution=None):
     r"""Add new Person
 

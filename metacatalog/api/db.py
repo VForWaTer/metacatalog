@@ -138,7 +138,7 @@ def import_direct(session, table_name, file_name):
     df.to_sql(table_name, session.bind, index=False, if_exists='append')
 
 
-def update_sequence(session, table_name, sequence_name=None):
+def update_sequence(session, table_name, sequence_name=None, to_value=None):
     """
     On insert with given id, PostgreSQL does not update the sequence 
     for autoincrement. Thus tables with defaults cannot use autoincremented

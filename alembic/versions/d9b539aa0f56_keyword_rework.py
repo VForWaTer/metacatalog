@@ -17,6 +17,7 @@ depends_on = None
 
 
 def upgrade():
+    op.execute('COMMIT;')
     # remove the alias and values fields from nm_keywords_entries
     op.drop_column('nm_keywords_entries', 'alias')
     op.drop_column('nm_keywords_entries', 'associated_value')
@@ -25,7 +26,7 @@ def upgrade():
     the = op.create_table('thesaurus',
         Column('id', Integer, primary_key=True),
         Column('uuid', String(64), unique=True, nullable=False),
-        Column('name',String(1024), nullable=False),
+        Column('name',String(1024), unique=True, nullable=False),
         Column('organisation', String, nullable=False),
         Column('url', String, nullable=False)
     )
@@ -46,13 +47,18 @@ def upgrade():
     op.add_column('keywords', Column('thesaurus_id', Integer, ForeignKey('thesaurus.id')))
 
     # updat existing
-    op.execute("UPDATE keywords SET thesaurus_id=1 WHERE id < 10000")
+    op.execute("UPDATE keywords SET thesaurus_id=1 WHERE id < 10000;")
+#    op.execute('COMMIT;')
 
 
 def downgrade():
+    # commit anything still in transaction
+#    op.drop_constraint('keywords_thesaurus_id_fkey', 'keywords', type_='foreignkey')
     # drop the foreign key
-    op.drop_column('keywords', 'thesaurus_id')
+    #op.drop_column('keywords', 'thesaurus_id')
+    op.execute('ALTER TABLE keywords DROP COLUMN thesaurus_id;')
     # drop the thesaurus table
+#    op.execute('COMMIT;')
     op.drop_table('thesaurus')
 
     # add the alias and values fields
