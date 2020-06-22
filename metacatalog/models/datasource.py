@@ -85,6 +85,15 @@ class DataSourceType(Base):
         return '%s data source <ID=%d>' % (self.name, self.id)
 
 
+class DataSourceDataType(Base):
+    """
+    """
+    __tablename__ = 'datasource_datatypes'
+
+    # columns
+    id = Column(Integer, primary_key=True)
+
+
 class DataSource(Base):
     r"""DataSource
 
@@ -99,6 +108,9 @@ class DataSource(Base):
     path : str
         Path to the actual data. Depending on type, this can be a filepath, SQL 
         tablename or URL.
+    encoding : str
+        The encoding of the file or database representation of the actual 
+        data. Defaults to ``'utf-8'``. Do only change if necessary.
     args : str
         Optional. If the I/O classes need further arguments, these can be stored 
         as a JSON-serializable str. Will be parsed into a dict and passed to the
@@ -124,6 +136,7 @@ class DataSource(Base):
     # column
     id = Column(Integer, primary_key=True)
     type_id = Column(Integer, ForeignKey('datasource_types.id'), nullable=False)
+    encoding = Column(String(64), default='utf-8')
     path = Column(String, nullable=False)
     args = Column(String)
 
@@ -167,7 +180,8 @@ class DataSource(Base):
         # set optionals
         if self.args is not None:
             d['args'] = self.parse_args()
-            
+        if self.encoding is not None:
+            d['encoding'] = self.encoding
         
         # deep loading
         if deep:
@@ -259,4 +273,3 @@ class DataSource(Base):
 
     def __str__(self):
         return "%s data source at %s <ID=%d>" % (self.type.name, self.path, self.id)
-
