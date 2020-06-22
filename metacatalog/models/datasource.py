@@ -2,9 +2,13 @@ import json
 from functools import wraps
 from datetime import datetime as dt
 
-from sqlalchemy import Column, ForeignKey
-from sqlalchemy import Integer, String, DateTime
+from sqlalchemy import Column, ForeignKey, CheckConstraint
+from sqlalchemy import Integer, String, DateTime, Numeric
 from sqlalchemy.orm import relationship, object_session
+from geoalchemy2 import Geometry
+from geoalchemy2.shape import to_shape, from_shape
+
+import pandas as pd
 
 from metacatalog.db.base import Base
 from metacatalog.util.ext import get_reader, get_importer
@@ -94,6 +98,219 @@ class DataSourceDataType(Base):
     id = Column(Integer, primary_key=True)
 
 
+class TemporalScale(Base):
+    """
+    The TemporalScale is used to commonly describe the temporal scale at which 
+    the data described is valid. metacatalog uses the scale triplet 
+    (spacing, extent, support), but renames ``'spacing'`` to ``'resolution'``.
+
+    Attributes
+    ----------
+    id : int
+        Unique id of the record. If not specified, the database will assign it.
+    resolution : str
+        Temporal resolution. The resolution has to be given as an ISO 8601 
+        Duration, or a fraction of it. You can substitute standalone minutes can 
+        be identified by non-ISO ``'min'``.
+        .. code-block:: python
+            resolution = '15min'
+        defines a temporal resolution of 15 Minutes. The ISO 8601 is built like:
+        .. code-block::
+            'P[n]Y[n]M[n]DT[n]H[n]M[n]S'
+    observation_start : datetime.datetime
+        Point in time, when the first observation was made. 
+        Forms the temporal extent toghether with `observation_end`.
+    observation_end : datetime.datetime
+        Point in time, when the last available observation was made.
+        Forms the temporal extent toghether with `observation_start`.
+    support : float
+        The support gives the temporal validity for a single observation.
+        It specifies the time before and after observation, that is still 
+        represented by the observation. 
+        It is given as a fraction of resolution. 
+        I.e. if ``support=0.5`` at ``resolution='10min'``, the observation 
+        supports ``5min`` (2.5min before and after the timestamp) and the 
+        resulting dataset would **not** be exhaustive. 
+        Defaults to ``support=1.0``, which would make a temporal exhaustive 
+        dataset, but may not apply to each dataset. 
+
+    """
+    __tablename__ = 'temporal_scales'
+
+    # columns
+    id = Column(Integer, primary_key=True)
+
+    resolution = Column(String, nullable=False)
+    observation_start = Column(DateTime, nullable=False)
+    observation_end = Column(DateTime, nullable=False)
+    support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, defaults=1.0)
+
+    # relationships
+    sources = relationship("DataSource", back_populates='temporal_scale')
+
+    def __init__(self, *args, **kwargs):
+        # handle resoultion 
+        if 'resolution_timedelta' in kwargs:
+            kwargs['resolution'] = pd.to_timedelta(kwargs['resolution_timedelta']).isoformat()
+            del kwargs['resolution_timedelta']
+        if 'extent' in kwargs:
+            kwargs['observation_start'] = kwargs['extent'][0]
+            kwargs['observation_end'] = kwargs['extent'][1]
+            del kwargs['extent']
+        if 'resolution' in kwargs:
+            kwargs['resolution'] = pd.to_timedelta(kwargs['resolution']).isoformat()
+        super(TemporalScale, self).__init__(*args, **kwargs)
+    
+    @property 
+    def resolution_timedelta(self):
+        return pd.to_timedelta(self.resolution)
+
+    @resolution_timedelta.setter
+    def resolution_timedelta(self, delta):
+        self.resolution = pd.to_timedelta(delta).isoformat()
+
+    @property
+    def support_timedelta(self):
+        return self.resolution_timedelta / 2
+
+    @resolution_timedelta.setter
+    def support_timedelta(self, delta):
+        self.support = pd.to_timedelta(delta) / self.resolution_timedelta
+
+    @property
+    def extent(self):
+        return [self.observation_start, self.observation_end]
+    
+    @extent.setter
+    def extent(self, extent):
+        self.observation_start, self.observation_end = extent
+
+    def to_dict(self, deep=False) -> dict:
+        """To dict
+
+        Return the model as a python dictionary.
+
+        Parameters
+        ----------
+        deep : bool
+            If True, all related objects will be included as 
+            dictionary. Defaults to False
+
+        Returns
+        -------
+        obj : dict
+            The Model as dict
+
+        """
+        # base dictionary
+        d = dict(
+            id=self.id,
+            resolution=self.resolution,
+            extent=self.extent,
+            support=self.support,
+            support_iso = self.support_timedelta.isoformat()
+        )
+
+        if deep:
+            d['datasources'] = [s.to_dict(deep=False) for s in self.sources]
+        
+        return d
+
+
+class SpatialScale(Base):
+    """
+    The SpatialScale is used to commonly describe the spatial scale at which 
+    the data described is valid. metacatalog uses the scale triplet 
+    (spacing, extent, support), but renames ``'spacing'`` to ``'resolution'``.
+
+    Attributes
+    ----------
+    id : int
+        Unique id of the record. If not specified, the database will assign it.
+    resolution : int
+        Spatial resoultion in meter. The resolution usually describes a grid
+        cell size, which only applies to gridded datasets. Use the 
+        :attr:`resolution_str` property for a string representation
+    extent : geoalchemy2.Geometry
+        The spatial extent of the dataset is given as a ``'POLYGON'``. While 
+        metacatalog is capable of storing any kind of valid POLYGON as extent, 
+        it is best practice to allow only Bounding Boxes on upload.
+    support : float
+        The support gives the spatial validity for a single observation.
+        It specifies the spatial extent at which an observed value is valid.
+        It is given as a fraction of resolution. For gridded datasets, it is 
+        common to set support to 1, as the observations are validated to 
+        represent the whole grid cell. In case ground truthing data is 
+        available, the actual footprint fraction of observations can be 
+        given here. 
+        Defaults to ``support=1.0``. 
+    
+    """
+    __tablename__ = 'spatial_scales'
+
+    # columns
+    id = Column(Integer, primary_key=True)
+
+    resolution = Column(Integer, nullable=False)
+    extent = Column(Geometry(geometry_type='POLYGON', srid=4326), nullable=False)
+    support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, defaults=1.0)
+
+    # relationships
+    sources = relationship("DataSource", back_populates='spatial_scale')
+
+    @property
+    def extent_shape(self):
+        return to_shape(self.extent)
+
+    @extent_shape.setter
+    def extent_shape(self, shape):
+        self.extent = from_shape(shape)
+
+    @property
+    def resolution_str(self):
+        if self.resolution / 1000 > 1:
+            return '%d km' % (int(self.resolution / 1000))
+        return '%.1f m' % self.resolution
+    
+    @property
+    def support_str(self):
+        if (self.support * self.resultion) / 1000 > 1:
+            return '%d km' % (int((self.support * self.resultion) / 1000))
+        return '%.1f m' % (self.support * self.resolution)
+
+    def to_dict(self, deep=False) -> dict:
+        """To dict
+
+        Return the model as a python dictionary.
+
+        Parameters
+        ----------
+        deep : bool
+            If True, all related objects will be included as 
+            dictionary. Defaults to False
+
+        Returns
+        -------
+        obj : dict
+            The Model as dict
+
+        """
+        # base dictionary
+        d = dict(
+            id=self.id,
+            resolution=self.resolution,
+            resolution_str=self.resolution_str,
+            extent=self.extent_shape.wkt,
+            support=self.support,
+            support_str = self.support_str
+        )
+
+        if deep:
+            d['datasources'] = [s.to_dict(deep=False) for s in self.sources]
+        
+        return d
+
+
 class DataSource(Base):
     r"""DataSource
 
@@ -140,12 +357,18 @@ class DataSource(Base):
     path = Column(String, nullable=False)
     args = Column(String)
 
+    # scales
+    temporal_scale_id = Column(Integer, ForeignKey('temporal_scales.id'))
+    spatial_scale_id = Column(Integer, ForeignKey('spatial_scales.id'))
+
     creation = Column(DateTime, default=dt.utcnow)
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
     entries = relationship("Entry", back_populates='datasource')
     type = relationship("DataSourceType", back_populates='sources')
+    temporal_scale = relationship("TemporalScale", back_populates='sources')
+    spatial_scale = relationship("SpatialScale", back_populates='sources')
 
     @classmethod
     def is_valid(cls, ds):
@@ -182,6 +405,10 @@ class DataSource(Base):
             d['args'] = self.parse_args()
         if self.encoding is not None:
             d['encoding'] = self.encoding
+        if self.temporal_scale is not None:
+            d['temporal_scale'] = self.temporal_scale.to_dict(deep=False)
+        if self.spatial_scale is not None:
+            d['spatial_scale'] = self.spatial_scale.to_dict(deep=False)
         
         # deep loading
         if deep:
