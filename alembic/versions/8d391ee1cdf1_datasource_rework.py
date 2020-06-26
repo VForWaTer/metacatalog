@@ -60,6 +60,7 @@ def upgrade():
 
     # fill defaults
     _load_to_db(DATATYPES)
+    op.execute("SELECT setval('datatypes_id_seq', 1000, true);")
 
     # add foreign key
     op.add_column('datasources', sa.Column('datatype_id', sa.Integer, sa.ForeignKey('datatypes.id'), nullable=True))
