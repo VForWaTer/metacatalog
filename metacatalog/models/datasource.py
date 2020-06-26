@@ -4,7 +4,7 @@ from datetime import datetime as dt
 
 from sqlalchemy import Column, ForeignKey, CheckConstraint
 from sqlalchemy import Integer, String, DateTime, Numeric
-from sqlalchemy.orm import relationship, object_session
+from sqlalchemy.orm import relationship, object_session, backref
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape, from_shape
 
@@ -38,6 +38,7 @@ class DataSourceType(Base):
         The full title of this Type.
     description : str
         Optional description about this type
+
     """
     __tablename__ = 'datasource_types'
 
@@ -89,14 +90,116 @@ class DataSourceType(Base):
         return '%s data source <ID=%d>' % (self.name, self.id)
 
 
-class DataSourceDataType(Base):
+class DataType(Base):
     """
+    DataType is describing the type of the actual data. 
+    The metacatalog documentation includes several default abstract 
+    types. Each combination of 
+    :class:`DataType <metacatalog.models.DataType>` and 
+    :class:`DataSourceType <metacatalog.models.DataSourceType>` can be 
+    assigned with custom reader and writer functions.
+
+    Attributes
+    ----------
+    id : int
+        Unique id of the record. If not specified, the database will assign it.
+    name : str
+        A short (64) name for the DataType. Should not contain any whitespaces.
+    title : str
+        The full title of this DataType.
+    description : str
+        Optional description about this DataType.
+
     """
-    __tablename__ = 'datasource_datatypes'
+    __tablename__ = 'datatypes'
 
     # columns
     id = Column(Integer, primary_key=True)
+    parent_id = Column(Integer, ForeignKey('datatypes.id'), nullable=True)
+    name = Column(String(64), nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=True)
 
+    # relationships
+    sources = relationship("DataSource", back_populates='datatype')
+    children = relationship("DataType", backref=backref('parent', remote_side=[id]))
+
+    def to_dict(self, deep=False) -> dict:
+        """To dict
+
+        Return the model as a python dictionary.
+
+        Parameters
+        ----------
+        deep : bool
+            If True, all related objects will be included as 
+            dictionary as well and deep will be passed down.
+            Defaults to False
+
+        Returns
+        -------
+        obj : dict
+            The Model as dict
+
+        """
+        # base dictionary
+        d = dict(
+            id = self.id,
+            name = self.name,
+            title = self.title
+        )
+
+        # set optionals
+        if self.description is not None:
+            d['description'] = self.description
+        if self.parent_id is not None:
+            d['parent_id'] = self.parent_id
+        
+        # deep loading
+        if deep:
+            d['sources'] = [s.to_dict(deep=True) for s in self.sources]
+            if self.parent is not None:
+                d['parent'] = self.parent.to_dict(deep=True)
+            if self.children is not None:
+                d['children'] = [c.to_dict(deep=True) for c in self.children]
+        else:
+            d['parents'] = [dt.to_dict(deep=False) for dt in self.parent_list()]
+            d['children'] = [dt.to_dict(deep=False) for dt in self.children_list()]
+        
+        return d
+
+    def parent_list(self):
+        """
+        Returns an inheritance tree for the current datatype.
+        If the list is empty, the current datatype is a 
+        top-level datatype. 
+        Otherwise, the list contains all parent datatypes 
+        that the current one inherits from.
+
+        """
+        parents = []
+
+        current_parent = self.parent
+        while current_parent is not None:
+            parents.append(current_parent)
+        
+        return parents
+
+    def children_list(self):
+        """
+        Returns an dependency tree for the current datatype.
+        If the list is empty, there are no child (inheriting) 
+        datatypes for the current datatype.
+        Otherwise, the list contains all child datatypes that 
+        are inheriting the current datatype.
+        """
+        children = []
+
+        current_children = self.children
+        while current_children is not None and len(current_children) > 1:
+            children.extend(current_children)
+
+        return children
 
 class TemporalScale(Base):
     """
@@ -143,7 +246,7 @@ class TemporalScale(Base):
     resolution = Column(String, nullable=False)
     observation_start = Column(DateTime, nullable=False)
     observation_end = Column(DateTime, nullable=False)
-    support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, defaults=1.0)
+    support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
 
     # relationships
     sources = relationship("DataSource", back_populates='temporal_scale')
@@ -253,7 +356,7 @@ class SpatialScale(Base):
 
     resolution = Column(Integer, nullable=False)
     extent = Column(Geometry(geometry_type='POLYGON', srid=4326), nullable=False)
-    support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, defaults=1.0)
+    support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
 
     # relationships
     sources = relationship("DataSource", back_populates='spatial_scale')
@@ -353,6 +456,7 @@ class DataSource(Base):
     # column
     id = Column(Integer, primary_key=True)
     type_id = Column(Integer, ForeignKey('datasource_types.id'), nullable=False)
+    datatype_id = Column(Integer, ForeignKey('datatypes.id'), nullable=False)
     encoding = Column(String(64), default='utf-8')
     path = Column(String, nullable=False)
     args = Column(String)
@@ -367,6 +471,7 @@ class DataSource(Base):
     # relationships
     entries = relationship("Entry", back_populates='datasource')
     type = relationship("DataSourceType", back_populates='sources')
+    datatype = relationship("DataType", back_populates='sources')
     temporal_scale = relationship("TemporalScale", back_populates='sources')
     spatial_scale = relationship("SpatialScale", back_populates='sources')
 
@@ -468,6 +573,22 @@ class DataSource(Base):
             except Exception as e:
                 session.rollback()
                 raise e
+
+    def create_scale(self, resolution, extent, support, scale_dimension):
+        """
+        Create a new scale for the dataset
+        """
+        # get the correct class
+        if scale_dimension.lower() == 'temporal':
+            Cls = TemporalScale
+        elif scale_dimension.lower() == 'spatial':
+            Cls = SpatialScale
+        else:
+            raise AttributeError("scale_dimension has to be in ['temporal', 'spatial']")
+        
+        # build the scale and append
+        scale = Cls(resolution=resolution, extent=extent, support=support)
+        setattr(self, '%s_scale' % scale_dimension.lower(), scale)
 
     def get_source_importer(self):
         """Get importer

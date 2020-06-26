@@ -76,6 +76,8 @@ class Entry(Base):
         Note that it will be returned and stored as WKB. The output value will 
         be reworked in a future release
     geom : str
+        .. deprecated:: 0.1.11
+            The geom attribute will be reomved with version 0.2
         .. warning::
             The geom attribute is completely untested so far and might be 
             reworked or removed in a future release
@@ -153,7 +155,7 @@ class Entry(Base):
     title = Column(String(512), nullable=False)
     abstract = Column(String)
     external_id = Column(String)
-    location = Column(Geometry('POINT'), nullable=False)
+    location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=False)
     geom = Column(Geometry)
     version = Column(Integer, default=1, nullable=False)
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)
