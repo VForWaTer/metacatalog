@@ -393,7 +393,7 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     if isinstance(location, str):
         attr['location'] = location
     elif isinstance(location, (tuple, list)):
-        attr['location'] = 'POINT (%f %f)' % (location[0], location[1])
+        attr['location'] = 'SRID=4326;POINT (%f %f)' % (location[0], location[1])
 
     if geom is not None and isinstance(geom, str):
         attr['geom'] = geom
