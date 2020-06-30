@@ -1,3 +1,11 @@
+"""
+.. note::
+
+    The extension management of metacatalog was completely rewritten in 
+    version 0.1.12. A detailed description will follow once the changes
+    get stable with version 0.2
+
+"""
 from .base import MetacatalogExtensionInterface
 
 EXTENSIONS = dict()
@@ -40,11 +48,11 @@ def __load_extensions():
     """
     It is possible to configure to load 
     """
-    from metacatalog.db.session import CONFIG_FILE
+    from metacatalog import CONFIGFILE
     import json
     import importlib
 
-    with open(CONFIG_FILE, 'r') as f:
+    with open(CONFIGFILE, 'r') as f:
         config = json.load(f)
     
     if not 'extensions' in config:
@@ -72,10 +80,10 @@ def activate_extension(name: str, module_name: str, interface_class_name: str):
     
 
     """
-    from metacatalog.db.session import CONFIG_FILE
+    from metacatalog import CONFIGFILE
     import json
 
-    with open(CONFIG_FILE, 'r') as f:
+    with open(CONFIGFILE, 'r') as f:
         config = json.load(f)
     
     if not 'extensions' in config:
@@ -85,7 +93,7 @@ def activate_extension(name: str, module_name: str, interface_class_name: str):
     config['extensions'][name] = {'module': module_name, 'interface': interface_class_name}
 
     # save
-    with open(CONFIG_FILE, 'w') as f:
+    with open(CONFIGFILE, 'w') as f:
         json.dump(config, f, indent=4)
     
     # now load
