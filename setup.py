@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 import os
+import json
 
 USERDATAPATH = os.path.abspath(os.path.join(os.path.expanduser('~'), '.metacatalog', 'user_data'))
 CONFIGFILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
@@ -27,6 +28,10 @@ def create_config_file():
         os.mkdir(os.path.dirname(CONFIGFILE))
     if not os.path.exists(USERDATAPATH):
         os.mkdir(USERDATAPATH)
+    if not os.path.exists(CONFIGFILE):
+        with open(CONFIGFILE, 'w') as f:
+            json.dump(dict(), f, indent=4)
+
 
 
 class PostDevelopCommand(develop):
