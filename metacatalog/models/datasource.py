@@ -11,7 +11,6 @@ from geoalchemy2.shape import to_shape, from_shape
 import pandas as pd
 
 from metacatalog.db.base import Base
-from metacatalog.util.ext import get_reader, get_importer
 
 
 class DataSourceType(Base):
@@ -200,6 +199,7 @@ class DataType(Base):
             children.extend(current_children)
 
         return children
+
 
 class TemporalScale(Base):
     """
@@ -524,6 +524,8 @@ class DataSource(Base):
 
     def parse_args(self):
         r"""Load args
+        .. depreacted:: 0.1.11
+            use load_args instead
 
         Note
         ----    
@@ -540,6 +542,21 @@ class DataSource(Base):
         # parse and return
         else:
             return json.loads(self.args)
+    
+    def load_args(self) -> dict:
+        """
+        .. versionadded:: 0.1.11
+        
+        Load the stored arguments from the ``'args'`` column.
+        It was filled by a JSON string and will be converted as 
+        dict before. 
+        This dict is usually used for I/O operations and passed 
+        as keyword arguments.
+        Therefore this is only useful for a DB admin and should not be 
+        exposed to the end-user.
+
+        """
+        return self.parse_args()
     
     def save_args_from_dict(self, args_dict, commit=False):
         """Save to args
@@ -591,7 +608,9 @@ class DataSource(Base):
         setattr(self, '%s_scale' % scale_dimension.lower(), scale)
 
     def get_source_importer(self):
-        """Get importer
+        """
+        .. deprecated:: 0.1.12
+            Will be removed with version 0.2
 
         This function is usually called by a 
         :class:`Entry <metacatalog.Entry>` object. It returns a function 
@@ -609,6 +628,8 @@ class DataSource(Base):
 
     def get_source_reader(self):
         """
+        .. deprecated:: 0.1.12
+            Will be removed with version 0.2
         """
         func = get_reader(self.type.name)
 

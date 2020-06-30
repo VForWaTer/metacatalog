@@ -3,7 +3,8 @@ from setuptools.command.develop import develop
 from setuptools.command.install import install
 import os
 
-CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
+USERDATAPATH = os.path.abspath(os.path.join(os.path.expanduser('~'), '.metacatalog', 'user_data'))
+CONFIGFILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
 
 
 def requirements():
@@ -22,8 +23,10 @@ def readme():
 
 
 def create_config_file():
-    if not os.path.exists(os.path.dirname(CONFIG_FILE)):
-        os.mkdir(os.path.dirname(CONFIG_FILE))
+    if not os.path.exists(os.path.dirname(CONFIGFILE)):
+        os.mkdir(os.path.dirname(CONFIGFILE))
+    if not os.path.exists(USERDATAPATH):
+        os.mkdir(USERDATAPATH)
 
 
 class PostDevelopCommand(develop):
