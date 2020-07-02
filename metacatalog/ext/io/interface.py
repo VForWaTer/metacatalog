@@ -3,6 +3,7 @@ from abc import abstractmethod
 from .importer import import_to_internal_table, import_to_local_csv_file
 from .reader import read_from_internal_table, read_from_local_csv_file
 from .deleter import delete_from_internal_table, delete_from_local_csv
+from .appender import append_to_internal_table, append_to_local_csv_file
 
 from metacatalog.util.exceptions import IOOperationNotFoundError
 from metacatalog.models import DataSource, Entry
@@ -46,10 +47,16 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
     )
     APPENDER = dict(
         interal={
-
+            'iarray': append_to_internal_table,
+            'timeseries': append_to_internal_table,
+            'idataframe': append_to_internal_table,
+            'time-dataframe': append_to_internal_table
         },
         csv={
-
+            'iarray': append_to_local_csv_file,
+            'timeseries': append_to_local_csv_file,
+            'idataframe': append_to_local_csv_file,
+            'time-dataframe': append_to_local_csv_file
         }
     )
     DELETER = dict(
