@@ -22,11 +22,8 @@ import numpy as np
 from metacatalog.db.base import Base
 from metacatalog import models
 from metacatalog import api
-from metacatalog.util.exceptions import (
-    MetadataMissingError,
-    NoImporterFoundWarning,
-    NoReaderFoundWarning
-)
+from metacatalog.util.exceptions import MetadataMissingError, IOOperationNotFoundError
+
 
 
 def get_embargo_end(datetime=None):
@@ -76,6 +73,8 @@ class Entry(Base):
         Note that it will be returned and stored as WKB. The output value will 
         be reworked in a future release
     geom : str
+        .. deprecated:: 0.1.11
+            The geom attribute will be reomved with version 0.2
         .. warning::
             The geom attribute is completely untested so far and might be 
             reworked or removed in a future release
@@ -153,7 +152,7 @@ class Entry(Base):
     title = Column(String(512), nullable=False)
     abstract = Column(String)
     external_id = Column(String)
-    location = Column(Geometry('POINT'), nullable=False)
+    location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=False)
     geom = Column(Geometry)
     version = Column(Integer, default=1, nullable=False)
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)
@@ -179,6 +178,10 @@ class Entry(Base):
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
     associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
     details = relationship("Detail", back_populates='entry')
+
+    # extensions
+    io_extension = None
+    io_interface = None
 
     def to_dict(self, deep=False) -> dict:
         """To dict
@@ -412,7 +415,7 @@ class Entry(Base):
                 session.rollback()
                 raise e
 
-    def create_datasource(self, path, type, commit=False, **args):
+    def create_datasource(self, path: str, type, datatype, commit=False, **args):
         """
         """
         # 
@@ -430,8 +433,11 @@ class Entry(Base):
         else:
             raise AttributeError('type has to be of type int or str')
         
+        # TODO need the API for DataTypes here!!
+        dtype = session.query(models.DataType).filter(models.DataType.name==datatype).one()
+        
         # build the datasource object
-        ds = models.DataSource(type=ds_type, path=path)
+        ds = models.DataSource(type=ds_type, datatype=dtype, path=path)
 
         # add the args
         ds.save_args_from_dict(args)
@@ -452,44 +458,149 @@ class Entry(Base):
 
     def get_data(self, **kwargs):
         """
+        .. versionchanged:: 0.1.12
+        
+        Read the data. This is only possible if a datasource is specified and 
+        any kind of IOExtension or IOInterface is activated. By default, 
+        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` 
+        is activated since version 0.1.12.
+
         """
         if self.datasource is None:
             raise MetadataMissingError('Entry need datasource information')
-            
-        try:
-            reader = self.datasource.get_source_reader()
-        except NoReaderFoundWarning as w:
-            print('[WARNING] %s' % str(w))
         
-        # get the args and update with kwargs
-        args = self.datasource.parse_args()
-        args.update(kwargs)
-
-        # use the reader and return
-        return reader(self, **args)
+        try:
+            # check if an io_extension is set
+            if self.io_extension is not None:
+                return self.io_extension.read(**kwargs)    
+            
+            # if no extension instance, maybe an interface class is set
+            elif self.io_interface is not None:
+                reader = self.io_interface.get_reader(self.datasource)
+                return reader(self, self.datasource, **kwargs)
+            else:
+                raise IOOperationNotFoundError("No IO interface activated. Run metacatalog.ext.extension('io', InterfaceClass) to register")
+        except IOOperationNotFoundError as e:
+            print('[ERROR]: Operation not possible.\n%s' % str(e))
+            return None
 
     def import_data(self, data, **kwargs):
         """
+        .. versionchanged:: 0.1.12
+        
+        Import data. This is only possible if a datasource is specified and 
+        any kind of IOExtension or IOInterface is activated. By default, 
+        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` 
+        is activated since version 0.1.12.
+
+        For the default interface, the datasource type and data type determine 
+        where the data will be stored and how the data has to look like. 
+        You can easily inherit from the 
+        :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to 
+        customize read and write behaviour. If you import i.e. a timeseries to 
+        the same database as metacatalog, you will need to prepared data to 
+        to only hold an datetime index and the data to be stored.
+
         """
         if self.datasource is None:
             raise MetadataMissingError('Entry need datasource information')
-
-        try:
-            importer = self.datasource.get_source_importer()
-        except NoImporterFoundWarning as w:
-            print('[WARNING] %s' % str(w))
-            return 
         
-        # get the args and update with kwargs
-        args = self.datasource.parse_args()
-        args.update(kwargs)
+        try:
+            # check if an io_extension is set
+            if self.io_extension is not None:
+                return self.io_extension.import_(data, **kwargs)    
+        
+            # if no extension instance, maybe an interface class is set
+            elif self.io_interface is not None:
+                importer = self.io_interface.get_importer(self.datasource)
+                return importer(self, self.datasource, data, **kwargs)
+            else:
+                raise IOOperationNotFoundError("No IO interface activated. Run metacatalog.ext.extension('io', InterfaceClass) to register")
+        except IOOperationNotFoundError as e:
+            print('[ERROR]: Operation not possible.\n%s' % str(e))
+            return None
+    
+    def append_data(self, data, **kwargs):
+        """
+        .. versionadded:: 0.1.12
 
-        # import the data 
-        importer(self, data, **args)
+        Append data. This is only possible if a datasource is specified and 
+        any kind of IOExtension or IOInterface is activated. By default, 
+        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` 
+        is activated since version 0.1.12.
 
+        For the default interface, the datasource type and data type determine 
+        where the data will be stored and how the data has to look like. 
+        You can easily inherit from the 
+        :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to 
+        customize read and write behaviour. If you import i.e. a timeseries to 
+        the same database as metacatalog, you will need to prepared data to 
+        to only hold an datetime index and the data to be stored.
+
+        """
+        if self.datasource is None:
+            raise MetadataMissingError('Entry need datasource information')
+        
+        try:
+            # check if an io_extension is set
+            if self.io_extension is not None:
+                return self.io_extension.append(data, **kwargs)    
+            
+            # if no extension instance, maybe an interface class is set
+            elif self.io_interface is not None:
+                appender = self.io_interface.get_appender(self.datasource)
+                return appender(self, self.datasource, data, **kwargs)
+            else:
+                raise IOOperationNotFoundError("No IO interface activated. Run metacatalog.ext.extension('io', InterfaceClass) to register")
+        except IOOperationNotFoundError as e:
+            print('[ERROR]: Operation not possible.\n%s' % str(e))
+            return None
+    
+    def delete_data(self, delete_source=False, **kwargs):
+        """
+        .. versionadded:: 0.1.12
+
+        Delete data. This is only possible if a datasource is specified and 
+        any kind of IOExtension or IOInterface is activated. By default, 
+        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` 
+        is activated since version 0.1.12.
+
+        For the default interface, the datasource type and data type determine 
+        where the data is stored and how the data will be delted. 
+        You can easily inherit from the 
+        :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to 
+        customize read and write behaviour. 
+
+        Parameters
+        ----------
+        delete_source : bool
+            If True, the DataSource will be deleted as well after the data 
+            has been deleted.
+
+        """
+        if self.datasource is None:
+            raise MetadataMissingError('Entry need datasource information')
+        
+        kwargs['delete_source'] = delete_source
+        try:
+            # check if an io_extension is set
+            if self.io_extension is not None:
+                return self.io_extension.delete(**kwargs)    
+            
+            # if no extension instance, maybe an interface class is set
+            elif self.io_interface is not None:
+                deleter = self.io_interface.get_deleter(self.datasource)
+                return deleter(self, self.datasource, **kwargs)
+            else:
+                raise IOOperationNotFoundError("No IO interface activated. Run metacatalog.ext.extension('io', InterfaceClass) to register")
+        except IOOperationNotFoundError as e:
+            print('[ERROR]: Operation not possible.\n%s' % str(e))
+            return None
 
     def add_data(self):
         """
+        .. deprecated:: 0.1.12
+            Will be removed with version 0.2
         """
         raise NotImplementedError
 
@@ -499,18 +610,3 @@ class Entry(Base):
             self.title[:20], 
             self.variable.name
             )
-
-
-#@event.listens_for(Entry, 'after_insert')
-#def insert_event_latest_version(mapper, connection, entry):
-#   """
-#    If entry does not reference a latest version it should 
-#    reference itself to mark itself being up to date.
-#    """
-#    if entry.latest_version_id is None:
-#        entry.latest_version_id = entry.id
-#    
-#    # make changes
-#    session = object_session(entry)
-#    session.add(entry)
-#    session.commit()

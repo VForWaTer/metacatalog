@@ -7,7 +7,7 @@ from metacatalog.models.entry import Entry
 from metacatalog.models.timeseries import TimeseriesPoint
 
 
-def import_to_internal_table(entry, data, datasource, mapping=None, **kwargs):
+def import_to_internal_table(entry, datasource, data, mapping=None, **kwargs):
     """Import to internal DB
 
     The given data is imported into the table 
@@ -40,6 +40,8 @@ def import_to_internal_table(entry, data, datasource, mapping=None, **kwargs):
 
     if datasource.path is None:
         tablename = 'data_entry_%d' % entry.id
+        datasource.path = tablename
+        __update_datasource(datasource)
     else:
         tablename = datasource.path
 
@@ -55,7 +57,7 @@ def import_to_internal_table(entry, data, datasource, mapping=None, **kwargs):
     imp.to_sql(tablename, session.bind, index=None, if_exists=if_exists)
 
 
-def import_to_local_csv_file(entry, data, datasource, **kwargs):
+def import_to_local_csv_file(entry, datasource, data, **kwargs):
     """Import to CSV
 
     Saves timeseries data to a local CSV file.
@@ -75,13 +77,7 @@ def import_to_local_csv_file(entry, data, datasource, **kwargs):
         datasource.path = path
         
         # save new path
-        try:
-            session = object_session(datasource)
-            session.add(datasource)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise e
+        __update_datasource(datasource)
 
     # reset the index
     imp = data.reset_index(level=0, inplace=False)
@@ -105,3 +101,15 @@ def import_to_local_csv_file(entry, data, datasource, **kwargs):
     
     else:
         raise ValueError("if_exists has to be one of ['fail', 'append', 'replace']")
+
+
+def __update_datasource(datasource):
+    try:
+        session = object_session(datasource)
+        session.add(datasource)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+
+    return datasource

@@ -1,29 +1,25 @@
-==============
-I/O Extensions
-==============
+==========
+Extensions
+==========
 
 Overview
 ========
 
-.. automodule:: metacatalog.util.ext
+.. automodule:: metacatalog.ext
+    :members: extension, activate_extension
 
 
-Functions
-=========
+Builtin Extensions
+==================
 
-register_reader
----------------
-.. autofunction:: metacatalog.util.ext.register_reader
+I/O Extension
+-------------
 
-register_importer
------------------
-.. autofunction:: metacatalog.util.ext.register_importer
+.. automodule:: metacatalog.ext.io
+    :members: IOExtension
 
-get_reader
-----------
+Custom Extensions
+=================
 
-.. autofunction:: metacatalog.util.ext.get_reader
-
-get_importer
-
-.. autofunction:: metacatalog.util.ext.get_importer
+.. automodule:: metacatalog.ext.base
+    :members: MetacatalogExtensionInterface

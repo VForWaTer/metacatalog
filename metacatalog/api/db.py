@@ -12,17 +12,19 @@ from metacatalog import BASEPATH
 from metacatalog.db.base import Base
 from metacatalog.db.session import get_session
 from metacatalog import DATAPATH
-from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole, EntryGroupType, Thesaurus
+#from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole, EntryGroupType, Thesaurus
+from metacatalog import models
 
 IMPORTABLE_TABLES = dict(
-    thesaurus=Thesaurus,
-    keywords=Keyword,
-    datasource_types=DataSourceType,
-    units=Unit,
-    variables=Variable,
-    licenses=License,
-    person_roles=PersonRole,
-    entrygroup_types=EntryGroupType
+    thesaurus=models.Thesaurus,
+    keywords=models.Keyword,
+    datasource_types=models.DataSourceType,
+    datatypes=models.DataType,
+    units=models.Unit,
+    variables=models.Variable,
+    licenses=models.License,
+    person_roles=models.PersonRole,
+    entrygroup_types=models.EntryGroupType
 )
 
 def connect_database(*args, **kwargs):
