@@ -1,7 +1,4 @@
 """
-Writing new Extensions
-----------------------
-
 The basic mechanism to add new extensions to metacatalog is to 
 create an Interface class and call the adding method of metacatalog.
 
