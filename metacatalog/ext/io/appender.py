@@ -20,4 +20,4 @@ def append_to_internal_table(entry: Entry, datasource: DataSource, data, **kwarg
 def append_to_local_csv_file(entry: Entry, datasource: DataSource, data, **kwargs):
     # force append
     kwargs['if_exists'] = 'append'
-    return import_to_local_csv_file(entry=entry, datasource=DataSource, data, **kwargs)
+    return import_to_local_csv_file(entry=entry, datasource=DataSource, data=data, **kwargs)

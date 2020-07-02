@@ -415,7 +415,7 @@ class Entry(Base):
                 session.rollback()
                 raise e
 
-    def create_datasource(self, path, type, commit=False, **args):
+    def create_datasource(self, path: str, type, datatype, commit=False, **args):
         """
         """
         # 
@@ -433,8 +433,11 @@ class Entry(Base):
         else:
             raise AttributeError('type has to be of type int or str')
         
+        # TODO need the API for DataTypes here!!
+        dtype = session.query(models.DataType).filter(models.DataType.name==datatype).one()
+        
         # build the datasource object
-        ds = models.DataSource(type=ds_type, path=path)
+        ds = models.DataSource(type=ds_type, datatype=dtype, path=path)
 
         # add the args
         ds.save_args_from_dict(args)
@@ -541,7 +544,7 @@ class Entry(Base):
         try:
             # check if an io_extension is set
             if self.io_extension is not None:
-                return self.io_extension.append(**kwargs)    
+                return self.io_extension.append(data, **kwargs)    
             
             # if no extension instance, maybe an interface class is set
             elif self.io_interface is not None:

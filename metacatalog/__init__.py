@@ -15,3 +15,4 @@ from metacatalog import util
 # ext has always to be the last import
 from metacatalog import ext
 from metacatalog.ext import extension
+ext.__load_extensions()

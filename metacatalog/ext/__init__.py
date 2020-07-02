@@ -98,6 +98,3 @@ def activate_extension(name: str, module_name: str, interface_class_name: str):
     
     # now load
     print('Extension is activated, you need to reload metacatalog be be effective.')
-
-# run __load_extensions whenever metacatalog is invoked
-__load_extensions()

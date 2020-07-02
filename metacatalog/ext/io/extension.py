@@ -1,5 +1,9 @@
-from .interface import IOExtensionInterface
+from copy import deepcopy
 
+from sqlalchemy.orm import reconstructor
+from sqlalchemy import event
+
+from .interface import IOExtensionInterface
 from metacatalog.models import Entry
 
 
@@ -19,25 +23,21 @@ class IOExtension(IOExtensionInterface):
         """
         # set the Extension interface
         Entry.io_interface = IOExtension
-
-        # overwrite the Entry.__init__
-        entry_init = Entry.__init__
-
-        # define the new init method
-        def init(self, *args, **kwargs):
-            entry_init(self, *args, **kwargs)
-            # init an Instance of IOExtension bound to Entry
-            self.io_extension = IOExtension(self)
-        Entry.__init__ = init
+        
+        # define an event to listen for Entry load events
+        @event.listens_for(Entry, 'load')
+        def init_io_ext(instance, context):
+            instance.foo = 'bar'
+            instance.io_extension = instance.io_interface(instance)
 
     def read(self, **kwargs):
-        super(IOExtension, self).read(**kwargs)
+        return super(IOExtension, self).read(**kwargs)
     
     def import_(self, data, **kwargs):
-        super(IOExtension, self).import_(data, **kwargs)
+        return super(IOExtension, self).import_(data, **kwargs)
 
     def append(self, data, **kwargs):
-        super(IOExtension, self).append(data, **kwargs)
+        return super(IOExtension, self).append(data, **kwargs)
     
     def delete(self, **kwargs):
-        super(IOExtension, self).delete(**kwargs)
+        return super(IOExtension, self).delete(**kwargs)

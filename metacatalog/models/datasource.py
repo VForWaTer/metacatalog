@@ -11,6 +11,7 @@ from geoalchemy2.shape import to_shape, from_shape
 import pandas as pd
 
 from metacatalog.db.base import Base
+from metacatalog.ext import extension
 
 
 class DataSourceType(Base):
@@ -617,7 +618,8 @@ class DataSource(Base):
         that will import the data into the correct source.
 
         """
-        func = get_importer(self.type.name)
+        IOExt = extension('io')
+        func = IOExt.get_importer(self)
 
         def injected_func(entry, timeseries, **kwargs):
             return func(entry, timeseries, self, **kwargs)
@@ -631,7 +633,8 @@ class DataSource(Base):
         .. deprecated:: 0.1.12
             Will be removed with version 0.2
         """
-        func = get_reader(self.type.name)
+        IOExt = extension('io')
+        func = IOExt.get_reader(self)
 
         def injected_func(entry, **kwargs):
             return func(entry, self, **kwargs)

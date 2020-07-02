@@ -6,7 +6,7 @@ from .deleter import delete_from_internal_table, delete_from_local_csv
 from .appender import append_to_internal_table, append_to_local_csv_file
 
 from metacatalog.util.exceptions import IOOperationNotFoundError
-from metacatalog.models import DataSource, Entry
+from metacatalog.models import DataSource, Entry 
 from metacatalog.ext import MetacatalogExtensionInterface
 
 
@@ -46,7 +46,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         }
     )
     APPENDER = dict(
-        interal={
+        internal={
             'iarray': append_to_internal_table,
             'timeseries': append_to_internal_table,
             'idataframe': append_to_internal_table,
@@ -77,12 +77,12 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
     def init_new_entry(self, entry: Entry):
         # Entry and Datasource instance
         self.entry = entry
-        self.datasource = entry.datasource
-        self.datatype = self.datasource.datatype
-
-        # SourceType and DataType names
-        self.sourcetype_name = self.datasource.type.name
-        self.datatype_name = self.datatype.name
+#        self.datasource = entry.datasource
+#        self.datatype = self.datasource.datatype
+#
+#        # SourceType and DataType names
+#        self.sourcetype_name = self.datasource.type.name
+#        self.datatype_name = self.datatype.name
 
     @abstractmethod
     def read(self, **kwargs):
@@ -99,14 +99,14 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         
         """
         # get reader
-        reader = self.get_reader(self.datasource)
+        reader = self.get_reader(self.entry.datasource)
         
         # build arguments
-        args = self.datasource.load_args()
+        args = self.entry.datasource.load_args()
         args.update(kwargs)
         
         # read the data
-        data = reader(self.entry, self.datasource, **kwargs)
+        data = reader(self.entry, self.entry.datasource, **kwargs)
         return self.after_read(data)
         
     def after_read(self, data):
@@ -127,14 +127,14 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         
         """
         # get importer
-        importer = self.get_importer(self.datasource)
+        importer = self.get_importer(self.entry.datasource)
         
         # build arguments
-        args = self.datasource.load_args()
+        args = self.entry.datasource.load_args()
         args.update(kwargs)
 
         # import the data
-        importer(self.entry, self.datasource, data, **kwargs)
+        importer(self.entry, self.entry.datasource, data, **kwargs)
         return self.after_import()
 
     def after_import(self):
@@ -155,14 +155,14 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
 
         """
         # get appender
-        appender = self.get_appender(self.datasource)
+        appender = self.get_appender(self.entry.datasource)
 
         # build arguments
-        args = self.datasource.load_args()
+        args = self.entry.datasource.load_args()
         args.update(kwargs)
 
         # append the data
-        appender(self.entry, self.datasource, data, **kwargs)
+        appender(self.entry, self.entry.datasource, data, **kwargs)
         return self.after_append()
         
     def after_append(self):
@@ -183,14 +183,14 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
 
         """
         # get deleter
-        deleter = self.get_deleter(self.datasource)
+        deleter = self.get_deleter(self.entry.datasource)
 
         # build arguments
-        args = self.datasource.load_args()
+        args = self.entry.datasource.load_args()
         args.update(kwargs)
         
         # delte the datasource
-        deleter(self.entry, self.datasource, **kwargs)
+        deleter(self.entry, self.entry.datasource, **kwargs)
         return self.after_delete()
 
     def after_delete(self):
@@ -224,13 +224,13 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
     @classmethod
     def _get_types(cls, operation: str, name: str) -> dict:
         try:
-            D = getattr(cls, op)
+            D = getattr(cls, operation)
         except AttributeError:
             raise AttributeError("'%s' is not a valid I/O operation" % operation.upper())
         
         try: 
             return D[name.lower()]
-        except AttributeError:
+        except KeyError:
             raise AttributeError("The type '%s' is not registered for %s I/O operations" % (name.lower(), operation.upper()))
 
     @classmethod
