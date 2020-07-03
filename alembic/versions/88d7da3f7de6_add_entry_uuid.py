@@ -27,17 +27,14 @@ def upgrade():
     session = Session(bind=op.get_bind())
     
     # load all entries
-    for e in api.find_entry(session):
-        # set UUID
-        e.uuid = str(uuid4())
-        session.add(e)
-        session.commit()
-
+    for proxy in session.execute('SELECT id from entries'):
+        id_ = proxy[0]
+        session.execute("UPDATE entries SET uuid='%s' WHERE id=%d" % (str(uuid4()), id_))
+    
     # load all entrygroups
-    for eg in api.find_group(session):
-        eg.uuid = str(uuid4())
-        session.add(eg)
-        session.commit()
+    for proxy in session.execute('SELECT id from entrygroups'):
+        id_ = proxy[0]
+        session.execute("UPDATE entrygroups SET uuid='%s' WHERE id=%d" % (str(uuid4()), id_))
 
     # set not null
     op.alter_column('entries', 'uuid', nullable=False)

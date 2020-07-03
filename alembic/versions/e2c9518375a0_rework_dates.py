@@ -17,6 +17,8 @@ down_revision = '40607fb2d4e6'
 branch_labels = None
 depends_on = None
 
+select_sql = """select e.id as entry_id, d.id as datasource_id from entries e
+join datasources d on d.id=e.datasource_id"""
 sql ="""UPDATE entrygroups SET "{column}"=(now() at time zone 'utc')::timestamp without time zone"""
 
 
@@ -30,12 +32,14 @@ def upgrade():
 
     # set creation from Entry.creation
     session = Session(op.get_bind())
-    for e in api.find_entry(session):
-        if e.datasource is not None:
+    for proxy in session.execute(select_sql):
+        entry_id, datasource_id = proxy
+#    for e in api.find_entry(session):
+        if datasource_id is not None:
             q = "UPDATE datasources SET creation='{c}' where id={id}"
-            d = session.execute('select creation from entries where id=%d' % e.id).scalar()
+            d = session.execute('select creation from entries where id=%d' % entry_id).scalar()
             if d is not None:
-                op.execute(q.format(c=d, id=e.datasource.id))
+                op.execute(q.format(c=d, id=datasource_id))
     
     # drop the columns in Entry
     op.drop_column('entries', 'creation')
@@ -48,12 +52,15 @@ def downgrade():
 
     # copy the creation back to Entry
     session = Session(op.get_bind())
-    for e in api.find_entry(session):
-        if e.datasource is not None:
+
+    for proxy in session.execute(select_sql):
+        entry_id, datasource_id = proxy
+#    for e in api.find_entry(session):
+        if datasource_id is not None:
             q = "UPDATE entries SET creation='{c}' where id={id}"
-            d = session.execute('select creation from datasources where id=%d' % e.datasource.id).scalar()
+            d = session.execute('select creation from datasources where id=%d' % datasource_id).scalar()
             if d is not None:
-                op.execute(q.format(c=d, id=e.id))
+                op.execute(q.format(c=d, id=entry_id))
 
     # drop the date columns on datasource
     op.drop_column('datasources', 'creation')
