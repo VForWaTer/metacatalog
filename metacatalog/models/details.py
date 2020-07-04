@@ -91,4 +91,7 @@ class Detail(Base):
         return d
 
     def __str__(self):
-        return "%s = %s" % (self.key, self.value) 
+        if self.thesaurus is not None:
+            return '%s = %s <%s>' % (self.key, self.value, self.thesaurus.name)
+        else:
+            return "%s = %s" % (self.key, self.value) 
