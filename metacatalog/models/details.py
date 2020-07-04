@@ -20,6 +20,11 @@ class Detail(Base):
     text-based tables. A HTML or markdown table can e.g. be appended 
     to the `Entry.abstract` on export.
 
+    Since version 0.1.13, it is possible to link an existing 
+    :class:`Thesaurus <metacatalog.models.Thesaurus>` to the detail.
+    This makes the export to ISO 19115 in princile possible as an 
+    ``MD_MetadataExtensionInformation`` object.
+
     Attributes
     ----------
     id : int
@@ -42,11 +47,16 @@ class Detail(Base):
         :class:`EntryGroup <metacatalog.models.EntryGroup>`. Optional,
         can be omitted, if not applicable.
     thesaurus : metacatalog.models.Thesaurus
-        If the detail :attr:`key` is described in a thesaurus or
+        .. versionadded:: 0.1.13
+        Optional. If the detail :attr:`key` is described in a thesaurus or
         controlled dictionary list, you can link the thesaurus 
         to the detail. Details with thesaurus information are 
         in principle exportable to ISO 19115 using an 
         ``MD_MetadataExtensionInformation``.
+    thesaurus_id : int
+        .. versionadded:: 0.1.13
+        Foreign key of the linked 
+        :class:`Thesaurus <metacatalog.models.Thesaurus>`. 
 
     """
     __tablename__ = 'details'
@@ -82,7 +92,7 @@ class Detail(Base):
         if self.description is not None:
             d['description'] = self.description
 
-        if self.deep:
+        if deep:
             d['entry'] = self.entry.to_dict(deep=False)
         else:
             d['entry_id'] = self.entry.id
