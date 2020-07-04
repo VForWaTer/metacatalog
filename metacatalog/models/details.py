@@ -41,6 +41,12 @@ class Detail(Base):
         :class:`Entry <metacatalog.models.Entry>` or 
         :class:`EntryGroup <metacatalog.models.EntryGroup>`. Optional,
         can be omitted, if not applicable.
+    thesaurus : metacatalog.models.Thesaurus
+        If the detail :attr:`key` is described in a thesaurus or
+        controlled dictionary list, you can link the thesaurus 
+        to the detail. Details with thesaurus information are 
+        in principle exportable to ISO 19115 using an 
+        ``MD_MetadataExtensionInformation``.
 
     """
     __tablename__ = 'details'
@@ -55,23 +61,34 @@ class Detail(Base):
     stem = Column(String(20), nullable=False)
     value = Column(String, nullable=False)
     description = Column(String, nullable=True)
+    thesaurus_id = Column(Integer, ForeignKey('thesaurus.id'))
 
     # relationships
     entry = relationship("Entry", back_populates='details')
+    thesaurus = relationship("Thesaurus")
 
-    def to_dict(self):
+    def to_dict(self, deep=False):
         """
         Return the detail as JSON enabled dict.
 
         """
-        return dict(
+        d = dict(
             id=self.id,
-            entry_id=self.entry_id,
             key=self.key,
             stem=self.stem,
             value=self.value,
-            description=self.description if self.description is not None else ''
         )
+
+        if self.description is not None:
+            d['description'] = self.description
+
+        if self.deep:
+            d['entry'] = self.entry.to_dict(deep=False)
+        else:
+            d['entry_id'] = self.entry.id
+            d['entry_uuid'] = self.entry.uuid
+
+        return d
 
     def __str__(self):
         return "%s = %s" % (self.key, self.value) 
