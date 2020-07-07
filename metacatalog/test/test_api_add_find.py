@@ -182,6 +182,24 @@ def check_project_group(session):
 
     return True
 
+
+def check_get_by_uuid(session):
+    """
+    Check if the keyword of UUID 5f2ec7b9-3e8c-4d12-bba6-0f84c08729e0
+    can be found by UUID and is the correct one.
+
+    """
+    uuid = '5f2ec7b9-3e8c-4d12-bba6-0f84c08729e0'
+
+    keyword = api.get_uuid(session, uuid=uuid)
+
+    assert keyword.id == 5890
+    assert keyword.value == 'EXTINCTION COEFFICIENTS'
+
+    return True
+
+
+
 @pytest.mark.depends(on=['db_init'], name='add_find')
 def test_add_and_find():
     """
@@ -201,3 +219,4 @@ def test_add_and_find():
     assert check_has_uuid(session)
     assert add_project_group(session)
     assert check_project_group(session)
+    assert check_get_by_uuid(session)
