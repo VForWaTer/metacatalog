@@ -20,6 +20,11 @@ class Detail(Base):
     text-based tables. A HTML or markdown table can e.g. be appended 
     to the `Entry.abstract` on export.
 
+    Since version 0.1.13, it is possible to link an existing 
+    :class:`Thesaurus <metacatalog.models.Thesaurus>` to the detail.
+    This makes the export to ISO 19115 in princile possible as an 
+    ``MD_MetadataExtensionInformation`` object.
+
     Attributes
     ----------
     id : int
@@ -41,6 +46,17 @@ class Detail(Base):
         :class:`Entry <metacatalog.models.Entry>` or 
         :class:`EntryGroup <metacatalog.models.EntryGroup>`. Optional,
         can be omitted, if not applicable.
+    thesaurus : metacatalog.models.Thesaurus
+        .. versionadded:: 0.1.13
+        Optional. If the detail :attr:`key` is described in a thesaurus or
+        controlled dictionary list, you can link the thesaurus 
+        to the detail. Details with thesaurus information are 
+        in principle exportable to ISO 19115 using an 
+        ``MD_MetadataExtensionInformation``.
+    thesaurus_id : int
+        .. versionadded:: 0.1.13
+        Foreign key of the linked 
+        :class:`Thesaurus <metacatalog.models.Thesaurus>`. 
 
     """
     __tablename__ = 'details'
@@ -55,23 +71,37 @@ class Detail(Base):
     stem = Column(String(20), nullable=False)
     value = Column(String, nullable=False)
     description = Column(String, nullable=True)
+    thesaurus_id = Column(Integer, ForeignKey('thesaurus.id'))
 
     # relationships
     entry = relationship("Entry", back_populates='details')
+    thesaurus = relationship("Thesaurus")
 
-    def to_dict(self):
+    def to_dict(self, deep=False):
         """
         Return the detail as JSON enabled dict.
 
         """
-        return dict(
+        d = dict(
             id=self.id,
-            entry_id=self.entry_id,
             key=self.key,
             stem=self.stem,
             value=self.value,
-            description=self.description if self.description is not None else ''
         )
 
+        if self.description is not None:
+            d['description'] = self.description
+
+        if deep:
+            d['entry'] = self.entry.to_dict(deep=False)
+        else:
+            d['entry_id'] = self.entry.id
+            d['entry_uuid'] = self.entry.uuid
+
+        return d
+
     def __str__(self):
-        return "%s = %s" % (self.key, self.value) 
+        if self.thesaurus is not None:
+            return '%s = %s <%s>' % (self.key, self.value, self.thesaurus.name)
+        else:
+            return "%s = %s" % (self.key, self.value) 
