@@ -1,4 +1,7 @@
 import pytest
+from uuid import uuid4
+
+from sqlalchemy.orm.exc import NoResultFound
 
 from metacatalog import api, models
 from ._util import connect, PATH, read_to_df
@@ -9,8 +12,8 @@ Marie,Curie,"Institute of awesome scientists","Insitute of awesome scientists - 
 Homer,Simpson,"University of Non-existent people",,
 """
 
-ENTRIES = """title,author,x,y,variable,abstract,license,external_id
-"Dummy 1",Reeves,13,44.5,5,"Lorem ipsum ..",5,abc
+ENTRIES = """title,author,x,y,variable,abstract,license,external_id,uuid
+"Dummy 1",Reeves,13,44.5,5,"Lorem ipsum ..",5,abc,4722782d-6bcb-463f-a1eb-6cebe490e9c4
 "Dummy 2",Curie,12,41.8,6,"Another dummy entry about abosulte nothing",4,foobar
 "Dummy 3",Reeves,10.5,44.5,6,"Another dummy entry by Keanu reeves",4,foobar2
 """
@@ -189,12 +192,22 @@ def check_get_by_uuid(session):
     can be found by UUID and is the correct one.
 
     """
-    uuid = '5f2ec7b9-3e8c-4d12-bba6-0f84c08729e0'
+    kw_uuid = '5f2ec7b9-3e8c-4d12-bba6-0f84c08729e0'
+    e_uuid = '4722782d-6bcb-463f-a1eb-6cebe490e9c4'
 
-    keyword = api.get_uuid(session, uuid=uuid)
+    keyword = api.get_uuid(session, uuid=kw_uuid)
+    entry = api.get_uuid(session, uuid=e_uuid)
 
+    # correct keyword found
     assert keyword.id == 5890
     assert keyword.value == 'EXTINCTION COEFFICIENTS'
+
+    # correct entry found
+    assert entry.abstract == "Lorem ipsum .."
+
+    # a newly created UUID should not be found
+    with pytest.raises(NoResultFound):
+        api.get_uuid(session, uuid=str(uuid4()))
 
     return True
 
