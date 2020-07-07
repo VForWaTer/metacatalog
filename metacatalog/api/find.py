@@ -64,7 +64,7 @@ def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=Fa
             return column_instance==compare_value
 
 
-def find_keyword(session, id=None, value=None, thesaurus_name=None, return_iterator=False):
+def find_keyword(session, id=None, uuid=None, value=None, thesaurus_name=None, return_iterator=False):
     """Find keyword
 
     Return one or many keyword entries from the database on 
@@ -77,6 +77,10 @@ def find_keyword(session, id=None, value=None, thesaurus_name=None, return_itera
     id : integer
         Database unique ID of the requested record. Will 
         return only one record.
+    uuid : str
+        .. versionadded:: 0.1.13
+        Find by version 4 UUID. If uuid is given, all other options
+        will be ignored. 
     value : str
         Value of the requested keyword(s). Multiple record
         return is possible.
@@ -96,6 +100,14 @@ def find_keyword(session, id=None, value=None, thesaurus_name=None, return_itera
     """
     # base query
     query = session.query(models.Keyword)
+
+    # handle uuid first
+    if uuid is not None:
+        query = query.filter(models.Keyword.uuid==uuid)
+        if return_iterator:
+            return query
+        else:
+            return query.first()
 
     # add needed filter
     if id is not None:
@@ -502,7 +514,7 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, or
         return query.all()
 
 
-def find_group_type(session, id=None, name=None, return_iterator=False):
+def find_group_type(session, id=None, uuid=None, name=None, return_iterator=False):
     """Find entry group types
 
     Find a group type on exact matches. The group types
@@ -546,7 +558,7 @@ def find_group_type(session, id=None, name=None, return_iterator=False):
         return query.all()
 
 
-def find_group(session, id=None, title=None, type=None, return_iterator=False):
+def find_group(session, id=None, uuid=None, title=None, type=None, return_iterator=False):
     """Find group
 
     Find a group of entries on exact matches. Groups can be 
@@ -563,6 +575,10 @@ def find_group(session, id=None, title=None, type=None, return_iterator=False):
     id : integer
         Database unique ID of the requested record. Will 
         return only one record.
+    uuid : str
+        .. versionadded:: 0.1.13
+        Find by version 4 UUID. If uuid is given, all other options
+        will be ignored. 
     title : str
         Title attribute of the group.
     type : int, str
@@ -580,6 +596,15 @@ def find_group(session, id=None, title=None, type=None, return_iterator=False):
     # base query
     query = session.query(models.EntryGroup)
 
+    # handle uuid first
+    if uuid is not None:
+        query = query.filter(models.EntryGroup.uuid==uuid)
+        if return_iterator:
+            return query
+        else:
+            return query.first()
+
+    # now the remaining parameters
     if id is not None:
         query = query.filter(models.EntryGroup.id==id)
     if title is not None:
@@ -601,7 +626,7 @@ def find_group(session, id=None, title=None, type=None, return_iterator=False):
         return query.all()
 
 
-def find_entry(session, id=None, title=None, abstract=None, external_id=None, version=None, return_iterator=False):
+def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_id=None, version=None, return_iterator=False):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be 
@@ -620,6 +645,10 @@ def find_entry(session, id=None, title=None, abstract=None, external_id=None, ve
     id : integer
         Database unique ID of the requested record. Will 
         return only one record.
+    uuid : str
+        .. versionadded:: 0.1.13
+        Find by version 4 UUID. If uuid is given, all other options
+        will be ignored. 
     title : str
         Title attribute of the Entry.
     abstract : str
@@ -656,6 +685,15 @@ def find_entry(session, id=None, title=None, abstract=None, external_id=None, ve
     # base query
     query = session.query(models.Entry).filter(models.Entry.is_partial == false())
 
+    # handle uuid first
+    if uuid is not None:
+        query = query.filter(models.Entry.uuid==uuid)
+        if return_iterator:
+            return query
+        else:
+            return query.first()
+    
+    # now the remaining parameters
     if id is not None:
         query = query.filter(models.Entry.id==id)
     if title is not None:

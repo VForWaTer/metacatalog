@@ -68,3 +68,4 @@ from .add import (
     add_keywords_to_entries,
     add_persons_to_entries
 )
+from .catalog import get_uuid
