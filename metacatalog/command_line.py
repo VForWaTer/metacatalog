@@ -13,7 +13,8 @@ from metacatalog.cmd import (
     init,
     find,
     show,
-    add
+    add,
+    get_uuid
 )
 
 def main():
@@ -75,6 +76,11 @@ def main():
     add_parser.add_argument('--txt', type=unescaped, help="Data Origin Flag. Pass a text filename or content containing whitespace separated key=value pairs where key has to match the ADD API keywords. If used directly remember to quote accordingly.")
     add_parser.add_argument('--json', type=unescaped, help="Data Origin Flag. Pass a JSON filename or content containing the data. Must contain a list of objects matchin the ADD API keywords.")
     add_parser.set_defaults(func=add)
+
+    # uuid parser
+    uuid_parser = subparsers.add_parser('uuid', parents=[default_options], add_help=True, help="Find a database object by UUID.")
+    uuid_parser.add_argument('uuid', type=str, help="Version 4 UUID of the requested resource")
+    uuid_parser.set_defaults(func=get_uuid)
 
     # parse the arguments
     args = parser.parse_args()

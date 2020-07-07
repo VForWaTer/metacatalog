@@ -6,3 +6,4 @@ from .init import init
 from .find import find
 from .show import show
 from .add import add
+from .catalog import get_uuid
