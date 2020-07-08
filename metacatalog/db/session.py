@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, object_session
 
 from metacatalog import models
-from .migration import check_database_version
+from metacatalog.db.migration import check_database_version
 
 CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
 
