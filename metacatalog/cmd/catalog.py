@@ -1,3 +1,4 @@
+import json
 from sqlalchemy.orm.exc import NoResultFound
 
 from ._util import connect
@@ -22,5 +23,8 @@ def get_uuid(args):
         exit(0)
 
     # print
-    print(entity)
+    if args.json:
+        print(json.dumps(entity.to_dict(deep=False), indent=4))
+    else:
+        print(entity.full_path)
 

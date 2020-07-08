@@ -80,6 +80,7 @@ def main():
     # uuid parser
     uuid_parser = subparsers.add_parser('uuid', parents=[default_options], add_help=True, help="Find a database object by UUID.")
     uuid_parser.add_argument('uuid', type=str, help="Version 4 UUID of the requested resource")
+    uuid_parser.add_argument('--json', action='store_true', help='If set, the object will be returned as JSON')
     uuid_parser.set_defaults(func=get_uuid)
 
     # parse the arguments
