@@ -108,6 +108,16 @@ class Entry(Base):
             be done on adding partial Entry records, or by checking the database
     comment : str
         Arbitrary free-text comment to the Entry
+    citation : str
+        .. versionadded:: 0.1.13
+        Citation informatio for this Entry. Note, that metacatalog does not 
+        assign DOIs and thus a citation is only useful if the associated 
+        data has a DOI and the bibliographic information applies to the Entry 
+        as well. 
+        .. note::
+            Metacatalog does not manage bibliography. Thus it is highly 
+            recommended to use thrid party software for management and only 
+            export the reference to the resource in a common citation style.
     license : metacatalog.models.License
         Data License associated to the data and the metadata. You can pass 
         the `License <metacatalog.models.License>`_ itself, or use the 
@@ -158,6 +168,7 @@ class Entry(Base):
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)
     is_partial = Column(Boolean, default=False, nullable=False)
     comment = Column(String, nullable=True)
+    citation = Column(String(2048), nullable=True)
     
     license_id = Column(Integer, ForeignKey('licenses.id'))
     variable_id = Column(Integer, ForeignKey('variables.id'), nullable=False)
@@ -219,6 +230,7 @@ class Entry(Base):
             keywords=self.plain_keywords_dict()
         )
 
+        # optional relations
         if self.license is not None:
             d['license'] = self.license.to_dict(deep=False)
 
@@ -226,7 +238,7 @@ class Entry(Base):
             d['details'] = self.details_dict(full=True)
         
         # set optional attributes
-        for attr in ('abstract', 'external_id','comment'):
+        for attr in ('abstract', 'external_id','comment', 'citation'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr)
 
