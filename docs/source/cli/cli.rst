@@ -14,6 +14,7 @@ CLI
     cli_add
     cli_find
     cli_show
+    cli_uuid
 
 Command Line Interface
 ======================

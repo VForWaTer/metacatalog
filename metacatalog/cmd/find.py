@@ -38,6 +38,8 @@ def find(args):
         results = api.find_group(session, **kwargs)
     elif entity.lower() == 'entry':
         results = api.find_entry(session, **kwargs)
+    elif entity.lower() == 'thesaurus':
+        results = api.find_thesaurus(session, **kwargs)
     else:
         print('Oops. Finding %s is not supported.' % entity)
         exit(0)

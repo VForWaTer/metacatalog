@@ -1,4 +1,7 @@
 import pytest
+from uuid import uuid4
+
+from sqlalchemy.orm.exc import NoResultFound
 
 from metacatalog import api, models
 from ._util import connect, PATH, read_to_df
@@ -9,10 +12,10 @@ Marie,Curie,"Institute of awesome scientists","Insitute of awesome scientists - 
 Homer,Simpson,"University of Non-existent people",,
 """
 
-ENTRIES = """title,author,x,y,variable,abstract,license,external_id
-"Dummy 1",Reeves,13,44.5,5,"Lorem ipsum ..",5,abc
-"Dummy 2",Curie,12,41.8,6,"Another dummy entry about abosulte nothing",4,foobar
-"Dummy 3",Reeves,10.5,44.5,6,"Another dummy entry by Keanu reeves",4,foobar2
+ENTRIES = """title,author,x,y,variable,abstract,license,external_id,uuid
+"Dummy 1",Reeves,13,44.5,5,"Lorem ipsum ..",5,abc,4722782d-6bcb-463f-a1eb-6cebe490e9c4
+"Dummy 2",Curie,12,41.8,6,"Another dummy entry about abosulte nothing",4,foobar,
+"Dummy 3",Reeves,10.5,44.5,6,"Another dummy entry by Keanu reeves",4,foobar2,
 """
 
 def add_person(session):
@@ -41,6 +44,8 @@ def add_entries(session):
     """
     df = read_to_df(ENTRIES)
     df['location'] = [(t[0], t[1],) for t in df[['x', 'y']].values]
+    # get rid of the uuids
+    df = df.where(df.notnull(), None)
     df.drop(['x', 'y'], axis=1, inplace=True)
     entries_dict_list = df.to_dict(orient='records')
 
@@ -182,6 +187,34 @@ def check_project_group(session):
 
     return True
 
+
+def check_get_by_uuid(session):
+    """
+    Check if the keyword of UUID 5f2ec7b9-3e8c-4d12-bba6-0f84c08729e0
+    can be found by UUID and is the correct one.
+
+    """
+    kw_uuid = '5f2ec7b9-3e8c-4d12-bba6-0f84c08729e0'
+    e_uuid = '4722782d-6bcb-463f-a1eb-6cebe490e9c4'
+
+    keyword = api.get_uuid(session, uuid=kw_uuid)
+    entry = api.get_uuid(session, uuid=e_uuid)
+
+    # correct keyword found
+    assert keyword.id == 5890
+    assert keyword.value == 'EXTINCTION COEFFICIENTS'
+
+    # correct entry found
+    assert entry.abstract == "Lorem ipsum .."
+
+    # a newly created UUID should not be found
+    with pytest.raises(NoResultFound):
+        api.get_uuid(session, uuid=str(uuid4()))
+
+    return True
+
+
+
 @pytest.mark.depends(on=['db_init'], name='add_find')
 def test_add_and_find():
     """
@@ -201,3 +234,4 @@ def test_add_and_find():
     assert check_has_uuid(session)
     assert add_project_group(session)
     assert check_project_group(session)
+    assert check_get_by_uuid(session)

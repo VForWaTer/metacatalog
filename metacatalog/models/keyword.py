@@ -257,7 +257,7 @@ class Keyword(Base):
         return d
 
     def __str__(self):
-        return "%s <ID=%d>" % (self.path, self.id)
+        return "%s <ID=%d>" % (self.full_path, self.id)
 
 
 class KeywordAssociation(Base):
