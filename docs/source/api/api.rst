@@ -24,6 +24,7 @@ API
     api_find_thesaurus
     api_show_attributes
     api_show_records
+    api_get_uuid
 
 Metacatalog API Overview
 ========================
