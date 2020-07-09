@@ -112,8 +112,9 @@ def _set_migration_head(session):
 # TODO turn this into an actual logging module
 def _log(session, message, code=models.LogCodes.info):
     try:
-        log = models.log(code=code, description=message, migration_head=migration.get_remote_head_id(session))
+        log = models.Log(code=code, description=message, migration_head=migration.get_remote_head_id(session))
         session.add(log)
+        session.commit()
     except:
         session.rollbac()
 
