@@ -2,11 +2,8 @@ import pytest
 import os
 import subprocess
 
-from alembic import command
-from alembic.config import Config
-
 from ._util import connect, cleanup
-from metacatalog.db.migration import check_database_version
+from metacatalog.db import migration
 from metacatalog import BASEPATH
 
 
@@ -15,32 +12,24 @@ def check_no_version_mismatch(session):
     This checks if there is no version mismatch
 
     """
-    return check_database_version(session.bind)
+    return migration.check_database_version(session)
 
 
-def downgrade(conf):
+def downgrade(session):
     """
-    Perform a database downgrade using alembic
-    """#
-    command.downgrade(conf, '-1')
-    env = os.environ.copy()
-
-    # set the connection
-    con = connect(mode='string')
-    env['ALEMBIC_CON'] = con
-    res = subprocess.run(['alembic', 'downgrade', '-1'], capture_output=True, env=env)
-    print(res.stdout)
-    print(res.stderr)
+    Perform a database downgrade
+    """
+    migration.downgrade(session)
     return True
 
 
-def upgrade(conf):
+def upgrade(session):
     """
     Perform a database upgrade using alembic
     """
     # the metacatalog will still raise the mismatch
     try:
-        command.upgrade(conf, 'head')
+        migration.upgrade(session)
     except RuntimeError:
         pass
     return True
@@ -52,7 +41,7 @@ def raise_version_mismatch(session):
     RuntimeError is raised.
     """
     with pytest.raises(RuntimeError) as excinfo:
-        check_database_version(session.bind)
+        migration.check_database_version(session)
     
     # check the error message
     return "database is behind" in str(excinfo.value)
@@ -66,21 +55,16 @@ def test_migration(capsys):
     which will be tested and finally the database is upgraded 
     again.
     """
-    return True
     # get a session
     session = connect(mode='session')
-
-    # build alembic config
-    al_config = Config(os.path.join(BASEPATH, '..', 'alembic.ini'))
-    al_config.session = session
 
     # run single tests
     assert check_no_version_mismatch(session)
     # something on the downgrade is not working properly.
     with capsys.disabled():
-        assert downgrade(al_config)
+        assert downgrade(session)
     assert raise_version_mismatch(session)
-    assert upgrade(al_config)
+    assert upgrade(session)
     assert check_no_version_mismatch(session)
 
     # cleanup - only if migration test is the last one
