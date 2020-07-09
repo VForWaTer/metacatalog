@@ -392,7 +392,6 @@ def find_datasource_type(session, id=None, name=None, return_iterator=False):
         return query.all()
 
 
-
 def find_role(session, id=None, name=None, return_iterator=False):
     """Find Person Role
 
