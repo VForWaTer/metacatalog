@@ -259,7 +259,19 @@ class Entry(Base):
 
     @property
     def is_latest_version(self):
-        self.latest_version_id == self.id
+        self.latest_version_id == self.id or self.latest_version_id is None
+
+    @property
+    def latest_version(self):
+        versions = [e.version for e in self.other_versions]
+        
+        # no other versions, then self is the only
+        if len(versions):
+            return self
+        
+        # if more versions exist, find the highest number
+        latest_index = version.index(max(versions))
+        return self.other_versions[latest_index]
 
     @property
     def author(self):

@@ -700,7 +700,7 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_
 
     # make this an option
     if version == 'latest':
-        query = query.filter(models.Entry.latest_version_id.isnot(None))
+        query = query.filter(models.Entry.latest_version_id.is_(None))
         version = None
     
     # now the remaining parameters
