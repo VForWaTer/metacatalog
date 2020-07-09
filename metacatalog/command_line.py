@@ -14,7 +14,8 @@ from metacatalog.cmd import (
     find,
     show,
     add,
-    get_uuid
+    get_uuid,
+    migrate
 )
 
 def main():
@@ -83,6 +84,12 @@ def main():
     uuid_parser.add_argument('--json', action='store_true', help='If set, the object will be returned as JSON')
     uuid_parser.set_defaults(func=get_uuid)
 
+    # migration parser
+    migration_parser = subparsers.add_parser('migrate', parents=[default_options], add_help=True, help="Database migration tool.\nONLY USE IF metacatalog TOLD YOU TO DO SO.")
+    migration_parser.add_argument('action', choices=['revision', 'upgrade', 'downgrade', 'head'], help="Migration command")
+    migration_parser.add_argument('--title', '-t', type=str, help="Optional title to be used for revision commands.")
+    migration_parser.add_argument('--message', '-m', type=str, help="Optional revision message. Only used for revision command")
+    migration_parser.set_defaults(func=migrate)
     # parse the arguments
     args = parser.parse_args()
 

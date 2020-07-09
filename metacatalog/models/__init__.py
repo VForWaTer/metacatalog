@@ -23,3 +23,4 @@ from .datasource import DataSource, DataSourceType, DataType, SpatialScale, Temp
 from .timeseries import TimeseriesPoint, TimeseriesPoint2D
 from .generic_data import DataPoint, DataPoint2D
 from .geometry_data import GeometryTimeseries, GenericGeometryData
+from .config import Log, LogCodes
