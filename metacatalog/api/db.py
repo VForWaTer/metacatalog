@@ -8,11 +8,11 @@ from alembic.config import Config
 from alembic import command
 
 #from metacatalog import Base
-from metacatalog import BASEPATH
+from metacatalog import BASEPATH, __version__
 from metacatalog.db.base import Base
 from metacatalog.db.session import get_session
+from metacatalog.db import migration
 from metacatalog import DATAPATH
-#from metacatalog.models import DataSourceType, Unit, Variable, License, Keyword, PersonRole, EntryGroupType, Thesaurus
 from metacatalog import models
 
 IMPORTABLE_TABLES = dict(
@@ -63,6 +63,9 @@ def connect_database(*args, **kwargs):
 
 def _set_alembic_head(session):
     """
+    .. deprecated:: 0.1.12
+        Will be removed with 0.2
+    
     The alembic version head has to be set to the current release.
     This has to be updated with each revision of alembic.
     This is necessary as new installations of metacatalog would 
@@ -85,6 +88,37 @@ def _set_alembic_head(session):
     command.stamp(config, 'head')
 
 
+def _set_migration_head(session):
+    """
+    Set the migration log to the current release.
+    This has to be set on new database instances to make the logs 
+    point to the correct migration version. Otherwise 
+    the migration would run conflicting code. 
+
+    """
+    local_head = migration.get_local_head_id()
+    try:
+        remote_head = migration.get_remote_head_id(session)
+    except:
+        remote_head = 0
+    if local_head > remote_head:
+        log = models.Log(
+            code=models.LogCodes.migration, 
+            description='Bump HEAD after clean install using metacatalog==%s' %  __version__, 
+            migration_head=local_head)
+        session.add(log)
+        session.commit()
+
+# TODO turn this into an actual logging module
+def _log(session, message, code=models.LogCodes.info):
+    try:
+        log = models.log(code=code, description=message, migration_head=migration.get_remote_head_id(session))
+        session.add(log)
+    except:
+        session.rollbac()
+
+
+
 def create_tables(session):
     """Create tables
 
@@ -98,9 +132,11 @@ def create_tables(session):
     
     """
     Base.metadata.create_all(session.bind)
+    _log(session, 'Creting tables')
 
     # set the latest version
-    _set_alembic_head(session)
+    _set_alembic_head(session) # TODO remove this with 0.2
+    _set_migration_head(session)
 
 
 def _remove_nan_from_dict(d):
@@ -148,14 +184,18 @@ def update_sequence(session, table_name, sequence_name=None, to_value=None):
     """
     if sequence_name is None:
         sequence_name = '%s_id_seq' % table_name
-    sql = "SELECT setval('%s', (SELECT MAX(id) from %s), true);" % (sequence_name, table_name)
+    if to_value is None:
+        val = '(SELECT MAX(id) from %s)' % table_name
+    else:
+        val = '%d' % to_value
+    sql = "SELECT setval('{seq}', {val}, true);".format(seq=sequence_name, val=val)
 
     res = session.execute(sql)
     return res.scalar()
     
 
 
-def populate_defaults(session, ignore_tables=[]):
+def populate_defaults(session, ignore_tables=[], bump_sequences=10000):
     """Import default data
 
     Populates many lookup and auxiliary tables with useful default 
@@ -163,9 +203,20 @@ def populate_defaults(session, ignore_tables=[]):
     inside this module and can therefore easily be adapted. 
     Any table name supplied in ignore_tables will be omitted.
 
+    .. warning::
+        Do only ignore tables if you know what you are doing.
+        There are dependencies (like variables, units and keywords) and 
+        some of the API is depending on some defaults (like datatypes).
+
     As of now, the following tables can be pre-polulated:
 
     * datasource_types
+    * datatypes
+    * entrygroup_types
+    * keywords
+    * licenses
+    * person_roles
+    * thesaurus
     * units
     * variables
 
@@ -178,6 +229,12 @@ def populate_defaults(session, ignore_tables=[]):
         List of tables to be omitted. Be aware that the actual 
         table name in the database has to be supplied, not the 
         name of the model in Python.
+    bump_sequences : int, None
+        If integer (default), the primary key sequences will be 
+        set to this value. It is recommended to use a high value like 
+        the default 10,000 to allow for future including of new 
+        pre-populated values. Otherwise, these might have integrity 
+        conflicts with your database objects.
 
     """
     # make sure that thesaurus is not ignored, when keywords are imported
@@ -215,10 +272,16 @@ def populate_defaults(session, ignore_tables=[]):
             session.rollback()
         print('Finished %s' % table)
     
+    # log
+    _log(session, "Populated default values. Ignored: ['%s]" % ','.join(ignore_tables))
+
     for table in IMPORTABLE_TABLES.keys():
         if table in ignore_tables:
             continue
-        last_id = update_sequence(session, table)
+        if isinstance(bump_sequences, int) and bump_sequences > 0:
+            last_id = update_sequence(session, table, to_value=bump_sequences)
+        else: 
+            last_id = update_sequence(session, table)
         if last_id is not None:
             print('Set %s_id_seq to %d' % (table, last_id))
         else:
