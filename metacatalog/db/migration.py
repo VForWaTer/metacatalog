@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 import numpy as np
 
 from metacatalog import BASEPATH, __version__
+from metacatalog import models
 from .revisions import revisions as REVISIONS
 ERR_TEMP = """VERSION MISMATCH!
 metacatalog and the database have a version mismatch.
@@ -55,12 +56,14 @@ def revision(title=None, message=None):
     """
     """
     rev = get_local_head_id()
+    print('Current head [%d]' % rev)
     if title is None:
         title = 'revision #%d' % (rev + 1)
     if message is None:
         message = ''
 
-    with open(pjoin(REVISIONS_PATH, 'rev%d.py' % (rev + 1)), 'w') as f:
+    rev_file = pjoin(REVISIONS_PATH, 'rev%d.py' % (rev + 1))
+    with open(rev_file, 'w') as f:
         f.write(REVISION_TEMPLATE.format(
             title=title, message=message, date=dt.now().isoformat()
             )
@@ -81,6 +84,8 @@ def revision(title=None, message=None):
     # overwrite
     with open(pjoin(REVISIONS_PATH, '__init__.py'), 'w') as f:
         f.write(tpl)
+    
+    print('Edit the revision file: %s' % rev_file)
 
 
 def upgrade(session: Session, target='head'):
@@ -90,7 +95,12 @@ def upgrade(session: Session, target='head'):
         target = get_local_head_id()
     
     current = get_remote_head_id(session)
+    print('Current head [%d] targeting [%d]' % (current, target))
 
+    if current < target:
+        print('Migrating [%d] ->' % current, end='')
+    else:
+        print('Nothing to update -> ', end='')
     while current < target:
         current += 1
         mod = REVISIONS[current]
@@ -98,9 +108,11 @@ def upgrade(session: Session, target='head'):
             mod.upgrade(session)
             set_remote_head_id(session, current)
             session.commit()
+            print(' [%d] ->' % current, end='')
         except Exception as e:
             session.rollback()
             raise e
+    print('done.')
 
 
 
@@ -109,7 +121,7 @@ def downgrade(session: Session):
     """
     rev_num = get_local_head_id() - 1
     if rev_num < 0:
-        print("End of revision history. Can't downgrade.")
+        print("With metacatalog==0.2 the migration system was rebuild.\nTo downgrade to metacatalog < 0.2, use alembic as\nmigration system.")
         return
 
     mod = REVISIONS[rev_num]
@@ -126,11 +138,17 @@ def downgrade(session: Session):
 def get_remote_head_id(session: Session) -> int:
     """
     """
-    return 1
+    head = models.Log.load_migration_head(session=session)
+    if head is None:
+        head = 0
+    return head
 
 
-def set_remote_head_id(session: Session, new_head_id: int):
-    pass
+def set_remote_head_id(session: Session, new_head_id: int, description=None):
+    if description is None:
+        description = 'Migrated database to %d using metacatalog==%s' % (new_head_id, __version__)
+    log = models.Log(code=models.LogCodes.migration, description=description, migration_head=new_head_id)
+    session.add(log)
 
 
 def get_local_head_id() -> int:
@@ -138,4 +156,18 @@ def get_local_head_id() -> int:
 
 
 def check_database_version(session: Session):
-    pass
+    local_head = get_local_head_id()
+    remote_head = get_remote_head_id(session)
+
+    # if heads are the same, return True
+    if local_head==remote_head:
+        return True
+
+    if local_head > remote_head:
+        msg = 'Your database is behind the metacatalog version and needs to be updated.'
+        cmd = 'python -m metacatalog migrate upgrade'
+    else:
+        msg = 'Your metacatalog is outdated and needs to be updated.'
+        cmd = 'pip install --upgrade metacatalog'
+    
+    raise RuntimeError(ERR_TEMP.format(msg=msg, cmd=cmd))       
