@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, object_session
 
 from metacatalog import models
-from .migration import check_database_version
+from metacatalog.db.migration import check_database_version
 
 CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
 
@@ -64,32 +64,12 @@ def get_engine(*args, **kwargs):
     elif len(args) == 0 and len(kwargs.keys()) == 0:
         args = [load_connection('default')]
 
-    # alembic needs to be able to supress the error raised
-    # otherwise it can't update the version
-    if 'version_mismatch' in kwargs and kwargs['version_mismatch']:
-        MISMATCH = kwargs['version_mismatch']
-        del kwargs['version_mismatch']
-    else:
-        MISMATCH = False
-
     # set an application name
     kwargs.setdefault('connect_args', {'application_name': 'metacatalog_session'})
 
     # create a connection
     engine = create_engine(*args, **kwargs)
 
-    # need to rebuild this check by hand
-    """
-    # check alembic version
-    try:
-        check_database_version(engine=engine)
-    except RuntimeError as e:
-        # no missmatch allowed
-        if not MISMATCH:
-            raise e
-        elif MISMATCH == 'print':
-            print(str(e))
-    """
     return engine
     
 
@@ -97,6 +77,14 @@ def get_session(*args, **kwargs):
     # TODO: check if the first argument was an engine
     # if len(args) > 0 and isinstance(args[0], Session):
     # check if engine was given as kwargs
+
+    # check the version
+    if 'version_mismatch' in kwargs and kwargs['version_mismatch']:
+        MISMATCH = kwargs['version_mismatch']
+        del kwargs['version_mismatch']
+    else:
+        MISMATCH = False
+
 
     # else build a new engine
     engine = get_engine(*args, **kwargs)
@@ -106,6 +94,19 @@ def get_session(*args, **kwargs):
 
     # create the instance
     session = Session()
+
+    # TODO with next version this has to be uncommented to use the new migration system
+    """    
+    # check las migration log
+    try:
+        check_database_version(session=session)
+    except RuntimeError as e:
+        # no missmatch allowed
+        if not MISMATCH:
+            raise e
+        elif MISMATCH == 'print':
+            print(str(e))    
+    """
 
     # hook up some event listeners
     @event.listens_for(session, 'before_flush')
