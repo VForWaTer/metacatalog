@@ -626,7 +626,7 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_id=None, version=None, return_iterator=False):
+def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_id=None, version='latest', return_iterator=False):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be 
@@ -665,10 +665,15 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_
         
     external_id : str
         External id attrinbute of the Entry.
-    version : int
+    version : int, str
+        .. versionchanged:: 0.2
+            The default value is now 'latest'
+        
         Version number of the Entry. Can be combined with 
         the other matching parameters, as they might not be 
         different between versions.
+        If version == 'latest', only the latest version will be found.
+        If None, all version are integrated.
     return_iterator : bool
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
@@ -682,16 +687,21 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_
     records : list of metacatalog.Entry
         List of matched Entry instance. 
     """
-    # base query
-    query = session.query(models.Entry).filter(models.Entry.is_partial == false())
-
     # handle uuid first
     if uuid is not None:
-        query = query.filter(models.Entry.uuid==uuid)
+        query = session.query(models.Entry).filter(models.Entry.uuid==uuid)
         if return_iterator:
             return query
         else:
             return query.first()
+
+    # base query
+    query = session.query(models.Entry).filter(models.Entry.is_partial == false())
+
+    # make this an option
+    if version == 'latest':
+        query = query.filter(models.Entry.latest_version_id.isnot(None))
+        version = None
     
     # now the remaining parameters
     if id is not None:
