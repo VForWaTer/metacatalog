@@ -439,7 +439,7 @@ class Entry(Base):
                 session.rollback()
                 raise e
 
-    def make_composite(self, others, title=None, description=None, commit=False):
+    def make_composite(self, others=[], title=None, description=None, commit=False):
         """
         Create a composite EntryGroup from this Entry. A composite marks 
         stand-alone (:attr:`is_partial` ``= False``) entries as inseparable.
@@ -475,7 +475,7 @@ class Entry(Base):
 
         # get a session
         session = object_session(self)
-        type_ = api.find_group_type(session, name='Composite')
+        type_ = api.find_group_type(session, name='Composite')[0]
         composite = models.EntryGroup(type=type_, title=title, description=description, entries=others)
 
         if commit:
