@@ -327,6 +327,7 @@ def add_person(session, first_name, last_name, organisation_name=None, affiliati
 
 def add_group(session, group_type, entry_ids, title=None, description=None):
     """
+    .. versionadded:: 0.2
     Adds a new EntryGroup to the database. The Entry(s) have to exist in the 
     database to be associated correctly.
 
@@ -382,6 +383,34 @@ def add_group(session, group_type, entry_ids, title=None, description=None):
     )
 
     return add_record(session, 'entry_groups', **attr)
+
+
+def add_project(session, entry_ids, title=None, description=None):
+    """
+    .. versionadded:: 0.2
+    Adds a new Project EntryGroup to the database. 
+    The Entry(s) have to exist in the database to be associated correctly.
+
+    Parameters
+    ----------
+    session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    entry_ids : list of int
+        List of :class:`Entry.id <metacatalog.models.Entry>` to be associated 
+        tp this Project.
+    title : str
+        Project title.
+    description : str
+        Project description.
+
+    Returns
+    -------
+    entry: metacatalog.models.EntryGroup
+        EntryGroup instance of the added group
+    
+    """
+    type_ = api.find_group_type(session, name='Project')[0]
+    return add_group(session=session, group_type=type_, entry_ids=entry_ids, title=title, description=description)
 
 
 
