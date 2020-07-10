@@ -13,6 +13,7 @@ API
     api_add_entry
     api_add_person
     api_add_variable
+    api_add_group
     api_add_license
     api_add_keyword
     api_add_thesaurus
