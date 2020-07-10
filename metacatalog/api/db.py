@@ -4,9 +4,6 @@ from os.path import join as pjoin
 import pandas as pd
 from pandas.errors import ParserError
 
-from alembic.config import Config
-from alembic import command
-
 #from metacatalog import Base
 from metacatalog import BASEPATH, __version__
 from metacatalog.db.base import Base
@@ -61,33 +58,6 @@ def connect_database(*args, **kwargs):
     return session
 
 
-def _set_alembic_head(session):
-    """
-    .. deprecated:: 0.1.12
-        Will be removed with 0.2
-    
-    The alembic version head has to be set to the current release.
-    This has to be updated with each revision of alembic.
-    This is necessary as new installations of metacatalog would 
-    otherwise try to migrate changes that are already reflected in the
-    current installation. This this in place,
-
-    .. code-block:: bash
-    
-        alembic upgrade head
-
-    can safely be run after installation.
-
-    """
-    # get the alembic context
-    config = Config(pjoin(BASEPATH, '..', 'alembic.ini'))
-    config.session = session
-    print(config.session)
-    
-    # set to head
-    command.stamp(config, 'head')
-
-
 def _set_migration_head(session):
     """
     Set the migration log to the current release.
@@ -136,7 +106,6 @@ def create_tables(session):
     _log(session, 'Creting tables')
 
     # set the latest version
-    _set_alembic_head(session) # TODO remove this with 0.2
     _set_migration_head(session)
 
 
