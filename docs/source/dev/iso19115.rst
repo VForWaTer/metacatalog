@@ -46,7 +46,7 @@ MD_Metadata
     - DataSource.encoding
     - MD_CharacterSetCode
     - [1]
-    - Not yet implemented
+    - DataSource.encoding
   * - parentIdentifier
     - EntryGroup.id if Entry.is_partial
     - 
@@ -100,13 +100,13 @@ MD_Metadata
   * - referenceSystemInfo
     - 
     - MD_ReferenceSystem
-    - [2]
-    - In ISO this is optional, in INSPIRE [1..*] cardinality. not yet implemented
+    - [1]
+    - In INSPIRE [1..*] cardinality. EPSG:4326 for metadata
   * - metadataExtensionInfo
     - 
     - MD_MetadataExtensionInformation
     - [0..*]
-    - Optional. not yet implemented
+    - Details.value if Details.thesaurus_id not None
   * - identificationInfo
     - 
     - MD_Identification
@@ -154,7 +154,7 @@ MD_Indentification
     - Entry.citation
     - CI_Citation
     - [1]
-    - not yet implemented
+    - 
   * - abstract
     - Entry.abstract
     - 
@@ -171,7 +171,7 @@ MD_Indentification
     - [0..1]
     - not yet implemented.
   * - pointOfContact
-    - 
+    - Entry.author
     - CI_ResponsibleParty
     - [1..*]
     - In metacatalog, this is a double entry to contact. Filled by `Entry.author`
@@ -224,10 +224,10 @@ MD_DataIdentification
     - [1..*]
     - ``'raster'`` for raster data-types, ``'vector'`` else.
   * - spatialResolution
-    - 
+    - DataSource.spatial_scale
     - MD_Resolution
     - [0..*]
-    - if applicable to data source. not yet implemented.
+    - if applicable (DataSource.spatial_scale can be None)
   * - language
     - ``'en-US'``
     - ISO 639-2
@@ -249,10 +249,10 @@ MD_DataIdentification
     - [0..1]
     - If important, should go into the abstract
   * - extent
-    - 
+    - SpatialScale.extent TemporalScale.extent
     - Ex_Extent
     - [1..*]
-    - not yet implemented
+    - not sure if temporal scale is supported by ISO
   * - supplementalInformation
     - DataSource.args
     - 
@@ -310,14 +310,16 @@ MD_RepresentativeFraction
 -------------------------
 
 Has only one field: ``denominator``, which is the ISO 19103 scale. Applies only to 
-raster sources in metacatalog. Not yet implemented.
+raster sources in metacatalog. See MD_Resolution.
 
 MD_Resolution
 -------------
 
-Has only of of two fields. The resolution applies only to raster sources in metacatalog 
+Has only one of two fields. The resolution applies only to raster sources in metacatalog 
 and is either a MD_RepresentativeFraction (scale) or a ground distance stored in the 
-field ``distance``. Not yet implemented.
+field ``distance``. If :class:`DataSource <metacatalog.models.DataSource>` has a 
+spatial scale, the :class:`SpatialScale.resolution <metacatalog.models.SpatialScale>` 
+can be used to give the ground distance.
 
 MD_Usage
 --------
@@ -533,6 +535,12 @@ MD_ReferenceSystem
   handle the reference system. If the data uses different reference systems, the ``DataSource`` 
   will be able to handle this information with the next revision.
 
+.. warning::
+
+  Due to technical reasons, the DataSource can not yet handle CRS information. Please store
+  only EPSG:4326 referenced data in metacatalog. This will be resolved with one of 
+  the future releases.
+
 MD_ContentInformation
 ---------------------
 
@@ -542,8 +550,7 @@ MD_ContentInformation
   As metacatalog only uses a very limited amount of the defined values, ``DataSource`` and 
   ``Variable`` will be mappable to MD_ContentInformation in the future.
 
-  This is not yet implemented.
-
+  
 MD_PortrayalCatalogueReference
 ------------------------------
 
@@ -632,9 +639,8 @@ MD_ExtendedElementInformation
 
 .. note::
 
-  MD_ExtendedElementInformation is not yet implemented and still under discussion.
-  There might be an extended version of ``Details`` that can be pre-definied by 
-  the admin to create a ``ControlledDetail``
+  MD_ExtendedElementInformation can be realized by ``Details`` that relate a 
+  ``Thesaurus`` with public URI. 
 
 .. list-table::
   :widths:  15 15 20 10 40
@@ -668,13 +674,13 @@ MD_ExtendedElementInformation
   * - obligation
     - 
     - MD_ObligationCode
-    - [1]
-    - not yet implemented. Might be always optional.
+    - [0]
+    - 
   * - condition
     - 
     - 
     - [0..1]
-    - not yet implemented. Can be omitted if ``obligation`` cannot be ``'conditional'``
+    - Can be omitted because ``obligation`` cannot be ``'conditional'``. 
   * - dataType
     - ``characterString``
     - MD_DataTypeCode
