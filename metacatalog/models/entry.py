@@ -439,6 +439,57 @@ class Entry(Base):
                 session.rollback()
                 raise e
 
+    def make_composite(self, others, title=None, description=None, commit=False):
+        """
+        Create a composite EntryGroup from this Entry. A composite marks 
+        stand-alone (:attr:`is_partial` ``= False``) entries as inseparable.
+        A composite can also contain a partial Entry 
+        (:attr:`is_partial` ``= True``), whichs  data only makes sense in the 
+        context of the composite group.
+
+        Parameters
+        ----------
+        others : list of Entry
+            The other :class:`Entries <metacatalog.models.Entry>` that 
+            should be part of the composite.
+        title : str
+            Optional title of the composite, if applicable
+        description : str
+            Optional description of the composite if applicable
+        commit : bool
+            If True, the newly created Group will be persisted in the 
+            database. Defaults to False.
+
+        Returns
+        -------
+        composite : metacatalog.models.EntryGroup
+            The newly created EntryGroup of EntryGroupType.name == 'Composite'
+        
+        """
+        # check type of others
+        if isinstance(others, Entry):
+            others = [others]
+        if not all([isinstance(e, Entry) for e in others]):
+            raise AttributeError("others has to be a list of Entry instances")
+        others.append(self)
+
+        # get a session
+        session = object_session(self)
+        type_ = api.find_group_type(session, name='Composite')
+        composite = models.EntryGroup(type=type_, title=title, description=description, entries=others)
+
+        if commit:
+            try:
+                session.add(composite)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
+        
+        # return
+        return composite
+        
+
     def create_datasource(self, path: str, type, datatype, commit=False, **args):
         """
         """
