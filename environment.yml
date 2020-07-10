@@ -5,7 +5,6 @@ dependencies:
   - pandas
   - sqlalchemy
   - psycopg2
-  - alembic
   - tabulate
   - nltk
   - shapely

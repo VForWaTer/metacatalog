@@ -4,6 +4,5 @@ pandas
 psycopg2
 tabulate
 nltk
-alembic
 shapely
 requests
