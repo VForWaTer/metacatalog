@@ -87,7 +87,7 @@ def associate_persons(session):
     """
     Set the others as associated persons
     """
-    e1 = api.find_entry(session, id=1)[0]
+    e1 = api.find_entry(session, title='Dummy 1')[0]
     e2 = api.find_entry(session, external_id='foobar')[0]
 
     assert e1.id != e2.id
@@ -135,10 +135,11 @@ def check_find_with_wildcard(session):
     assert entries[0].author.last_name == 'Curie'
 
     entries = api.find_entry(session, abstract='!*entry*')
-    assert len(entries) == 1
-    assert entries[0].author.first_name == 'Keanu'
+    assert not any([e.title in ('Dummy 2', 'Dummy 3') for e in entries])
+    assert any([e.author.first_name == 'Keanu' for e in entries])
 
     return True
+
 
 def check_has_uuid(session):
     """

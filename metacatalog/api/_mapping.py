@@ -11,7 +11,8 @@ TABLE_MAPPING = dict(
     person_roles=models.PersonRole,
     units=models.Unit,
     variables=models.Variable,
-    thesaurus=models.Thesaurus
+    thesaurus=models.Thesaurus,
+    entry_groups=models.EntryGroup,
 )
 
 ENTITY_MAPPING = dict(

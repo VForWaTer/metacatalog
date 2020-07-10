@@ -149,6 +149,8 @@ class EntryGroup(Base):
         # lazy loading
         if deep:
             d['entries'] = [e.to_dict() for e in self.entries]
+        else:
+            d['entries'] = [e.uuid for e in self.entries]
 
         return d
 

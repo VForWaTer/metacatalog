@@ -325,6 +325,95 @@ def add_person(session, first_name, last_name, organisation_name=None, affiliati
     return add_record(session=session, tablename='persons', **attr)
 
 
+def add_group(session, group_type, entry_ids, title=None, description=None):
+    """
+    .. versionadded:: 0.2
+    Adds a new EntryGroup to the database. The Entry(s) have to exist in the 
+    database to be associated correctly.
+
+    Parameters
+    ----------
+    session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    group_type : int, str
+        Either :class:`EntryGroupType <metacatalog.models.EntryGroupType>` 
+        id or name to be used.
+    entry_ids : list of int
+        List of :class:`Entry.id <metacatalog.models.Entry>` to be associated 
+        tp this Group.
+    title : str
+        Optional title of this Group. Mandatory, if the type is a 'Project'
+    description : str
+        Optional description of this Group. Mandatory is the type is a
+        'Project'.
+
+    Returns
+    -------
+    entry: metacatalog.models.EntryGroup
+        EntryGroup instance of the added group
+    
+    """
+    # check ids
+    if isinstance(entry_ids, int):
+        entry_ids = [entry_ids]
+    if not all([isinstance(i, int) for i in entry_ids]):
+        raise AttributeError("entry_ids has to be a list of integers.")
+
+    # get the type
+    if isinstance(group_type, int):
+        type_ = api.find_group_type(session, id=group_type)[0]
+    elif isinstance(gropu_type, str):
+        type_ = api.find_group_type(session, name=group_type)[0]
+    else:
+        type_ = group_type
+    if not isinstance(type_, models.EntryGroupType):
+        raise AttributeError("The group_type has to be int or str.")
+
+    if type_.name == 'Project' and (title is None or description is None):
+        raise AttributeError("Projects must not omit title and description.")
+    
+    # load entries
+    entries = [api.find_entry(session, id=id_)[0] for id_ in entry_ids]
+
+    attr = dict(
+        title=title,
+        description=description,
+        type=type_,
+        entries = entries
+    )
+
+    return add_record(session, 'entry_groups', **attr)
+
+
+def add_project(session, entry_ids, title=None, description=None):
+    """
+    .. versionadded:: 0.2
+    Adds a new Project EntryGroup to the database. 
+    The Entry(s) have to exist in the database to be associated correctly.
+
+    Parameters
+    ----------
+    session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    entry_ids : list of int
+        List of :class:`Entry.id <metacatalog.models.Entry>` to be associated 
+        tp this Project.
+    title : str
+        Project title.
+    description : str
+        Project description.
+
+    Returns
+    -------
+    entry: metacatalog.models.EntryGroup
+        EntryGroup instance of the added group
+    
+    """
+    type_ = api.find_group_type(session, name='Project')[0]
+    return add_group(session=session, group_type=type_, entry_ids=entry_ids, title=title, description=description)
+
+
+
 def add_entry(session, title, author, location, variable, abstract=None, external_id=None, geom=None, license=None, embargo=False, **kwargs):
     r"""Add new Entry
 
@@ -365,6 +454,7 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     embargo : bool
         If True, this Entry will **not** be publicly available until the embargo ends
         The embargo period is usually 2 years but can be modified using the kwargs.
+
     Returns
     -------
     entry: metacatalog.Entry
@@ -422,6 +512,7 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     add_persons_to_entries(session, entry, author, 1, 1)
 
     return entry
+
 
 def add_details_to_entries(session, entries, details=None, **kwargs):
     """Associate detail(s) to entrie(s)
