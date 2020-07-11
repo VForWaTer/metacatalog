@@ -762,23 +762,18 @@ Ex_Extent
 EX_GeographicExtent
 -------------------
 
-.. note:: 
-
-  The related tables are not entirely mappable in metacatalog as 
-  the spatial extent will always be mapped as a bounding box
-
-.. note::
-
-  This is still under discussion and not yet implemented
+The geographic extent is always given as bounding box in 
+EPSG:4326, if applicable. Other values and objects defined in
+IOS 19115 are not supported by metacatalog.
 
 
 EX_TemporalExtent
 -----------------
 
-.. note::
-
-  ISO 19115 only requires a ``EX_TemporalExtent.extent`` value, which has to be 
-  a ISO 19108 time range. This is not yet implemented. 
+ISO 19115 only requires a ``EX_TemporalExtent.extent`` value, which has to be 
+a ISO 19108 time range. The :class:`TemporalScale <metacatalog.models.TemporalScale>`
+has a ``start`` and a ``end`` property and any instance of it can return an 
+ISO 19108 time range.
 
 EX_VerticalExtent
 ------------------
@@ -879,7 +874,9 @@ CI_ResponsibleParty
 Code-Lists
 ==========
 
-Metacatalog mappings are based on the CodeList dictionaries published by NOAA
+Metacatalog mappings are based on the CodeList dictionaries published by NOAA.
+The following list gives you an idea, where and how the codes lists and the values 
+are implemented.
 
 https://www.ngdc.noaa.gov/wiki/index.php/ISO_19115_and_19115-2_CodeList_Dictionaries#CI_DateTypeCode
 
