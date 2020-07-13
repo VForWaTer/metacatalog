@@ -1,7 +1,7 @@
 sqlalchemy
 geoalchemy2
 pandas
-psycopg2
+psycopg2-binary
 tabulate
 nltk
 shapely
