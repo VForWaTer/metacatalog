@@ -625,7 +625,7 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_id=None, version='latest', return_iterator=False):
+def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, external_id=None, version='latest', return_iterator=False):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be 
@@ -661,7 +661,10 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_
         
         .. code-block:: python
             api.find_entry(session, abstract='*phrase to find*')
-        
+    license : str, int
+        .. versionadded:: 0.2.1
+        The license can be a :class:``License <metacatalog.models.License>`, 
+        its id (int) or the short_title (str).     
     external_id : str
         External id attrinbute of the Entry.
     version : int, str
@@ -713,6 +716,16 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_
         query = query.filter(_match(models.Entry.external_id, external_id))
     if version is not None:
         query = query.filter(models.Entry.version==version)
+
+    if license is not None:
+        if isinstance(license, models.License):
+            license = license.id 
+        if isinstance(license, int):
+            query = query.filter(models.Entry.license_id==license)
+        elif isinstance(license, str):
+            query = query.join(models.License).filter(_match(models.License.short_title, license))
+        else: 
+            raise AttributeError('license has to be int or str.')
 
     # return
     if return_iterator:
