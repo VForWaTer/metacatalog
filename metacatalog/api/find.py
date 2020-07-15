@@ -625,7 +625,7 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', return_iterator=False):
+def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', project=None, return_iterator=False):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be 
@@ -680,13 +680,15 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
         different between versions.
         If version == 'latest', only the latest version will be found.
         If None, all version are integrated.
+    project : id, str
+        .. versionadded:: 0.2.2
+        The project can be a :class:`EntryGroup <metacatalog.models.EntryGroup>` of 
+        :class:`EntryGroupType.name=='Project' <metacatalog.models.EntryGroupType>`, 
+        its id (int) or title (str)
     return_iterator : bool
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
     
-    TODO
-    ----
-    if version is None, use the lastest version
 
     Returns
     -------
@@ -741,6 +743,18 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
             query = query.join(models.Variable).filter(_match(models.Variable.name, variable))
         else:
             raise AttributeError('variable has to be int or str.')
+
+    if project is not None:
+        if isinstance(project, models.EntryGroup) and project.type.name == 'Project':
+            project = project.id
+        if isinstance(project, int): 
+            join = query.join(models.EntryGroup).join(models.EntryGroupType)
+            query = join.fitler(models.EntryGroupType.name=='Project').filter(models.EntryGroup.id==project)
+        elif isinstance(project, str):
+            join = query.join(models.EntryGroup).join(models.EntryGroupType)
+            query = join.fitler(models.EntryGroupType.name=='Project').filter(_match(models.EntryGroup.title, project))
+        else:
+            raise AttributeError('project has to be int or str')
 
     # return
     if return_iterator:

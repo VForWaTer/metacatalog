@@ -189,6 +189,17 @@ def check_project_group(session):
     return True
 
 
+def find_by_project(session):
+    dummies = api.find_group(session, title="Dumm%")[0]
+
+    for pars in [dict(project=dummies), dict(project=dummies.id), dict(project='Dumm%')]:
+        entries = api.find_entry(session, **pars)
+        assert len(entries) == 2
+        assert set([e.title for e in entries]) == set('Dummy 1', 'Dummy 2')
+    
+    return True
+
+
 def check_get_by_uuid(session):
     """
     Check if the keyword of UUID 5f2ec7b9-3e8c-4d12-bba6-0f84c08729e0
@@ -235,4 +246,5 @@ def test_add_and_find():
     assert check_has_uuid(session)
     assert add_project_group(session)
     assert check_project_group(session)
+    assert find_by_project(session)
     assert check_get_by_uuid(session)
