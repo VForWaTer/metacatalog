@@ -207,7 +207,7 @@ def find_by_project(session):
     for pars in [dict(project=project), dict(project=project.id), dict(project='Awesome%')]:
         entries = api.find_entry(session, **pars)
         assert len(entries) == 2
-        assert set([e.title for e in entries]) == set('Dummy 1', 'Dummy 2')
+        assert set([e.title for e in entries]) == set(['Dummy 1', 'Dummy 2'])
     
     return True
 
