@@ -750,10 +750,10 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
                 raise TypeError("EntryGroup has to be of type 'Project'.")
             project = project.id
         if isinstance(project, int): 
-            join = query.join(models.EntryGroup).join(models.EntryGroupType)
+            join = query.join(models.EntryGroupAssociation).join(models.EntryGroup).join(models.EntryGroupType)
             query = join.fitler(models.EntryGroupType.name=='Project').filter(models.EntryGroup.id==project)
         elif isinstance(project, str):
-            join = query.join(models.EntryGroup).join(models.EntryGroupType)
+            join = query.join(models.EntryGroupAssociation).join(models.EntryGroup).join(models.EntryGroupType)
             query = join.fitler(models.EntryGroupType.name=='Project').filter(_match(models.EntryGroup.title, project))
         else:
             raise AttributeError('project has to be int or str')

@@ -13,7 +13,7 @@ is supported. This may change in a future version.
 
 """
 from .entry import Entry
-from .entrygroup import EntryGroup, EntryGroupType
+from .entrygroup import EntryGroup, EntryGroupType, EntryGroupAssociation
 from .details import Detail
 from .keyword import Keyword, KeywordAssociation, Thesaurus
 from .person import Person, PersonRole, PersonAssociation
