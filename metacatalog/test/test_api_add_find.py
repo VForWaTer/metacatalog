@@ -189,10 +189,22 @@ def check_project_group(session):
     return True
 
 
+def check_composite_raises_error(session):
+    with pytest.raises(TypeError) as excinfo:
+        dummies = api.find_group(session, title="Dumm%")[0]
+        api.find_entry(session, project=dummies)
+    
+    return "has to be of type 'Project'" in str(excinfo.value)
+
 def find_by_project(session):
     dummies = api.find_group(session, title="Dumm%")[0]
+    # create a project
+    project = api.add_project(session, 
+        entry_ids=[e.id for e in dummies.entries],
+        title='Awesome Project', description='Nice project for testing purposes'
+    )
 
-    for pars in [dict(project=dummies), dict(project=dummies.id), dict(project='Dumm%')]:
+    for pars in [dict(project=project), dict(project=project.id), dict(project='Awesome%')]:
         entries = api.find_entry(session, **pars)
         assert len(entries) == 2
         assert set([e.title for e in entries]) == set('Dummy 1', 'Dummy 2')
@@ -245,6 +257,7 @@ def test_add_and_find():
     assert check_find_with_wildcard(session)
     assert check_has_uuid(session)
     assert add_project_group(session)
+    assert check_composite_raises_error(session)
     assert check_project_group(session)
     assert find_by_project(session)
     assert check_get_by_uuid(session)

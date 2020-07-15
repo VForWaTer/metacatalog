@@ -745,7 +745,9 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
             raise AttributeError('variable has to be int or str.')
 
     if project is not None:
-        if isinstance(project, models.EntryGroup) and project.type.name == 'Project':
+        if isinstance(project, models.EntryGroup):
+            if project.type.name != 'Project':
+                raise TypeError("EntryGroup has to be of type 'Project'.")
             project = project.id
         if isinstance(project, int): 
             join = query.join(models.EntryGroup).join(models.EntryGroupType)
