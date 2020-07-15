@@ -625,7 +625,7 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, external_id=None, version='latest', return_iterator=False):
+def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', return_iterator=False):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be 
@@ -662,9 +662,13 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
         .. code-block:: python
             api.find_entry(session, abstract='*phrase to find*')
     license : str, int
-        .. versionadded:: 0.2.1
+        .. versionadded:: 0.2.2
         The license can be a :class:``License <metacatalog.models.License>`, 
-        its id (int) or the short_title (str).     
+        its id (int) or the short_title (str).   
+    variable : str, int
+        .. versionadded:: 0.2.2
+        The variable can be a :class:`Variable <metacatalog.models.Variable>`,
+        its id (int) or the name (str).  
     external_id : str
         External id attrinbute of the Entry.
     version : int, str
@@ -717,6 +721,7 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
     if version is not None:
         query = query.filter(models.Entry.version==version)
 
+    # some second level lookups
     if license is not None:
         if isinstance(license, models.License):
             license = license.id 
@@ -726,6 +731,16 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
             query = query.join(models.License).filter(_match(models.License.short_title, license))
         else: 
             raise AttributeError('license has to be int or str.')
+    
+    if variable is not None:
+        if isinstance(variable, models.Variable):
+            variable = variable.id
+        if isinstance(variable, int):
+            query = query.filter(models.Entry.variable_id==variable)
+        elif isinstance(variable, str):
+            query = query.join(models.Variable).filter(_match(models.Variable.name, variable))
+        else:
+            raise AttributeError('variable has to be int or str.')
 
     # return
     if return_iterator:
