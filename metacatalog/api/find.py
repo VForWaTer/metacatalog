@@ -625,7 +625,7 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', project=None, author=None, return_iterator=False):
+def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', project=None, author=None, contributor=None, return_iterator=False):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be 
@@ -688,8 +688,15 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
     author : int, str
         .. versionadded:: 0.2.2
         The author can be a :class:`Person <metacatalog.models.Person>`, 
-        his id (int) or name (str). An string argument will match first and last 
-        names. The author is only the first author.
+        his id (int) or name (str). A string argument will match first and last 
+        names. The author is only the first author. For other contributors see 
+        :attr:`contributor`.
+    contributor : int, str
+        .. versionadded:: 0.2.2
+        The contributor can be a :class:`Person <metacatalog.models.Person>`, 
+        his id (int) or name (str). A string argument will match first and last 
+        names. A contributor is anyone associated as first or co-author. For 
+        first author only, see :attr:`author`.
     return_iterator : bool
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
@@ -728,7 +735,11 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
     if version is not None:
         query = query.filter(models.Entry.version==version)
 
+    # -------------------------------------
     # some second level lookups
+    # -------------------------------------
+
+    # license
     if license is not None:
         if isinstance(license, models.License):
             license = license.id 
@@ -739,6 +750,7 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
         else: 
             raise AttributeError('license has to be int or str.')
     
+    # variable
     if variable is not None:
         if isinstance(variable, models.Variable):
             variable = variable.id
@@ -749,6 +761,7 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
         else:
             raise AttributeError('variable has to be int or str.')
 
+    # project
     if project is not None:
         if isinstance(project, models.EntryGroup):
             if project.type.name != 'Project':
@@ -763,6 +776,7 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
         else:
             raise AttributeError('project has to be int or str')
 
+    # first author
     if author is not None:
         if isinstance(author, models.Person):
             author = author.id
@@ -776,6 +790,21 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
             )
         else: 
             raise AttributeError('author has to be int or str')
+    
+    # contributor
+    if contributor is not None:
+        if isinstance(contributor, models.Person):
+            contributor = contributor.id
+        if isinstance(contributor, int):
+            join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
+            query = join.filter(models.PersonRole.name.in_('author', 'coAuthor')).filter(models.Person.id==contributor)
+        elif isinstance(contributor, str):
+            join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
+            query = join.filter(models.PersonRole.name.in_('author', 'coAuthor')).filter(
+                (_match(models.Person.first_name, contributor)) | (_match(models.Person.last_name, contributor))
+            )
+        else:
+            raise AttributeError('contributior has to be in or str')
 
     # return
     if return_iterator:
