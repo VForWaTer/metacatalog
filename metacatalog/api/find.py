@@ -625,7 +625,7 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', project=None, return_iterator=False):
+def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', project=None, author=None, return_iterator=False):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be 
@@ -680,11 +680,16 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
         different between versions.
         If version == 'latest', only the latest version will be found.
         If None, all version are integrated.
-    project : id, str
+    project : int, str
         .. versionadded:: 0.2.2
         The project can be a :class:`EntryGroup <metacatalog.models.EntryGroup>` of 
         :class:`EntryGroupType.name=='Project' <metacatalog.models.EntryGroupType>`, 
         its id (int) or title (str)
+    author : int, str
+        .. versionadded:: 0.2.2
+        The author can be a :class:`Person <metacatalog.models.Person>`, 
+        his id (int) or name (str). An string argument will match first and last 
+        names. The author is only the first author.
     return_iterator : bool
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
@@ -757,6 +762,20 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
             query = join.filter(models.EntryGroupType.name=='Project').filter(_match(models.EntryGroup.title, project))
         else:
             raise AttributeError('project has to be int or str')
+
+    if author is not None:
+        if isinstance(author, models.Person):
+            author = author.id
+        if isinstance(author, int):
+            join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
+            query = join.filter(models.PersonRole.name=='author').filter(models.Person.id==author)
+        elif isinstance(author, str):
+            join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
+            query = query.filter(models.PersonRole.name=='author').filter(
+                (_match(models.Person.first_name, author)) | (_match(models.Person.last_name, author))
+            )
+        else: 
+            raise AttributeError('author has to be int or str')
 
     # return
     if return_iterator:
