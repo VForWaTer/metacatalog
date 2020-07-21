@@ -11,6 +11,8 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import false
 
+import nltk
+
 def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=False) -> BinaryExpression:
     """
     Create Column based Compare logic
@@ -625,7 +627,7 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', project=None, author=None, contributor=None, return_iterator=False):
+def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', project=None, author=None, contributor=None, keywords=None, details=None, return_iterator=False):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be 
@@ -697,6 +699,18 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
         his id (int) or name (str). A string argument will match first and last 
         names. A contributor is anyone associated as first or co-author. For 
         first author only, see :attr:`author`.
+    keywords : list of str, int
+        .. versionadded:: 0.2.2
+        The entries can be filtered by tagged controlled keywords. The given 
+        keyword or list of keywords will be matched against the value (str)  or 
+        id (int). If more than one is given, the entries need to be tagged by 
+        **all** keywords. An ``OR`` search is not possible, through the API.
+    details : dict
+        ..versionadded:: 0.2.2
+        Entries can be filtered by additional details. The details need to be 
+        specified as dictioniares of ``name=value`` pairs. If more than one 
+        pair is given, the query will combine the pairs by ``AND``.
+        An ``OR`` search is not possible, through the API.
     return_iterator : bool
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
@@ -804,7 +818,36 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
                 (_match(models.Person.first_name, contributor)) | (_match(models.Person.last_name, contributor))
             )
         else:
-            raise AttributeError('contributior has to be in or str')
+            raise AttributeError('contributior has to be int or str')
+
+    # keywords
+    if keywords is not None:
+        query = query.join(models.KeywordAssociation).join(models.Keyword)
+        if not isinstance(keywords, (list, tuple)):
+            keywords = [keywords]
+        # for every keyword
+        for keyword in keywords:
+            if isinstance(keyword, models.Keyword):
+                keyword = keyword.id
+            if isinstance(keyword, int):                
+                query = query.filter(models.Keyword.id==keyword)
+            elif isinstance(keyword, str):
+                query = query.filter(_match(models.Keyword.value, keyword))
+            else:
+                raise AttributeError('keywords have to be a list of int or str')
+    
+    # details
+    if details is not None:
+        # build the query
+        query = query.join(models.Detail)
+
+        # build a stemmer
+        ps = nltk.PorterStemmer()
+
+        if not isinstance(details, dict):
+            raise TypeError('The details have to be given as a dictionary')
+        for key, value in details.items():
+            query = query.filter(models.Detail.stem==ps.stem(key)).filter(_match(models.Detail.value, value))
 
     # return
     if return_iterator:
