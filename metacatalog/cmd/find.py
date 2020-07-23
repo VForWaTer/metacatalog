@@ -1,5 +1,10 @@
+import json
+import csv
+import io
+
 from ._util import connect
 from metacatalog import api
+from metacatalog.util.dict_functions import serialize, flatten
 
 def find(args):
     # get the session
@@ -44,6 +49,19 @@ def find(args):
         print('Oops. Finding %s is not supported.' % entity)
         exit(0)
 
-    # print out the results
-    for result in results:
-        print(result)
+    # switch the output
+    if args.json:
+        obj = [serialize(r) for r in results]
+        print(json.dumps(obj, indent=4))
+    elif args.csv:
+        obj = [flatten(serialize(r)) for r in results]
+        f = io.StringIO(newline='')
+        colnames = set([n for o in obj for n in o.keys()])
+        writer = csv.DictWriter(f, fieldnames=colnames, quotechar='"', quoting=csv.QUOTE_NONNUMERIC, lineterminator='\r')
+        writer.writeheader()
+        for o in obj:
+            writer.writerow(o)
+        print(f.getvalue())
+    else:   # stdOut
+        for result in results:
+            print(result)
