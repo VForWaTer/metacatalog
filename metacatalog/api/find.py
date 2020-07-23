@@ -799,7 +799,7 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
             query = join.filter(models.PersonRole.name=='author').filter(models.Person.id==author)
         elif isinstance(author, str):
             join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
-            query = query.filter(models.PersonRole.name=='author').filter(
+            query = join.filter(models.PersonRole.name=='author').filter(
                 (_match(models.Person.first_name, author)) | (_match(models.Person.last_name, author))
             )
         else: 

@@ -238,6 +238,13 @@ def check_get_by_uuid(session):
     return True
 
 
+def find_by_author(session):
+    entries = api.find_entry(session, author='Reev*')
+
+    assert len(entries) == 2
+    assert set([e.title for e in entries]) == set(['Dummy 1', 'Dummy 3'])
+    return True
+
 
 @pytest.mark.depends(on=['db_init'], name='add_find')
 def test_add_and_find():
@@ -261,3 +268,4 @@ def test_add_and_find():
     assert check_project_group(session)
     assert find_by_project(session)
     assert check_get_by_uuid(session)
+    assert find_by_author(session)
