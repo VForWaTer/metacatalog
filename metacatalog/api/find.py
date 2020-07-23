@@ -11,6 +11,8 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import false
 
+import nltk
+
 def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=False) -> BinaryExpression:
     """
     Create Column based Compare logic
@@ -625,7 +627,7 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_id=None, version='latest', return_iterator=False):
+def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', project=None, author=None, contributor=None, keywords=None, details=None, return_iterator=False):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be 
@@ -661,7 +663,14 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_
         
         .. code-block:: python
             api.find_entry(session, abstract='*phrase to find*')
-        
+    license : str, int
+        .. versionadded:: 0.2.2
+        The license can be a :class:``License <metacatalog.models.License>`, 
+        its id (int) or the short_title (str).   
+    variable : str, int
+        .. versionadded:: 0.2.2
+        The variable can be a :class:`Variable <metacatalog.models.Variable>`,
+        its id (int) or the name (str).  
     external_id : str
         External id attrinbute of the Entry.
     version : int, str
@@ -673,13 +682,39 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_
         different between versions.
         If version == 'latest', only the latest version will be found.
         If None, all version are integrated.
+    project : int, str
+        .. versionadded:: 0.2.2
+        The project can be a :class:`EntryGroup <metacatalog.models.EntryGroup>` of 
+        :class:`EntryGroupType.name=='Project' <metacatalog.models.EntryGroupType>`, 
+        its id (int) or title (str)
+    author : int, str
+        .. versionadded:: 0.2.2
+        The author can be a :class:`Person <metacatalog.models.Person>`, 
+        his id (int) or name (str). A string argument will match first and last 
+        names. The author is only the first author. For other contributors see 
+        :attr:`contributor`.
+    contributor : int, str
+        .. versionadded:: 0.2.2
+        The contributor can be a :class:`Person <metacatalog.models.Person>`, 
+        his id (int) or name (str). A string argument will match first and last 
+        names. A contributor is anyone associated as first or co-author. For 
+        first author only, see :attr:`author`.
+    keywords : list of str, int
+        .. versionadded:: 0.2.2
+        The entries can be filtered by tagged controlled keywords. The given 
+        keyword or list of keywords will be matched against the value (str)  or 
+        id (int). If more than one is given, the entries need to be tagged by 
+        **all** keywords. An ``OR`` search is not possible, through the API.
+    details : dict
+        ..versionadded:: 0.2.2
+        Entries can be filtered by additional details. The details need to be 
+        specified as dictioniares of ``name=value`` pairs. If more than one 
+        pair is given, the query will combine the pairs by ``AND``.
+        An ``OR`` search is not possible, through the API.
     return_iterator : bool
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
     
-    TODO
-    ----
-    if version is None, use the lastest version
 
     Returns
     -------
@@ -713,6 +748,106 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, external_
         query = query.filter(_match(models.Entry.external_id, external_id))
     if version is not None:
         query = query.filter(models.Entry.version==version)
+
+    # -------------------------------------
+    # some second level lookups
+    # -------------------------------------
+
+    # license
+    if license is not None:
+        if isinstance(license, models.License):
+            license = license.id 
+        if isinstance(license, int):
+            query = query.filter(models.Entry.license_id==license)
+        elif isinstance(license, str):
+            query = query.join(models.License).filter(_match(models.License.short_title, license))
+        else: 
+            raise AttributeError('license has to be int or str.')
+    
+    # variable
+    if variable is not None:
+        if isinstance(variable, models.Variable):
+            variable = variable.id
+        if isinstance(variable, int):
+            query = query.filter(models.Entry.variable_id==variable)
+        elif isinstance(variable, str):
+            query = query.join(models.Variable).filter(_match(models.Variable.name, variable))
+        else:
+            raise AttributeError('variable has to be int or str.')
+
+    # project
+    if project is not None:
+        if isinstance(project, models.EntryGroup):
+            if project.type.name != 'Project':
+                raise TypeError("EntryGroup has to be of type 'Project'.")
+            project = project.id
+        if isinstance(project, int): 
+            join = query.join(models.EntryGroupAssociation).join(models.EntryGroup).join(models.EntryGroupType)
+            query = join.filter(models.EntryGroupType.name=='Project').filter(models.EntryGroup.id==project)
+        elif isinstance(project, str):
+            join = query.join(models.EntryGroupAssociation).join(models.EntryGroup).join(models.EntryGroupType)
+            query = join.filter(models.EntryGroupType.name=='Project').filter(_match(models.EntryGroup.title, project))
+        else:
+            raise AttributeError('project has to be int or str')
+
+    # first author
+    if author is not None:
+        if isinstance(author, models.Person):
+            author = author.id
+        if isinstance(author, int):
+            join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
+            query = join.filter(models.PersonRole.name=='author').filter(models.Person.id==author)
+        elif isinstance(author, str):
+            join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
+            query = join.filter(models.PersonRole.name=='author').filter(
+                (_match(models.Person.first_name, author)) | (_match(models.Person.last_name, author))
+            )
+        else: 
+            raise AttributeError('author has to be int or str')
+    
+    # contributor
+    if contributor is not None:
+        if isinstance(contributor, models.Person):
+            contributor = contributor.id
+        if isinstance(contributor, int):
+            join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
+            query = join.filter(models.PersonRole.name.in_('author', 'coAuthor')).filter(models.Person.id==contributor)
+        elif isinstance(contributor, str):
+            join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
+            query = join.filter(models.PersonRole.name.in_('author', 'coAuthor')).filter(
+                (_match(models.Person.first_name, contributor)) | (_match(models.Person.last_name, contributor))
+            )
+        else:
+            raise AttributeError('contributior has to be int or str')
+
+    # keywords
+    if keywords is not None:
+        query = query.join(models.KeywordAssociation).join(models.Keyword)
+        if not isinstance(keywords, (list, tuple)):
+            keywords = [keywords]
+        # for every keyword
+        for keyword in keywords:
+            if isinstance(keyword, models.Keyword):
+                keyword = keyword.id
+            if isinstance(keyword, int):                
+                query = query.filter(models.Keyword.id==keyword)
+            elif isinstance(keyword, str):
+                query = query.filter(_match(models.Keyword.value, keyword))
+            else:
+                raise AttributeError('keywords have to be a list of int or str')
+    
+    # details
+    if details is not None:
+        # build the query
+        query = query.join(models.Detail)
+
+        # build a stemmer
+        ps = nltk.PorterStemmer()
+
+        if not isinstance(details, dict):
+            raise TypeError('The details have to be given as a dictionary')
+        for key, value in details.items():
+            query = query.filter(models.Detail.stem==ps.stem(key)).filter(_match(models.Detail.value, value))
 
     # return
     if return_iterator:

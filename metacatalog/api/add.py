@@ -362,7 +362,7 @@ def add_group(session, group_type, entry_ids, title=None, description=None):
     # get the type
     if isinstance(group_type, int):
         type_ = api.find_group_type(session, id=group_type)[0]
-    elif isinstance(gropu_type, str):
+    elif isinstance(group_type, str):
         type_ = api.find_group_type(session, name=group_type)[0]
     else:
         type_ = group_type
