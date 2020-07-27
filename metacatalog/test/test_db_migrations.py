@@ -47,7 +47,7 @@ def raise_version_mismatch(session):
     return "database is behind" in str(excinfo.value)
 
 
-@pytest.mark.depends(on=['add_find'])
+@pytest.mark.depends(on=['cli_find'])
 def test_migration(capsys):
     """
     After installing the database and initializing metacatalog

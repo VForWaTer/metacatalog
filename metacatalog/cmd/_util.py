@@ -17,6 +17,6 @@ def connect(args):
     
     session = connect_database(conn, echo=echo)
 
-    print('Using session: %s' % str(session.bind))
+#    print('Using session: %s' % str(session.bind))
 
     return session
