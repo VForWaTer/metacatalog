@@ -1,5 +1,6 @@
 import pytest
 import subprocess
+from subprocess import PIPE
 import json
 
 from ._util import connect
@@ -9,7 +10,7 @@ from ._util import connect
 
 def check_json_output(dburi):
     cmd = ['metacatalog', 'find', 'entry', '--json', '--by', 'author', 'Reeves', '--connection', dburi]
-    cmdRes = subprocess.run(cmd, capture_output=True)
+    cmdRes = subprocess.run(cmd, stderr=PIPE, stdout=PIPE)
 
     results = json.loads(cmdRes.stdout)
 
