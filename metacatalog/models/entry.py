@@ -277,6 +277,43 @@ class Entry(Base):
     def author(self):
         return [c.person for c in self.contributors if c.role.name == 'author'][0]
     
+    @author.setter
+    def author(self, new_author):
+        self.set_new_author(new_author)
+
+    def set_new_author(self, new_author, commit=False):
+        """
+        Set a new first Author for this entry.
+
+        Parameters
+        ----------
+        new_author : metacatalog.models.Person
+            The new first author. As of now the new author has to be passed as a
+            model instance. Passing the ID or query parameter is not yet supported.
+        commit : boolean
+            If True, the whole :class:`Entry <metacatalog.models.Entry>` will commit 
+            and persist itself to the database. 
+            .. note::
+                This will also affect other uncommited edits to the Entry.
+
+        """
+        if not isinstance(new_author, models.Person):
+            raise AttributeError('The new author has to be of type metatacatalog.models.Person')
+        
+        # find the association
+        assoc_idx = [i for i, c in enumerate(self.contributors) if c.role.name == 'author'][0]
+        self.contributors[assoc_idx].person = new_author
+
+        if commit:
+            session = object_session(self)
+            try:
+                session.add(self)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
+        
+    
     @property
     def authors(self):
         # get all
