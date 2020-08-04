@@ -1,7 +1,7 @@
 from tabulate import tabulate
 
 from metacatalog.api import show_attributes, show_records
-from ._util import connect
+from ._util import connect, cprint
 
 
 def show(args):
@@ -10,7 +10,7 @@ def show(args):
     if args.action == 'records':
         show_recs(args)
     else:
-        print("'%s' is not supported." % args.action)
+        cprint(args, "'%s' is not supported." % args.action)
 
 def show_attr(args):
     # the attributes command does not need a session
@@ -23,13 +23,13 @@ def show_attr(args):
 
     # create output
     message = "Attributes of %s" % table_name
-    print(message)
-    print('-' * len(message))
+    cprint(args, message)
+    cprint(args, '-' * len(message))
     if name_only:
-        print('\n'.join(attribute_list))
+        cprint(args, '\n'.join(attribute_list))
     else:
         for attr in attribute_list:
-            print('%s  |  %s' % (attr[0], attr[1]))
+            cprint(args, '%s  |  %s' % (attr[0], attr[1]))
 
 
 def show_recs(args):
@@ -53,4 +53,4 @@ def show_recs(args):
     if trunc:
         records = [[r[:12] + '...' if isinstance(r, str) else r for r in rec] for rec in records]
 
-    print(tabulate(records, headers=attribute_list))
+    cprint(args, tabulate(records, headers=attribute_list))

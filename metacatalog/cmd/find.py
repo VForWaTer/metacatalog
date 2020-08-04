@@ -2,7 +2,7 @@ import json
 import csv
 import io
 
-from ._util import connect
+from ._util import connect, cprint
 from metacatalog import api
 from metacatalog.util.dict_functions import serialize, flatten
 
@@ -25,34 +25,34 @@ def find(args):
         kwargs[by[0]] = by[1]
 
     # switch entity
-    if entity.lower() == 'units':
+    if entity.lower() == 'units' or entity.lower() == 'unit':
         results = api.find_unit(session, **kwargs)
-    elif entity.lower() == 'variables':
+    elif entity.lower() == 'variables' or entity.lower() == 'variable':
         results = api.find_variable(session, **kwargs)
-    elif entity.lower() == 'licenses':
+    elif entity.lower() == 'licenses' or entity.lower() == 'license':
         results = api.find_license(session, **kwargs)
-    elif entity.lower() == 'keywords':
+    elif entity.lower() == 'keywords' or entity.lower() == 'keyword':
         results = api.find_keyword(session, **kwargs)
-    elif entity.lower() == 'role':
+    elif entity.lower() == 'roles' or entity.lower() == 'role':
         results = api.find_role(session, **kwargs)
-    elif entity.lower() == 'person':
+    elif entity.lower() == 'persons' or entity.lower() == 'person':
         results = api.find_person(session, **kwargs)
-    elif entity.lower() == 'group_type':
+    elif entity.lower() == 'group_types' or entity.lower() == 'group_type':
         results = api.find_group_type(session, **kwargs)
-    elif entity.lower() == 'group':
+    elif entity.lower() == 'groups' or entity.lower() == 'group':
         results = api.find_group(session, **kwargs)
-    elif entity.lower() == 'entry':
+    elif entity.lower() == 'entries' or entity.lower() == 'entry':
         results = api.find_entry(session, **kwargs)
     elif entity.lower() == 'thesaurus':
         results = api.find_thesaurus(session, **kwargs)
     else:
-        print('Oops. Finding %s is not supported.' % entity)
+        cprint(args, 'Oops. Finding %s is not supported.' % entity)
         exit(0)
 
     # switch the output
     if args.json:
         obj = [serialize(r) for r in results]
-        print(json.dumps(obj, indent=4))
+        cprint(args, json.dumps(obj, indent=4))
     elif args.csv:
         obj = [flatten(serialize(r)) for r in results]
         f = io.StringIO(newline='')
@@ -61,7 +61,9 @@ def find(args):
         writer.writeheader()
         for o in obj:
             writer.writerow(o)
-        print(f.getvalue())
+            
+        f.seek(0)
+        cprint(args, f.getvalue())
     else:   # stdOut
         for result in results:
-            print(result)
+            cprint(args, result)
