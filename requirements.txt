@@ -5,4 +5,5 @@ psycopg2-binary
 tabulate
 nltk
 shapely
+pyproj
 requests

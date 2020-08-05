@@ -9,5 +9,6 @@ dependencies:
   - nltk
   - shapely
   - requests
+  - pyproj
   - pip:
     - geoalchemy2

@@ -8,14 +8,14 @@ from shapely.geometry.base import BaseGeometry
 from shapely import wkt, wkb
 from shapely.ops import transform
 
-from pyproj import Transformer, Proj
+from pyproj import Transformer, Proj, CRS
 
 from geoalchemy2.functions import ST_Within, ST_GeomFromText, ST_SetSRID
 from sqlalchemy.orm import Query
 
 from metacatalog import models
 
-def get_search_shape(arg, buffer=None, buffer_use_epsg=3857):
+def get_search_shape(arg, buffer=None, buffer_use_epsg=3857) -> BaseGeometry:
     """
     Calculate a search shape from a whole bunch of arguments.
     The search shape can optionally be buffered. 
@@ -78,9 +78,9 @@ def get_search_shape(arg, buffer=None, buffer_use_epsg=3857):
         if len(arg) == 2:
             # point
             geom = Point(arg)
-        elif len(args) == 4:
+        elif len(arg) == 4:
             # bbox [min x, min y, max x, max y]
-            l, b, r, u = args
+            l, b, r, u = arg
             geom = Polygon([(l, b), (l, u), (r, u), (r, b)])
         elif all([len(_) == 2 for _ in arg]):
             # polygon
@@ -116,10 +116,14 @@ def get_search_shape(arg, buffer=None, buffer_use_epsg=3857):
     
     # buffer at least with 0 distance to tidy polygons
     # create transformers
-    src = Proj(init="epsg:4326")
-    dest = Proj(init="epsg:%d" % buffer_use_epsg)
-    from_dest = Transformer.from_proj(src, dest)
-    to_dest = Transformer.from_proj(dest, src)
+#    src = Proj(init="epsg:4326")
+#    dest = Proj(init="epsg:%d" % buffer_use_epsg)
+    src = CRS('EPSG:4326')
+    dst = CRS('EPSG:%d' % buffer_use_epsg)
+#    from_dest = Transformer.from_proj(src, dest)
+#    to_dest = Transformer.from_proj(dest, src)
+    from_dest = Transformer.from_crs(src, dst)
+    to_dest = Transformer.from_crs(dst, src)
 
     _g = transform(from_dest.transform, geom)
     area = _g.buffer(buffer)
