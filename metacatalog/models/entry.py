@@ -23,6 +23,7 @@ from metacatalog.db.base import Base
 from metacatalog import models
 from metacatalog import api
 from metacatalog.util.exceptions import MetadataMissingError, IOOperationNotFoundError
+from metacatalog.util.dict_functions import serialize
 
 
 
@@ -194,7 +195,7 @@ class Entry(Base):
     io_extension = None
     io_interface = None
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep=False, stringify=False) -> dict:
         """To dict
 
         Return the model as a python dictionary.
@@ -204,7 +205,9 @@ class Entry(Base):
         deep : bool
             If True, all related objects will be included as 
             dictionary. Defaults to False
-
+        stringify : bool
+            If True, all values will be turned into a string, 
+            to make the object serializable.
         Returns
         -------
         obj : dict
@@ -251,6 +254,8 @@ class Entry(Base):
             if len(comp) > 0:
                 d['composite_entries'] = [e.to_dict(deep=False) for e in comp]
 
+        if stringify:
+            return serialize(d, stringify=True)
         return d
 
     @classmethod

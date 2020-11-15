@@ -5,7 +5,7 @@ from sqlalchemy.orm import object_session
 
 from metacatalog.models.entry import Entry
 
-def read_from_internal_table(entry, datasource, **kwargs):
+def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
     # check data validity
     assert Entry.is_valid(entry)
 
@@ -17,11 +17,10 @@ def read_from_internal_table(entry, datasource, **kwargs):
 
     # check if start and end date are set
     sql = "SELECT * FROM %s WHERE entry_id=%d" % (tablename, entry.id)
-    if 'start' in kwargs.keys() or 'end' in kwargs.keys():
-        if 'start' in kwargs.keys():
-            sql += " AND tstamp >= '%s'" % (dt.strftime(kwargs['start'], '%Y-%m-%d %H:%M:%S'))
-        if 'end' in kwargs.keys():
-            sql += " AND tstamp <= '%s'" % (dt.strftime(kwargs['end'], '%Y-%m-%d %H:%M:%S'))
+    if start is not None:
+        sql += " AND tstamp >= '%s'" % (dt.strftime(start, '%Y-%m-%d %H:%M:%S'))
+    if end is not None:
+        sql += " AND tstamp <= '%s'" % (dt.strftime(end, '%Y-%m-%d %H:%M:%S'))
 
     # infer table column names order
     col_sql = 'select * from %s limit 0' % tablename
