@@ -50,7 +50,7 @@ class Person(Base):
     """
     __tablename__ = 'persons'
     __table_args__ = (
-        CheckConstraint('NOT (full_name is NULL AND organisation_name is NULL)'),
+        CheckConstraint('NOT (last_name is NULL AND organisation_name is NULL)'),
     )
 
     id = Column(Integer, primary_key=True)
