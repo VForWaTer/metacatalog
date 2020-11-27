@@ -1,5 +1,5 @@
-from sqlalchemy import Column, ForeignKey
-from sqlalchemy import Integer, String
+from sqlalchemy import Column, ForeignKey, CheckConstraint
+from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import relationship
 
 from metacatalog.db.base import Base
@@ -49,11 +49,16 @@ class Person(Base):
         
     """
     __tablename__ = 'persons'
+    __table_args__ = (
+        CheckConstraint('NOT (full_name is NULL AND organisation_name is NULL)')
+    )
 
     id = Column(Integer, primary_key=True)
-    first_name = Column(String(128), nullable=False)
-    last_name = Column(String(128), nullable=False)
+    is_organisation = Column(Boolean, default=False)
+    first_name = Column(String(128), nullable=True)
+    last_name = Column(String(128), nullable=True)
     organisation_name = Column(String(1024), nullable=True)
+    organisation_abbrev = Column(String(64), nullable=True)
     affiliation = Column(String(1024))
     attribution = Column(String(1024))
 
@@ -78,14 +83,19 @@ class Person(Base):
 
         """
         # base dictionary
-        d = dict(
-            id=self.id,
-            first_name=self.first_name,
-            last_name=self.last_name
-        )
+        if self.is_organization:
+            d = dict(
+                id=self.id
+            )
+        else:
+            d = dict(
+                id=self.id,
+                first_name=self.first_name,
+                last_name=self.last_name
+            )
 
         # set optionals
-        for attr in ('organisation_name', 'affiliation', 'attribution'):
+        for attr in ('organisation_abbrev', 'organisation_name', 'affiliation', 'attribution'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr)
 
@@ -97,21 +107,28 @@ class Person(Base):
 
     @property
     def full_name(self):
-        if self.first_name is not None:
-            return '%s %s' % (self.first_name, self.last_name)
+        if not self.is_organisation:
+            if self.first_name is not None:
+                return '%s %s' % (self.first_name, self.last_name)
+            else:
+                return self.last_name
         else:
-            return self.last_name
+            return '%s (Org.)' % self.organisation_name 
 
     @full_name.setter
     def full_name(self, name):
-        # split the name and use the last name
-        chunks = name.split(' ')
-        self.last_name = chunks.pop()
+        if not self.is_organisation:
+            # split the name and use the last name
+            chunks = name.split(' ')
+            self.last_name = chunks.pop()
 
-        if len(chunks) > 0:
-            self.first_name = ' '.join(chunks)
+            if len(chunks) > 0:
+                self.first_name = ' '.join(chunks)
+            else:
+                self.first_name = None
         else:
-            self.first_name = None
+            part = name.replace(' (Org.)', '')
+            self.organisation_name = part
 
     def __str__(self):
         return "%s <ID=%d>" % (self.full_name, self.id)
