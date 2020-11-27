@@ -117,4 +117,4 @@ def main():
             if not args.quiet:
                 print("An unexpected error occured:\n{msg}\nFull error traceback in 'error.log'".format(msg=str(e)))
             with open('error.log', 'w') as f:
-                traceback.print_tb(err.__traceback__, file=f)
+                traceback.print_tb(e.__traceback__, file=f)

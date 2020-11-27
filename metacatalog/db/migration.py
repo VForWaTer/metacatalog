@@ -36,6 +36,7 @@ date: {date}
 
 {title}
 {message}
+
 \"\"\"
 from sqlalchemy.orm import Session
 from metacatalog import api, models
@@ -112,6 +113,14 @@ def upgrade(session: Session, target='head'):
         except Exception as e:
             session.rollback()
             raise e
+
+        # add a log
+        log = models.Log(
+            code=models.LogCodes.migration,
+            description="Migration [%d] -> [%d]" % (current, target)
+        )
+        session.add(log)
+        session.commit()
     print('done.')
 
 
