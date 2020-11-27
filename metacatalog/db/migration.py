@@ -114,13 +114,6 @@ def upgrade(session: Session, target='head'):
             session.rollback()
             raise e
 
-        # add a log
-        log = models.Log(
-            code=models.LogCodes.migration,
-            description="Migration [%d] -> [%d]" % (current, target)
-        )
-        session.add(log)
-        session.commit()
     print('done.')
 
 
