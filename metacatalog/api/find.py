@@ -9,7 +9,7 @@ At the current stage, the following objects can be found by a FIND operation:
 from metacatalog import models
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.sql.expression import false
+from sqlalchemy.sql.expression import false, true
 
 import nltk
 
@@ -438,15 +438,20 @@ def find_role(session, id=None, name=None, return_iterator=False):
         return query.all()
 
 
-def find_person(session, id=None, first_name=None, last_name=None, role=None, organisation_name=None, return_iterator=False):
+def find_person(session, id=None, first_name=None, last_name=None, role=None, organisation_name=None, organisation_abbrev=None, return_iterator=False):
     """Find Person
 
     Return person record on exact matches. Persons can be 
-    identified by id, first_name, last_name or associated roles.
+    identified by id, first_name, last_name, organisation details or associated roles.
+    Since version ``0.2.5`` only Persons which have a ``is_organisation==False`` 
+    will be returned
 
     .. versionchanged:: 0.1.8
         string matches now allow `'%'` and `'*'` wildcards and can 
         be inverted by prepending `!`
+
+    .. versaionchanged:: 0.2.6
+        organisation_abbrev is now available.
 
     Parameters
     ----------
@@ -468,6 +473,12 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, or
         and group specification.
         .. note::
             Not all Persons may have an organisation_name.
+    organisation_abbrev : str
+        .. versionadded:: 0.2.6
+        A short abbreviation of the head organisation if
+        applicable.
+        .. note::
+            Not all Persons may have a head organisation
     return_iterator : bool
         If True, an iterator returning the requested objects 
         instead of the objects themselves is returned.
@@ -477,9 +488,13 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, or
     records : list of metacatalog.Person
         List of matched Person instance. 
 
+    See Also
+    --------
+    find_organisation
+
     """
     # base query
-    query = session.query(models.Person)
+    query = session.query(models.Person).filter(models.Person.is_organisation == false())
 
     if id is not None:
         query = query.filter(models.Person.id==id)
@@ -507,7 +522,79 @@ def find_person(session, id=None, first_name=None, last_name=None, role=None, or
 
     if organisation_name is not None:
         query = query.filter(_match(models.Person.organisation_name, organisation_name))
+
+    if organisation_abbrev is not None:
+        query = query.filter(_match(models.Person.organisation_abbrev, organisation_abbrev))
     
+    # return
+    if return_iterator:
+        return query
+    else:
+        return query.all()
+
+
+def find_organisation(session, id=None, organisation_name=None, organisation_abbrev=None, role=None,  return_iterator=False):
+    """Find Organisation
+    .. versionadded:: 0.2.6
+
+    Return Person record on exact matches. This function will only return records 
+    that have ``is_organisation=True``. For natural persons use the 
+    :func:`find_person <metacatalog.api.find_person>` function.    
+
+    Parameters
+    ----------
+    session : sqlalchemy.Session
+        SQLAlchemy session connected to the database.
+    id : integer
+        Database unique ID of the requested record. Will 
+        return only one record.
+    organisation_name :  str
+        Required. The full name of the head organisation. 
+    organisation_abbrev : str
+        A short abbreviation of the head organisation if
+        applicable.
+    role : int, str
+        Role id or name (exact match) that is associated to 
+        an organistion. Will most likely return many organisations.
+    return_iterator : bool
+        If True, an iterator returning the requested objects 
+        instead of the objects themselves is returned.
+    
+    Returns
+    -------
+    records : list of metacatalog.Person
+        List of matched Person instance. 
+
+    """
+    # base query
+    query = session.query(models.Person).filter(models.Person.is_organisation == true())
+
+    if id is not None:
+        query = query.filter(models.Person.id == id)
+
+    if organisation_name is not None:
+        query = query.filter(_match(models.Person.organisation_name, organisation_name))
+
+    if organisation_abbrev is not None:
+        query = query.filter(_match(models.Person.organisation_abbrev, organisation_abbrev))
+
+    if role is not None:
+        # get the roles
+        if isinstance(role, int):
+            role_id = session.query(models.PersonRole.id).filter(models.PersonRole.id == role).one()
+        elif isinstance(role, str):
+            role_id = session.query(models.PersonRole.id).filter(models.PersonRole.name == role).first()
+        else:
+            raise AttributeError(
+                'Role has to be an id (integer) or name (string).')
+
+        # find the associations
+        ids = session.query(models.PersonAssociation.person_id).filter(
+            models.PersonAssociation.relationship_type_id == role_id).all()
+
+        # filter by these ids
+        query = query.filter(models.Person.id.in_(ids))
+
     # return
     if return_iterator:
         return query
