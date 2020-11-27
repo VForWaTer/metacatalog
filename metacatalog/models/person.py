@@ -83,7 +83,7 @@ class Person(Base):
 
         """
         # base dictionary
-        if self.is_organization:
+        if self.is_organisation:
             d = dict(
                 id=self.id
             )
