@@ -47,10 +47,15 @@ Create Tables
     `init <../cli/cli_init.ipynb>`_ for more detailed information.
 
 After the database has been installed, you can use the `metacatalog CLI <../cli/cli.rst>`_
-to create the necessary tables:
+to create the necessary tables.
+Follow the syntax of the init command and replace *driver*, *user*, *password*, *host* and *database* with your parameters. 
 
 .. code-block:: bash
 
-    metacatalog init --connection postgresql://user:password@host:port/dbname
+    metacatalog init --connection driver://user:password@host:port/database
 
-As this
+When using Windows this command can lead to errors and must be changed in this case (refer to `metacatalog CLI <../cli/cli.rst>`_):
+
+.. code-block:: bash
+
+    python -m metacatalog init --connection driver://user:password@host:port/database
