@@ -41,11 +41,18 @@ You can install metacatalog from PyPI
 Create Tables
 -------------
 
-.. note:: Refer to the CLI command `create <../cli/cli_create.ipynb>`_, `populate <../cli/cli_populate.ipynb>`_ and `init <../cli/cli_init.ipynb>`_ for more detailed information.
+.. note::
+
+    Refer to the CLI command `create <../cli/cli_create.ipynb>`_, `populate <../cli/cli_populate.ipynb>`_ and
+    `init <../cli/cli_init.ipynb>`_ for more detailed information.
 
 After the database has been installed, you can use the `metacatalog CLI <../cli/cli.rst>`_
 to create the necessary tables.
-Follow the syntax of the init command and replace *driver*, *user*, *password*, *host* and *database* with your parameters.
+Follow the syntax of the init command and replace *driver*, *user*, *password*, *host* and *database* with your parameters
+
+.. note::
+
+    All parameters can be accessed in pgAdmin or have been previously set by the user.
 
 .. code-block:: bash
 
