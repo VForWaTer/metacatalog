@@ -114,7 +114,7 @@ def upgrade(session: Session, target='head'):
             session.rollback()
             raise e
 
-    print('done.')
+    print(' done.')
 
 
 
