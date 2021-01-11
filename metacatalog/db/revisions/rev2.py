@@ -32,6 +32,7 @@ ALTER TABLE public.persons ALTER COLUMN first_name SET NOT NULL;
 ALTER TABLE public.persons ALTER COLUMN last_name SET NOT NULL;
 ALTER TABLE public.persons DROP COLUMN is_organisation;
 ALTER TABLE public.persons DROP COLUMN organisation_abbrev;
+COMMIT;
 """
 
 
