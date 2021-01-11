@@ -26,7 +26,7 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.6
+        python-version: 3.8
 
     # install metacatalog and test dependencies
     # e2e-tests rely on pytest and pytest-depends so far 

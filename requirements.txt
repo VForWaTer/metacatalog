@@ -1,6 +1,7 @@
 sqlalchemy
 geoalchemy2
 pandas
+numpy
 psycopg2-binary
 tabulate
 nltk
