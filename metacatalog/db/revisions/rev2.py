@@ -22,12 +22,12 @@ ALTER TABLE public.persons ALTER COLUMN is_organisation SET NOT NULL;
 -- set constraints
 ALTER TABLE public.persons ALTER COLUMN first_name DROP NOT NULL;
 ALTER TABLE public.persons ALTER COLUMN last_name DROP NOT NULL;
-ALTER TABLE public.persons ADD CONSTRAINT check_names CHECK ( NOT (last_name IS NULL AND organisation_name IS NULL));
+ALTER TABLE public.persons ADD CONSTRAINT persons_check CHECK ( NOT (last_name IS NULL AND organisation_name IS NULL));
 COMMIT;
 """
 DOWNGRADE_SQL="""
 -- remove organisations
-ALTER TABLE public.persons DROP CONSTRAINT check_names;
+ALTER TABLE public.persons DROP CONSTRAINT persons_check;
 ALTER TABLE public.persons ALTER COLUMN first_name SET NOT NULL;
 ALTER TABLE public.persons ALTER COLUMN last_name SET NOT NULL;
 ALTER TABLE public.persons DROP COLUMN is_organisation;
@@ -49,6 +49,8 @@ def downgrade(session: Session):
     try:
         with session.bind.connect() as con:
             con.execute(DOWNGRADE_SQL)
+
+        print('Run:\n%s' % DOWNGRADE_SQL)
     except Exception as e:
         session.rollback()
         print('ERROR: there might still be organisations in the database. Remove them first.\n%s' % str(e))
