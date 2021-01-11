@@ -1,9 +1,8 @@
 include LICENSE
 include README.md
 include requirements.txt
+include environment.yml
 include VERSION
-include metacatalog/data/*
-include metacatalog/data/**/*
 include metacatalog/metacatalog
-include alembic.ini
-include alembic
+graft metacatalog/data
+
