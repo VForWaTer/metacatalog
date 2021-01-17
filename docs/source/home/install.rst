@@ -66,8 +66,14 @@ When using Windows this command can lead to errors and must be changed in this c
 
 
 
+
 The (standard) connection command could look like this:
 
 .. code-block:: bash
 
-    python -m metacatalog init --connection postgresql://postgres:\ *yourpassword*\ @localhost:5432/metacatalog
+    metacatalog init --connection postgresql://postgres:\ *yourpassword*\ @localhost:5432/metacatalog
+
+
+.. note::
+
+    If you get a **FileNotFoundError** when first running the init command, try to (re)install the shapely package with **conda install shapely**.
