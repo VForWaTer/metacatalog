@@ -63,3 +63,10 @@ When using Windows this command can lead to errors and must be changed in this c
 .. code-block:: bash
 
     python -m metacatalog init --connection driver://user:password@host:port/database
+
+
+
+The (standard) connection string could look like this:
+.. code-block:: bash
+
+    python -m metacatalog init --connection postgresql://postgres:\ *yourpassword*\ @localhost:5432/metacatalog
