@@ -66,7 +66,8 @@ When using Windows this command can lead to errors and must be changed in this c
 
 
 
-The (standard) connection string could look like this:
+The (standard) connection command could look like this:
+
 .. code-block:: bash
 
     python -m metacatalog init --connection postgresql://postgres:\ *yourpassword*\ @localhost:5432/metacatalog
