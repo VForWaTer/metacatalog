@@ -33,7 +33,7 @@ def get_uuid(session: Session, uuid: str, not_found='raise'):
     if group is not None:
         return group
 
-    # check if Person exists
+    # check if a Person exists
     group = api.find_person(session, uuid=uuid)
     if group is not None:
         return group
