@@ -362,7 +362,7 @@ def find_datasource_type(session, id=None, name=None, return_iterator=False):
 
     Parameters
     ----------
-   session : sqlalchemy.Session
+    session : sqlalchemy.Session
         SQLAlchemy session connected to the database.
     id : integer
         Database unique ID of the requested record. Will
@@ -406,7 +406,7 @@ def find_role(session, id=None, name=None, return_iterator=False):
 
     Parameters
     ----------
-   session : sqlalchemy.Session
+    session : sqlalchemy.Session
         SQLAlchemy session connected to the database.
     id : integer
         Database unique ID of the requested record. Will
