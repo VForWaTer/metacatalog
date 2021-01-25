@@ -26,7 +26,7 @@ class Person(Base):
     id : int
         Unique id of the record. If not specified, the database will assign it.
     uuid : str
-        .. versionadded: 0.2.8
+        .. versionadded: 0.2.7
         Version 4 UUID string to identify the Entry across installations.
         This field is read-only and will be assigned on creation. It is primarily
         used to export Entry into ISO19115 metadata.

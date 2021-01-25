@@ -461,7 +461,7 @@ def find_person(session, id=None, uuid=None, first_name=None, last_name=None, ro
         Database unique ID of the requested record. Will
         return only one record.
     uuid : str
-        .. versionadded:: 0.2.8
+        .. versionadded:: 0.2.7
         Find by version 4 UUID. If uuid is given, all other options
         will be ignored.
     first_name : str

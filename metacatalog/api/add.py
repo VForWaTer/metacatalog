@@ -292,7 +292,7 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
     session : sqlalchemy.Session
         SQLAlchemy session connected to the database.
     uuid : str
-        .. versionadded: 0.2.8
+        .. versionadded: 0.2.7
         An UUID version 4 to globally identify the person list.
         If you add a new person, do not set the UUID as a new
         UUID will be set.

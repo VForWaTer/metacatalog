@@ -19,7 +19,7 @@ def get_uuid(session: Session, uuid: str, not_found='raise'):
     - Entry
     - EntryGroup
     - Keyword
-    .. versionadded:: 0.2.8
+    .. versionadded:: 0.2.7
     - Person
 
     """
@@ -34,9 +34,9 @@ def get_uuid(session: Session, uuid: str, not_found='raise'):
         return group
 
     # check if a Person exists
-    group = api.find_person(session, uuid=uuid)
-    if group is not None:
-        return group
+    person = api.find_person(session, uuid=uuid)
+    if person is not None:
+        return person
 
     # handle keyword
     keyword = api.find_keyword(session, uuid=uuid)
