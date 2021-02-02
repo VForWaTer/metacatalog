@@ -438,7 +438,7 @@ def find_role(session, id=None, name=None, return_iterator=False):
         return query.all()
 
 
-def find_person(session, id=None, uuid=None, first_name=None, last_name=None, role=None, organisation_name=None, organisation_abbrev=None, return_iterator=False):
+def find_person(session, id=None, uuid=None, first_name=None, last_name=None, role=None, organisation_name=None, organisation_abbrev=None, attribution=None, return_iterator=False):
     """Find Person
 
     Return person record on exact matches. Persons can be
@@ -483,6 +483,10 @@ def find_person(session, id=None, uuid=None, first_name=None, last_name=None, ro
         applicable.
         .. note::
             Not all Persons may have a head organisation
+    attribution : str
+        .. versionadded:: 0.2.8
+        Attribtion recommondation, which is associated 
+        to all datasets, the user is first author of
     return_iterator : bool
         If True, an iterator returning the requested objects
         instead of the objects themselves is returned.
@@ -537,6 +541,9 @@ def find_person(session, id=None, uuid=None, first_name=None, last_name=None, ro
 
     if organisation_abbrev is not None:
         query = query.filter(_match(models.Person.organisation_abbrev, organisation_abbrev))
+
+    if attribution is not None:
+        query = query.filter(_match(models.Person.attribution, attribution))
 
     # return
     if return_iterator:
