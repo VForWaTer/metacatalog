@@ -1,0 +1,1116 @@
+=========
+ISO 19115
+=========
+
+Overview
+========
+
+Metacatalog makes it possible to store metadata in ISO 19115 standard.
+Some of the required information for ISO 19115 will be the same for the 
+whole metacatalog instance, or, is specific to your installation and use 
+case. Below is a table of ISO 19115 code lists, which are implemented 
+and how they translate into metacatalog.
+
+ISO 19115 Fields
+================
+
+ISO 19115, 19115-1, and 19115-2 define only a few mandatory (M) fields, but a long 
+list of optional (O) and coditional (C) fields. In the table below you find a mapping 
+of ISO names to metacatalog names. If the column *Code List* is filled, metacatalog 
+makes use of published ISO 19115 CodeList values. In the section below you can find 
+for every list, how the single values map into metacatalog.
+
+MD_Metadata
+-----------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - fileIdentifier
+    - Entry.uuid
+    - 
+    - [1]
+    - 
+  * - language
+    - ``'en-US'``
+    - ISO 639-2 values are allowed
+    - [1]
+    - metacatalog is not multi-language and therefore a common value should be used
+  * - characterSet
+    - DataSource.encoding
+    - MD_CharacterSetCode
+    - [1]
+    - DataSource.encoding
+  * - parentIdentifier
+    - EntryGroup.id if Entry.is_partial
+    - 
+    - [0] or [1]
+    - Only for partial Entries a Parent Entry is mandatory.
+  * - hierachyLevel
+    - ``'dataset'``
+    - MD_ScopeCode
+    - [1]
+    - All other values are not applicable for metacatalog.
+  * - hierachyLevelName
+    - 
+    - 
+    - [0..*]
+    - Conditional: not applicable if ``hierachyLevel == 'dataset'``
+  * - contact
+    - Entry.author | Entry.contributors
+    - CI_ResponsibleParty, CI_RoleCode
+    - [1..*]
+    - In metacatalog, the first author is contact person. 
+  * - dateStamp
+    - Entry.lastUpdate
+    - ISO 19103
+    - [1]
+    - either creation or last edit
+  * - metadataStandardName
+    - ``'ISO19115-2'``
+    -  
+    - [1]
+    - As of now ISO is the only standard used. More can be added here
+  * - metadataStandardVersion
+    - ``ISO19115-2:2019'``
+    -  
+    - [1]
+    - Not entirely sure about this
+  * - locale
+    - ``'en-US.utf8'``
+    - ISO 19139
+    - [0..*]
+    - Not sure about the format
+  * - metadataLinkageURL
+    - 
+    - 
+    - [0..*]
+    - The specific installation of metacatalog has to define this.
+  * - spatialRepresentationInfo
+    - 
+    - MD_SpatialRepresentation
+    - [0..*]
+    - Recommended for INSPIRE topic 'elevation'
+  * - referenceSystemInfo
+    - 
+    - MD_ReferenceSystem
+    - [1]
+    - In INSPIRE [1..*] cardinality. EPSG:4326 for metadata
+  * - metadataExtensionInfo
+    - 
+    - MD_MetadataExtensionInformation
+    - [0..*]
+    - Details.value if Details.thesaurus_id not None
+  * - identificationInfo
+    - 
+    - MD_Identification
+    - [1..*]
+    - Many possible. Only the first occarance is used for INSPIRE
+  * - contentInfo
+    - DataSourceType.name & Variable.name
+    - MD_ContentInformation
+    - [1..*]
+    - this does not map exactly, but is optional in ISO anyway
+  * - distributionInfo
+    - 
+    - MD_Distribution
+    - [1]
+    - INSPIRE requires distribution information. Has to be implemented by metacatalog admin.
+  * - dataQualityInfo
+    - 
+    - DQ_DataQuality
+    - [1..*]
+    - not yet implemended
+  * - portrayalCatalogueInfo
+    - 
+    - MD_PortrayalCatalogueReference
+    - [0..*]
+    - This has to be defined outside metacatalog.
+  * - applicationSchemaInfo
+    - 
+    - MD_ApplicationSchema
+    - [0]
+    - Not sure if metacatalog can implement this at all.
+
+MD_Indentification
+------------------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - citation
+    - Entry.citation
+    - CI_Citation
+    - [1]
+    - 
+  * - abstract
+    - Entry.abstract
+    - 
+    - [1]
+    - The abstract may contain a details table (`Entry.details_table(fmt='markdown')`)
+  * - purpose
+    - 
+    - 
+    - [0]
+    - The purpose goes into the abstract in metacatalog
+  * - status
+    - 
+    - MD_ProgressCode
+    - [0..1]
+    - not yet implemented.
+  * - pointOfContact
+    - Entry.author
+    - CI_ResponsibleParty
+    - [1..*]
+    - In metacatalog, this is a double entry to contact. Filled by `Entry.author`
+  * - resourceMaintenance
+    - 
+    - MD_MaintenaceInformation
+    - [0..*]
+    - as of now, no planned implementation
+  * - graphicOverview
+    - 
+    - MD_BrowseGraphic
+    - [0..*]
+    - as of now, no planned implementation. 
+  * - descriptiveKeywords
+    - Keyword
+    - MD_Keywords
+    - [1..*]
+    - I have no idea, what the forced Keyword is...
+  * - resourceSpecificUsage
+    - 
+    - MD_Usage
+    - [0..*]
+    - as of now, no planned implementation
+  * - resourceConstraints
+    - License
+    - MD_Constrains
+    - [1..*]
+    - only a few values are allowed within metacatalog
+  * - aggregationInfo
+    - EntryGroup
+    - MD_AggregationInformation
+    - [0..*]
+    - only a few values are alled within metacatalog
+
+MD_DataIdentification
+---------------------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - spatialRepresentationType
+    - ``'raster'`` or ``'vector'``
+    - MD_SpatialRepresentation_TypeCode
+    - [1..*]
+    - ``'raster'`` for raster data-types, ``'vector'`` else.
+  * - spatialResolution
+    - DataSource.spatial_scale
+    - MD_Resolution
+    - [0..*]
+    - if applicable (DataSource.spatial_scale can be None)
+  * - language
+    - ``'en-US'``
+    - ISO 639-2
+    - [1]
+    - metacatalog is as of now not multi-language
+  * - characterSet
+    - ``'utf8'``
+    - MD_CharacterSetCode
+    - [1]
+    - it is recommended to only use UTF-8 encodings
+  * - topicCategory
+    - Keyword.value
+    - MD_TopicCategoryCode
+    - [1..*]
+    - This may be mappable from Keywords
+  * - environmentDescription
+    - Entry.abstract
+    - 
+    - [0..1]
+    - If important, should go into the abstract
+  * - extent
+    - SpatialScale.extent TemporalScale.extent
+    - Ex_Extent
+    - [1..*]
+    - not sure if temporal scale is supported by ISO
+  * - supplementalInformation
+    - DataSource.args
+    - 
+    - [0..1]
+    - This may not be helpful on export 
+
+MD_BrowseGraphic
+----------------
+
+.. note::
+
+  The ``MD_Identification.graphicOverview`` is as of now not implemented in metacatalog.
+  Currently, no implementation is planned.
+
+
+MD_Keywords
+-----------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - keyword
+    - Keyword.full_path
+    - 
+    - [1..*]
+    - Keyword hierachies will always be separated by ``' > '``
+  * - type
+    - ``'theme'``
+    - MD_KeywordTypeCode
+    - [0..1]
+    - in metacatalog keywords are: ``'topic > term > ...'``
+  * - thesaurusName
+    - ``Keyword.thesaurusName``
+    - CI_Citation
+    - [0..1]
+    - ``Keyword.thesaurusName`` is a read only
+
+.. note:: 
+    To reference a thesaurus, the thesaurus name is needed.
+    Then, the url of the given Keyword is given as 
+    `thesaurusUrl`. The system, which operates metacatalog 
+    has to be able to create a valid ``CI_Citation``. 
+    The `thesaurusName.citedResponsibleParty` is represented 
+    by an `organisationName` given by `thesaurus_organisation`
+    and `contactInfo`, which is an `OnlineResource` of `linkage` 
+    given as `thesaurus_url`.
+
+MD_RepresentativeFraction
+-------------------------
+
+Has only one field: ``denominator``, which is the ISO 19103 scale. Applies only to 
+raster sources in metacatalog. See MD_Resolution.
+
+MD_Resolution
+-------------
+
+Has only one of two fields. The resolution applies only to raster sources in metacatalog 
+and is either a MD_RepresentativeFraction (scale) or a ground distance stored in the 
+field ``distance``. If :class:`DataSource <metacatalog.models.DataSource>` has a 
+spatial scale, the :class:`SpatialScale.resolution <metacatalog.models.SpatialScale>` 
+can be used to give the ground distance.
+
+MD_Usage
+--------
+
+.. note::
+
+  Metacatalog does not store the usage information in extra fields, but they can be 
+  extracted from existing ISO fields, that are extended in metacatalog
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - specificUsage  
+    - Entry.abstract
+    - 
+    - [1]
+    - This information is added to the abstract in metacatalog
+  * - userContactInfo
+    - Entry.author
+    - 
+    - [1]
+    - metacatalog defines the first author as a universal contact person
+
+
+MD_AggregateInformation
+-----------------------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - aggregateDataSetIdentifier  
+    - Entry.associated_groups.entries.uuid
+    - MD_Identifier
+    - [1]
+    - can either implement the UUID or full MD_Identifier
+  * - associationType
+    - EntryGroupType.name
+    - DS_AssociationTypeCode
+    - [1]
+    - not all types are mapped into metacatalog
+
+MD_Constraints
+--------------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - useLimitation
+    - License.full_text
+    - 
+    - [1]
+    - This is redunant to meet INSPIRE
+
+.. note::
+
+  There is an onging debate about this field between INSPIRE and GDI-DE. At the moment the 
+  useLimitations are meant to describe use-cases where the data is not applicable. But it 
+  is a mandatory field and it is not possible to leave it blank. DGI-DE is duplication the 
+  useConstraints from MD_LegalConstraints into this field to satisfy ISO 19115 and INSPIRE.
+
+MD_LegalConstraints
+-------------------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - accessConstraints
+    - 
+    - MD_RestrictionsCode
+    - [C..0]
+    - not mapped in metacatalog
+  * - useConstraints
+    - ``'otherRestrictions'``
+    - MD_RestrictionsCode
+    - [1]
+    - note the warning below!
+  * - otherConstraints
+    - License.full_text
+    - 
+    - [1]
+    - note the warning below!
+
+.. note::
+
+  ISO 19115 makes the fields ``accessConstraints``, ``useConstraints`` and ``otherConstraints`` 
+  dependent on each other. ``otherConstraints`` is mandatory and either ``accessConstraints`` or
+  ``useConstraints`` need at least a reference ``'otherRestrictions'`` as a value to reference 
+  the field. All of them together are needed to set the legal framework of working with data. 
+  GDI-DE is trying to unify this semantic und suggests to duplicate open data licenses into 
+  all of these fields. They also have a suggestion how to store open data licenses (which 
+  only applies to the german geodata infrastructure and is therefore not a part of metacatalog.)
+
+.. warning::
+
+  If you implement metacatalog in your application, you have to make sure, that the license 
+  information is mapped into ISO 19115 accordingly. Other restrictions and use limitation do 
+  not apply as metacatalog is made for open data. If you wish to store private or restricted 
+  information, you will need a security, authorization and authentification middleware as 
+  metacatalog does not handle these issues.
+
+
+MD_SecurityConstraints
+----------------------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - classification
+    - ``'unclassified'``
+    - MD_ClassificationCode
+    - [1]
+    - note the warning below
+
+  .. warning::
+
+    Please also see MD_LegalConstraints. The metadata in metacatalog is always 
+    ``'unclassified'``. If you wish to implement classified information, you need a 
+    security middleware. However, ISO 19115 and INSPIRE define this field as 
+    mandatory and you have to include it.
+
+DQ_DataQuality
+-------------- 
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - scope
+    - ``'dataset'``, ``'series'``
+    - DQ_Scope
+    - [1]
+    - see note below 
+  * - report
+    - 
+    - DQ_Element
+    - [1..*]
+    - not yet implemented
+  * - lineage
+    - 
+    - LI_Lineage
+    - [1..*]
+    - not yet implemented
+
+
+.. note::
+
+  The scope is always ``'dataset'`` for ``Entry`` and ``'series'`` for ``EntryGroup``.
+  The DQ_Scope can then be filled automatically, as both entries do not need user-information 
+  to fill the other DQ_Scope fields and are therefore not implemented into metacatalog.
+
+.. note::
+
+  All related data-quality tables are not mapped into metacatalog as the implementation 
+  is still in discussion.
+
+MD_MaintenaceInformation 
+------------------------
+
+.. note::
+
+  Currently, there are no plans to implement MD_MaintenaceInformation
+
+MD_SpatialRepresentation
+------------------------
+
+.. note:: 
+
+  This only applies to ``'raster'`` and ``'vector'`` data types, which can be derived from 
+  a data source type.
+  Any further implementations are not planned.
+
+MD_ReferenceSystem
+------------------
+
+.. note:: 
+
+  Metacatalog stores all geographic information in EPS:4326, WGS84 and you can therefore 
+  handle the reference system. If the data uses different reference systems, the ``DataSource`` 
+  will be able to handle this information with the next revision.
+
+.. warning::
+
+  Due to technical reasons, the DataSource can not yet handle CRS information. Please store
+  only EPSG:4326 referenced data in metacatalog. This will be resolved with one of 
+  the future releases.
+
+MD_ContentInformation
+---------------------
+
+.. note::
+
+  The MD_ContentInformation and all related entities are not yet implemented in metacatalog.
+  As metacatalog only uses a very limited amount of the defined values, ``DataSource`` and 
+  ``Variable`` will be mappable to MD_ContentInformation in the future.
+
+  
+MD_PortrayalCatalogueReference
+------------------------------
+
+.. note::
+
+  There are currently no plans to implement portayal information into metacatalog. 
+  But these records would have a ``m:1`` relationship to ``Entry`` and can be 
+  implemented outside metacatalog in a data-delivery middleware.
+
+
+MD_Distribution
+---------------
+.. note::
+
+  By the use of I/O extensions, almost any format and way 
+  of distributing data can be implemented into metacatalog.
+  It is recommended to append distribution information on export
+  filling the fields accordingly. Some of the fields can be 
+  determined by following metacatalog's data types.
+
+  The distributor will always be the authority running the 
+  metacatalog installation (not the data owner!)
+
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - testData
+    - 
+    - 
+    - [0]
+    - this is not mapped in metacatalog
+  * - distributionFormat
+    - ``'.txt'`` or ``.csv'``
+    - MD_Format
+    - [1]
+    - See note above.
+  * - distributor
+    - 
+    - MD_Distributor
+    - [1]
+    - metacatalog admin
+  * - transferOptions
+    - 
+    - MD_DigitalTransferOptions
+    - [0..*]
+    - Depending on the distribution system
+
+.. note::
+
+  If the ``DataSourceTypes`` should be used for distribution, an CI_OnlineResource 
+  with the ``DataSource.path`` as ``linkage`` can be automatically derived.
+
+.. note::
+
+  All other entities related to distribution are not part of metacatalog and have to be 
+  added, specifying the ways how the data can be requested and who is responsible.
+  The I/O Extentions might store some useful information.
+
+MD_MetadataExtensionInformation
+-------------------------------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - extendedRoleInformation
+    - nm_entries_details
+    - MD_ExtendedElementInformation
+    - [1..*]
+    - 
+
+MD_ExtendedElementInformation
+-----------------------------
+
+.. note::
+
+  MD_ExtendedElementInformation can be realized by ``Details`` that relate a 
+  ``Thesaurus`` with public URI. 
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - name
+    - Details.key
+    - 
+    - [1]
+    - 
+  * - shortName
+    - Details.stem
+    - 
+    - [0..1]
+    - can be omitted if ``'codeListElement'``
+  * - domainCode
+    - 
+    - 
+    - [1]
+    - 3-digit integer code. No idea for what.
+  * - definition
+    - Detail.description
+    - 
+    - [1]
+    - 
+  * - obligation
+    - 
+    - MD_ObligationCode
+    - [0]
+    - 
+  * - condition
+    - 
+    - 
+    - [0..1]
+    - Can be omitted because ``obligation`` cannot be ``'conditional'``. 
+  * - dataType
+    - ``characterString``
+    - MD_DataTypeCode
+    - [1]
+    - ``models.Detail.value`` is always string
+  * - maximumOccurence
+    - ``1``
+    - 
+    - [1]
+    - A key may not be duplicated on the same ``Entry``
+  * - domainValue
+    - ``'any'``
+    - 
+    - [1]
+    - ``key=value`` are arbitrary.
+  * - parentEntity
+    - ``MD_Metadata``
+    - 
+    - [1..*]
+    - in metacatalog ``Detail`` is bound to ``Entry``
+  * - rule
+    - ``'descriptive Value'``
+    - 
+    - [1]
+    - ``Detail`` is always specifying ``Entry``. You can set other text.
+  * - rationale
+    - Detail.description
+    - 
+    - [0..1]
+    - the description may contain a rationale
+  * - source
+    - Entry.author
+    - 
+    - [1]
+    - metacatalog specifies the author to be the source
+
+
+MD_ApplicationSchema
+--------------------
+
+.. note::
+
+  There are no plans to implement MD_ApplicationSchema.
+
+
+Ex_Extent
+---------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - description
+    - 
+    - 
+    - [0..1]
+    - Only one field of Ex_Extent can to be filled
+  * - geographicElement
+    - 
+    - EX_GeographicExtent
+    - [0..1]
+    - Only one field of Ex_Extent can to be filled
+  * - temporalElement
+    - 
+    - EX_TemporalExtent
+    - [0..1]
+    - Only one field of Ex_Extent can to be filled
+  * - verticalElement
+    - 
+    - EX_VerticalElement
+    - [0]
+    - verticalElements are not mapped in metacatalog
+
+EX_GeographicExtent
+-------------------
+
+The geographic extent is always given as bounding box in 
+EPSG:4326, if applicable. Other values and objects defined in
+IOS 19115 are not supported by metacatalog.
+
+
+EX_TemporalExtent
+-----------------
+
+ISO 19115 only requires a ``EX_TemporalExtent.extent`` value, which has to be 
+a ISO 19108 time range. The :class:`TemporalScale <metacatalog.models.TemporalScale>`
+has a ``start`` and a ``end`` property and any instance of it can return an 
+ISO 19108 time range.
+
+EX_VerticalExtent
+------------------
+
+.. note:: 
+
+  EX_VerticalExtent cannot be mapped in metacatalog
+
+CI_Citation
+-----------
+
+.. list-table::
+  :widths:  15 15 20 10 40
+  :header-rows: 1
+
+  * - ISO field
+    - metacatalog
+    - CodeList or Table
+    - Cardinality
+    - description
+  * - title
+    - Entry.title
+    - 
+    - [1]
+    - 
+  * - alternateTitle
+    - 
+    - 
+    - [0..*]
+    - not available in metacatalog
+  * - date
+    - Entry.publication
+    - 
+    - [1]
+    - The CI_Date is always publication in metacatalog
+  * - edition
+    - Entry.version
+    - 
+    - [0..1]
+    - This might change in the future
+  * - editionDate
+    - Entry.publication
+    - ISO 19103
+    - [0..1]
+    - mandatory if edition is set. It is the publication of the new ``Entry.version``
+  * - identifier
+    - 
+    - 
+    - [0]
+    - this does not apply to metacatalog
+  * - citedResponsibleParty
+    - 
+    - CI_ResponsibleParty
+    - [0..1]
+    - Not implemented, but could be filled by the metacatlog admin as CI_ResponsibleParty.
+  * - presentationForm
+    - 
+    - CI_PresentationFormCode
+    - [0]
+    - Not implemented in metacatalog.
+  * - series
+    - EntryGroup.uuid
+    - CI_Series
+    - [0..1]
+    - only applicable for ``EntryGroup``
+  * - otherCitationDetails
+    - 
+    - 
+    - [0]
+    - not available in metacatalog
+  * - collectiveTitle
+    - EntryGroup.title
+    - 
+    - [0..1]
+    - only applicable for ``EntryGroup``
+  * - ISBN
+    - 
+    - 
+    - [0]
+    - not available
+  * - ISSN
+    - 
+    - 
+    - [0]
+    - not available
+
+CI_ResponsibleParty
+-------------------
+
+.. note::
+
+  In metacatalog only two cases of using CI_ResponsibleParty are covered. Either it 
+  is the first author of the dataset and can then be filled by ``Entry.author``, or it 
+  is the authority running metacatalog and CI_ResponsibleParty can automatically be 
+  filled on export.
+
+
+Code-Lists
+==========
+
+Metacatalog mappings are based on the CodeList dictionaries published by NOAA.
+The following list gives you an idea, where and how the codes lists and the values 
+are implemented.
+
+https://www.ngdc.noaa.gov/wiki/index.php/ISO_19115_and_19115-2_CodeList_Dictionaries#CI_DateTypeCode
+
+
+CI_DateTypeCode
+---------------
+
+.. list-table:: 
+  :widths: 25 25 50
+  :header-rows: 1
+
+  * - ISO
+    - metacatalog
+    - description
+  * - creation
+    - Entry.creation
+    - start-date of the *data*
+  * - publication
+    - Entry.publication
+    - creation date of the Entry record
+  * - revision 
+    - /
+    - we use ISO 19115-2 lastUpdate
+  * - adopted
+    - n.a.
+    - not applicable
+  * - deprecated
+    - /
+    - not yet implemented
+  * - distribution
+    - n.a.
+    - not applicable as metacatalog is a distribution system. Will be the same as ``publication`` here.
+  * - expiry
+    - n.a.
+    - not applicable
+  * - inForce
+    - n.a.
+    - not applicable
+  * - lastRevision
+    - /
+    - not yet implemented
+  * - lastUpdate
+    - Entry.lastUpdate
+    - updates on every edit
+  * - nextUpdate
+    - n.a.
+    - not applicable
+  * - release
+    - n.a.
+    - metacatalog is intended for open data
+  * - superseded
+    - /
+    - not yet implemented
+  * - unavailable
+    - n.a.
+    - not applicable
+  * - validityBegins
+    - n.a.
+    - not applicable
+  * - validityExpires
+    - n.a.
+    - not applicable
+
+CI_PresentationFormCode
+-----------------------
+
+The definitions given in this list do not apply to environmental datasets. 
+Depending on the metacatalog instance and the metadata stored, the 
+CI_PresentationFormCode will apply to all data. If applicable it will be one of
+
+* mapDigital
+* modelDigital
+* tableDigital
+* physicalSample
+
+
+.. note::
+  
+  You will have to implement this _after_ metacatalog has exported the 
+  :class:`Entry <metacatalog.models.Entry>` information, if needed.
+
+CI_RoleCode
+-----------
+.. note::
+
+  The full `CI_RoleCode Codelist <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode>`_ 
+  is implemented exactly into `metacatalog.PersonRole`.
+
+.. csv-table:: Roles
+   :file: ../../../metacatalog/data/person_roles.csv
+   :widths: 20, 20, 60
+   :header-rows: 1
+
+DQ_EvaluationMethodTypeCode
+---------------------------
+
+The `DQ_EvaluationMethodTypeCode <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#DQ_EvaluationMethodTypeCode>`_
+list is not yet implemented.
+
+DS_AssociationTypeCode
+----------------------
+
+The :class:`EntryGroup <metacatalog.models.EntryGroup>` maps some of the 
+DS_AssociationTypeCode. 
+
+.. list-table:: 
+  :widths: 25 25 50
+  :header-rows: 1
+
+  * - ISO
+    - metacatalog
+    - description
+  * - crossReference
+    - /
+    - not implemented yet
+  * - largerWorkCitation
+    - :class:`EntryGroupType.name=='Composite' <metacatalog.models.EntryGroupType>`
+    - 'Citation' might be misleading here.
+  * - partOfSeamlessDatabase
+    - n.a.
+    - not sure if this applies to metacatalog
+  * - source
+    - n.a.
+    - not applicable, as metacatalog does not store dependencies if the data is an image
+  * - stereoMate
+    - n.a.
+    - not applicable
+  * - collectiveTitle
+    - `EntryGroupType.name=='Project'`
+    - applies if the Entries are grouped by Project name
+  * - dependency
+    - :class:`Entry <metacatalog.models.Entry>` if :class:`Entry.is_partial==True <metacatalog.models.Entry>`
+    - :class:`Entry.uuid <metacatalog.models.Entry>` of all :class:`Entry.is_partial==False <metacatalog.models.Entry>` for a partial Entry within the same composite
+  * - isComposedOf
+    - :class:`Entry.uuid <metacatalog.models.Entry>`
+    - :class:`Entry.uuid <metacatalog.models.Entry>` of all child Entries for a EntryGroup
+  * - revisionOf
+    - /
+    - not yet implemented
+  * - series
+    - n.a.
+    - not applicable.
+
+DS_InitiativeTypeCode
+---------------------
+
+The `InitiativeTypeCode List <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#DS_InitiativeTypeCode>`_ 
+does not apply to metacatalog. In cases you use a data platform around metacatalog, 
+which can either return aggregated datasets or processing results or datasets 
+that share a context, you have to implement this list to describe the type of 
+dataset aggregation.
+
+MD_CellGeometryCode
+-------------------
+
+The `MD_CellGeometryCode List <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_CellGeometryCode>`_ 
+is extended in metacatalog by the :class:`Entry.location <metacatalog.models.Entry` 
+and :class:`Entry.geom <metacatalog.models.Entry` properties.
+
+.. note::
+  
+  Note that `MD_CellGeometryCode List <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_CellGeometryCode>`_
+  is describing **grid cells**, therefore this section only applies to 
+  raster datasources and is not yet implemented.
+ 
+.. list-table:: 
+  :widths: 25 25 50
+  :header-rows: 1
+
+  * - ISO
+    - metacatalog
+    - description
+  * - point
+    - :class:`Entry.location <metacatalog.models.Entry` 
+    - location is always a point in metacatalog
+
+MD_CharacterSetCode
+-------------------
+
+The characterset of the metacatalog database is always the same as metacatalog 
+is not supporting multi-database installations. We recommend to use ``'utf-8'``.
+
+
+MD_ClassificationCode
+---------------------
+
+The `MD_ClassificationCode List <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_ClassificationCode>`_ 
+describes classified information. As metacatalog is designed for and dedicated to 
+managing open data this list does not apply.
+
+However a :class:`Entry <metacatalog.models.Entry>` can be put into embargo for a 
+limited amount of time. This defaults to two years after ``'publication'`` date.
+An Entry under embargo is still ``'unclassified'`` following 
+`MD_ClassificationCode List <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_ClassificationCode>`_ 
+but just not visible in the system. 
+
+MD_CoverageContentTypeCode
+--------------------------
+
+The `MD_CoverageContentTypeCode List <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode>`_ 
+is not yet implemented.
+
+MD_DatatypeCode
+---------------
+
+The `MD_DatatypeCode List <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_DatatypeCode>`_ 
+is not implemented yet, but will be available as a lookup value for data types.
+
+MD_DimensionNameTypeCode
+------------------------
+
+The  `MD_DimensionNameTypeCode List <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode>`_ 
+does not apply to metacatalog, as the data can be more generalized than geometric dimensions.
+
+MD_GeometricObjectTypeCode
+--------------------------
+
+The value is always ``'point'`` for :class:`Entry.location <metacatalog.models.Entry>`
+
+
+MD_ImagingConditionCode
+-----------------------
+
+The `MD_ImagingConditionCode List <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_ImagingConditionCode>`_ 
+is not yet implemented, but will be available optinally, to be linked to 
+:class:`Detail <metacatalog.models.Detail>` information.
+
+MD_KeywordTypeCode
+------------------
+
+The `MD_KeywordTypeCode <https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode>`_ 
+is not yet implemented. Some of the keyword types can be used to specify the controlled 
+keywords implemented as :class:`Keyword <metacatalog.models.Keyword>` and some might 
+further specify :class:`Details <metacatalog.models.Detail>`. 
+It will be decided with Version 0.2 of metacatalog how much of this information 
+will be reflected within metacatalog.
+

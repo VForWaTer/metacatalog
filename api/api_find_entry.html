@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Entry &#8212; Metacatalog 0.2.8 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Find person" href="api_find_person.html" />
+    <link rel="prev" title="Add Thesaurus" href="api_add_thesaurus.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../index.html">
+    
+      <img src="../_static/brand.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../home/home.html">Home</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../cli/cli.html">CLI</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="api.html">API</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../models/models.html">Database Models</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../dev/dev.html">Developers</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/VForWaTer/metacatalog" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="api_create_tables.html">Create Tables</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_populate_defaults.html">Populate defaults</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_add_entry.html">Add Entry</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_add_person.html">Add Person</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_add_variable.html">Add variable and unit</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_add_group.html">Add EntryGroup</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_add_license.html">Add license</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_add_keyword.html">Add keyword</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_add_thesaurus.html">Add Thesaurus</a>
+                </li>
+            
+          
+            
+                <li class="active">
+                    <a href="">Find Entry</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_find_person.html">Find person</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_find_variable.html">Find Variable</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_find_license.html">Find License</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_find_keyword.html">Find Keyword</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_find_thesaurus.html">Find Thesaurus</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_show_attributes.html">Show Attributes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_show_records.html">Show Records</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="api_get_uuid.html">Get UUID</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Entry" class="nav-link">Entry</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Entry-Group" class="nav-link">Entry-Group</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Group-type" class="nav-link">Group type</a>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="Find-Entry">
+<h1>Find Entry<a class="headerlink" href="#Find-Entry" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">Entry</span></code> is the main and most atomic entity in metacatalog. A set of metadata that describes one datasource of unique data type is described as <code class="docutils literal notranslate"><span class="pre">Entry</span></code>. In cases, where more than one <code class="docutils literal notranslate"><span class="pre">Entry</span></code> need to be grouped together to provide useful information, a <code class="docutils literal notranslate"><span class="pre">n:m</span></code> relation from <code class="docutils literal notranslate"><span class="pre">Entry</span></code> to <code class="docutils literal notranslate"><span class="pre">EntryGroup</span></code>s can be created. Depending on the kind of connection between the entries, <code class="docutils literal notranslate"><span class="pre">EntryGroup</span></code>s are futher described by <code class="docutils literal notranslate"><span class="pre">EntryGroupType</span></code>s.</p>
+<div class="section" id="Entry">
+<h2>Entry<a class="headerlink" href="#Entry" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="metacatalog.api.find_entry">
+<code class="sig-prename descclassname">metacatalog.api.</code><code class="sig-name descname">find_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">uuid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">abstract</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">license</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">variable</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">external_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">version</span><span class="o">=</span><span class="default_value">'latest'</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">author</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">contributor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keywords</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_iterator</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.api.find_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find Entry</p>
+<p>Find an meta data Entry on exact matches. Entries can be
+identified by id, title, external_id and version. The
+version can be added to all other matching types, which
+are mutually exclusive.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.1.8: </span>string matches now allow <cite>‘%’</cite> and <cite>‘*’</cite> wildcards and can
+be inverted by prepending <cite>!</cite></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>sqlalchemy.Session</em>) – SQLAlchemy session connected to the database.</p></li>
+<li><p><strong>id</strong> (<em>integer</em>) – Database unique ID of the requested record. Will
+return only one record.</p></li>
+<li><p><strong>uuid</strong> (<em>str</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.13.</span></p>
+</div>
+<p>Find by version 4 UUID. If uuid is given, all other options
+will be ignored.</p>
+</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – Title attribute of the Entry.</p></li>
+<li><p><strong>abstract</strong> (<em>str</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.8.</span></p>
+</div>
+<p>Abstract attibute of the Entry.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The abstract is usually a full text and the FIND operation
+uses <strong>exact</strong> matches. Therefore be sure to use a wildcard</p>
+</div>
+</p></li>
+<li><p><strong>license</strong> (<em>str</em><em>, </em><em>int</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.2.2.</span></p>
+</div>
+<p>The license can be a :class:<a href="#id1"><span class="problematic" id="id2">``</span></a>License &lt;metacatalog.models.License&gt;`,
+its id (int) or the short_title (str).</p>
+</p></li>
+<li><p><strong>variable</strong> (<em>str</em><em>, </em><em>int</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.2.2.</span></p>
+</div>
+<p>The variable can be a <code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code>,
+its id (int) or the name (str).</p>
+</p></li>
+<li><p><strong>external_id</strong> (<em>str</em>) – External id attrinbute of the Entry.</p></li>
+<li><p><strong>version</strong> (<em>int</em><em>, </em><em>str</em>) – <div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.2: </span>The default value is now ‘latest’</p>
+</div>
+<p>Version number of the Entry. Can be combined with
+the other matching parameters, as they might not be
+different between versions.
+If version == ‘latest’, only the latest version will be found.
+If None, all version are integrated.</p>
+</p></li>
+<li><p><strong>project</strong> (<em>int</em><em>, </em><em>str</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.2.2.</span></p>
+</div>
+<p>The project can be a <code class="xref py py-class docutils literal notranslate"><span class="pre">EntryGroup</span></code> of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EntryGroupType.name=='Project'</span></code>,
+its id (int) or title (str)</p>
+</p></li>
+<li><p><strong>author</strong> (<em>int</em><em>, </em><em>str</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.2.2.</span></p>
+</div>
+<p>The author can be a <code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code>,
+his id (int) or name (str). A string argument will match first and last
+names. The author is only the first author. For other contributors see
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">contributor</span></code>.</p>
+</p></li>
+<li><p><strong>contributor</strong> (<em>int</em><em>, </em><em>str</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.2.2.</span></p>
+</div>
+<p>The contributor can be a <code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code>,
+his id (int) or name (str). A string argument will match first and last
+names. A contributor is anyone associated as first or co-author. For
+first author only, see <code class="xref py py-attr docutils literal notranslate"><span class="pre">author</span></code>.</p>
+</p></li>
+<li><p><strong>keywords</strong> (<em>list of str</em><em>, </em><em>int</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.2.2.</span></p>
+</div>
+<p>The entries can be filtered by tagged controlled keywords. The given
+keyword or list of keywords will be matched against the value (str)  or
+id (int). If more than one is given, the entries need to be tagged by
+<strong>all</strong> keywords. An <code class="docutils literal notranslate"><span class="pre">OR</span></code> search is not possible, through the API.</p>
+</p></li>
+<li><p><strong>details</strong> (<em>dict</em>) – ..versionadded:: 0.2.2
+Entries can be filtered by additional details. The details need to be
+specified as dictioniares of <code class="docutils literal notranslate"><span class="pre">name=value</span></code> pairs. If more than one
+pair is given, the query will combine the pairs by <code class="docutils literal notranslate"><span class="pre">AND</span></code>.
+An <code class="docutils literal notranslate"><span class="pre">OR</span></code> search is not possible, through the API.</p></li>
+<li><p><strong>return_iterator</strong> (<em>bool</em>) – If True, an iterator returning the requested objects
+instead of the objects themselves is returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>records</strong> – List of matched Entry instance.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of metacatalog.Entry</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="Entry-Group">
+<h2>Entry-Group<a class="headerlink" href="#Entry-Group" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="metacatalog.api.find_group">
+<code class="sig-prename descclassname">metacatalog.api.</code><code class="sig-name descname">find_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">uuid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_iterator</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.api.find_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find group</p>
+<p>Find a group of entries on exact matches. Groups can be
+identified by id, title or its type.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.1.8: </span>string matches now allow <cite>‘%’</cite> and <cite>‘*’</cite> wildcards and can
+be inverted by prepending <cite>!</cite></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>sqlalchemy.Session</em>) – SQLAlchemy session connected to the database.</p></li>
+<li><p><strong>id</strong> (<em>integer</em>) – Database unique ID of the requested record. Will
+return only one record.</p></li>
+<li><p><strong>uuid</strong> (<em>str</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.13.</span></p>
+</div>
+<p>Find by version 4 UUID. If uuid is given, all other options
+will be ignored.</p>
+</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – Title attribute of the group.</p></li>
+<li><p><strong>type</strong> (<em>int</em><em>, </em><em>str</em>) – Either the id or name of a group type to exact match.</p></li>
+<li><p><strong>return_iterator</strong> (<em>bool</em>) – If True, an iterator returning the requested objects
+instead of the objects themselves is returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>records</strong> – List of matched EntryGroupType instance.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of metacatalog.EntryGroupType</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="Group-type">
+<h2>Group type<a class="headerlink" href="#Group-type" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="metacatalog.api.find_group_type">
+<code class="sig-prename descclassname">metacatalog.api.</code><code class="sig-name descname">find_group_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">uuid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_iterator</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.api.find_group_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find entry group types</p>
+<p>Find a group type on exact matches. The group types
+describes a collection of entries.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.1.8: </span>string matches now allow <cite>‘%’</cite> and <cite>‘*’</cite> wildcards and can
+be inverted by prepending <cite>!</cite></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>sqlalchemy.Session</em>) – SQLAlchemy session connected to the database.</p></li>
+<li><p><strong>id</strong> (<em>integer</em>) – Database unique ID of the requested record. Will
+return only one record.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name attribute of the group type.</p></li>
+<li><p><strong>return_iterator</strong> (<em>bool</em>) – If True, an iterator returning the requested objects
+instead of the objects themselves is returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>records</strong> – List of matched EntryGroupType instance.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of metacatalog.EntryGroupType</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="api_add_thesaurus.html" title="previous page">Add Thesaurus</a>
+    <a class='right-next' id="next-link" href="api_find_person.html" title="next page">Find person</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020, Mirko Mälicke.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

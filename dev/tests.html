@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E2E Tests &#8212; Metacatalog 0.2.8 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Extensions" href="ext.html" />
+    <link rel="prev" title="Developers" href="dev.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../index.html">
+    
+      <img src="../_static/brand.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../home/home.html">Home</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../cli/cli.html">CLI</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../api/api.html">API</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../models/models.html">Database Models</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="dev.html">Developers</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/VForWaTer/metacatalog" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="active">
+                    <a href="">E2E Tests</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="ext.html">Extensions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="iso19115.html">ISO 19115</a>
+                </li>
+            
+          
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#testing-in-metacatalog" class="nav-link">Testing in metacatalog</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#run" class="nav-link">Run</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#running-tests-locally" class="nav-link">Running tests locally</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#clean-up" class="nav-link">Clean up</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="e2e-tests">
+<h1>E2E Tests<a class="headerlink" href="#e2e-tests" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="testing-in-metacatalog">
+<h2>Testing in metacatalog<a class="headerlink" href="#testing-in-metacatalog" title="Permalink to this headline">¶</a></h2>
+<p>metacatalog includes an icreasing suite of tests to assure functional correctness.
+As typical unittests would need some serious amount of database mocking and be
+of one magnitude larger than the database management code, it was decided to
+include end-to-end tests, as they are common in javascript frameworks.</p>
+<p>The tests are implemented using pytest and can be run like that. They run
+common tasks like importing, editing and searching data and compare the
+results of queries against expected results.</p>
+<p>On this path, some minor functions might not be covered by a unittest, but
+in a larger context, the tests assure that the whole application does what
+it should do.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>metacatalog is a one-man project. If you spot a function that is not
+covered and needs coverage, contact me via Github but be patient please.</p>
+</div>
+</div>
+<div class="section" id="run">
+<h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="running-tests-locally">
+<h3>Running tests locally<a class="headerlink" href="#running-tests-locally" title="Permalink to this headline">¶</a></h3>
+<p>The tests are designed to run on Github actions, by actually installing a
+PostgreSQL database and actually uploading data into the DB. You can run
+the tests locally, as well. You need to install:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pytest</span> <span class="n">pytest</span><span class="o">-</span><span class="n">cov</span> <span class="n">pytest</span><span class="o">-</span><span class="n">depends</span>
+</pre></div>
+</div>
+<p>as these testing packages are not in the metacatalog requirements.
+By simply running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
+</pre></div>
+</div>
+<p>metacatalog will install a new database instance called <code class="docutils literal notranslate"><span class="pre">'test_[a-z]8</span></code>
+with user <code class="docutils literal notranslate"><span class="pre">postgres</span></code> and password``postgres`` at port <code class="docutils literal notranslate"><span class="pre">5432</span></code>.
+You can overwrite these settings by the environment variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">POSTGRES_USER</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POSTGRES_PASSWORD</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POSTGRES_PORT</span></code></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After each test run, a <code class="docutils literal notranslate"><span class="pre">DBNAME</span></code> file will be added to the
+<code class="docutils literal notranslate"><span class="pre">metacatalog/test</span></code> folder, to track the current database
+between the tests. After the tests have finished, you should
+remove this file. This might be done by an optional cleanup
+tests in the future.</p>
+</div>
+</div>
+<div class="section" id="clean-up">
+<h3>Clean up<a class="headerlink" href="#clean-up" title="Permalink to this headline">¶</a></h3>
+<p>If you run a lot of local tests, or if your copy of metacatalog runs
+tests after upgrading (which makes a lot of sense), you will find
+yourself left with maybe hundereds of databases, as the test suite does
+not drop the database.</p>
+<p>Run the following chunk to delete all databases that follow the
+naming convention of metacatalog tests:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo -u postgres psql -d postgres &lt; &lt;<span class="o">(</span> sudo -u postgres psql -Atc <span class="s2">&quot;select &#39;drop database \&quot;&#39; || datname || &#39;\&quot;;&#39; from pg_database where datname like &#39;test_%&#39;;&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you have other databases that start with <code class="docutils literal notranslate"><span class="pre">test_</span></code>, <strong>they will be deleted as well.</strong></p>
+</div>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="dev.html" title="previous page">Developers</a>
+    <a class='right-next' id="next-link" href="ext.html" title="next page">Extensions</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020, Mirko Mälicke.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
