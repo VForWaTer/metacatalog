@@ -30,7 +30,6 @@ class Person(Base):
         Version 4 UUID string to identify the Entry across installations.
         This field is read-only and will be assigned on creation. It is primarily
         used to export Entry into ISO19115 metadata.
-
     first_name : str
         .. versionchanged:: 0.1.10
             Now mandatory.
@@ -95,7 +94,8 @@ class Person(Base):
         # base dictionary
         if self.is_organisation:
             d = dict(
-                id=self.id
+                id=self.id,
+                uuid=self.uuid
             )
         else:
             d = dict(
