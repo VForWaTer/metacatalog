@@ -6,7 +6,7 @@ At the current stage, the following objects can be found by a FIND operation:
 * keywords
 
 """
-import numpy ass np
+import numpy as np
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import false
