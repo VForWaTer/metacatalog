@@ -11,6 +11,7 @@ Database Models
    :Caption: Models:
 
    entry
+   location
    keyword
    person
    variable
