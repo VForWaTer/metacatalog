@@ -23,8 +23,8 @@ from metacatalog.db.base import Base
 from metacatalog import models
 from metacatalog import api
 from metacatalog.util.exceptions import MetadataMissingError, IOOperationNotFoundError
+from metacatalog.util.location import around
 from metacatalog.util.dict_functions import serialize
-
 
 
 def get_embargo_end(datetime=None):
@@ -530,7 +530,58 @@ class Entry(Base):
         
         # return
         return composite
+
+    def neighbors(self, distance, unit='meter', buffer_epsg=3857, as_sql=False, **kwargs):
+        """
+        Find neighboring :class:`Entries <metacatalog.models.Entry>` around the 
+        location of this instance. You can return the result, or the sqlalchemy 
+        Query object, which can be printed as plain SQL.
+
+        Parameters
+        ----------
+        distance : int, float
+            The maximum distance at which another Entry is still considered to be a neighbor.
+        unit : str
+            Has to be one of ['meter', 'km', 'mile', 'nautic'] to specify the unit
+            of the given distance. Note that the distance will always be transformed 
+            into meter.
+        buffer_epsg : int
+            The EPSG identification number of any projected cartesian coordinate 
+            reference system that uses meter as unit. This CRS will be used to 
+            apply the search distance (in meter).
+            .. note:: 
+                The default system is the transversal Mercartor projection, which is 
+                a global system. Thus, it can always be applied, but may introduce 
+                large uncertainties in small areas. Replace this attribute by a
+                local CRS wherever possible.
+        as_sql : bool
+            If False (default) the SQL query for neighbors will be executed and 
+            the result is returned. Else, the SQL query itself will be returned.
+        kwargs : keyword arguments
+            Any passed keyword argument will be passed down to the 
+            :func:`api.find_entry <metacatalog.api.find_entry>` function to further 
+            filter the results.
+
+        See Also
+        --------
+        :func:`around <metacatalog.util.location.around>`
+        :func:`find_entry <metacatalog.api.find_entry>`
+
+        """
+        # open a session
+        session = object_session(self)
+
+        # get the base filter query
+        kwargs['return_iterator'] = True
+        query = api.find_entry(session, **kwargs)
         
+        # get the area
+        filter_query = around(self, distance=distance, unit=unit, query=query, buffer_use_epsg=buffer_epsg)
+        
+        if as_sql:
+            return filter_query
+        else:
+            return filter_query.all()
 
     def create_datasource(self, path: str, type, datatype, commit=False, **args):
         """

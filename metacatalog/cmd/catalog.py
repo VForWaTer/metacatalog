@@ -27,4 +27,3 @@ def get_uuid(args):
         cprint(args, json.dumps(entity.to_dict(deep=False), indent=4))
     else:
         cprint(args, entity.full_path)
-

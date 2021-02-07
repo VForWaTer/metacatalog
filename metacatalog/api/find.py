@@ -6,10 +6,13 @@ At the current stage, the following objects can be found by a FIND operation:
 * keywords
 
 """
-from metacatalog import models
+import numpy as np
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.expression import false, true
+
+from metacatalog import models
+from metacatalog.util import location
 
 import nltk
 
@@ -733,7 +736,23 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=None, variable=None, external_id=None, version='latest', project=None, author=None, contributor=None, keywords=None, details=None, return_iterator=False):
+def find_entry(session, 
+    id=None, 
+    uuid=None, 
+    title=None, 
+    abstract=None, 
+    license=None, 
+    variable=None, 
+    external_id=None, 
+    version='latest', 
+    project=None, 
+    author=None, 
+    contributor=None, 
+    keywords=None, 
+    details=None, 
+    return_iterator=False,
+    by_geometry=None,
+):
     """Find Entry
 
     Find an meta data Entry on exact matches. Entries can be
@@ -817,6 +836,15 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
         specified as dictioniares of ``name=value`` pairs. If more than one
         pair is given, the query will combine the pairs by ``AND``.
         An ``OR`` search is not possible, through the API.
+    by_geometry : str, list
+        .. versionadded:: 0.2.10
+        The passed argument can be a WKT (string) or a list of numbers. If three
+        numbers are passed, this is interpreted as a center point and a buffer 
+        distance in meter. If four numbers are passed, this is a bounding box.
+        If a 2D-list of lists is passed (with two numbers), this will be used to
+        construct a search Polygon. 
+        Finally the constructed geometry is used to apply a spatial filter to the 
+        results.
     return_iterator : bool
         If True, an iterator returning the requested objects
         instead of the objects themselves is returned.
@@ -854,6 +882,17 @@ def find_entry(session, id=None, uuid=None, title=None, abstract=None, license=N
         query = query.filter(_match(models.Entry.external_id, external_id))
     if version is not None:
         query = query.filter(models.Entry.version==version)
+    
+    # location
+    if by_geometry is not None:
+        # get the search area
+        if isinstance(by_geometry, (list, tuple, np.ndarray)) and len(by_geometry) == 3:
+            area = location.get_search_shape([by_geometry[0], by_geometry[1]], buffer=by_geometry[2])
+        else:
+            area = location.get_search_shape(by_geometry)
+        
+        # append the spatial filter
+        query = location.build_query(query, area)
 
     # -------------------------------------
     # some second level lookups

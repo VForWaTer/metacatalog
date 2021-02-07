@@ -9,7 +9,7 @@ from ._util import connect
 # should be replace by tests adding the data by CLI
 
 def check_json_output(dburi):
-    cmd = ['metacatalog', 'find', 'entry', '--json', '--by', 'author', 'Reeves', '--connection', dburi]
+    cmd = ['python', '-m', 'metacatalog', 'find', 'entry', '--json', '--by', 'author', 'Reeves', '--connection', dburi]
     cmdRes = subprocess.run(cmd, stderr=PIPE, stdout=PIPE)
 
     results = json.loads(cmdRes.stdout)
