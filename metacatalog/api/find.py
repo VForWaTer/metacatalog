@@ -780,7 +780,7 @@ def find_entry(session,
     # location
     if by_geometry is not None:
         # get the search area
-        if isinstance(by_geometry, (list, tuple, np.ndarray)) and len(by_geometry) === 3:
+        if isinstance(by_geometry, (list, tuple, np.ndarray)) and len(by_geometry) == 3:
             area = location.get_search_shape([by_geometry[0], by_geometry[1]], buffer=by_geometry[2])
         else:
             area = location.get_search_shape(by_geometry)
