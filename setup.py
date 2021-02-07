@@ -42,7 +42,7 @@ def migrate_database():
     try:
         from metacatalog import api
         from metacatalog.db import migration
-    except ModuleNotFoundError, ImportError:
+    except ModuleNotFoundError:
         # this happens on first startup as the dependencies are 
         # not yet installed. Can be ignored.
         pass
