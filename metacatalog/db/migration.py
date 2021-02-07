@@ -36,6 +36,7 @@ date: {date}
 
 {title}
 {message}
+
 \"\"\"
 from sqlalchemy.orm import Session
 from metacatalog import api, models
@@ -112,24 +113,30 @@ def upgrade(session: Session, target='head'):
         except Exception as e:
             session.rollback()
             raise e
-    print('done.')
+
+    print(' done.')
 
 
 
 def downgrade(session: Session):
     """
     """
-    rev_num = get_local_head_id() - 1
-    if rev_num < 0:
+    # here we actually use the local head, as we need the downgrade of the current head
+    rev_num = get_local_head_id()
+    new_rev_num = rev_num - 1
+    if rev_num == 0:
         print("With metacatalog==0.2 the migration system was rebuild.\nTo downgrade to metacatalog < 0.2, use alembic as\nmigration system.")
         return
 
+    # load the current revision module
     mod = REVISIONS[rev_num]
 
     try:
+        # run the downgrade
         mod.downgrade(session)
-        set_remote_head_id(session, rev_num)
+        set_remote_head_id(session, new_rev_num)
         session.commit()
+        print('Downgraded [%d] -> [%d]' % (rev_num, new_rev_num))
     except Exception as e:
         session.rollback()
         raise e

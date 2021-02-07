@@ -6,10 +6,10 @@ from sqlalchemy.orm.exc import NoResultFound
 from metacatalog import api, models
 from ._util import connect, PATH, read_to_df
 
-PERSONS = """first_name,last_name,organisation_name,affiliation,attribution
-Keanu,Reeves,"Institute for martial arts","Institute for martial arts - department of slow motion",
-Marie,Curie,"Institute of awesome scientists","Insitute of awesome scientists - department for physics","Curie, Marie, Awesome."
-Homer,Simpson,"University of Non-existent people",,
+PERSONS = """first_name,last_name,organisation_name,affiliation,attribution,uuid
+Keanu,Reeves,"Institute for martial arts","Institute for martial arts - department of slow motion",,10156ffc-5796-4ac1-a736-a74703ea575c
+Marie,Curie,"Institute of awesome scientists","Insitute of awesome scientists - department for physics","Curie, Marie, Awesome.",e05c3360-1120-4c9b-a181-659da986b061
+Homer,Simpson,"University of Non-existent people",,,1e8402f8-4d11-41dd-85c7-93f9d95225e1
 """
 
 ENTRIES = """title,author,x,y,variable,abstract,license,external_id,uuid
@@ -34,6 +34,7 @@ def add_person(session):
         assert person.last_name == df.loc[person.first_name].last_name
     
     assert persons[1].attribution == "Curie, Marie, Awesome."
+    assert persons[0].uuid == '10156ffc-5796-4ac1-a736-a74703ea575c'
     
     return True
 
@@ -216,13 +217,17 @@ def check_get_by_uuid(session):
     """
     Check if the keyword of UUID 5f2ec7b9-3e8c-4d12-bba6-0f84c08729e0
     can be found by UUID and is the correct one.
+    Check if the person of UUID 1e8402f8-4d11-41dd-85c7-93f9d95225e1
+    can be found by UUID and is the coorect one.
 
     """
     kw_uuid = '5f2ec7b9-3e8c-4d12-bba6-0f84c08729e0'
     e_uuid = '4722782d-6bcb-463f-a1eb-6cebe490e9c4'
+    p_uuid = '10156ffc-5796-4ac1-a736-a74703ea575c'
 
     keyword = api.get_uuid(session, uuid=kw_uuid)
     entry = api.get_uuid(session, uuid=e_uuid)
+    person = api.get_uuid(session, uuid=p_uuid)
 
     # correct keyword found
     assert keyword.id == 5890
@@ -230,6 +235,10 @@ def check_get_by_uuid(session):
 
     # correct entry found
     assert entry.abstract == "Lorem ipsum .."
+
+    # correct person found
+    assert person.organisation_name == 'Institute for martial arts'
+    assert person.last_name == 'Reeves'
 
     # a newly created UUID should not be found
     with pytest.raises(NoResultFound):
@@ -243,6 +252,18 @@ def find_by_author(session):
 
     assert len(entries) == 2
     assert set([e.title for e in entries]) == set(['Dummy 1', 'Dummy 3'])
+    return True
+
+
+def check_find_person(session):
+    p0 = api.find_person(session, last_name='Reeves')
+    p1 = api.find_person(session, attribution='Curie, Marie, Awesome.')
+    p2 = api.find_person(session, uuid='1e8402f8-4d11-41dd-85c7-93f9d95225e1')
+
+    assert p0[0].first_name == 'Keanu'
+    assert p1[0].uuid== 'e05c3360-1120-4c9b-a181-659da986b061'
+    assert p2.organisation_name == 'University of Non-existent people'
+
     return True
 
 
@@ -269,3 +290,4 @@ def test_add_and_find():
     assert find_by_project(session)
     assert check_get_by_uuid(session)
     assert find_by_author(session)
+    assert check_find_person(session)

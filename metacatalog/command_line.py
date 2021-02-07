@@ -1,5 +1,7 @@
 import argparse
 import codecs
+import os
+import traceback
 
 def unescaped(arg_str):
     return codecs.decode(str(arg_str), 'unicode_escape')
@@ -23,12 +25,12 @@ def main():
     default_options.add_argument("--version", "-v", action="store_true", help="Returns the module version")
     default_options.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database")
     default_options.add_argument("--verbose", "-V", action="store_true", help="Activate extended output.")
+    default_options.add_argument("--quiet", '-q', action="store_true", help="Suppress any kind of output.")
+    default_options.add_argument("--dev", action="store_true", help="Development mode.\nUnexpected errors will not be handled and the full traceback is printed to the screen.")
+    default_options.add_argument("--logfile", type=str, help="If a file is given, output will be written to that file instead of printed to StdOut.")
 
     # build the main Argument parser
     parser = argparse.ArgumentParser(description="MetaCatalog management CLI", add_help=True)
-#    parser.add_argument("--version", "-v", action="store_true", help="Returns the module version")
-#    parser.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database")
-#    parser.add_argument("--verbose", "-V", action="store_true", help="Activate extended output.")
     parser.set_defaults(func=empty)
 
     # add subparsers
@@ -96,7 +98,23 @@ def main():
     # parse the arguments
     args = parser.parse_args()
 
+    #-------------------
+    # RUN THE TOOL
+    #-------------------
+    # print version
     if hasattr(args, 'version') and args.version:
         print(VERSION)
-    else:
+    
+    # if development mode, do not handle errors
+    elif args.dev:
         args.func(args)
+    
+    # else, catch all errors and print to file
+    else:
+        try:
+            args.func(args)
+        except Exception as e:
+            if not args.quiet:
+                print("An unexpected error occured:\n{msg}\nFull error traceback in 'error.log'".format(msg=str(e)))
+            with open('error.log', 'w') as f:
+                traceback.print_tb(e.__traceback__, file=f)

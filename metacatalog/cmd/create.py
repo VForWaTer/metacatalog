@@ -1,5 +1,5 @@
 from metacatalog.api import create_tables
-from ._util import connect
+from ._util import connect, cprint
 
 
 def create(args):
@@ -7,6 +7,6 @@ def create(args):
     session = connect(args)
 
     # create all tables
-    print("Creating Tables.")
+    cprint(args, "Creating Tables...")
     create_tables(session=session)
-    print("Done.")
+    cprint(args, "Done.")

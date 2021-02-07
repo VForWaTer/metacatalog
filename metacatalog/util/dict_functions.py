@@ -40,7 +40,7 @@ def __flat_list(key, l: list, sep='.') -> dict:
     return out
 
 
-def serialize(d) -> dict:
+def serialize(d, stringify=False) -> dict:
     """
     Serializes an object to json. Currently it can 
     convert datetime to isoformat and any of the 
@@ -48,17 +48,22 @@ def serialize(d) -> dict:
     function.
     """
     if isinstance(d, dict):
-        return {k: __convert(v) for k,v in d.items()}
+        return {k: __convert(v, stringify=stringify) for k,v in d.items()}
     elif hasattr(d, 'to_dict'):
-        return serialize(d.to_dict())
+        return serialize(d.to_dict(), stringify=stringify)
+    else:
+        return d
 
 
-def __convert(value): 
+def __convert(value, stringify=False): 
     if isinstance(value, dict):
-        return serialize(value)
+        return serialize(value, stringify=stringify)
     elif hasattr(value, 'to_dict'):
-        return this.__convert(value.to_dict())
+        return __convert(value.to_dict(), stringify=stringify)
     elif isinstance(value, datetime):
         return value.isoformat()
     else:
-        return value
+        if stringify:
+            return str(value)
+        else:
+            return value

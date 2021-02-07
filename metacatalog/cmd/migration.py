@@ -3,7 +3,7 @@
 **THE MIGRATION MODULE IS ONLY USEFUL FOR DEVELOPERS**
 
 """
-from ._util import connect
+from ._util import connect, cprint
 from metacatalog.db import migration
 
 
@@ -19,7 +19,7 @@ def migrate(args):
     elif action == 'head':
         current_head(args)
     else:
-        print("Sorry, '%s' is nothing metacatalog can do for you." % action)
+        cprint(args, "Sorry, '%s' is nothing metacatalog can do for you." % action)
 
 def revision(args):
     msg = args.message
@@ -43,4 +43,4 @@ def current_head(args):
 
     head = migration.get_remote_head_id(session)
 
-    print('Current database revision: %d' % head)
+    cprint(args, 'Current database revision: %d' % head)

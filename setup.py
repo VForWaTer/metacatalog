@@ -33,16 +33,33 @@ def create_config_file():
             json.dump(dict(), f, indent=4)
 
 
+def migrate_database():
+    """
+    This can fail if the install command is run for the fist time.
+    In these cases, a database migration is not necessary, as the 
+    latest Models will be installed anyway.
+    """
+    from metacatalog import api
+    from metacatalog.db import migration
+    try:
+        session = api.connect_database()
+        migration.upgrade(session)
+    except:
+        print()
+        pass
+
 
 class PostDevelopCommand(develop):
     def run(self):
-        create_config_file()     
+        create_config_file() 
+        migrate_database()    
         develop.run(self)
 
 
 class PostInstallCommand(install):
     def run(self):
         create_config_file()
+        migrate_database()
         install.run(self)
 
 

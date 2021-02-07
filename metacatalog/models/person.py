@@ -1,5 +1,7 @@
-from sqlalchemy import Column, ForeignKey
-from sqlalchemy import Integer, String
+from uuid import uuid4
+
+from sqlalchemy import Column, ForeignKey, CheckConstraint
+from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import relationship
 
 from metacatalog.db.base import Base
@@ -7,22 +9,27 @@ from metacatalog.db.base import Base
 
 class Person(Base):
     """
-    Person represents all persons that are associated 
+    Person represents all persons that are associated
     in any kind to a dataset. This may be an author, who is
-    mandatory, but also an owners or processors can be 
-    associated. 
+    mandatory, but also an owners or processors can be
+    associated.
 
     .. note::
-        In metatacatalog, an organisation_name is an optional, but 
-        recommended information. On export to ISO 19115 persons without 
-        affilated organisations can't be exported. Thus, they should 
-        not take the role of ``pointOfContact`` or ``author`` (first author), 
+        In metatacatalog, an organisation_name is an optional, but
+        recommended information. On export to ISO 19115 persons without
+        affilated organisations can't be exported. Thus, they should
+        not take the role of ``pointOfContact`` or ``author`` (first author),
         because this would result in invalid ISO 19115 metadata then.
-    
+
     Attributes
     ----------
     id : int
         Unique id of the record. If not specified, the database will assign it.
+    uuid : str
+        .. versionadded: 0.2.7
+        Version 4 UUID string to identify the Entry across installations.
+        This field is read-only and will be assigned on creation. It is primarily
+        used to export Entry into ISO19115 metadata.
     first_name : str
         .. versionchanged:: 0.1.10
             Now mandatory.
@@ -30,30 +37,37 @@ class Person(Base):
     last_name : str
         Person's last name.
     organisation_name : str
-        Optional, but **highly recommended** if applicable. This should be 
+        Optional, but **highly recommended** if applicable. This should be
         the name of the head organisation, **without department information**.
         The full :attr:`affiliation` can be defined in another attribute.
     affiliation : str
-        Optional. The user may want to further specify a department or 
-        working group for affiliation information. 
+        Optional. The user may want to further specify a department or
+        working group for affiliation information.
     attribution : str
         .. versionadded: 0.1.10
-        Optional. The user may define an attribtion recommondation here, 
+        Optional. The user may define an attribtion recommondation here,
         which is associated to all datasets, the user is first author of.
-        If not given, the system running metacatalog should give automatic 
+        If not given, the system running metacatalog should give automatic
         and fallback information of how a dataset should be attributed.
     entries : list
-        List of :class:`Entries <metacatalog.models.Entry>` the user is 
-        associated to. This includes all kinds of associations, not only 
+        List of :class:`Entries <metacatalog.models.Entry>` the user is
+        associated to. This includes all kinds of associations, not only
         author and coAuthor associations.
-        
+
     """
     __tablename__ = 'persons'
+    __table_args__ = (
+        CheckConstraint('NOT (last_name is NULL AND organisation_name is NULL)'),
+    )
 
+    # columns
     id = Column(Integer, primary_key=True)
-    first_name = Column(String(128), nullable=False)
-    last_name = Column(String(128), nullable=False)
+    uuid = Column(String(36), nullable=False, default=lambda: str(uuid4()))
+    is_organisation = Column(Boolean, default=False)
+    first_name = Column(String(128), nullable=True)
+    last_name = Column(String(128), nullable=True)
     organisation_name = Column(String(1024), nullable=True)
+    organisation_abbrev = Column(String(64), nullable=True)
     affiliation = Column(String(1024))
     attribution = Column(String(1024))
 
@@ -68,7 +82,7 @@ class Person(Base):
         Parameters
         ----------
         deep : bool
-            If True, all related objects will be included as 
+            If True, all related objects will be included as
             dictionary. Defaults to False
 
         Returns
@@ -78,14 +92,21 @@ class Person(Base):
 
         """
         # base dictionary
-        d = dict(
-            id=self.id,
-            first_name=self.first_name,
-            last_name=self.last_name
-        )
+        if self.is_organisation:
+            d = dict(
+                id=self.id,
+                uuid=self.uuid
+            )
+        else:
+            d = dict(
+                id=self.id,
+                uuid=self.uuid,
+                first_name=self.first_name,
+                last_name=self.last_name
+            )
 
         # set optionals
-        for attr in ('organisation_name', 'affiliation', 'attribution'):
+        for attr in ('organisation_abbrev', 'organisation_name', 'affiliation', 'attribution'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr)
 
@@ -97,21 +118,28 @@ class Person(Base):
 
     @property
     def full_name(self):
-        if self.first_name is not None:
-            return '%s %s' % (self.first_name, self.last_name)
+        if not self.is_organisation:
+            if self.first_name is not None:
+                return '%s %s' % (self.first_name, self.last_name)
+            else:
+                return self.last_name
         else:
-            return self.last_name
+            return '%s (Org.)' % self.organisation_name
 
     @full_name.setter
     def full_name(self, name):
-        # split the name and use the last name
-        chunks = name.split(' ')
-        self.last_name = chunks.pop()
+        if not self.is_organisation:
+            # split the name and use the last name
+            chunks = name.split(' ')
+            self.last_name = chunks.pop()
 
-        if len(chunks) > 0:
-            self.first_name = ' '.join(chunks)
+            if len(chunks) > 0:
+                self.first_name = ' '.join(chunks)
+            else:
+                self.first_name = None
         else:
-            self.first_name = None
+            part = name.replace(' (Org.)', '')
+            self.organisation_name = part
 
     def __str__(self):
         return "%s <ID=%d>" % (self.full_name, self.id)
@@ -135,7 +163,7 @@ class PersonRole(Base):
         Parameters
         ----------
         deep : bool
-            If True, all related objects will be included as 
+            If True, all related objects will be included as
             dictionary. Defaults to False
 
         Returns
@@ -168,7 +196,7 @@ class PersonRole(Base):
 class PersonAssociation(Base):
     __tablename__ = 'nm_persons_entries'
 
-    # columns 
+    # columns
     person_id = Column(Integer, ForeignKey('persons.id'), primary_key=True)
     entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)
     relationship_type_id = Column(Integer, ForeignKey('person_roles.id'), nullable=False)
