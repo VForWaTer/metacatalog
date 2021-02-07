@@ -233,7 +233,11 @@ def around(entry, distance, unit='km', query=None, buffer_use_epsg=3857):
 
     # if a query is given -> return filter else return the search area
     if query is not None:
-        return build_query(query, area)
+        # get the ids which where questions
+        ids = [e.id for e in entries]
+        query = build_query(query, area)
+        query = query.filter(~models.Entry.id.in_(ids))
+        return query
     else:
         return area
 
