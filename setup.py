@@ -39,8 +39,14 @@ def migrate_database():
     In these cases, a database migration is not necessary, as the 
     latest Models will be installed anyway.
     """
-    from metacatalog import api
-    from metacatalog.db import migration
+    try:
+        from metacatalog import api
+        from metacatalog.db import migration
+    except ModuleNotFoundError, ImportError:
+        # this happens on first startup as the dependencies are 
+        # not yet installed. Can be ignored.
+        pass
+
     try:
         session = api.connect_database()
         migration.upgrade(session)
