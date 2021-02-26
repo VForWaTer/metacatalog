@@ -279,7 +279,7 @@ def add_thesaurus(session, name, title, organisation, url, description=None, uui
     return add_record(session, tablename='thesaurus', **attr)
 
 
-def add_person(session, first_name, last_name, organisation_name=None, organisation_abbrev=None, affiliation=None, attribution=None, uuid=None):
+def add_person(session, first_name, last_name, organisation_name=None, organisation_abbrev=None, affiliation=None, attribution=None, citation=None, uuid=None):
     r"""Add new Person
 
     Add a new Person to the database. A person can be a real Person
@@ -316,6 +316,9 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
     attribution : str.
         Optional. Attribution recommondation for all datasets
         this Person is associated to as a first author.
+    citation : str
+        .. versionadded: 0.2.11
+        Specification of how this person should be quoted.
 
     Returns
     -------
@@ -338,7 +341,8 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
         organisation_name=organisation_name,
         organisation_abbrev=organisation_abbrev,
         affiliation=affiliation,
-        attribution=attribution
+        attribution=attribution,
+        citation=citation
     )
 
     return add_record(session=session, tablename='persons', **attr)

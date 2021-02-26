@@ -49,6 +49,9 @@ class Person(Base):
         which is associated to all datasets, the user is first author of.
         If not given, the system running metacatalog should give automatic
         and fallback information of how a dataset should be attributed.
+    citation : str
+        .. versionadded: 0.2.11
+        Specification of how this person should be quoted.
     entries : list
         List of :class:`Entries <metacatalog.models.Entry>` the user is
         associated to. This includes all kinds of associations, not only
@@ -70,6 +73,7 @@ class Person(Base):
     organisation_abbrev = Column(String(64), nullable=True)
     affiliation = Column(String(1024))
     attribution = Column(String(1024))
+    citation = Column(String(1024))
 
     # relationships
     entries = relationship("PersonAssociation", back_populates='person')
@@ -106,7 +110,7 @@ class Person(Base):
             )
 
         # set optionals
-        for attr in ('organisation_abbrev', 'organisation_name', 'affiliation', 'attribution'):
+        for attr in ('organisation_abbrev', 'organisation_name', 'affiliation', 'attribution', 'citation'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr)
 
