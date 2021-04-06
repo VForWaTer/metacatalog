@@ -3,6 +3,7 @@ from . import (
     rev1,
     rev2,
     rev3,
+    rev4,
 )
 
 revisions = {
@@ -10,4 +11,5 @@ revisions = {
     1: rev1,
     2: rev2,
     3: rev3,
+    4: rev4,
 }
