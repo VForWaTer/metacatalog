@@ -34,7 +34,7 @@ class EntryGroupType(Base):
         Parameters
         ----------
         deep : bool
-            If True, all related objects will be included as 
+            If True, all related objects will be included as
             dictionary. Defaults to False
 
         Returns
@@ -62,9 +62,9 @@ class EntryGroupType(Base):
 
 class EntryGroup(Base):
     """
-    An EntryGroup is an association object between any number of 
-    :class:`Entry <metacatalog.models.Entry>` records. The type 
-    of association is further described by 
+    An EntryGroup is an association object between any number of
+    :class:`Entry <metacatalog.models.Entry>` records. The type
+    of association is further described by
     :class:`EntryGroupType <EntryGroupType>`.
 
     Attributes
@@ -74,19 +74,19 @@ class EntryGroup(Base):
     uuid : str
         .. versionadded:: 0.1.9
 
-        Version 4 UUID string to identify the Entry across installations. 
-        This field is read-only and will be assigned on creation. It is primarily 
+        Version 4 UUID string to identify the Entry across installations.
+        This field is read-only and will be assigned on creation. It is primarily
         used to export Entry into ISO19115 metadata.
     type : metacatalog.models.EntryGroupType
         The type is most important to give meaning to a group of
-        entries. Two types ship with metacatalog ``'Project'`` and ``'Composite'``.
+        entries. Three types ship with metacatalog ``'Project'``, ``'Composite'`` and ``'Split dataset'``.
     type_id : int
         Foreign key to the EntryGroupType
     title : str
         A descriptive title for the Group. Maximum of 40 letters.
     description : str
-        An optional full text description of the EntryGroup. This 
-        description should contain all information necessary to 
+        An optional full text description of the EntryGroup. This
+        description should contain all information necessary to
         understand the grouping.
     publication : datetime.datetime
         .. versionadded:: 0.1.9
@@ -123,7 +123,7 @@ class EntryGroup(Base):
         Parameters
         ----------
         deep : bool
-            If True, all related objects will be included as 
+            If True, all related objects will be included as
             dictionary. Defaults to False
 
         Returns
@@ -156,7 +156,7 @@ class EntryGroup(Base):
 
     def __str__(self):
         return "%s%s <ID=%d>" % (
-            self.type.name, 
-            " %s" % self.title[:20] if self.title is not None else '', 
+            self.type.name,
+            " %s" % self.title[:20] if self.title is not None else '',
             self.id
         )

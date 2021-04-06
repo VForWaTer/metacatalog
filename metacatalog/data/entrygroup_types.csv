@@ -1,3 +1,4 @@
 id,name,description
 1,Project,"A Project groups datasets into a lager collection of datasets that have been collected or used in the same Campaign."
 2,Composite,"A composite dataset groups a number of datasets that are inseparable."
+3,Split dataset,"A split dataset groups a number of identical datasets that have to be split e.g. in case of different time scale resolution."
