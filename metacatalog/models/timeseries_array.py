@@ -1,6 +1,7 @@
 import pandas as pd
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy import Integer, DateTime, Numeric, ARRAY
+from sqlalchemy import Integer, DateTime, Numeric
+from sqlalchemy.dialects.postgresql import ARRAY 
 
 from metacatalog.db.base import Base
 
