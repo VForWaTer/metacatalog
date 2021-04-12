@@ -23,9 +23,15 @@ def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
         sql += " AND tstamp <= '%s'" % (dt.strftime(end, '%Y-%m-%d %H:%M:%S'))
 
     # infer table column names order
-    col_sql = 'select * from %s limit 0' % tablename
-    col_names = list(pd.read_sql_query(col_sql, session.bind).columns.values)
-    col_names.remove('entry_id')
+    if datasource.data_name is not None:
+        col_names = data_name
+    elif entry.variable.column_names is not None:
+        col_names = variable.column_names
+    else:
+        col_sql = 'select * from %s limit 0' % tablename
+        col_names = list(pd.read_sql_query(col_sql, session.bind).columns.values)
+        col_names.remove('entry_id')    
+
     if 'index' in col_names:
         index_col = ['index']
         col_names.remove('index')
@@ -57,7 +63,7 @@ def read_from_local_csv_file(entry, datasource, **kwargs):
         data.set_index('tstamp', inplace=True)
     elif 'index' in data:
         data.set_index('index', inplace=True)
-    
+
     # map column names
     df.columns = [entry.variable.name if _col== 'value' else _col for _col in df.columns]
 

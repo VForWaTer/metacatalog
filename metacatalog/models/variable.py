@@ -1,6 +1,7 @@
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from metacatalog.db.base import Base
 
@@ -16,9 +17,9 @@ class Unit(Base):
     name : str
         Full name of the Unit
     symbol : str
-        A max. 12 letter symbol that is **commonly** used to represent the 
+        A max. 12 letter symbol that is **commonly** used to represent the
         unit
-    si : str 
+    si : str
         Optional. If applicable, the conversion if the unit into SI units.
         If the unit is i.e. m/km the si would be m*1000^-1*m^-1
     variables : list
@@ -44,7 +45,7 @@ class Unit(Base):
         Parameters
         ----------
         deep : bool
-            If True, all related objects will be included as 
+            If True, all related objects will be included as
             dictionary. Defaults to False
 
         Returns
@@ -77,19 +78,19 @@ class Unit(Base):
 
 class Variable(Base):
     r"""
-    Model to represent variables. The variable is any kind of oberservation, 
-    that can be represented by one data type. metacatalog does not take the 
+    Model to represent variables. The variable is any kind of oberservation,
+    that can be represented by one data type. metacatalog does not take the
     definition of variables too strict. It is however common to keep variables
-    as atomic as possbile. 
+    as atomic as possbile.
 
-    However, technically, you can also create a new variable that describes a 
-    combined data type and reference a newly created table via 
-    `DataSource <metacatalog.models.DataSource>`. This can make sense if in the 
-    scope and context of the metacatalog installation a sensor like a Decagon 
-    5TE always records three parameters at a time like Temperature, Moisture 
-    and Conductance. That can be implemented as a new '5TE' variable and the 
+    However, technically, you can also create a new variable that describes a
+    combined data type and reference a newly created table via
+    `DataSource <metacatalog.models.DataSource>`. This can make sense if in the
+    scope and context of the metacatalog installation a sensor like a Decagon
+    5TE always records three parameters at a time like Temperature, Moisture
+    and Conductance. That can be implemented as a new '5TE' variable and the
     datasource would point to a table containing all three measurements.
-    **Note that this should not be common practice and will make your 
+    **Note that this should not be common practice and will make your
     metadata unusable in other contexts**.
 
     Attributes
@@ -99,13 +100,17 @@ class Variable(Base):
     name : str
         Full name of the Unit
     symbol : str
-        A max. 12 letter symbol that is **commonly** used to represent the 
+        A max. 12 letter symbol that is **commonly** used to represent the
         unit
-    si : str 
+    si : str
         Optional. If applicable, the conversion if the unit into SI units.
         If the unit is i.e. m/km the si would be m*1000^-1*m^-1
     variables : list
         Lazy loaded list of Variables that use the current unit
+    column_names : list
+          .. versionadded:: 0.2.12
+          List of default column names that will be displayed when exporting the data.
+          The columns are named in the same order as they appear in the list.
 
     """
     __tablename__ = 'variables'
@@ -114,6 +119,7 @@ class Variable(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     symbol = Column(String(12), nullable=False)
+    column_names = Column(ARRAY(String))
     unit_id = Column(Integer, ForeignKey('units.id'), nullable=False)
     keyword_id = Column(Integer, ForeignKey('keywords.id'))
 
@@ -130,7 +136,7 @@ class Variable(Base):
         Parameters
         ----------
         deep : bool
-            If True, all related objects will be included as 
+            If True, all related objects will be included as
             dictionary. Defaults to False
 
         Returns
@@ -148,6 +154,8 @@ class Variable(Base):
         )
 
         # set optionals
+        if self.column_names is not None:
+            d['column_names'] = self.column_names
         for attr in ('keyword'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr).to_dict(deep=False)
