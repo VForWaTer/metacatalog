@@ -97,7 +97,7 @@ class Detail(Base):
     @property
     def value(self):
         if '__literal__' in self.raw_value:
-            return sel.raw_value.get('__literal__')
+            return self.raw_value.get('__literal__')
         else:
             return dict(self.raw_value)
 
