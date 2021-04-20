@@ -123,6 +123,12 @@ class Variable(Base):
     unit_id = Column(Integer, ForeignKey('units.id'), nullable=False)
     keyword_id = Column(Integer, ForeignKey('keywords.id'))
 
+    # fill column_names if not specified
+    if column_names is None:
+        # this wouldn´t work for 3D wind data, as there must be 3 column_names
+        # but it would work for the (standard 1D variables)
+        variable.column_names = variable.name
+
     # relationships
     entries = relationship("Entry", back_populates='variable')
     unit = relationship("Unit", back_populates='variables')
@@ -150,12 +156,11 @@ class Variable(Base):
             id=self.id,
             name=self.name,
             symbol=self.symbol,
-            unit=self.unit.to_dict(deep=False)
+            unit=self.unit.to_dict(deep=False),
+            column_names=self.column_names
         )
 
         # set optionals
-        if self.column_names is not None:
-            d['column_names'] = self.column_names
         for attr in ('keyword'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr).to_dict(deep=False)
