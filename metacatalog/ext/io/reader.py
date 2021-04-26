@@ -24,13 +24,13 @@ def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
 
     # infer table column names order
     if datasource.data_name is not None:
-        col_names = data_name
+        col_names = datasource.data_name
     elif entry.variable.column_names is not None:
         col_names = variable.column_names
     else:
         col_sql = 'select * from %s limit 0' % tablename
         col_names = list(pd.read_sql_query(col_sql, session.bind).columns.values)
-        col_names.remove('entry_id')    
+        col_names.remove('entry_id')
 
     if 'index' in col_names:
         index_col = ['index']
@@ -42,8 +42,14 @@ def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
     # load data
     df = pd.read_sql(sql, session.bind, index_col=index_col, columns=col_names)
 
+    # unstack multi-dimensional data into the single columns
+    rawvalues = np.vstack(df['data'].values)
+
+    df = pd.DataFrame(data=rawvalues, columns=col_names)
+
     # map column names
-    df.columns = [entry.variable.name if _col== 'value' else _col for _col in df.columns]
+    # deprecated (?)
+    #df.columns = [entry.variable.name if _col== 'value' else _col for _col in df.columns]
 
     return df
 
