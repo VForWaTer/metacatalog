@@ -2,6 +2,7 @@ from datetime import datetime as dt
 
 import pandas as pd
 from sqlalchemy.orm import object_session
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from metacatalog.models.entry import Entry
 
@@ -23,14 +24,9 @@ def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
         sql += " AND tstamp <= '%s'" % (dt.strftime(end, '%Y-%m-%d %H:%M:%S'))
 
     # infer table column names order
-    if datasource.data_name is not None:
-        col_names = datasource.data_name
-    elif entry.variable.column_names is not None:
-        col_names = variable.column_names
-    else:
-        col_sql = 'select * from %s limit 0' % tablename
-        col_names = list(pd.read_sql_query(col_sql, session.bind).columns.values)
-        col_names.remove('entry_id')
+    col_sql = 'select * from %s limit 0' % tablename
+    col_names = list(pd.read_sql_query(col_sql, session.bind).columns.values)
+    col_names.remove('entry_id')
 
     if 'index' in col_names:
         index_col = ['index']
@@ -42,14 +38,30 @@ def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
     # load data
     df = pd.read_sql(sql, session.bind, index_col=index_col, columns=col_names)
 
-    # unstack multi-dimensional data into the single columns
-    rawvalues = np.vstack(df['data'].values)
+    # always use data_name from datasource as column names when exporting the data
+    col_names = datasource.data_name
 
-    df = pd.DataFrame(data=rawvalues, columns=col_names)
+    # if the column 'data' exists, the new routine is used
+    if 'data' in df.columns:
+        # unstack multi-dimensional data into the single columns
+        rawvalues = np.vstack(df['data'].values)
 
-    # map column names
-    # deprecated (?)
-    #df.columns = [entry.variable.name if _col== 'value' else _col for _col in df.columns]
+        # unstack precision (precision1, precision2, ...)
+        rawprecision = np.vstack(df['precision'].values)
+
+        # add precision column names to the col_names
+        for i in range(1, len(rawprecission[0])+1):
+            precision_col = 'precision%s' % i
+            col_names.append(precision_col)
+
+        # horizontally stack data and precission
+        raw = np.hstack([rawvalues, rawprecision])
+
+        df = pd.DataFrame(data=raw, columns=col_names)
+    # if 'data' does not appear in the column names, the old routine is used
+    else:
+        # map column names
+        df.columns = [datasource.data_name if _col== 'value' else _col for _col in df.columns]
 
     return df
 

@@ -1,7 +1,9 @@
 import os
 
 import pandas as pd
+import sqlalchemy as sa
 from sqlalchemy.orm import object_session
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from metacatalog.models.entry import Entry
 from metacatalog.models.timeseries import TimeseriesPoint
@@ -36,11 +38,20 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
     else:
         session = object_session(entry)
 
-    # save column names in datasource.data_names
-    if len(imp.columns) != len(entry.variable.column_names):
+    # get the column names - exclude everthing that stores precisions
+    data_columns = [col for col in imp.columns.tolist() if not col.startswith('precision')]
+
+    # get the precision columns
+    precision_columns = [col for col in imp.columns.tolist() if col.startswith('precision')]
+
+    # get index
+    index = imp.index
+
+    # save column names in datasource.data_names (excluding )
+    if len(columns) != len(entry.variable.column_names):
         force_data_names = True
     if force_data_names:
-        datasource.data_names = imp.columns
+        datasource.data_names = columns
     else:
         datasource.data_names = entry.variable.column_names
 
@@ -52,12 +63,19 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
     else:
         tablename = datasource.path
 
-    # get the available column names from the database
-    sql = 'select * from %s limit 0' % tablename
-    col_names = pd.read_sql_query(sql, session.bind).columns.values
+    # transform the data into a list of arrays
+    values = [row for row in imp[data_columns].values]
+    precision = [row for row in imp[precision_columns].values]
 
-    if not all([col in col_names for col in imp.columns.values]):
-        raise ValueError('The input data has columns, that are not present in the database.\n %s' % ', '.join(col_names))
+    # explicitly map the column types
+    dtypes = {
+        'tstamp': sa.TIMESTAMP,
+        'values': ARRAY(sa.REAL),
+        'precision': ARRAY(sa.REAL)
+    }
+
+    imp_data = pd.DataFrame(data={'tstamp': index, 'values': values, 'precision': precision})
+    imp_data['entry_id'] = entry.id
 
     # else import
     if_exists = kwargs.get('if_exists', 'append')

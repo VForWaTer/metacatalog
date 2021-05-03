@@ -119,15 +119,9 @@ class Variable(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     symbol = Column(String(12), nullable=False)
-    column_names = Column(ARRAY(String))
+    column_names = Column(ARRAY(String), nullable=False)
     unit_id = Column(Integer, ForeignKey('units.id'), nullable=False)
     keyword_id = Column(Integer, ForeignKey('keywords.id'))
-
-    # fill column_names if not specified
-    if column_names is None:
-        # this wouldn´t work for 3D wind data, as there must be 3 column_names
-        # but it would work for the (standard 1D variables)
-        variable.column_names = variable.name
 
     # relationships
     entries = relationship("Entry", back_populates='variable')
