@@ -267,6 +267,30 @@ def check_find_person(session):
     return True
 
 
+def check_details(session):
+    entry = api.find_entry(session, title='Dummy 2')[0]
+
+    # add nested details
+    entry.add_details(
+        foo=dict(bar=['list', 'of', 'strings'], baz=42),
+        answer=42,
+        commit=True
+    )
+
+    # get the table
+    entry.details_table(fmt='markdown')
+
+    # find the details
+    found_entry = api.find_entry(details=dict(answer=42))[0]
+    assert entry.id == found_entry.id
+
+    # find nested details
+    found_entry = api.find_entry(details=dict(foo=dict(baz=42)))
+    assert entry.id == found_entry.id
+
+    return True
+
+
 @pytest.mark.depends(on=['db_init'], name='add_find')
 def test_add_and_find():
     """
@@ -291,3 +315,4 @@ def test_add_and_find():
     assert check_get_by_uuid(session)
     assert find_by_author(session)
     assert check_find_person(session)
+    assert check_details(session)
