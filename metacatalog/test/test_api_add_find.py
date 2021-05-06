@@ -280,6 +280,30 @@ def add_details(session):
 
     return True
 
+
+def mutate_details(session):
+    """
+    Check detail mutability
+    """
+    # get the same entry as before
+    e2 = api.find_entry(session, title="Dummy 2")[0]
+    detail = [d for d in e2.details if d.key == 'answer'][0]
+
+    # store detail id and check current value
+    detail_id = detail.id
+    assert detail.value == 42
+
+    # update
+    detail.value = 1312
+    session.add(e2)
+    session.commit()
+
+    # reload from database
+    updated = session.query(models.Detail).filter(models.Detail.id == detail_id).one()
+    assert detail.value == 1312
+    return True
+
+
 @pytest.mark.depends(on=['db_init'], name='add_find')
 def test_add_and_find():
     """
@@ -293,6 +317,7 @@ def test_add_and_find():
     assert add_person(session)
     assert add_entries(session)
     assert add_details(session)
+    assert mutate_details(session)
     assert associate_persons(session)
     assert check_related_information(session)
     assert check_find_with_wildcard(session)
