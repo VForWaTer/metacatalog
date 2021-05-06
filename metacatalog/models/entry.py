@@ -407,7 +407,7 @@ class Entry(Base):
         """
         # get the details
         details = self.details_dict(full=True)
-        for key, value in details.item():
+        for key, value in details.items():
             if isinstance(value, dict):
                 expand = {f'{key}.{k}': dict(value=v, ) for k,v in value.items()}
                 details.update(expand)
