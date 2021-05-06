@@ -105,6 +105,8 @@ class Detail(Base):
     def value(self, new_value: Union[str, dict]):
         if not isinstance(new_value, dict):
             new_val = {'__literal__': new_value}
+        else:
+            new_val = new_value
         self.raw_value = new_val
 
     def to_dict(self, deep=False):
