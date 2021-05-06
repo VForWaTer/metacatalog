@@ -406,15 +406,18 @@ class Entry(Base):
 
         """
         # get the details
-        details = self.details_dict(full=True)
-        for key, value in details.items():
-            if isinstance(value, dict):
-                expand = {f'{key}.{k}': dict(value=v, ) for k,v in value.items()}
+        details = dict()
+        for key, detail in self.details_dict(full=True).items():
+            if isinstance(detail['value'], dict):
+                expand = {f'{key}.{k}': dict(value=v, id=detail['id'], key=detail['key'], stem=detail['stem']) for k,v in detail['value'].items()}
                 details.update(expand)
-                details[key]['value'] = f'- see childs: {key}.child  -'
+            else:
+                details[key] = detail
 
-        df = pd.DataFrame(self.details_dict(full=True)).T
+        # turn into a transposed datarame
+        df = pd.DataFrame(details).T
 
+        # output table
         if fmt.lower() == 'html':
             return df.to_html()
         elif fmt.lower() == 'latex':
