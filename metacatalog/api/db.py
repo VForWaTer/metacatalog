@@ -121,7 +121,7 @@ def _remove_nan_from_dict(d):
     return out_d
 
 
-def import_table_data(fname, InstanceClass):
+def import_table_data(fname, InstanceClass, array_col_name=None):
     try:
         df = pd.read_csv(os.path.join(DATAPATH, fname))
     except ParserError as e:
@@ -130,6 +130,10 @@ def import_table_data(fname, InstanceClass):
 
     # replace nan with None
     df = df.where(df.notnull(), None)
+
+    # handle arrays
+    if array_col_name is not None:
+        df[array_col_name] = [[cell] for cell in df[array_col_name].values]
 
     # build an instance for each line and return
     return [InstanceClass(**_remove_nan_from_dict(d)) for d in df.to_dict(orient='record')]
@@ -226,8 +230,11 @@ def populate_defaults(session, ignore_tables=[], bump_sequences=10000):
             print('Finished %s' % table)
             continue
         
-        # get the classes
-        instances = import_table_data('%s.csv' % table, InstanceClass)
+        elif table == 'variables':
+            instances = import_table_data('variables.csv', InstanceClass, array_col_name='column_names')
+        else:
+            # get the classes
+            instances = import_table_data('%s.csv' % table, InstanceClass)
 
         # add
         try:
