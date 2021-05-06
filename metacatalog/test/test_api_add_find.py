@@ -262,6 +262,7 @@ def add_details(session):
 
      # add nested details
     e2.add_details(
+        session,
         foo=dict(bar=['list', 'of', 'strings'], baz=42),
         answer=42,
         commit=True
