@@ -983,16 +983,23 @@ def find_entry(session,
 
     # details
     if details is not None:
+        if not isinstance(details, dict):
+            raise TypeError('The details have to be given as a dictionary')
+
         # build the query
         query = query.join(models.Detail)
 
         # build a stemmer
         ps = nltk.PorterStemmer()
 
-        if not isinstance(details, dict):
-            raise TypeError('The details have to be given as a dictionary')
         for key, value in details.items():
-            query = query.filter(models.Detail.stem==ps.stem(key)).filter(_match(models.Detail.value, value))
+            query = query.filter(models.Detail.stem==ps.stem(key))
+            
+            # handle nested json data
+            if isinstance(value, (list, tuple, dict)):
+                query = query.filter(models.Detail.raw_value.contains(value))
+            else:
+                query = query.filter(models.Detail.raw_value.contains({'__literal__': value}))
 
     # return
     if return_iterator:
