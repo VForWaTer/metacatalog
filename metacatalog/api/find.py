@@ -997,9 +997,9 @@ def find_entry(session,
             
             # handle nested json data
             if isinstance(value, (list, tuple, dict)):
-                query = query.filter(Detail.raw_value.contains(value))
+                query = query.filter(models.Detail.raw_value.contains(value))
             else:
-                query = query.filter(Detail.raw_value.contains({'__literal__': value}))
+                query = query.filter(models.Detail.raw_value.contains({'__literal__': value}))
 
     # return
     if return_iterator:
