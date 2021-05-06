@@ -28,15 +28,15 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
     # reset the index
     imp = data.reset_index(level=0, inplace=False)
 
-    # set entry_id
-    if 'entry_id' not in imp.columns:
-        imp['entry_id'] = entry.id
-
     # check if a session was passed
     if 'session' in kwargs.keys():
         session = kwargs['session']
     else:
         session = object_session(entry)
+
+    # get index, drop it afterwards
+    index = imp.tstamp
+    imp.drop('tstamp', axis=1, inplace=True)
 
     # get the column names - exclude everthing that stores precisions
     data_columns = [col for col in imp.columns.tolist() if not col.startswith('precision')]
@@ -44,14 +44,15 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
     # get the precision columns
     precision_columns = [col for col in imp.columns.tolist() if col.startswith('precision')]
 
-    # get index
-    index = imp.index
+    # set entry_id
+    if 'entry_id' not in imp.columns:
+        imp['entry_id'] = entry.id
 
-    # save column names in datasource.data_names (excluding )
-    if len(columns) != len(entry.variable.column_names):
+    # save column names in datasource.data_names (excluding precision)
+    if len(data_columns) != len(entry.variable.column_names):
         force_data_names = True
     if force_data_names:
-        datasource.data_names = columns
+        datasource.data_names = data_columns
     else:
         datasource.data_names = entry.variable.column_names
 
@@ -70,16 +71,16 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
     # explicitly map the column types
     dtypes = {
         'tstamp': sa.TIMESTAMP,
-        'values': ARRAY(sa.REAL),
+        'data': ARRAY(sa.REAL),
         'precision': ARRAY(sa.REAL)
     }
 
-    imp_data = pd.DataFrame(data={'tstamp': index, 'values': values, 'precision': precision})
+    imp_data = pd.DataFrame(data={'tstamp': index, 'data': values, 'precision': precision})
     imp_data['entry_id'] = entry.id
 
     # else import
     if_exists = kwargs.get('if_exists', 'append')
-    imp.to_sql(tablename, session.bind, index=None, if_exists=if_exists)
+    imp_data.to_sql(tablename, session.bind, index=None, dtype=dtypes, if_exists=if_exists)
 
 
 def import_to_local_csv_file(entry, datasource, data, **kwargs):

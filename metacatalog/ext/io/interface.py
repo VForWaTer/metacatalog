@@ -274,7 +274,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
                 check_for_func = False
 
         if func is None:
-            raise IOOperationNotFoundError("No registered function for datatype '%s'\nOperation:[%s]->[%s]" % (name.lower(), operation.upper(), name))
+            raise IOOperationNotFoundError("No registered function for datatype '%s'\nOperation:[%s]->[%s]" % (datatype, operation.upper(), name))
 
         return func
 

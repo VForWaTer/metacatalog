@@ -13,4 +13,3 @@ id,parent_id,name,title,description
 21,20,vdataframe,"named, indexed table","idataframe with additional name property of any valid metacatalog Variable."
 22,16,time-dataframe,timeseries table,"NDArray indexed by datetime information. The datetimes need to be of increasing order."
 23,22,vtime-dataframe,named timeseries table,"Timeseries table that holds an additional Variable name to describe the content."
-24,,timeseries-array,"timeseries,ARRAY data","sqlalchemy.dialects.postgresql.ARRAY data indexed by datetime information. The datetimes need to be of increasing order."

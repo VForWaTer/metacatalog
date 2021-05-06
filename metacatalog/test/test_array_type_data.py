@@ -13,7 +13,7 @@ u = 1.123902, 0.214753, 0.446611, 0.962977, 2.915902, 4.048897, 5.368552, 6.0462
 v = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
 w = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
 
-df = pd.DataFrame(data={"tstamp": tstamp, "u": u, "v": v, "w": w})
+df = pd.DataFrame(data={"tstamp": tstamp, "u_m": u, "v_m": v, "w_m": w})
 df['tstamp'] = pd.to_datetime(df['tstamp'], format='%Y-%m-%d %H:%M:%S')
 df.set_index('tstamp', inplace=True)
 
@@ -53,7 +53,7 @@ def create_eddy_datasource(session):
     Add a datasource to the eddy entry.
     """
     eddy_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
-    eddy_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries-array', data_names=['u', 'v', 'w'])
+    eddy_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries', data_names=['u', 'v', 'w'])
 
     eddy_wind.datasource.create_scale(resolution='30min', extent=(df.index[0], df.index[-1]), support=1.0, scale_dimension='temporal')
 
