@@ -61,29 +61,6 @@ def add_entries(session):
     return True
 
 
-def add_details(session):
-    """
-    Add some random detail
-    """
-    # find the first entry
-    e1 = api.find_entry(session, title="Dummy 1")[0]
-    e2 = api.find_entry(session, title="Dummy 2")[0]
-
-    # check compability of < v0.1.8 api
-    api.add_details_to_entries(session, [e1], **{'foo': 'bar 1'})
-    api.add_details_to_entries(session, [e2], **{'foo': 'bar 2'})
-    api.add_details_to_entries(session, [e1, e2], **{'banana': 'both love it'})
-    
-    # check the new possibilites:
-    api.add_details_to_entries(session, [e1], 
-        details=[dict(key='baz', value=42, description='Baz is the best kw')])
-
-    d = e1.details_dict(full=True)
-    assert d['baz']['description']=='Baz is the best kw'
-    
-    return True
-
-
 def associate_persons(session):
     """
     Set the others as associated persons
@@ -267,29 +244,41 @@ def check_find_person(session):
     return True
 
 
-def check_details(session):
-    entry = api.find_entry(session, title='Dummy 2')[0]
+def add_details(session):
+    """
+    Add some random detail
+    """
+    # find the first entry
+    e1 = api.find_entry(session, title="Dummy 1")[0]
+    e2 = api.find_entry(session, title="Dummy 2")[0]
 
-    # add nested details
-    entry.add_details(
+    # check compability of < v0.1.8 api
+    api.add_details_to_entries(session, [e1], **{'foo': 'bar 1'})
+    api.add_details_to_entries(session, [e1, e2], **{'banana': 'both love it'})
+    
+    # check the new possibilites:
+    api.add_details_to_entries(session, [e1], 
+        details=[dict(key='baz', value=42, description='Baz is the best kw')])
+
+     # add nested details
+    e2.add_details(
         foo=dict(bar=['list', 'of', 'strings'], baz=42),
         answer=42,
         commit=True
     )
 
     # get the table
-    entry.details_table(fmt='markdown')
+    e2.details_table(fmt='markdown')
 
     # find the details
     found_entry = api.find_entry(details=dict(answer=42))[0]
-    assert entry.id == found_entry.id
+    assert e2.id == found_entry.id
 
     # find nested details
-    found_entry = api.find_entry(details=dict(foo=dict(baz=42)))
-    assert entry.id == found_entry.id
+    found_entry2 = api.find_entry(details=dict(foo=dict(baz=42)))
+    assert e2.id == found_entry2.id
 
     return True
-
 
 @pytest.mark.depends(on=['db_init'], name='add_find')
 def test_add_and_find():
@@ -315,4 +304,3 @@ def test_add_and_find():
     assert check_get_by_uuid(session)
     assert find_by_author(session)
     assert check_find_person(session)
-    assert check_details(session)
