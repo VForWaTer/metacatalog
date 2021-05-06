@@ -275,7 +275,7 @@ def add_details(session):
     assert e2.id == found_entry.id
 
     # find nested details
-    found_entry2 = api.find_entry(session, details=dict(foo=dict(baz=42)))
+    found_entry2 = api.find_entry(session, details=dict(foo=dict(baz=42)))[0]
     assert e2.id == found_entry2.id
 
     return True
