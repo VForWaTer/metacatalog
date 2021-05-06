@@ -2,6 +2,7 @@ import pytest
 
 import pandas as pd
 from metacatalog import api
+from ._util import connect
 
 
 
@@ -51,19 +52,15 @@ def create_eddy_datasource(session):
     """
     Add a datasource to the eddy entry.
     """
-    wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries_array', data_names=['u', 'v', 'w'])
+    eddy_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
+    eddy_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries-array', data_names=['u', 'v', 'w'])
 
-    wind.datasource.create_scale(
-        resolution='30min',
-        extent=(df.index[0], df.index[-1]),
-        support=1.0,
-        scale_dimension='temporal'
-    )
+    eddy_wind.datasource.create_scale(resolution='30min', extent=(df.index[0], df.index[-1]), support=1.0, scale_dimension='temporal')
 
     session.commit()
 
     # assert
-    assert wind.datasource.data_names == ['u', 'v', 'w']
+    assert eddy_wind.datasource.data_names == ['u', 'v', 'w']
 
     return True
 
@@ -72,7 +69,8 @@ def add_eddy_data(session):
     """
     Add the previously generated 3D windspeed data to the eddy entry.
     """
-    wind.import_data(df)
+    eddy_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
+    eddy_wind.import_data(df)
 
     return True
 
@@ -81,9 +79,9 @@ def read_eddy_data(session):
     """
     Read the 3D windspeed data and check column names.
     """
-    eddy = api.find_entry(session, title='3-dimensional windspeed data')
+    eddy_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
 
-    dat = eddy.get_data()
+    dat = eddy_wind.get_data()
 
     print(dat.columns)
 
@@ -104,4 +102,5 @@ def test_array_type_data():
     # run single tests
     assert add_eddy_entry(session)
     assert create_eddy_datasource(session)
+    assert add_eddy_data(session)
     assert read_eddy_data(session)

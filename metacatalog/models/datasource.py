@@ -7,6 +7,7 @@ from sqlalchemy import Integer, String, DateTime, Numeric
 from sqlalchemy.orm import relationship, object_session, backref
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape, from_shape
+from sqlalchemy.dialects.postgresql import ARRAY
 
 import pandas as pd
 
@@ -464,7 +465,7 @@ class DataSource(Base):
     datatype_id = Column(Integer, ForeignKey('datatypes.id'), nullable=False)
     encoding = Column(String(64), default='utf-8')
     path = Column(String, nullable=False)
-    data_names = Column(String, nullable=False)
+    data_names = Column(ARRAY(String(128)), nullable=False)
     args = Column(String)
 
     # scales
