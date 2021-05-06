@@ -406,6 +406,13 @@ class Entry(Base):
 
         """
         # get the details
+        details = self.details_dict(full=True)
+        for key, value in details.item():
+            if isinstance(value, dict):
+                expand = {f'{key}.{k}': dict(value=v, ) for k,v in value.items()}
+                details.update(expand)
+                details[key]['value'] = f'- see childs: {key}.child  -'
+
         df = pd.DataFrame(self.details_dict(full=True)).T
 
         if fmt.lower() == 'html':
@@ -452,7 +459,7 @@ class Entry(Base):
                 'entry_id': self.id, 
                 'key': str(k), 
                 'stem': ps.stem(k), 
-                'value': str(v)
+                'value': v
             })
         
         # parse details
@@ -462,7 +469,7 @@ class Entry(Base):
                     'entry_id': self.id,
                     'key': detail['key'],
                     'stem': ps.stem(detail['key']),
-                    'value': str(detail['value'])
+                    'value': detail['value']
                 }
                 if 'description' in detail.keys():
                     d['description'] = detail['description']
