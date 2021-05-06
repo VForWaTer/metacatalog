@@ -464,7 +464,7 @@ class DataSource(Base):
     datatype_id = Column(Integer, ForeignKey('datatypes.id'), nullable=False)
     encoding = Column(String(64), default='utf-8')
     path = Column(String, nullable=False)
-    data_names = Column(String)
+    data_names = Column(String, nullable=False)
     args = Column(String)
 
     # scales
