@@ -271,11 +271,11 @@ def add_details(session):
     e2.details_table(fmt='markdown')
 
     # find the details
-    found_entry = api.find_entry(details=dict(answer=42))[0]
+    found_entry = api.find_entry(session, details=dict(answer=42))[0]
     assert e2.id == found_entry.id
 
     # find nested details
-    found_entry2 = api.find_entry(details=dict(foo=dict(baz=42)))
+    found_entry2 = api.find_entry(session, details=dict(foo=dict(baz=42)))
     assert e2.id == found_entry2.id
 
     return True
