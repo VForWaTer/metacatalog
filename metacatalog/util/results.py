@@ -107,9 +107,17 @@ class ImmutableResultSet:
         """
         Get a short unified version of the results.
 
-        TODO: 
+        .. todo:: 
+            the list of used keys is hardcoded and should
+            depend on the variable / group type or be completely
+            dynamic
+
         """
-        pass
+        # hardcode the keys
+        keys = ['id', 'uuid', 'title', 'variable', 'datasource']
+        
+        # build the output dictionary
+        return {key: self.get(key) for key in keys}
 
     def to_dict(self):
         """
