@@ -239,6 +239,9 @@ class Entry(Base):
 
         if self.details is not None:
             d['details'] = self.details_dict(full=True)
+
+        if self.datasource is not None:
+            d['datasource'] = self.datasource.to_dict(deep=False)
         
         # set optional attributes
         for attr in ('abstract', 'external_id','comment', 'citation'):
