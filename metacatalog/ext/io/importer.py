@@ -35,8 +35,12 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
         session = object_session(entry)
 
     # get index, drop it afterwards
-    index = imp.tstamp
-    imp.drop('tstamp', axis=1, inplace=True)
+    if 'index' in imp.columns:
+        index = imp.index
+        imp.drop('index', axis=1, inplace=True)
+    elif 'tstamp' in imp.columns:
+        index = imp.tstamp
+        imp.drop('tstamp', axis=1, inplace=True)
 
     # get the column names - exclude everthing that stores precisions
     data_columns = [col for col in imp.columns.tolist() if not col.startswith('precision')]
@@ -68,19 +72,45 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
     values = [row for row in imp[data_columns].values]
     precision = [row for row in imp[precision_columns].values]
 
-    # explicitly map the column types
-    dtypes = {
-        'tstamp': sa.TIMESTAMP,
-        'data': ARRAY(sa.REAL),
-        'precision': ARRAY(sa.REAL)
-    }
+    # make importer.py compatible with the (old) 1D timeseries table
+    if tablename == 'timeseries':
+        # explicitly map the column types
+        dtypes = {
+            'tstamp': sa.TIMESTAMP,
+            'value': sa.NUMERIC,
+            'precision': sa.NUMERIC
+        }
 
-    imp_data = pd.DataFrame(data={'tstamp': index, 'data': values, 'precision': precision})
-    imp_data['entry_id'] = entry.id
+        # convert 1D np.ndarray data and precision to type float
+        values = [number for array in values for number in array]
+        precision = [number for array in precision for number in array]
 
-    # else import
-    if_exists = kwargs.get('if_exists', 'append')
-    imp_data.to_sql(tablename, session.bind, index=None, dtype=dtypes, if_exists=if_exists)
+        # the list comprehension above creates an empty list if precision is empty:
+        if not precision:
+            imp_data = pd.DataFrame(data={'tstamp': index, 'value': values})
+            imp_data['entry_id'] = entry.id
+        else:
+            imp_data = pd.DataFrame(data={'tstamp': index, 'value': values, 'precision': precision})
+            imp_data['entry_id'] = entry.id
+
+        # else import
+        if_exists = kwargs.get('if_exists', 'append')
+        imp_data.to_sql(tablename, session.bind, index=None, dtype=dtypes, if_exists=if_exists)
+    else:
+        # else: the (new) timeseries_array is used
+        # explicitly map the column types
+        dtypes = {
+            'tstamp': sa.TIMESTAMP,
+            'data': ARRAY(sa.REAL),
+            'precision': ARRAY(sa.REAL)
+        }
+
+        imp_data = pd.DataFrame(data={'tstamp': index, 'data': values, 'precision': precision})
+        imp_data['entry_id'] = entry.id
+
+        # else import
+        if_exists = kwargs.get('if_exists', 'append')
+        imp_data.to_sql(tablename, session.bind, index=None, dtype=dtypes, if_exists=if_exists)
 
 
 def import_to_local_csv_file(entry, datasource, data, **kwargs):

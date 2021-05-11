@@ -1,7 +1,7 @@
 """
 This e2e Test needs the add-find API tests to be finished.
 
-It will use the Entries created in that test to create 
+It will use the Entries created in that test to create
 some data samples and upload them to the database.
 
 """
@@ -18,7 +18,7 @@ from ._util import connect
 
 def create_datasource(session, entry: models.Entry, data):
     # create the datasource
-    datasource = entry.create_datasource('timeseries', 'internal', 'timeseries', commit=True)
+    datasource = entry.create_datasource('timeseries', 'internal', 'timeseries', data_names=['data_name'], commit=True)
     assert datasource is not None
 
     # check
