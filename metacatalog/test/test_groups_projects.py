@@ -55,7 +55,7 @@ def check_result_set(session):
     """
     Load only one of the entries and create a ImmutableResultSet
     """
-    result = api.find_entry(title='Microphone', as_result=True)
+    result = api.find_entry(title='Microphone', as_result=True)[0]
 
     assert isinstance(result, ImmutableResultSet)
 
@@ -64,6 +64,16 @@ def check_result_set(session):
 
     # but only one author
     assert isinstance(result.get('author'), dict)
+
+
+def check_result_set_from_group(session):
+    """
+    Create a ImmutableResultSet from a group
+    """
+    result = api.find_group(session, title='Awesome inventions', as_result=True)[0]
+
+    # assert like above
+    assert len(result.get('uuid')) == 3
 
 
 @pytest.mark.depends(on=['db_init'], name='groups')
