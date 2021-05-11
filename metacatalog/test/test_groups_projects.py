@@ -65,6 +65,8 @@ def check_result_set(session):
     # but only one author
     assert isinstance(result.get('author'), dict)
 
+    return True
+
 
 def check_result_set_from_group(session):
     """
@@ -74,6 +76,8 @@ def check_result_set_from_group(session):
 
     # assert like above
     assert len(result.get('uuid')) == 3
+
+    return True
 
 
 @pytest.mark.depends(on=['db_init'], name='groups')
@@ -86,4 +90,5 @@ def test_groups_and_projects():
     assert add_person_and_entries(session)
     assert make_composite(session)
     assert check_result_set(session)
+    assert check_result_set_from_group(session)
 

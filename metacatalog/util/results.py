@@ -29,7 +29,8 @@ the ImmutableResultSet will merge matching content:
 
 >>> res.get('title')
 
-  'Awesome Composite Dataset'
+.. code-block::
+    'Awesome Composite Dataset'
 
 Note that the return type is string, like the original ``title``,
 not a list.
