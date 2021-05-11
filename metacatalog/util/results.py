@@ -1,12 +1,41 @@
 """
-Result Set
-----------
-
 The ImmutableResultSet class can be used to wrap a list of
 :class:`Entry <metacatalog.models.Entry>` or 
 :class:`EntryGroup <metacatalog.models.EntryGroup>` instances
 a deliver a unified interface to load metadata from nested 
 and / or grouped results.
+
+Example
+~~~~~~~
+
+>>> session = api.connect_database()
+>>> entry = api.find_entry(session, id=42)
+>>> res = ImmutableResultSet(entry)
+
+This will load all sibling Entries into the result set. I.e., if
+the composite entry has three members, the Composite EntryGroup 
+and two child Entries, the ImmutableResultSet will have three
+UUIDs
+
+>>> res.get('uuid')
+
+  ['c1087040-5566-44b9-9852-ea600f73ae0c',
+  '0350c985-4e43-4876-a03a-7b6fb2a3a4b6',
+  'c6d6301b-8e1c-478f-9407-ce9a0c38dbb8']
+
+At the same time, if all members share a property, like their ``title``
+the ImmutableResultSet will merge matching content:
+
+>>> res.get('title')
+
+  'Awesome Composite Dataset'
+
+Note that the return type is string, like the original ``title``,
+not a list.
+
+
+.. automodule:: metacatalog.util.results.ImmutableResultSet
+    :members: __init__
 
 """
 from typing import Union, List
@@ -44,6 +73,18 @@ class ImmutableResultSet:
 
     @classmethod
     def load_base_group(cls, entry: Entry):
+        r"""
+        Returns the base EntryGroup of the given Entry.
+        The base EntryGroup is the strongest grouping that requires expanding
+        of the result set, to load all siblings. 
+        If there are no matching groups, None will be returned
+
+        Currently the order of importance is:
+
+        * ``'Composite'``
+        * ``'Split dataset'``
+
+        """
         # get the groups and the names
         groups = entry.associated_groups
         type_names = [group.type.name for group in groups]
