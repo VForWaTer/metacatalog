@@ -11,6 +11,7 @@ Database Models
    :Caption: Models:
 
    entry
+   result
    location
    keyword
    person
