@@ -19,9 +19,10 @@ UUIDs
 
 >>> res.get('uuid')
 
-  ['c1087040-5566-44b9-9852-ea600f73ae0c',
-  '0350c985-4e43-4876-a03a-7b6fb2a3a4b6',
-  'c6d6301b-8e1c-478f-9407-ce9a0c38dbb8']
+.. code-block::
+    ['c1087040-5566-44b9-9852-ea600f73ae0c',
+    '0350c985-4e43-4876-a03a-7b6fb2a3a4b6',
+    'c6d6301b-8e1c-478f-9407-ce9a0c38dbb8']
 
 At the same time, if all members share a property, like their ``title``
 the ImmutableResultSet will merge matching content:
@@ -44,7 +45,7 @@ Reference
 ~~~~~~~~~
 
 .. automodule:: metacatalog.util.results.ImmutableResultSet
-    :members: __init__
+    :members:
 
 """
 from typing import Union, List
