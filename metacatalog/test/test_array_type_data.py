@@ -6,18 +6,6 @@ from ._util import connect
 
 
 
-# using eddy wind speed data for the tests (u, v, w)
-tstamp = "2018-01-01 00:30:00", "2018-01-01 01:00:00", "2018-01-01 01:30:00", "2018-01-01 02:00:00", "2018-01-01 02:30:00", "2018-01-01 03:00:00", "2018-01-01 03:30:00", "2018-01-01 04:00:00", "2018-01-01 04:30:00", "2018-01-01 05:00:00"
-u = 1.123902, 0.214753, 0.446611, 0.962977, 2.915902, 4.048897, 5.368552, 6.046246, 5.405221, 4.172279
-v = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
-w = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
-
-df_3D_wind = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u, "v_ms": v, "w_ms": w})    # use different column names to test force_data_names=True
-df_3D_wind['tstamp'] = pd.to_datetime(df_3D_wind['tstamp'], format='%Y-%m-%d %H:%M:%S')
-df_3D_wind.set_index('tstamp', inplace=True)
-
-
-
 def add_3D_entry(session):
     """
     Add an entry for the eddy wind data.
@@ -48,7 +36,7 @@ def add_3D_entry(session):
     return True
 
 
-def create_3D_datasource(session):
+def create_3D_datasource(session, df_3D_wind):
     """
     Add a datasource to the eddy entry.
     """
@@ -65,7 +53,7 @@ def create_3D_datasource(session):
     return True
 
 
-def add_3D_data(session):
+def add_3D_data(session, df_3D_wind):
     """
     Add Eddy 3D windspeed data to the eddy entry.
     """
@@ -92,15 +80,10 @@ def read_3D_data(session):
     return True
 
 
-def one_dim_data(session):
+def one_dim_data(session, df_1D_wind):
     """
     Do the same as above, but with one-dimensional data instead.
     """
-    # generate data
-    df_1D_wind = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u})
-    df_1D_wind['tstamp'] = pd.to_datetime(df_1D_wind['tstamp'], format='%Y-%m-%d %H:%M:%S')
-    df_1D_wind.set_index('tstamp', inplace=True)
-
     # add the variable
     var_1D_wind = api.add_variable(session, name='1D-wind', symbol='u', column_names=['u'], unit=107)
 
@@ -134,7 +117,7 @@ def one_dim_data(session):
     return True
 
 
-def force_data_names_true(session):
+def force_data_names_true(session, df_3D_wind):
     """
     Test force_data_names=True when loading the data into the database.
     In this case, datasource.data_names will be overwritten with the column
@@ -196,10 +179,27 @@ def test_array_type_data():
     # get a session
     session = connect(mode='session')
 
+    # using eddy wind speed data for the tests (u, v, w)
+    tstamp = "2018-01-01 00:30:00", "2018-01-01 01:00:00", "2018-01-01 01:30:00", "2018-01-01 02:00:00", "2018-01-01 02:30:00", "2018-01-01 03:00:00", "2018-01-01 03:30:00", "2018-01-01 04:00:00", "2018-01-01 04:30:00", "2018-01-01 05:00:00"
+    u = 1.123902, 0.214753, 0.446611, 0.962977, 2.915902, 4.048897, 5.368552, 6.046246, 5.405221, 4.172279
+    v = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
+    w = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
+
+    # generate 3D data
+    df_3D_wind = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u, "v_ms": v, "w_ms": w})    # use different column names to test force_data_names=True
+    df_3D_wind['tstamp'] = pd.to_datetime(df_3D_wind['tstamp'], format='%Y-%m-%d %H:%M:%S')
+    df_3D_wind.set_index('tstamp', inplace=True)
+
+    # generate 1D data
+    df_1D_wind = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u})
+    df_1D_wind['tstamp'] = pd.to_datetime(df_1D_wind['tstamp'], format='%Y-%m-%d %H:%M:%S')
+    df_1D_wind.set_index('tstamp', inplace=True)
+
+
     # run single tests
     assert add_3D_entry(session)
-    assert create_3D_datasource(session)
-    assert add_3D_data(session)
+    assert create_3D_datasource(session, df_3D_wind)
+    assert add_3D_data(session, df_3D_wind)
     assert read_3D_data(session)
-    assert one_dim_data(session)
-    assert force_data_names_true(session)
+    assert one_dim_data(session, df_1D_wind)
+    assert force_data_names_true(session, df_3D_wind)
