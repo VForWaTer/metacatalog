@@ -6,19 +6,19 @@ from ._util import connect
 
 
 
-### EDDY data chunk erstellen
-# using 3D eddy wind speed data (u, v, w)
+# using eddy wind speed data for the tests (u, v, w)
 tstamp = "2018-01-01 00:30:00", "2018-01-01 01:00:00", "2018-01-01 01:30:00", "2018-01-01 02:00:00", "2018-01-01 02:30:00", "2018-01-01 03:00:00", "2018-01-01 03:30:00", "2018-01-01 04:00:00", "2018-01-01 04:30:00", "2018-01-01 05:00:00"
 u = 1.123902, 0.214753, 0.446611, 0.962977, 2.915902, 4.048897, 5.368552, 6.046246, 5.405221, 4.172279
 v = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
 w = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
 
-df = pd.DataFrame(data={"tstamp": tstamp, "u_m": u, "v_m": v, "w_m": w})
-df['tstamp'] = pd.to_datetime(df['tstamp'], format='%Y-%m-%d %H:%M:%S')
-df.set_index('tstamp', inplace=True)
+df_3D_wind = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u, "v_ms": v, "w_ms": w})    # use different column names to test force_data_names=True
+df_3D_wind['tstamp'] = pd.to_datetime(df_3D_wind['tstamp'], format='%Y-%m-%d %H:%M:%S')
+df_3D_wind.set_index('tstamp', inplace=True)
 
 
-def add_eddy_entry(session):
+
+def add_3D_entry(session):
     """
     Add an entry for the eddy wind data.
     """
@@ -32,7 +32,7 @@ def add_eddy_entry(session):
                         )
 
     # add the entry
-    eddy_wind = api.add_entry(session, title='3-dimensional windspeed data',
+    entry_3D_wind = api.add_entry(session, title='3-dimensional windspeed data',
                               abstract='3-dimensional windspeed data from the Fendt data set',
                               location=(8, 52),
                               variable=var_3D_wind.id,
@@ -48,47 +48,87 @@ def add_eddy_entry(session):
     return True
 
 
-def create_eddy_datasource(session):
+def create_3D_datasource(session):
     """
     Add a datasource to the eddy entry.
     """
-    eddy_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
-    eddy_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries', data_names=['u', 'v', 'w'])
+    entry_3D_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
+    entry_3D_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries', data_names=['u', 'v', 'w'])
 
-    eddy_wind.datasource.create_scale(resolution='30min', extent=(df.index[0], df.index[-1]), support=1.0, scale_dimension='temporal')
+    entry_3D_wind.datasource.create_scale(resolution='30min', extent=(df_3D_wind.index[0], df_3D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
     session.commit()
 
     # assert
-    assert eddy_wind.datasource.data_names == ['u', 'v', 'w']
+    assert entry_3D_wind.datasource.data_names == ['u', 'v', 'w']
 
     return True
 
 
-def add_eddy_data(session):
+def add_3D_data(session):
     """
-    Add the previously generated 3D windspeed data to the eddy entry.
+    Add Eddy 3D windspeed data to the eddy entry.
     """
-    eddy_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
-    eddy_wind.import_data(df)
+    entry_3D_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
+    entry_3D_wind.import_data(df_3D_wind)
 
     return True
 
 
-def read_eddy_data(session):
+def read_3D_data(session):
     """
     Read the 3D windspeed data and check column names.
     """
-    eddy_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
+    entry_3D_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
 
-    dat = eddy_wind.get_data()
+    dat = entry_3D_wind.get_data()
 
-    print(dat.columns)
+    print(dat['u'].mean())
+
+    # assert
+    assert dat.columns[1] == 'v'
+    assert dat.columns.tolist() == ['u', 'v', 'w']          # at the moment, no precision columns will be returned when there is no data, is this the wanted behaviour?
+    assert dat.index[2] == pd.to_datetime("2018-01-01 01:30:00", format='%Y-%m-%d %H:%M:%S')
+    assert dat['u'].mean() == 3.070534
 
     return True
 
 
+def one_dim_data(session):
+    """
+    Do the same as above, but with one-dimensional data instead.
+    """
+    # generate data
+    df_1D_wind = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u})
+    df_1D['tstamp'] = pd.to_datetime(df_1D['tstamp'], format='%Y-%m-%d %H:%M:%S')
+    df_1D.set_index('tstamp', inplace=True)
 
+    # add the variable
+    var_1D_wind = api.add_variable(session, name='1D-wind', symbol='u', column_names=['u'], unit=107)
+
+    # add the entry
+    entry_1D_wind = api.add_entry(session, title='1-dimensional windspeed data',abstract='1-dimensional windspeed data from the Fendt data set',
+                                  location=(8, 52),
+                                  variable=var_1D_wind.id,
+                                  license=6,
+                                  author=kit.id,
+                                  embargo=False,
+                                  is_partial=False)
+
+    # create datasource and scale
+    entry_1D_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries', data_names=['u'])
+
+    entry_1D_wind.datasource.create_scale(resolution='30min', extent=(df_1D.index[0], df_1D.index[-1]), support=1.0, scale_dimension='temporal')
+
+    return True
+
+
+#def force_data_names_true(session):
+#    return True
+
+
+#def test_old_timeseries(session):
+#    return True
 
 @pytest.mark.depends(on=['db_init'], name='array_type_data')
 def test_array_type_data():
@@ -100,7 +140,8 @@ def test_array_type_data():
     session = connect(mode='session')
 
     # run single tests
-    assert add_eddy_entry(session)
-    assert create_eddy_datasource(session)
-    assert add_eddy_data(session)
-    assert read_eddy_data(session)
+    assert add_3D_entry(session)
+    assert create_3D_datasource(session)
+    assert add_3D_data(session)
+    assert read_3D_data(session)
+    #assert one_dim_data(session)
