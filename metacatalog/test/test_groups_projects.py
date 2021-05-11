@@ -55,7 +55,7 @@ def check_result_set(session):
     """
     Load only one of the entries and create a ImmutableResultSet
     """
-    result = api.find_entry(title='Microphone', as_result=True)[0]
+    result = api.find_entry(session, title='Microphone', as_result=True)[0]
 
     assert isinstance(result, ImmutableResultSet)
 
