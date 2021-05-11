@@ -33,6 +33,15 @@ the ImmutableResultSet will merge matching content:
 Note that the return type is string, like the original ``title``,
 not a list.
 
+Alternatively, the API can return ImmutableResultSets if the
+API has a ``as_result`` arugment. The example above can be reproduced
+like:
+
+>>> res = api.find_entry(session, id=42, as_result=True)
+
+
+Reference
+~~~~~~~~~
 
 .. automodule:: metacatalog.util.results.ImmutableResultSet
     :members: __init__
