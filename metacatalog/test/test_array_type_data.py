@@ -83,8 +83,6 @@ def read_3D_data(session):
 
     dat = entry_3D_wind.get_data()
 
-    print(dat['u'].mean())
-
     # assert
     assert dat.columns[1] == 'v'
     assert dat.columns.tolist() == ['u', 'v', 'w']          # at the moment, no precision columns will be returned when there is no data, is this the wanted behaviour?
@@ -100,11 +98,14 @@ def one_dim_data(session):
     """
     # generate data
     df_1D_wind = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u})
-    df_1D['tstamp'] = pd.to_datetime(df_1D['tstamp'], format='%Y-%m-%d %H:%M:%S')
-    df_1D.set_index('tstamp', inplace=True)
+    df_1D_wind['tstamp'] = pd.to_datetime(df_1D_wind['tstamp'], format='%Y-%m-%d %H:%M:%S')
+    df_1D_wind.set_index('tstamp', inplace=True)
 
     # add the variable
     var_1D_wind = api.add_variable(session, name='1D-wind', symbol='u', column_names=['u'], unit=107)
+
+    # find the previously added author
+    kit = api.find_person(session, organisation_abbrev='KIT')[0]
 
     # add the entry
     entry_1D_wind = api.add_entry(session, title='1-dimensional windspeed data',abstract='1-dimensional windspeed data from the Fendt data set',
@@ -118,13 +119,69 @@ def one_dim_data(session):
     # create datasource and scale
     entry_1D_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries', data_names=['u'])
 
-    entry_1D_wind.datasource.create_scale(resolution='30min', extent=(df_1D.index[0], df_1D.index[-1]), support=1.0, scale_dimension='temporal')
+    entry_1D_wind.datasource.create_scale(resolution='30min', extent=(df_1D_wind.index[0], df_1D_wind.index[-1]), support=1.0, scale_dimension='temporal')
+
+    # add data
+    entry_1D_wind.import_data(df_1D_wind)
+
+    # read data
+    dat = entry_1D_wind.get_data()
+
+    # assert
+    assert dat.columns == 'u'
+    assert dat['u'].mean() == 3.070534
 
     return True
 
 
-#def force_data_names_true(session):
-#    return True
+def force_data_names_true(session):
+    """
+    Test force_data_names=True when loading the data into the database.
+    In this case, datasource.data_names will be overwritten with the column
+    names of the imported data, when exporting the data, these column col_names
+    will be displayed.
+    We use the 3D eddy wind data for this again.
+    """
+    # find the variable
+    var_3D_wind = api.find_variable(session, name='3D-wind')[0]
+
+    # find the previously added person
+    kit = api.find_person(session, organisation_abbrev='KIT')[0]
+
+    # find the previously added author
+    kit = api.find_person(session, organisation_abbrev='KIT')[0]
+
+    # add the entry
+    entry_3D_force_data_names = api.add_entry(session, title='3-dimensional windspeed data, force_data_names',
+                                              abstract='3-dimensional windspeed data from the Fendt data set',
+                                              location=(8, 52),
+                                              variable=var_3D_wind.id,
+                                              comment='after double rotation',
+                                              license=6,
+                                              author=kit.id,
+                                              embargo=False,
+                                              is_partial=False)
+
+    # create datasource and scale
+    entry_3D_force_data_names.create_datasource(type=1, path='timeseries_array', datatype='timeseries', data_names=['u', 'v', 'w'])
+
+    entry_3D_force_data_names.datasource.create_scale(resolution='30min', extent=(df_3D_wind.index[0], df_3D_wind.index[-1]), support=1.0, scale_dimension='temporal')
+
+    # add data
+    entry_3D_force_data_names.import_data(df_3D_wind, force_data_names=True)
+
+    #load data
+    dat = entry_3D_force_data_names.get_data()
+
+    assert dat.columns.tolist() == ['u_ms', 'v_ms', 'w_ms']
+    assert dat['u_ms'].mean() == 3.070534
+
+    return True
+
+
+# TEST len(data_columns) != len(entry.variable.column_names)
+
+    #### a datasource must always be created first, datasource.data_names is not nullable -> WHEN would we use variable.column_names??
 
 
 #def test_old_timeseries(session):
@@ -144,4 +201,5 @@ def test_array_type_data():
     assert create_3D_datasource(session)
     assert add_3D_data(session)
     assert read_3D_data(session)
-    #assert one_dim_data(session)
+    assert one_dim_data(session)
+    assert force_data_names_true(session)
