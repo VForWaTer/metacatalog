@@ -7,10 +7,12 @@ The ImmutableResultSet class can be used to wrap a list of
 :class:`EntryGroup <metacatalog.models.EntryGroup>` instances
 a deliver a unified interface to load metadata from nested 
 and / or grouped results.
+
 """
-from typing import Union
+from typing import Union, List
 import hashlib
 import json
+from itertools import chain
 
 from metacatalog.models import Entry, EntryGroup
 
@@ -21,13 +23,72 @@ class ImmutableResultSet:
         ImmutableResultSet for the given EntryGroup or Entry.
         
         """
+        group = None
+        members = []
+
+        # check if an Entry was given
         if isinstance(instance, Entry):
-            self.group = None
-            self._members = [instance]
+            group = ImmutableResultSet.load_base_group(instance)
+            if group is None:
+                members = ImmutableResultSet.expand_entry(instance)
+            else:
+                members = [ImmutableResultSet.expand_entry(e) for e in group.entries]
         
         elif isinstance(instance, EntryGroup):
-            self.group = instance
-            self._members = [e for e in instance.entries]
+            group = instance
+            members = [ImmutableResultSet.expand_entry(e) for e in instance.entries]
+
+        # set attributes
+        self.group = group
+        self._members = ImmutableResultSet.entry_set(members)
+
+    @classmethod
+    def load_base_group(cls, entry: Entry):
+        # get the groups and the names
+        groups = entry.associated_groups
+        type_names = [group.type.name for group in groups]
+
+        # TODO: here we have a hard-coded hierachy
+        if 'Composite' in type_names:
+            idx = type_names.index('Composite')
+            return groups[idx]
+        
+        if 'Split dataset' in type_names:
+            idx = type_names.index('Split dataset')
+            return groups[idx]
+        
+        return None
+
+    @classmethod
+    def expand_entry(cls, entry: Entry):
+        """
+        Expand this Entry to all siblings
+        """
+        # container
+        entries = []
+
+        for g in entry.associated_groups:
+            if g.type.name not in ('Composite', 'Split dataset'):
+                continue
+            entries.extend(g.entries)
+
+        return entries
+
+    @classmethod
+    def entry_set(cls, entries: List[Entry]):
+        """
+        Return a set of entries to remove duplicates
+        """
+        # flat the list
+        if any([isinstance(e, list) for e in entries]):
+            entries = list(chain(*entries))
+        
+        # get the ids
+        ids = [e.id for e in entries]
+
+        # return only the first occurence of each entry
+        return [entries[i] for i, _id in enumerate(ids) if i==ids.index(_id)]
+
 
     def get(self, name: str, default=None):
         """
@@ -60,7 +121,12 @@ class ImmutableResultSet:
             if not hasattr(member, name):
                 continue
             val = getattr(member, name)
-            occurences.append(val.to_dict() if hasattr(val, 'to_dict') else val)
+            # check the datatype - could be a nested list
+            if isinstance(val, list):
+                exp_val = [v.to_dict() if hasattr(v, 'to_dict') else v for v in val]
+            else:
+                exp_val = val.to_dict() if hasattr(val, 'to_dict') else val
+            occurences.append(exp_val)
         
         # create the set
         occur_md5 = [hashlib.md5(json.dumps(str(o)).encode()).hexdigest() for o in occurences]
