@@ -19,18 +19,17 @@ UUIDs
 
 >>> res.get('uuid')
 
-.. code-block::
-    ['c1087040-5566-44b9-9852-ea600f73ae0c',
-    '0350c985-4e43-4876-a03a-7b6fb2a3a4b6',
-    'c6d6301b-8e1c-478f-9407-ce9a0c38dbb8']
+
+>>    ['c1087040-5566-44b9-9852-ea600f73ae0c',
+>>    '0350c985-4e43-4876-a03a-7b6fb2a3a4b6',
+>>    'c6d6301b-8e1c-478f-9407-ce9a0c38dbb8']
 
 At the same time, if all members share a property, like their ``title``
 the ImmutableResultSet will merge matching content:
 
 >>> res.get('title')
 
-.. code-block::
-    'Awesome Composite Dataset'
+>>    'Awesome Composite Dataset'
 
 Note that the return type is string, like the original ``title``,
 not a list.
@@ -45,7 +44,7 @@ like:
 Reference
 ~~~~~~~~~
 
-.. automodule:: metacatalog.util.results.ImmutableResultSet
+.. autoclass:: metacatalog.util.results.ImmutableResultSet
     :members:
 
 """
