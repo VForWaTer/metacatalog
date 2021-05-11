@@ -1,6 +1,8 @@
 import pytest
 
 from metacatalog import models
+from metacatalog import api
+from metacatalog.util.results import ImmutableResultSet
 from ._util import connect
 
 
@@ -49,6 +51,20 @@ def make_composite(session):
     return len(composite.entries) == 2
 
 
+def check_result_set(session):
+    """
+    Load only one of the entries and create a ImmutableResultSet
+    """
+    result = api.find_entry(title='Microphone', as_result=True)
+
+    assert isinstance(result, ImmutableResultSet)
+
+    # there should be 3 uuids
+    assert len(result.get('uuid')) == 3
+
+    # but only one author
+    assert isinstance(result.get('author'), dict)
+
 
 @pytest.mark.depends(on=['db_init'], name='groups')
 def test_groups_and_projects():
@@ -59,4 +75,5 @@ def test_groups_and_projects():
     # run tests
     assert add_person_and_entries(session)
     assert make_composite(session)
+    assert check_result_set(session)
 
