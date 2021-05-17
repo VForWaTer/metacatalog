@@ -1,6 +1,7 @@
 import pytest
 
 import pandas as pd
+import numpy as np
 from metacatalog import api
 from ._util import connect
 
@@ -41,14 +42,14 @@ def create_3D_datasource(session, df_3D_wind):
     Add a datasource to the eddy entry.
     """
     entry_3D_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
-    entry_3D_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries', data_names=['u', 'v', 'w'])
+    entry_3D_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
 
     entry_3D_wind.datasource.create_scale(resolution='30min', extent=(df_3D_wind.index[0], df_3D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
     session.commit()
 
     # assert
-    assert entry_3D_wind.datasource.data_names == ['u', 'v', 'w']
+    assert entry_3D_wind.variable.column_names == ['u', 'v', 'w']
 
     return True
 
@@ -100,7 +101,7 @@ def one_dim_data(session, df_1D_wind):
                                   is_partial=False)
 
     # create datasource and scale
-    entry_1D_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries', data_names=['u'])
+    entry_1D_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
 
     entry_1D_wind.datasource.create_scale(resolution='30min', extent=(df_1D_wind.index[0], df_1D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
@@ -128,9 +129,6 @@ def force_data_names_true(session, df_3D_wind):
     # find the variable
     var_3D_wind = api.find_variable(session, name='3D-wind')[0]
 
-    # find the previously added person
-    kit = api.find_person(session, organisation_abbrev='KIT')[0]
-
     # find the previously added author
     kit = api.find_person(session, organisation_abbrev='KIT')[0]
 
@@ -146,7 +144,7 @@ def force_data_names_true(session, df_3D_wind):
                                               is_partial=False)
 
     # create datasource and scale
-    entry_3D_force_data_names.create_datasource(type=1, path='timeseries_array', datatype='timeseries', data_names=['u', 'v', 'w'])
+    entry_3D_force_data_names.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
 
     entry_3D_force_data_names.datasource.create_scale(resolution='30min', extent=(df_3D_wind.index[0], df_3D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
@@ -156,25 +154,63 @@ def force_data_names_true(session, df_3D_wind):
     #load data
     dat = entry_3D_force_data_names.get_data()
 
+    # assert
     assert dat.columns.tolist() == ['u_ms', 'v_ms', 'w_ms']
     assert dat['u_ms'].mean() == 3.070534
 
     return True
 
+def precision_test(session, df_3D_prec):
+    """
+    Test if precision columns are handled correctly.
+    We use the 3D eddy wind data with 3 precision columns for this.
+    """
+    # find the variable
+    var_3D_wind = api.find_variable(session, name='3D-wind')[0]
 
+    # find the previously added person
+    kit = api.find_person(session, organisation_abbrev='KIT')[0]
+
+    # add the entry
+    entry_3D_precision = api.add_entry(session, title='3-dimensional windspeed data, precision',
+                                       abstract='3-dimensional windspeed data from the Fendt data set',
+                                       location=(8, 52),
+                                       variable=var_3D_wind.id,
+                                       comment='after double rotation',
+                                       license=6,
+                                       author=kit.id,
+                                       embargo=False,
+                                       is_partial=False)
+
+    # create datasource and scale
+    entry_3D_precision.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
+
+    entry_3D_precision.datasource.create_scale(resolution='30min', extent=(df_3D_prec.index[0], df_3D_prec.index[-1]), support=1.0, scale_dimension='temporal')
+
+    # add data
+    entry_3D_precision.import_data(df_3D_prec, force_data_names=False)
+
+    #load data
+    dat = entry_3D_precision.get_data()
+
+    # assert
+    assert dat.columns.tolist() == ['u', 'v', 'w', 'precision1', 'precision2', 'precision3'] # note: input was 'precision_1'
+    assert dat['u'].mean() == 3.070534
+
+    return True
+
+def auto_force_data_names(session):
+    """
+    If
+    """
 # TEST len(data_columns) != len(entry.variable.column_names)
 
-    #### a datasource must always be created first, datasource.data_names is not nullable -> WHEN would we use variable.column_names??
-
-
-#def test_old_timeseries(session):
-#    return True
 
 @pytest.mark.depends(on=['db_init'], name='array_type_data')
 def test_array_type_data():
     """
-    A simple workflow of 3 persons who contributed to two entries.
-    The content of some related content is tested randomly
+    Test if timeseries_array works correctly.
+    Backward compatibility with the old timeseries path is tested in test_models_data.py
     """
     # get a session
     session = connect(mode='session')
@@ -184,6 +220,9 @@ def test_array_type_data():
     u = 1.123902, 0.214753, 0.446611, 0.962977, 2.915902, 4.048897, 5.368552, 6.046246, 5.405221, 4.172279
     v = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
     w = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0
+    prec1 = np.random.rand(10)
+    prec2 = np.random.rand(10)
+    prec3 = np.random.rand(10)
 
     # generate 3D data
     df_3D_wind = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u, "v_ms": v, "w_ms": w})    # use different column names to test force_data_names=True
@@ -195,6 +234,10 @@ def test_array_type_data():
     df_1D_wind['tstamp'] = pd.to_datetime(df_1D_wind['tstamp'], format='%Y-%m-%d %H:%M:%S')
     df_1D_wind.set_index('tstamp', inplace=True)
 
+    # generate 3D data with random 3D precision
+    df_3D_prec = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u, "v_ms": v, "w_ms": w, "precision_1": prec1, "precision_2": prec2, "precision_3": prec3})
+    df_3D_prec['tstamp'] = pd.to_datetime(df_3D_prec['tstamp'], format='%Y-%m-%d %H:%M:%S')
+    df_3D_prec.set_index('tstamp', inplace=True)
 
     # run single tests
     assert add_3D_entry(session)
@@ -203,3 +246,4 @@ def test_array_type_data():
     assert read_3D_data(session)
     assert one_dim_data(session, df_1D_wind)
     assert force_data_names_true(session, df_3D_wind)
+    #assert precision_test(session, df_3D_prec)

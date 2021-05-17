@@ -59,10 +59,15 @@ def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
         raw = np.hstack([rawvalues, rawprecision])
 
         df = pd.DataFrame(data=raw, columns=col_names, index=df_sql.index)
-    # if 'data' does not appear in the column names, the old routine is used
-    else:
+    elif 'value' in df_sql.columns:
+        # if 'data' does not appear in the column names, the old routine is used
+        df = df_sql.copy()
+        df.drop(['entry_id'], axis=1, inplace=True)
+
         # map column names
-        df_sql.columns = [datasource.data_names if _col== 'value' else _col for _col in df.columns]
+        df.columns = [datasource.data_names[0] if _col== 'value' else _col for _col in df.columns]
+    else:
+        print('Currently only "timeseries" and "timeseries_array" are supported.')
 
     return df
 

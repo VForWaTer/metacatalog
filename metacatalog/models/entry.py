@@ -596,7 +596,7 @@ class Entry(Base):
         else:
             return filter_query.all()
 
-    def create_datasource(self, path: str, type, datatype, data_names, commit=False, **args):
+    def create_datasource(self, path: str, type, datatype, commit=False, **args):
         """
         """
         #
@@ -618,7 +618,7 @@ class Entry(Base):
         dtype = session.query(models.DataType).filter(models.DataType.name==datatype).one()
 
         # build the datasource object
-        ds = models.DataSource(type=ds_type, datatype=dtype, path=path, data_names=data_names)
+        ds = models.DataSource(type=ds_type, datatype=dtype, path=path)
 
         # add the args
         ds.save_args_from_dict(args)

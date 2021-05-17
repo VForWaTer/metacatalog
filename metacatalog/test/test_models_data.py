@@ -18,7 +18,7 @@ from ._util import connect
 
 def create_datasource(session, entry: models.Entry, data):
     # create the datasource
-    datasource = entry.create_datasource('timeseries', 'internal', 'timeseries', data_names=['data_name'], commit=True)
+    datasource = entry.create_datasource('timeseries', 'internal', 'timeseries', commit=True)
     assert datasource is not None
 
     # check
@@ -50,7 +50,7 @@ def read_data(session, entry, data):
     db_data = entry.get_data()
 
     return assert_array_almost_equal(
-        getattr(db_data, entry.variable.name).values,
+        getattr(db_data, entry.variable.column_names[0]).values,
         data.value.values,
         decimal=3
     )

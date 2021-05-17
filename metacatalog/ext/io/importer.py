@@ -42,7 +42,7 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
         index = imp.tstamp
         imp.drop('tstamp', axis=1, inplace=True)
 
-    # get the column names - exclude everthing that stores precisions
+    # get the column names - exclude everthing that stores precision
     data_columns = [col for col in imp.columns.tolist() if not col.startswith('precision')]
 
     # get the precision columns
