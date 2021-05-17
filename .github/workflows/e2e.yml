@@ -35,6 +35,10 @@ jobs:
         pip install -r requirements.txt
         python setup.py develop
         pip install pytest pytest-depends pytest-cov
+      
+    # activate the IO extension
+    - name: Activate builtin IOExtension
+      run: python -c "from metacatalog import ext; ext.activate_extension('io', 'metacatalog.ext.io', 'IOExtension')"
 
     # run the actual tests
     # they need the arbitrary port number which is mapped to 5432
