@@ -76,7 +76,7 @@ def read_3D_data(session):
     assert dat.columns[1] == 'v'
     assert dat.columns.tolist() == ['u', 'v', 'w']          # at the moment, no precision columns will be returned when there is no data, is this the wanted behaviour?
     assert dat.index[2] == pd.to_datetime("2018-01-01 01:30:00", format='%Y-%m-%d %H:%M:%S')
-    assert dat['u'].mean() == 3.070534
+    assert dat['u'].mean() == pytest.approx(3.1, 0.05)
 
     return True
 
@@ -113,7 +113,7 @@ def one_dim_data(session, df_1D_wind):
 
     # assert
     assert dat.columns == 'u'
-    assert dat['u'].mean() == 3.070534
+    assert dat['u'].mean() == pytest.approx(3.1, 0.05)
 
     return True
 
@@ -156,7 +156,7 @@ def force_data_names_true(session, df_3D_wind):
 
     # assert
     assert dat.columns.tolist() == ['u_ms', 'v_ms', 'w_ms']
-    assert dat['u_ms'].mean() == 3.070534
+    assert dat['u_ms'].mean() == pytest.approx(3.1, 0.05)
 
     return True
 
@@ -195,7 +195,7 @@ def precision_test(session, df_3D_prec):
 
     # assert
     assert dat.columns.tolist() == ['u', 'v', 'w', 'precision1', 'precision2', 'precision3'] # note: input was 'precision_1'
-    assert dat['u'].mean() == 3.070534
+    assert dat['u'].mean() == pytest.approx(3.1, 0.05)
 
     return True
 
