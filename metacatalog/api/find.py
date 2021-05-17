@@ -13,6 +13,7 @@ from sqlalchemy.sql.expression import false, true
 
 from metacatalog import models
 from metacatalog.util import location
+from metacatalog.util.results import ImmutableResultSet
 
 import nltk
 
@@ -668,7 +669,7 @@ def find_group_type(session, id=None, uuid=None, name=None, return_iterator=Fals
         return query.all()
 
 
-def find_group(session, id=None, uuid=None, title=None, type=None, return_iterator=False):
+def find_group(session, id=None, uuid=None, title=None, type=None, return_iterator=False, as_result=False):
     """Find group
 
     Find a group of entries on exact matches. Groups can be
@@ -677,6 +678,9 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
     .. versionchanged:: 0.1.8
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
+
+    .. versionchanged:: 0.2.14
+        Can be returned as ImmutableResultSet now.
 
     Parameters
     ----------
@@ -696,11 +700,16 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
     return_iterator : bool
         If True, an iterator returning the requested objects
         instead of the objects themselves is returned.
+    as_result : bool
+        If True, the reuslts will be merged into a
+        :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>`.
+        Defaults to False. Will be ignored if return_iterator
+        is True
 
     Returns
     -------
-    records : list of metacatalog.EntryGroupType
-        List of matched EntryGroupType instance.
+    records : list
+        List of matched EntryGroup or ImmutableResultSet.
 
     """
     # base query
@@ -733,6 +742,8 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
     if return_iterator:
         return query
     else:
+        if as_result:
+            return [ImmutableResultSet(group) for group in query.all()]
         return query.all()
 
 
@@ -751,6 +762,7 @@ def find_entry(session,
     keywords=None, 
     details=None, 
     return_iterator=False,
+    as_result=False,
     by_geometry=None,
 ):
     """Find Entry
@@ -763,6 +775,10 @@ def find_entry(session,
     .. versionchanged:: 0.1.8
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
+    
+    .. versionchanged:: 0.2.14
+        Can be returned as ImmutableResultSet now.
+
 
     Parameters
     ----------
@@ -845,6 +861,11 @@ def find_entry(session,
         construct a search Polygon. 
         Finally the constructed geometry is used to apply a spatial filter to the 
         results.
+    as_result : bool
+        If True, the reuslts will be merged into a
+        :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>`.
+        Defaults to False. Will be ignored if return_iterator
+        is True
     return_iterator : bool
         If True, an iterator returning the requested objects
         instead of the objects themselves is returned.
@@ -852,8 +873,9 @@ def find_entry(session,
 
     Returns
     -------
-    records : list of metacatalog.Entry
-        List of matched Entry instance.
+    records : list
+        List of matched Entry or ImmutableResultSet.
+
     """
     # handle uuid first
     if uuid is not None:
@@ -983,19 +1005,28 @@ def find_entry(session,
 
     # details
     if details is not None:
+        if not isinstance(details, dict):
+            raise TypeError('The details have to be given as a dictionary')
+
         # build the query
         query = query.join(models.Detail)
 
         # build a stemmer
         ps = nltk.PorterStemmer()
 
-        if not isinstance(details, dict):
-            raise TypeError('The details have to be given as a dictionary')
         for key, value in details.items():
-            query = query.filter(models.Detail.stem==ps.stem(key)).filter(_match(models.Detail.value, value))
+            query = query.filter(models.Detail.stem==ps.stem(key))
+            
+            # handle nested json data
+            if isinstance(value, (list, tuple, dict)):
+                query = query.filter(models.Detail.raw_value.contains(value))
+            else:
+                query = query.filter(models.Detail.raw_value.contains({'__literal__': value}))
 
     # return
     if return_iterator:
         return query
     else:
+        if as_result:
+            return [ImmutableResultSet(entry) for entry in query.all()]
         return query.all()

@@ -1,9 +1,12 @@
 """
 .. added: 0.1.6
 """
+from typing import Union
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy import Integer, String, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.dialects.postgresql import JSONB
 from metacatalog.db.base import Base
 
 
@@ -39,8 +42,10 @@ class Detail(Base):
     stem : str
         Stemmed key using a `nltk.PorterStemmer`. The stemmed 
         key can be used to search for related keys
-    value : str
-        The actual value of this detail.
+    value : str, dict
+        .. versionchanged:: 0.2.12
+        The actual value of this detail. This can be a string
+        or a flat dictionary.
     description : str
         Description what the key means in the context of the 
         :class:`Entry <metacatalog.models.Entry>` or 
@@ -69,13 +74,40 @@ class Detail(Base):
     entry_id = Column(Integer, ForeignKey('entries.id'))
     key = Column(String(20), nullable=False)
     stem = Column(String(20), nullable=False)
-    value = Column(String, nullable=False)
+    raw_value = Column(MutableDict.as_mutable(JSONB), nullable=False)
     description = Column(String, nullable=True)
     thesaurus_id = Column(Integer, ForeignKey('thesaurus.id'))
 
     # relationships
     entry = relationship("Entry", back_populates='details')
     thesaurus = relationship("Thesaurus")
+
+    def __init__(self, **kwargs):
+        # handle values, if given
+        if 'value' in kwargs:
+            value = kwargs['value']
+            del kwargs['value']
+        
+        # call the main init func
+        super(Detail, self).__init__(**kwargs)
+
+        # set the value via the property
+        self.value = value
+
+    @property
+    def value(self):
+        if '__literal__' in self.raw_value:
+            return self.raw_value.get('__literal__')
+        else:
+            return dict(self.raw_value)
+
+    @value.setter
+    def value(self, new_value: Union[str, dict]):
+        if not isinstance(new_value, dict):
+            new_val = {'__literal__': new_value}
+        else:
+            new_val = new_value
+        self.raw_value = new_val
 
     def to_dict(self, deep=False):
         """

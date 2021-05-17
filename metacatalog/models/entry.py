@@ -240,6 +240,9 @@ class Entry(Base):
         if self.details is not None:
             d['details'] = self.details_dict(full=True)
 
+        if self.datasource is not None:
+            d['datasource'] = self.datasource.to_dict(deep=False)
+
         # set optional attributes
         for attr in ('abstract', 'external_id','comment', 'citation'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
@@ -406,8 +409,18 @@ class Entry(Base):
 
         """
         # get the details
-        df = pd.DataFrame(self.details_dict(full=True)).T
+        details = dict()
+        for key, detail in self.details_dict(full=True).items():
+            if isinstance(detail['value'], dict):
+                expand = {f'{key}.{k}': dict(value=v, id=detail['id'], key=detail['key'], stem=detail['stem']) for k,v in detail['value'].items()}
+                details.update(expand)
+            else:
+                details[key] = detail
 
+        # turn into a transposed datarame
+        df = pd.DataFrame(details).T
+
+        # output table
         if fmt.lower() == 'html':
             return df.to_html()
         elif fmt.lower() == 'latex':
@@ -449,10 +462,10 @@ class Entry(Base):
         # parse kwargs
         for k, v in kwargs.items():
             detail_list.append({
-                'entry_id': self.id,
-                'key': str(k),
-                'stem': ps.stem(k),
-                'value': str(v)
+                'entry_id': self.id, 
+                'key': str(k), 
+                'stem': ps.stem(k), 
+                'value': v
             })
 
         # parse details
@@ -462,7 +475,7 @@ class Entry(Base):
                     'entry_id': self.id,
                     'key': detail['key'],
                     'stem': ps.stem(detail['key']),
-                    'value': str(detail['value'])
+                    'value': detail['value']
                 }
                 if 'description' in detail.keys():
                     d['description'] = detail['description']
@@ -764,13 +777,6 @@ class Entry(Base):
         except IOOperationNotFoundError as e:
             print('[ERROR]: Operation not possible.\n%s' % str(e))
             return None
-
-    def add_data(self):
-        """
-        .. deprecated:: 0.1.12
-            Will be removed with version 0.2
-        """
-        raise NotImplementedError
 
     def __str__(self):
         return "<ID=%d %s [%s] >" % (
