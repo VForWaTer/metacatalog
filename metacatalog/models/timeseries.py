@@ -6,7 +6,7 @@ from metacatalog.db.base import Base
 
 
 class TimeseriesPoint(Base):
-    __tablename__ = 'timeseries'
+    __tablename__ = 'timeseries_1d'
 
     # columns
     entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)

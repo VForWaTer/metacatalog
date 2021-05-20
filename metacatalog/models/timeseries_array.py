@@ -7,7 +7,7 @@ from metacatalog.db.base import Base
 
 
 class TimeseriesArray(Base):
-    __tablename__ = 'timeseries_array'
+    __tablename__ = 'timeseries'
 
     # columns
     entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)
