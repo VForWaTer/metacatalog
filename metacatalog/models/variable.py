@@ -108,7 +108,7 @@ class Variable(Base):
     variables : list
         Lazy loaded list of Variables that use the current unit
     column_names : list
-          .. versionadded:: 0.2.12
+          .. versionadded:: 0.3.0
           List of default column names that will be displayed when exporting the data.
           The columns are named in the same order as they appear in the list.
 

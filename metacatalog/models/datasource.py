@@ -443,7 +443,7 @@ class DataSource(Base):
         The referenced :class:`DataSourceType`. Can be used instead of setting
         ``type_id``.
     data_names : list
-          .. versionadded:: 0.2.12
+          .. versionadded:: 0.3.0
           List of column names that will be displayed when exporting the data.
           The columns are named in the same order as they appear in the list.
 

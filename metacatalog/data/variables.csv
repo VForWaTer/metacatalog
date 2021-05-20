@@ -1,19 +1,19 @@
 id,name,symbol,column_names,unit_id,keyword_id
-1,air temperature,Ta,air_temperature,101,111
-2,soil temperature,Ts,soil_temperature,101,5736
-3,water temperature,Tw,water_temperature,101,7402
-4,discharge,Q,discharge,108,7327
-5,air pressure,p,air_pressure,104,109
-6,relative humidity,RH,relative_humidity,112,6308
-7,daily rainfall sum,P,daily_rainfall_sum,103,6434
-8,rainfall intensity,Pi,rainfall_intensity,105,6436
-9,solar irradiance,SI,solar_irradiance,115,5236
-10,net radiation,Rn,net_radiation,115,5227
-11,gravimetric water content,u,gravimetric_water_content,114,5727
-12,volumetric water content,theta,volumetric_water_content,113,5727
-13,precision,sigma,precision,21,
-14,sap flow,Fm,sap_flow,22,7424
-15,matric potential,phi,matric_potential,24,
-16,bulk electrical conductivity,bEC,bulk_electrical_conductivity,25,5111
-17,specific electrical conductivity,sEC,specific_electrical_conductivity,25,5111
-18,river water level,L,river_water_level,2,
+1,air temperature,Ta,Ta,101,111
+2,soil temperature,Ts,Ts,101,5736
+3,water temperature,Tw,Tw,101,7402
+4,discharge,Q,Q,108,7327
+5,air pressure,p,p,104,109
+6,relative humidity,RH,RH,112,6308
+7,daily rainfall sum,P,P,103,6434
+8,rainfall intensity,Pi,Pi,105,6436
+9,solar irradiance,SI,SI,115,5236
+10,net radiation,Rn,Rn,115,5227
+11,gravimetric water content,u,u,114,5727
+12,volumetric water content,theta,theta,113,5727
+13,precision,sigma,sigma,21,
+14,sap flow,Fm,Fm,22,7424
+15,matric potential,phi,phi,24,
+16,bulk electrical conductivity,bEC,bEC,25,5111
+17,specific electrical conductivity,sEC,sEC,25,5111
+18,river water level,L,L,2,
