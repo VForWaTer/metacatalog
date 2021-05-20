@@ -18,7 +18,7 @@ from ._util import connect
 
 def create_datasource(session, entry: models.Entry, data):
     # create the datasource
-    datasource = entry.create_datasource('timeseries', 'internal', 'timeseries', commit=True)
+    datasource = entry.create_datasource('timeseries_1d', 'internal', 'timeseries', commit=True)
     assert datasource is not None
 
     # check
