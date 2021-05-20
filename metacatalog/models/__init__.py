@@ -20,8 +20,7 @@ from .person import Person, PersonRole, PersonAssociation
 from .license import License
 from .variable import Variable, Unit
 from .datasource import DataSource, DataSourceType, DataType, SpatialScale, TemporalScale
-from .timeseries import TimeseriesPoint, TimeseriesPoint2D
-from .timeseries_array import TimeseriesArray
+from .timeseries import Timeseries
 from .generic_data import DataPoint, DataPoint2D
 from .geometry_data import GeometryTimeseries, GenericGeometryData
 from .config import Log, LogCodes
