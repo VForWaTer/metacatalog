@@ -6,7 +6,6 @@ from sqlalchemy.orm import object_session
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from metacatalog.models.entry import Entry
-from metacatalog.models.timeseries import TimeseriesPoint
 
 
 def import_to_internal_table(entry, datasource, data, force_data_names=False, **kwargs):
