@@ -18,7 +18,7 @@ from ._util import connect
 
 def create_datasource(session, entry: models.Entry, data):
     # create the datasource
-    datasource = entry.create_datasource('timeseries', 'internal', 'timeseries', commit=True)
+    datasource = entry.create_datasource('timeseries_1d', 'internal', 'timeseries', commit=True)
     assert datasource is not None
 
     # check
@@ -42,31 +42,37 @@ def create_datasource(session, entry: models.Entry, data):
 def import_data(session, entry: models.Entry, data):
     entry.import_data(data)
 
-    nrecords = session.execute('SELECT count(*) from timeseries where entry_id=%d' % entry.id)
-    return nrecords.scalar() == 400
+    nrecords = session.execute('SELECT count(*) from timeseries_1d where entry_id=%d' % entry.id)
+    assert nrecords.scalar() == 400
+
+    return True
 
 
 def read_data(session, entry, data):
     db_data = entry.get_data()
 
-    return assert_array_almost_equal(
+    assert_array_almost_equal(
         getattr(db_data, entry.variable.column_names[0]).values,
         data.value.values,
         decimal=3
     )
 
+    return True
+
 
 def append_data(session, entry: models.Entry, data):
     entry.append_data(data)
 
-    nrecords = session.execute("SELECT count(*) FROM timeseries WHERE entry_id=%d" % entry.id)
-    return nrecords.scalar() == 450
+    nrecords = session.execute("SELECT count(*) FROM timeseries_1d WHERE entry_id=%d" % entry.id)
+    assert nrecords.scalar() == 450
+
+    return True
 
 
 def delete_data(session, entry):
     entry.delete_data(delete_source=True)
 
-    nrecords = session.execute("SELECT count(*) FROM timeseries WHERE entry_id=%d" % entry.id)
+    nrecords = session.execute("SELECT count(*) FROM timeseries_1d WHERE entry_id=%d" % entry.id)
     assert nrecords.scalar() == 0
 
     return entry.datasource is None
