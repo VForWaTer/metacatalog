@@ -72,7 +72,7 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
     precision = [row for row in imp[precision_columns].values]
 
     # make importer.py compatible with the (old) 1D timeseries table
-    if tablename == 'timeseries':
+    if tablename == 'timeseries_1d':
         # explicitly map the column types
         dtypes = {
             'tstamp': sa.TIMESTAMP,
