@@ -17,3 +17,5 @@ id,name,symbol,column_names,unit_id,keyword_id
 16,bulk electrical conductivity,bEC,bulk_electrical_conductivity,25,5111
 17,specific electrical conductivity,sEC,specific_electrical_conductivity,25,5111
 18,river water level,L,river_water_level,2,
+19,evapotranspiration,ET,evapotranspiration,6319
+20,drainage,D,drainage,7328
