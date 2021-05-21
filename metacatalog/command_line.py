@@ -17,7 +17,8 @@ from metacatalog.cmd import (
     show,
     add,
     get_uuid,
-    migrate
+    migrate,
+    run
 )
 
 def main():
@@ -95,6 +96,14 @@ def main():
     migration_parser.add_argument('--title', '-t', type=str, help="Optional title to be used for revision commands.")
     migration_parser.add_argument('--message', '-m', type=str, help="Optional revision message. Only used for revision command")
     migration_parser.set_defaults(func=migrate)
+
+    # RESTful parser
+    rest_parser = subparsers.add_parser('rest', parents=[default_options], add_help=True, help="RESTful server hosting the MetaCatalog API. Experimental feature")
+    rest_parser.add_argument('--host', '-H', type=str, nargs='?', default='127.0.0.1', help='Server address, defaults to 127.0.0.1.')
+    rest_parser.add_argument('--port', '-p', type=int, nargs='?', default=3005, help="Server port, defaults to 3005.")
+    rest_parser.add_argument('--debug', action='store_true', help="Run in debug mode. Only for development.")
+    rest_parser.set_defaults(func=run)
+
     # parse the arguments
     args = parser.parse_args()
 
