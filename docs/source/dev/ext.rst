@@ -6,7 +6,7 @@ Overview
 ========
 
 .. automodule:: metacatalog.ext
-    :members: extension, activate_extension
+    :members: extension, activate_extension, deactivate_extension
 
 
 Builtin Extensions
