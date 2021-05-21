@@ -8,3 +8,5 @@ nltk
 shapely
 pyproj
 requests
+flask
+flask-cors
