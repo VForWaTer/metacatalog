@@ -274,11 +274,11 @@ class Entry(Base):
         versions = [e.version for e in self.other_versions]
         
         # no other versions, then self is the only
-        if len(versions):
+        if len(versions) == 1:
             return self
         
         # if more versions exist, find the highest number
-        latest_index = version.index(max(versions))
+        latest_index = versions.index(max(versions))
         return self.other_versions[latest_index]
 
     @property
