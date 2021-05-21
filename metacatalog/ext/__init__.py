@@ -75,6 +75,7 @@ def __load_extensions():
         except Exception as e:
             print("Error on loading Extension '%s'\n%s" % (name, str(e)))
 
+
 def activate_extension(name: str, module_name: str, interface_class_name: str):
     """
     Permanently activate an extension in this metacatalog instance.
@@ -107,3 +108,41 @@ def activate_extension(name: str, module_name: str, interface_class_name: str):
     
     # now load
     print('Extension is activated, you need to reload metacatalog be be effective.')
+
+
+def deactivate_extension(name: str):
+    """
+    Permanently deactivate an extension in this metacatalog instance.
+    This becomes only active with the next Python session.
+
+    Parameters
+    ----------
+    name : str
+        Name of the extension, which was used on activation
+
+    See Also
+    --------
+    activate_extension : permanently activate extensions
+    extension : load or activate extension for this session
+    """
+    from metacatalog import CONFIGFILE
+    import json
+
+    # open
+    with open(CONFIGFILE, 'r') as f:
+        config = json.load(f)
+    
+    # check if the extension is activated
+    if name not in config['extensions'].keys():
+        print(f"An extension '{name}' is not activated.")
+        return
+
+    # remove the extension of given name
+    config['extensions'] = {k: v for k, v in config['extensions'].items() if k != name}
+
+    # save back
+    with open(CONFIGFILE, 'w') as f:
+        json.dump(config, f, indent=4)
+
+    # print
+    print(f"Extension '{name}' deactivated. Restart Python to take effect.")
