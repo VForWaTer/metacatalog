@@ -89,7 +89,6 @@ class ExportExtension(MetacatalogExtensionInterface):
         out = dict()
 
         # add data
-        entry.get
         for e in result._members:
             try:
                 data = e.get_data(**kwargs)
