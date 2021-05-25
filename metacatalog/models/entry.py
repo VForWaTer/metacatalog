@@ -494,7 +494,7 @@ class Entry(Base):
                 session.rollback()
                 raise e
 
-    def export(self, path=None, fmt=None, **kwargs):
+    def export(self, path=None, fmt='JSON', **kwargs):
         r"""
         Export the Entry. Exports the data using a metacatalog extension.
         Refer to the note below to learn more about export extensions.
@@ -555,7 +555,14 @@ class Entry(Base):
             Export = ext.extension('export')
         except AttributeError:
             from metacatalog.ext.export import ExportExtension as Export
-        raise NotImplementedError
+        
+        # check if there is a export function available
+        if not hasattr(Export, fmt.lower()):
+            raise AttributeError(f'The current export extension cannot export {fmt}')
+        
+        # get the export function
+        exp_function = getattr(Export, fmt.lower())
+        return exp_function(self, path=path, **kwargs)
 
     def make_composite(self, others=[], title=None, description=None, commit=False):
         """
