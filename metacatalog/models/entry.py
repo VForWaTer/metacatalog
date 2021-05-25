@@ -494,6 +494,69 @@ class Entry(Base):
                 session.rollback()
                 raise e
 
+    def export(self, path=None, fmt=None, **kwargs):
+        r"""
+        Export the Entry. Exports the data using a metacatalog extension.
+        Refer to the note below to learn more about export extensions.
+
+        Parameters
+        ----------
+        path : str
+            If set, the export will be written into a file at the given
+            location.
+        fmt : str
+            Export format. Each export extension should at least support
+            json and XML export.
+        **kwargs
+            Any other argument given will be passed down to the actual
+            export function.
+
+        Notes
+        -----
+        Uses any extension called 'export' activated, by passing
+        itself to the extension. If fmt is set, a method of same name on the 
+        extension will be used. If such a method is not present, the 'export'
+        method is used and the fmt attribute will be passed along.
+        Refer to the notes about :any:`custom extensions <metacatalog.ext.base>`
+        to learn more about writing your own export extension.
+        
+        Consider this example:
+
+        .. code-block:: Python
+
+            from metacatalog.ext import MetacatalogExtensionInterface
+            import json
+
+            class RawJSONExtension(MetacatalogExtensionInterface):
+                @classmethod
+                def init_extension(cls):
+                    pass
+                
+                @classmethod
+                def json(cls, entry, path, **kwargs):
+                    # get the dict
+                    data = entry.to_dict(stringify=True)
+                    if path is None:
+                        return data
+                    else:
+                        with open(path, 'w') as f:
+                            json.dump(data, f, indent=kwargs.get('indent', 4))
+        
+        You can activate and use it like:
+
+        >> from metacatalog import ext
+        >> ext.extension('export', RawJSONEXtension)
+        >> entry.export(path='testfile.json', fmt='json', indent=2)
+
+        """
+        # load the extension
+        from metacatalog import ext
+        try:
+            Export = ext.extension('export')
+        except AttributeError:
+            from metacatalog.ext.export import ExportExtension as Export
+        raise NotImplementedError
+
     def make_composite(self, others=[], title=None, description=None, commit=False):
         """
         Create a composite EntryGroup from this Entry. A composite marks 
