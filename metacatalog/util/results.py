@@ -166,22 +166,34 @@ class ImmutableResultSet:
  
         """
         occurences = []
+        uuids = []
 
         # create the dictionaries
         for member in [self.group, *self._members]:
             if not hasattr(member, name):
                 continue
+
+            # get the value or callable
             val = getattr(member, name)
+            if callable(val):
+                val = val()
+            
             # check the datatype - could be a nested list
             if isinstance(val, list):
                 exp_val = [v.to_dict() if hasattr(v, 'to_dict') else v for v in val]
             else:
                 exp_val = val.to_dict() if hasattr(val, 'to_dict') else val
+            
+            # append
             occurences.append(exp_val)
+            uuids.append(member.uuid)
         
         # create the set
         occur_md5 = [hashlib.md5(json.dumps(str(o)).encode()).hexdigest() for o in occurences]
-        occur_set = [occurences[i] for i,h in enumerate(occur_md5) if occur_md5.index(h) == i]
+        occur_set = [occurences[i] for i, h in enumerate(occur_md5) if occur_md5.index(h) == i]
+        
+        # needed to trace back the values
+        uuid_list = [uuids[i] for i, h in enumerate(occur_md5) if occur_md5.index(h) == i]
 
         # check return type
         if len(occur_set) == 1:
@@ -189,7 +201,11 @@ class ImmutableResultSet:
         elif len(occur_set) == 0:
             return default
         else:
-            return occur_set
+            if name == 'uuid':
+                return occur_set  # we don't need to index uuids by uuids
+            
+            # index the occurences by the parent uuid
+            return {uuid: occur for uuid, occur in zip(uuid_list, occur_set)}
 
     @property
     def uuids(self):
