@@ -2,6 +2,7 @@ from typing import List
 from datetime import datetime as dt
 import json
 import pickle
+from dicttoxml import dicttoxml
 
 from metacatalog.ext import MetacatalogExtensionInterface
 from metacatalog.models import Entry
@@ -278,3 +279,56 @@ class ExportExtension(MetacatalogExtensionInterface):
         else:
             with open(path, 'wb') as f:
                 pickle.dump(metadata, f)
+
+    @classmethod
+    def fast_xml(cls, entry: Entry, path=None, no_data = False, **kwargs):
+        """
+        Export an :class:`Entry <metacatalog.models.Entry>` to XML.
+        If a path is given, a new file will be created. This is the fast
+        XML version, which will convert the metadata to custom XML tags.
+
+        Parameters
+        ----------
+        entry : metacatalog.models.Entry
+            The entry instance to be exported
+        path : str
+            If given, a file location for export.
+        no_data : bool
+            If set to True, the actual data will not be loaded and included.
+            This can be helpful if the data is not serializable or very large.
+        
+        Retruns
+        -------
+        out : str
+            The the XML str if path is None, else None
+        
+        Notes
+        -----
+        The content of the file will be created using a 
+        :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`.
+        This will lazy-load sibling Entries and parent groups as needed for
+        an useful Metadata export.
+        The list of exported properties is hardcoded into this extension, but can
+        be overwritten. You can also import the list:
+
+        >> from metacatalog.ext.export.extension import ENTRY_KEYS
+
+        A updated list can then be passed as kwargs:
+
+        >> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
+        >> Export = metacatalog.ext.extension('export')
+        >> Export.fast_xml(entry, '/temp/metadata.xml', use_keys=use_keys)
+
+        """
+        # get the dict
+        metadata = cls.to_dict(entry, no_data=no_data, **kwargs)
+
+        # convert
+        xml = dicttoxml(metadata, custom_root='metadata', attr_type=False)
+        
+        # check path settings
+        if path is None:
+            return xml.decode()
+        else:
+            with open(path, 'wb') as f:
+                f.write(xml)
