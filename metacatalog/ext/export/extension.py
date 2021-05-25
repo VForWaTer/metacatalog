@@ -67,7 +67,7 @@ class ExportExtension(MetacatalogExtensionInterface):
             data = cls.get_data(entry, **kwargs)
 
             # handle json output
-            json_data = [cls._serialize(d) for d in data]
+            json_data = {k: cls._serialize(v) for k, v in data.items()}
 
             out['data'] = json_data
         
@@ -143,7 +143,7 @@ class ExportExtension(MetacatalogExtensionInterface):
         elif isinstance(val, (list, float)):
             return [cls._serialize(v) for v in val]
         elif isinstance(val, dict):
-            return cls.clear_output(val)
+            return cls._clear_output(val)
         elif isinstance(val, dt):
             return val.isoformat()
         else:
