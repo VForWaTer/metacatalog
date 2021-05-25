@@ -8,10 +8,10 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from metacatalog.models.entry import Entry
 
 
-def import_to_internal_table(entry, datasource, data, force_data_names=False, **kwargs):
+def import_to_internal_table(entry, datasource, data, precision=None, force_data_names=False, **kwargs):
     """Import to internal DB
 
-    The given data is imported into the table
+    The given data and (optional) precision is imported into the table
     as specified in the datasource.
     If force_data_names=True the column names of the imported data are saved in
     the datasource, otherwise the standard column names in
@@ -23,6 +23,35 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
 
     if isinstance(data, pd.Series):
         data = pd.DataFrame(data)
+
+    # handle precision
+    if precision is not None:
+        if isinstance(precision, pd.Series):
+            precision = pd.DataFrame(precision)
+
+        # raise error if data and precision are of different length
+        if len(precision) != len(data):
+            raise ValueError('Data and precision must be of same length.')
+        # raise error if data and precision are of different length
+        if all(precision.index != data.index):
+            raise ValueError('Data and precision index are differing.')
+
+        # flag if precision is passed to the function:
+        handle_precision = True
+
+        # drop index from precision, index of data is used as index
+        precision.reset_index(level=0, inplace=True)
+        if 'index' in precision.columns:
+            precision.drop('index', axis=1, inplace=True)
+        elif 'tstamp' in precision.columns:
+            precision.drop('tstamp', axis=1, inplace=True)
+
+        # get the precision columns
+        precision_columns = [col for col in precision.columns.tolist()]
+        # transform precision data into a list of arrays
+        precision = [row for row in precision[precision_columns].values]
+    else:
+        handle_precision = False
 
     # reset the index
     imp = data.reset_index(level=0, inplace=False)
@@ -41,11 +70,8 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
         index = imp.tstamp
         imp.drop('tstamp', axis=1, inplace=True)
 
-    # get the column names - exclude everthing that stores precision
-    data_columns = [col for col in imp.columns.tolist() if not col.startswith('precision')]
-
-    # get the precision columns
-    precision_columns = [col for col in imp.columns.tolist() if col.startswith('precision')]
+    # get the data column names
+    data_columns = [col for col in imp.columns.tolist()]
 
     # set entry_id
     if 'entry_id' not in imp.columns:
@@ -69,7 +95,6 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
 
     # transform the data into a list of arrays
     values = [row for row in imp[data_columns].values]
-    precision = [row for row in imp[precision_columns].values]
 
     # make importer.py compatible with the (old) 1D timeseries table
     if tablename == 'timeseries_1d':
@@ -80,16 +105,17 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
             'precision': sa.NUMERIC
         }
 
-        # convert 1D np.ndarray data and precision to type float
+        # convert 1D np.ndarray data and precision to type numeric
         values = [number for array in values for number in array]
-        precision = [number for array in precision for number in array]
 
-        # the list comprehension above creates an empty list if precision is empty:
-        if not precision:
-            imp_data = pd.DataFrame(data={'tstamp': index, 'value': values})
+        # add precision if handle_precision is set to True
+        if handle_precision is True:
+            precision = [number for array in precision for number in array]
+
+            imp_data = pd.DataFrame(data={'tstamp': index, 'value': values, 'precision': precision})
             imp_data['entry_id'] = entry.id
         else:
-            imp_data = pd.DataFrame(data={'tstamp': index, 'value': values, 'precision': precision})
+            imp_data = pd.DataFrame(data={'tstamp': index, 'value': values})
             imp_data['entry_id'] = entry.id
 
         # else import
@@ -103,6 +129,14 @@ def import_to_internal_table(entry, datasource, data, force_data_names=False, **
             'data': ARRAY(sa.REAL),
             'precision': ARRAY(sa.REAL)
         }
+
+        # add precision if handle_precision is set to True
+        if handle_precision is True:
+            imp_data = pd.DataFrame(data={'tstamp': index, 'data': values, 'precision': precision})
+            imp_data['entry_id'] = entry.id
+        else:
+            imp_data = pd.DataFrame(data={'tstamp': index, 'data': values})
+            imp_data['entry_id'] = entry.id
 
         imp_data = pd.DataFrame(data={'tstamp': index, 'data': values, 'precision': precision})
         imp_data['entry_id'] = entry.id

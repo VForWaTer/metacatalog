@@ -74,7 +74,7 @@ def read_3D_data(session):
 
     # assert
     assert dat.columns[1] == 'v'
-    assert dat.columns.tolist() == ['u', 'v', 'w']          # at the moment, no precision columns will be returned when there is no data, is this the wanted behaviour?
+    assert dat.columns.tolist() == ['u', 'v', 'w']
     assert dat.index[2] == pd.to_datetime("2018-01-01 01:30:00", format='%Y-%m-%d %H:%M:%S')
     assert dat['u'].mean() == pytest.approx(3.1, 0.05)
 
@@ -160,7 +160,7 @@ def force_data_names_true(session, df_3D_wind):
 
     return True
 
-def precision_test(session, df_3D_prec):
+def precision_test(session, df_3D_wind, df_3D_prec):
     """
     Test if precision columns are handled correctly.
     We use the 3D eddy wind data with 3 precision columns for this.
@@ -185,10 +185,10 @@ def precision_test(session, df_3D_prec):
     # create datasource and scale
     entry_3D_precision.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
 
-    entry_3D_precision.datasource.create_scale(resolution='30min', extent=(df_3D_prec.index[0], df_3D_prec.index[-1]), support=1.0, scale_dimension='temporal')
+    entry_3D_precision.datasource.create_scale(resolution='30min', extent=(df_3D_wind.index[0], df_3D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
     # add data
-    entry_3D_precision.import_data(df_3D_prec, force_data_names=False)
+    entry_3D_precision.import_data(data=df_3D_wind, precision=df_3D_prec, force_data_names=False)
 
     #load data
     dat = entry_3D_precision.get_data()
@@ -235,7 +235,7 @@ def test_array_type_data():
     df_1D_wind.set_index('tstamp', inplace=True)
 
     # generate 3D data with random 3D precision
-    df_3D_prec = pd.DataFrame(data={"tstamp": tstamp, "u_ms": u, "v_ms": v, "w_ms": w, "precision_1": prec1, "precision_2": prec2, "precision_3": prec3})
+    df_3D_prec = pd.DataFrame(data={"tstamp": tstamp, "precision_1": prec1, "precision_2": prec2, "precision_3": prec3})
     df_3D_prec['tstamp'] = pd.to_datetime(df_3D_prec['tstamp'], format='%Y-%m-%d %H:%M:%S')
     df_3D_prec.set_index('tstamp', inplace=True)
 
@@ -246,4 +246,4 @@ def test_array_type_data():
     assert read_3D_data(session)
     assert one_dim_data(session, df_1D_wind)
     assert force_data_names_true(session, df_3D_wind)
-    #assert precision_test(session, df_3D_prec)
+    assert precision_test(session, df_3D_wind, df_3D_prec)

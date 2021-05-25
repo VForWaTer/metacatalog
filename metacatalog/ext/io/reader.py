@@ -50,10 +50,13 @@ def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
         # unstack precision (precision1, precision2, ...)
         rawprecision = np.vstack(df_sql['precision'].values)
 
-        # add precision column names to the col_names
-        for i in range(1, len(rawprecision[0])+1):
-            precision_col = 'precision%s' % i
-            col_names.append(precision_col)
+        if not all(x is None for x in np.hstack(rawprecision)): # check if precision contains any values
+            # add precision column names to col_names, if data is contained
+            for i in range(1, len(rawprecision[0])+1):
+                precision_col = 'precision%s' % i
+                col_names.append(precision_col)
+        else:
+            rawprecision = np.array([], dtype=np.int64).reshape(len(rawprecision),0)
 
         # horizontally stack data and precission
         raw = np.hstack([rawvalues, rawprecision])
