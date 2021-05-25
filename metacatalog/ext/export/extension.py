@@ -56,7 +56,7 @@ class ExportExtension(MetacatalogExtensionInterface):
             val = result.get(key)
 
             # remove non
-            if val is None:
+            if val is not None:
                 if serialize:
                     out[key] = cls._serialize(val)
                 else:
