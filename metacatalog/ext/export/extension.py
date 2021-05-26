@@ -3,6 +3,8 @@ from datetime import datetime as dt
 import json
 import pickle
 from dicttoxml import dicttoxml
+import pandas as pd
+import xarray
 
 from metacatalog.ext import MetacatalogExtensionInterface
 from metacatalog.models import Entry
@@ -334,9 +336,88 @@ class ExportExtension(MetacatalogExtensionInterface):
     
     @classmethod
     def netcdf(cls, entry: Entry, path=None, **kwargs):
+        """
+        Export an :class:`Entry <metacatalog.models.Entry>` to netCDF or xarray.
+        If a path is given, a new netCDF file will be created, if path is None,
+        the xarray used for building the netCDF is returned.
+
+        Note that the common attribute no_data, which is available for the
+        other export functions, is not available for netCDF export.
+        Furthermore, the flat flag is always true, as the Python netCDF
+        implementation does not support nested attributes.
+
+        Parameters
+        ----------
+        entry : metacatalog.models.Entry
+            The entry instance to be exported
+        path : str
+            If given, a file location for export.
+
+        Retruns
+        -------
+        out : str
+            The the XML str if path is None, else None
+        
+        Notes
+        -----
+        The content of the file will be created using a 
+        :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`.
+        This will lazy-load sibling Entries and parent groups as needed for
+        an useful Metadata export.
+        The list of exported properties is hardcoded into this extension, but can
+        be overwritten. You can also import the list:
+
+        >> from metacatalog.ext.export.extension import ENTRY_KEYS
+
+        A updated list can then be passed as kwargs:
+
+        >> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
+        >> Export = metacatalog.ext.extension('export')
+        >> Export.netCDF(entry, '/temp/metadata.xml', use_keys=use_keys)
+
+        """
         # get the metadata
-        metadata = cls.to_dict(entry, no_data=True, **kwargs)
+        _m = cls.to_dict(entry, no_data=True, **kwargs)
+        metadata = cls.flat_keys(_m)
 
         # get the data
         data = cls.get_data(entry, serialize=False)
-        raise NotImplementedError
+
+        # container
+        merged_df = pd.DataFrame()
+        column_meta = {}
+
+        # build up metadata
+        for uuid, df in data.items():
+            # can only work on DataFrame right now
+            if not isinstance(df, pd.DataFrame):
+                continue
+
+            # merge the dataframes
+            merged_df = pd.merge(merged_df, df, left_index=True, right_index=True, how='outer')
+            
+            # get the variable names and build their metadata
+            names = df.columns
+            for name in names:
+                # add the UUID to reference attributes
+                column_meta[name] = dict(uuid=uuid)
+                for k, v in  metadata.items():
+                    if k.startwith(f'variable.{uuid}') or k.startswith(f'datasource.{uuid}'):
+                        new_key = '.'.join(k.split('.')[2:])
+                        column_meta[name][new_key] = v
+            
+            # build the xarray
+            xr = xarray.Dataset.from_dataframe(merged_df)
+
+            # add Dataset attributes
+            xr.attrs = {k: v for k, v in metadata.items() if not k.startwith(f'variable.{uuid}') and not k.startswith(f'datasource.{uuid}')}
+
+            # add column attributes
+            for variable_name, attrs in column_meta.items():
+                xr[variable_name].attrs = attrs
+
+            # if no path is specified, return the xarray
+            if path is None:
+                return xr
+            else:
+                xr.to_netcdf(path)
