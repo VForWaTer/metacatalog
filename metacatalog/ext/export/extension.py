@@ -37,6 +37,7 @@ ENTRY_KEYS = (
 class ExportExtension(MetacatalogExtensionInterface):
     r"""
     Export functions.
+
     The default ExportExtension can be used to produce raw export
     functionality. The :class:`Entry <metacatalog.models.Entry>` has
     a :func:`export <metacatalog.models.Entry.export>` function, that
@@ -224,7 +225,7 @@ class ExportExtension(MetacatalogExtensionInterface):
             If set to True, the actual data will not be loaded and included.
             This can be helpful if the data is not serializable or very large.
         
-        Retruns
+        Returns
         -------
         out : str
             The JSON string if path is None, else None
@@ -238,13 +239,13 @@ class ExportExtension(MetacatalogExtensionInterface):
         The list of exported properties is hardcoded into this extension, but can
         be overwritten. You can also import the list:
 
-        >> from metacatalog.ext.export.extension import ENTRY_KEYS
+        >>> from metacatalog.ext.export.extension import ENTRY_KEYS
 
         A updated list can then be passed as kwargs:
 
-        >> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
-        >> Export = metacatalog.ext.extension('export')
-        >> Export.json(entry, '/temp/metadata.json', use_keys=use_keys)
+        >>> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
+        >>> Export = metacatalog.ext.extension('export')
+        >>> Export.json(entry, '/temp/metadata.json', use_keys=use_keys)
 
         """
         # get the dict
@@ -287,7 +288,7 @@ class ExportExtension(MetacatalogExtensionInterface):
             If set to True, the actual data will not be loaded and included.
             This can be helpful if the data is not serializable or very large.
         
-        Retruns
+        Returns
         -------
         out : dict
             The native Python dict if path is None, else None
@@ -301,13 +302,13 @@ class ExportExtension(MetacatalogExtensionInterface):
         The list of exported properties is hardcoded into this extension, but can
         be overwritten. You can also import the list:
 
-        >> from metacatalog.ext.export.extension import ENTRY_KEYS
+        >>> from metacatalog.ext.export.extension import ENTRY_KEYS
 
         A updated list can then be passed as kwargs:
 
-        >> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
-        >> Export = metacatalog.ext.extension('export')
-        >> Export.pickle(entry, '/temp/metadata.pickle', use_keys=use_keys)
+        >>> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
+        >>> Export = metacatalog.ext.extension('export')
+        >>> Export.pickle(entry, '/temp/metadata.pickle', use_keys=use_keys)
 
         """
         # get the dict
@@ -341,7 +342,7 @@ class ExportExtension(MetacatalogExtensionInterface):
             If set to True, the actual data will not be loaded and included.
             This can be helpful if the data is not serializable or very large.
         
-        Retruns
+        Returns
         -------
         out : str
             The the XML str if path is None, else None
@@ -355,13 +356,13 @@ class ExportExtension(MetacatalogExtensionInterface):
         The list of exported properties is hardcoded into this extension, but can
         be overwritten. You can also import the list:
 
-        >> from metacatalog.ext.export.extension import ENTRY_KEYS
+        >>> from metacatalog.ext.export.extension import ENTRY_KEYS
 
         A updated list can then be passed as kwargs:
 
-        >> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
-        >> Export = metacatalog.ext.extension('export')
-        >> Export.fast_xml(entry, '/temp/metadata.xml', use_keys=use_keys)
+        >>> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
+        >>> Export = metacatalog.ext.extension('export')
+        >>> Export.fast_xml(entry, '/temp/metadata.xml', use_keys=use_keys)
 
         """
         # get the dict
@@ -396,7 +397,7 @@ class ExportExtension(MetacatalogExtensionInterface):
         path : str
             If given, a file location for export.
 
-        Retruns
+        Returns
         -------
         out : str
             The the XML str if path is None, else None
@@ -410,13 +411,13 @@ class ExportExtension(MetacatalogExtensionInterface):
         The list of exported properties is hardcoded into this extension, but can
         be overwritten. You can also import the list:
 
-        >> from metacatalog.ext.export.extension import ENTRY_KEYS
+        >>> from metacatalog.ext.export.extension import ENTRY_KEYS
 
         A updated list can then be passed as kwargs:
 
-        >> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
-        >> Export = metacatalog.ext.extension('export')
-        >> Export.netCDF(entry, '/temp/metadata.xml', use_keys=use_keys)
+        >>> use_keys = [k for k in ENTRY_KEYS if not k.startswith('embargo')]
+        >>> Export = metacatalog.ext.extension('export')
+        >>> Export.netCDF(entry, '/temp/metadata.xml', use_keys=use_keys)
 
         """
         # get the metadata
