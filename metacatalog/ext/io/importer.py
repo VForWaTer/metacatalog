@@ -32,8 +32,8 @@ def import_to_internal_table(entry, datasource, data, precision=None, force_data
         # raise error if data and precision are of different length
         if len(precision) != len(data):
             raise ValueError('Data and precision must be of same length.')
-        # raise error if data and precision are of different length
-        if all(precision.index != data.index):
+        # raise error if data and precision differing at any position
+        if any(precision.index != data.index):
             raise ValueError('Data and precision index are differing.')
 
         # flag if precision is passed to the function:
