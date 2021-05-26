@@ -108,31 +108,30 @@ class ExportExtension(MetacatalogExtensionInterface):
         return out
     
     @classmethod
-    def flat_keys(cls, data: dict, delimiter: str = '.', **kwargs) -> dict:
+    def flat_keys(cls, data: dict, prefix = False, delimiter: str = '.', **kwargs) -> dict:
         """
         Turn nested dictionaries into flat dictionaries by expanding 
         nested keys using the given delimiter
         """
-        out = dict()
-
+        tuples = []
+        
         # expand the keys
         for key, value in data.items():
-            if isinstance(value, dict):
-                nested = cls._flatten(key, value, delimiter, '')
-                out.update(nested)
+            # build the new key
+            if prefix:
+                prefixed_key = f'{prefix}{delimiter}{key}'
             else:
-                out[key] = value
-        
-        # return 
-        return out
-
-    @classmethod
-    def _flatten(cls, key, value, delimiter, prefix):
-        if isinstance(value, dict):
-            prefixed_key = ''.join([prefix, key, delimiter])
-            return {f'{prefixed_key}{k}': cls._flatten(v, k, delimiter, prefix=prefixed_key) for k, v in value.items()}
-        else:
-            return value
+                prefixed_key = key
+            
+            # check value
+            if isinstance(value, dict):
+                tuples.extend(cls.flat_keys(value, prefixed_key, delimiter).items())
+            elif isinstance(value, list):
+                for i, v in enumerate(value):
+                    tuples.extend(cls.flat_keys({str(i): v}, prefixed_key, delimiter).items())
+            else:
+                tuples.append((prefixed_key, value))
+        return dict(tuples)
 
     @classmethod
     def _serialize(cls, val):
@@ -332,3 +331,12 @@ class ExportExtension(MetacatalogExtensionInterface):
         else:
             with open(path, 'wb') as f:
                 f.write(xml)
+    
+    @classmethod
+    def netcdf(cls, entry: Entry, path=None, **kwargs):
+        # get the metadata
+        metadata = cls.to_dict(entry, no_data=True, **kwargs)
+
+        # get the data
+        data = cls.get_data(entry, serialize=False)
+        raise NotImplementedError
