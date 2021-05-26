@@ -10,7 +10,7 @@ from metacatalog.ext import MetacatalogExtensionInterface
 from metacatalog.models import Entry
 
 
-# DEV not sure if this is a good palce...
+# DEV not sure if this is a good place...
 ENTRY_KEYS = (
     'uuid',
     'external_id',
@@ -35,6 +35,49 @@ ENTRY_KEYS = (
 )
 
 class ExportExtension(MetacatalogExtensionInterface):
+    r"""
+    Export functions.
+    The default ExportExtension can be used to produce raw export
+    functionality. The :class:`Entry <metacatalog.models.Entry>` has
+    a :func:`export <metacatalog.models.Entry.export>` function, that
+    will translate the requested format to a activated extension of
+    this name or fall back to this extension and call a function
+    of same name.
+    Raw export means, that the given Entry will be translated into a
+    Python dictionary and then implemented into the given file-format
+    as natively as possible. This does not follow any specified
+    standards or rules. Standard metadata formats are implemented
+    in separate extensions.
+
+    Currently, the following exports are supported:
+
+    * JSON
+    * XML (called fast_XML)
+    * pickle
+    * netCDF
+
+    .. note::
+        The XML export is currently done with another package
+        (``dicttoxml``). This works great, but it is not possible to
+        adjust the exported XML to i.e. ISO19115 standard requirements.
+        This will be implemented with an export via ``lxml``.
+        Thus, for the base version of that export, the function ``xml``
+        is reserved.
+
+    If no path is specified, the native Python object that will be used
+    to create the file is returned. This can be very useful to pack more
+    than one Entry together. With ``path=None``, the export function will
+    return the following objects:
+
+    * JSON     -> str:    the JSON object as string
+    * fast_XML -> str:    the XML representation as (decoded UTF-8) string
+    * pickle   -> dict:   the dict underlying all export functions
+    * netCDF   -> xarray: the xarray used to build the netCDF file
+
+    Note that the export of ``'pickle'`` and ``'netCDF'`` can be particularly
+    useful without setting the path.
+
+    """
     @classmethod
     def init_extension(cls):
         pass

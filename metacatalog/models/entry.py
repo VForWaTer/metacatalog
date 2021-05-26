@@ -513,13 +513,16 @@ class Entry(Base):
 
         Notes
         -----
-        Uses any extension called 'export' activated, by passing
-        itself to the extension. If fmt is set, a method of same name on the 
-        extension will be used. If such a method is not present, the 'export'
-        method is used and the fmt attribute will be passed along.
+        Uses any extension prefixed with 'export-' activated, by passing
+        itself to the extension. If not format-specific extension is activated,
+        the default :class:`ExportExtension <metacatalog.ext.export.ExportExtension>`
+        will be used. A method of same name as ``fmt`` on theextension will be used. 
+        If such a method is not present, the 'export' method is used and the fmt 
+        attribute will be passed along. This can be used for format specific
+        extensions.
         Refer to the notes about :any:`custom extensions <metacatalog.ext.base>`
         to learn more about writing your own export extension.
-        
+
         Consider this example:
 
         .. code-block:: Python
@@ -552,16 +555,22 @@ class Entry(Base):
         # load the extension
         from metacatalog import ext
         try:
-            Export = ext.extension('export')
+            Export = ext.extension(f'export-{fmt.lower()}')
         except AttributeError:
-            from metacatalog.ext.export import ExportExtension as Export
-        
-        # check if there is a export function available
-        if not hasattr(Export, fmt.lower()):
-            raise AttributeError(f'The current export extension cannot export {fmt}')
+            try:
+                Export = ext.extension('export')
+            except AttributeError:
+                from metacatalog.ext.export import ExportExtension as Export
         
         # get the export function
-        exp_function = getattr(Export, fmt.lower())
+        if  hasattr(Export, fmt.lower()):
+            exp_function = getattr(Export, fmt.lower())
+        elif hasattr(Export, 'export'):
+            exp_function = getattr(Export, 'export')
+        else:    
+            raise AttributeError(f'The current export extension cannot export {fmt}')
+
+        # return
         return exp_function(self, path=path, **kwargs)
 
     def make_composite(self, others=[], title=None, description=None, commit=False):
