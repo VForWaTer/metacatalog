@@ -459,7 +459,7 @@ class ExportExtension(MetacatalogExtensionInterface):
             xr = xarray.Dataset.from_dataframe(merged_df)
 
             # add Dataset attributes
-            xr.attrs = {k: v for k, v in metadata.items() if not k.startswith(f'variable.{uuid}') and not k.startswith(f'datasource.{uuid}')}
+            xr.attrs = {k: v for k, v in metadata.items() if not k.startswith(f'variable.') and not k.startswith(f'datasource.')}
 
             # add column attributes
             for variable_name, attrs in column_meta.items():
