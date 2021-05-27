@@ -42,7 +42,7 @@ def create_3D_datasource(session, df_3D_wind):
     Add a datasource to the eddy entry.
     """
     entry_3D_wind = api.find_entry(session, title='3-dimensional windspeed data')[0]
-    entry_3D_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
+    entry_3D_wind.create_datasource(type=1, path='timeseries', datatype='timeseries')
 
     entry_3D_wind.datasource.create_scale(resolution='30min', extent=(df_3D_wind.index[0], df_3D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
@@ -102,7 +102,7 @@ def one_dim_data(session, df_1D_wind):
                                   is_partial=False)
 
     # create datasource and scale
-    entry_1D_wind.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
+    entry_1D_wind.create_datasource(type=1, path='timeseries', datatype='timeseries')
 
     entry_1D_wind.datasource.create_scale(resolution='30min', extent=(df_1D_wind.index[0], df_1D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
@@ -145,7 +145,7 @@ def force_data_names_true(session, df_3D_wind):
                                               is_partial=False)
 
     # create datasource and scale
-    entry_3D_force_data_names.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
+    entry_3D_force_data_names.create_datasource(type=1, path='timeseries', datatype='timeseries')
 
     entry_3D_force_data_names.datasource.create_scale(resolution='30min', extent=(df_3D_wind.index[0], df_3D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
@@ -184,7 +184,7 @@ def precision_test(session, df_3D_wind, df_3D_prec):
                                        is_partial=False)
 
     # create datasource and scale
-    entry_3D_precision.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
+    entry_3D_precision.create_datasource(type=1, path='timeseries', datatype='timeseries')
 
     entry_3D_precision.datasource.create_scale(resolution='30min', extent=(df_3D_wind.index[0], df_3D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
@@ -225,7 +225,7 @@ def auto_force_data_names(session, df_1D_wind, df_3D_prec):
                                        embargo=False,
                                        is_partial=False)
     # create datasource and scale
-    entry_1D_precision.create_datasource(type=1, path='timeseries_array', datatype='timeseries')
+    entry_1D_precision.create_datasource(type=1, path='timeseries', datatype='timeseries')
 
     entry_1D_precision.datasource.create_scale(resolution='30min', extent=(df_1D_wind.index[0], df_1D_wind.index[-1]), support=1.0, scale_dimension='temporal')
 
@@ -234,7 +234,7 @@ def auto_force_data_names(session, df_1D_wind, df_3D_prec):
 
     #load data
     dat = entry_1D_precision.get_data()
-    
+
     # assert
     assert dat.columns.tolist() == ['u_ms', 'precision1', 'precision2', 'precision3']
     assert dat['u_ms'].mean() == pytest.approx(3.1, 0.05)
@@ -245,7 +245,7 @@ def auto_force_data_names(session, df_1D_wind, df_3D_prec):
 @pytest.mark.depends(on=['db_init'], name='array_type_data')
 def test_array_type_data():
     """
-    Test if timeseries_array works correctly.
+    Test if timeseries array works correctly.
     Backward compatibility with the old timeseries path is tested in test_models_data.py
     """
     # get a session
