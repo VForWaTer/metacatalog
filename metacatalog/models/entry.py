@@ -1,6 +1,6 @@
 """
 The Entry is the core class of metacatalog. It represents the core logical unit of the meta data model.
-In principle, an Entry needs a first Author, a title, position and a license to describe 
+In principle, an Entry needs a first Author, a title, position and a license to describe
 one type of environmental variable. It can hold a reference and interface to the actual data.
 If a supported data format is used, Entry can load the data.
 
@@ -36,12 +36,12 @@ def get_embargo_end(datetime=None):
 class Entry(Base):
     r"""Entry
 
-    The Entry is the main entity in metacatalog. An object instance models a 
-    set of metadata needed to store and manage a datasource. The Entry is not 
-    the actual data. 
-    The Entry is designed to store all necessary information to be exportable 
-    in ISO19115 in the scope of metacatalog. That means, Properties which are 
-    always the same across metacatalog, or can be derived from the actual 
+    The Entry is the main entity in metacatalog. An object instance models a
+    set of metadata needed to store and manage a datasource. The Entry is not
+    the actual data.
+    The Entry is designed to store all necessary information to be exportable
+    in ISO19115 in the scope of metacatalog. That means, Properties which are
+    always the same across metacatalog, or can be derived from the actual
     implementation, are not part of an Entry.
 
     Attributes
@@ -51,103 +51,103 @@ class Entry(Base):
     uuid : str
         .. versionadded:: 0.1.9
 
-        Version 4 UUID string to identify the Entry across installations. 
-        This field is read-only and will be assigned on creation. It is primarily 
+        Version 4 UUID string to identify the Entry across installations.
+        This field is read-only and will be assigned on creation. It is primarily
         used to export Entry into ISO19115 metadata.
     title : str
         A full title (512) to describe the datasource as well as possible.
-        The truncated title (first 25 signs) is usually used to print an 
+        The truncated title (first 25 signs) is usually used to print an
         Entry object to the console.
     abstract : str
-        Full abstract of the datasource. The abstract should include all 
-        necessary information that is needed to fully understand the data. 
+        Full abstract of the datasource. The abstract should include all
+        necessary information that is needed to fully understand the data.
     external_id : str
-        Any kind of OID that was used to identify the data in the first place. 
-        Usually an unque ID field of other data-storage solutions. The 
-        exernal_id is only stored for reference reasons.       
+        Any kind of OID that was used to identify the data in the first place.
+        Usually an unque ID field of other data-storage solutions. The
+        exernal_id is only stored for reference reasons.
     location : str, tuple
         The location as a POINT Geometry in unprojected WGS84 (EPSG: 4326).
-        The location is primarily used to show all Entry objects on a map, or 
-        perform geo-searches. If the data-source needs to store more complex 
+        The location is primarily used to show all Entry objects on a map, or
+        perform geo-searches. If the data-source needs to store more complex
         Geometries, you can use the ``geom`` argument.
         The location can be passed as WKT or a tuple of (x, y) coordinates.
-        Note that it will be returned and stored as WKB. The output value will 
+        Note that it will be returned and stored as WKB. The output value will
         be reworked in a future release
     geom : str
         .. deprecated:: 0.1.11
             The geom attribute will be reomved with version 0.2
         .. warning::
-            The geom attribute is completely untested so far and might be 
+            The geom attribute is completely untested so far and might be
             reworked or removed in a future release
-            It takes a WKT of any kind of OGC-conform Geometry. The return value 
+            It takes a WKT of any kind of OGC-conform Geometry. The return value
             will be the same Geometry as WKB.
     creation : datetime.datetime
-        Following the ISO19115 the *creation* date is referring to the creation 
-        date of the **data resource** described by the Entry, not the Entry 
-        itself. If creation date is not set, it is assumed, that yet no data 
+        Following the ISO19115 the *creation* date is referring to the creation
+        date of the **data resource** described by the Entry, not the Entry
+        itself. If creation date is not set, it is assumed, that yet no data
         resource is connected to the Entry.
     end : datetime.datimetime
-        The last date the data source described by this Entry has data for. 
+        The last date the data source described by this Entry has data for.
         The end date is **not** ISO19115-compliant and will be reworked.
     version : int
-        The version of this Entry. Usually metacatalog will handle the version 
+        The version of this Entry. Usually metacatalog will handle the version
         itself and there is not need to set the version manually.
     latest_version_id : int
-        Foreign key to `Entry.id`. This key is self-referencing the another 
-        Entry. This has to be set if the current Entry is not the latest one. 
-        If latest_version_id is None, the Entry is the most recent one and 
-        database operations that find multiple entries will in a future release 
+        Foreign key to `Entry.id`. This key is self-referencing the another
+        Entry. This has to be set if the current Entry is not the latest one.
+        If latest_version_id is None, the Entry is the most recent one and
+        database operations that find multiple entries will in a future release
         filter to 'version duplicates'.
     is_partial : bool
         .. versionadded:: 0.1.10
-        If an Entry is partial, it is not self-contained and **has** to be part 
-        of a :class:`EntryGroup <metacatalog.models.EntryGroup>` of type 
-        composite. 
+        If an Entry is partial, it is not self-contained and **has** to be part
+        of a :class:`EntryGroup <metacatalog.models.EntryGroup>` of type
+        composite.
         .. note::
-            To make it possbile to add partial Entrys via the models submodule, 
-            The Entry class itself will  **not** check integrity. This has to 
+            To make it possbile to add partial Entrys via the models submodule,
+            The Entry class itself will  **not** check integrity. This has to
             be done on adding partial Entry records, or by checking the database
     comment : str
         Arbitrary free-text comment to the Entry
     citation : str
         .. versionadded:: 0.1.13
-        Citation informatio for this Entry. Note, that metacatalog does not 
-        assign DOIs and thus a citation is only useful if the associated 
-        data has a DOI and the bibliographic information applies to the Entry 
-        as well. 
+        Citation informatio for this Entry. Note, that metacatalog does not
+        assign DOIs and thus a citation is only useful if the associated
+        data has a DOI and the bibliographic information applies to the Entry
+        as well.
         .. note::
-            Metacatalog does not manage bibliography. Thus it is highly 
-            recommended to use thrid party software for management and only 
+            Metacatalog does not manage bibliography. Thus it is highly
+            recommended to use thrid party software for management and only
             export the reference to the resource in a common citation style.
     license : metacatalog.models.License
-        Data License associated to the data and the metadata. You can pass 
-        the `License <metacatalog.models.License>`_ itself, or use the 
+        Data License associated to the data and the metadata. You can pass
+        the `License <metacatalog.models.License>`_ itself, or use the
         license_id attribute.
     license_id : int
-        Foreign key to the data license. 
+        Foreign key to the data license.
     author : metacatalog.models.Person
-        :class:`Person <metacatalog.models.Person>` that acts as first author 
-        for the given entry. Only one first author is possible, co-authors can 
-        be requested from either the contributors list or the 
-        :py:attr:`authors` property. `author` is a property and setting a 
+        :class:`Person <metacatalog.models.Person>` that acts as first author
+        for the given entry. Only one first author is possible, co-authors can
+        be requested from either the contributors list or the
+        :py:attr:`authors` property. `author` is a property and setting a
         new author using this property is not supported.
     authors : list
-        List of :class:`Person <metacatalog.models.Person>`. The first element 
-        is the first author, see :py:attr:`~author`. The others are 
-        :class:`Person <metacatalog.models.Person>`s associated with the 
-        :class:`Role <metacatalog.models.PersonRole>` of ``'coAuthor' ``. 
+        List of :class:`Person <metacatalog.models.Person>`. The first element
+        is the first author, see :py:attr:`~author`. The others are
+        :class:`Person <metacatalog.models.Person>`s associated with the
+        :class:`Role <metacatalog.models.PersonRole>` of ``'coAuthor' ``.
         The list of authors is sorted by the `order` attribute.
-        `authors` is a property and setting a new list of authors using this 
+        `authors` is a property and setting a new list of authors using this
         property is not supported.
 
     Note
     ----
-    One Entry object instance is always described by exactly one variable. 
-    If a datasource is a composite of many datasources, there are two 
-    strategies. Either a new table can be implemented and an abstract 
-    :class:`Variable <metacatalog.models.Variable>` be added. This is done with 
-    Eddy-Covariance data. Secondly, Each variable of the datasource can be 
-    represented by its own Entry, which get then grouped by an 
+    One Entry object instance is always described by exactly one variable.
+    If a datasource is a composite of many datasources, there are two
+    strategies. Either a new table can be implemented and an abstract
+    :class:`Variable <metacatalog.models.Variable>` be added. This is done with
+    Eddy-Covariance data. Secondly, Each variable of the datasource can be
+    represented by its own Entry, which get then grouped by an
     :class:`EntryGroup` of :class:`EntryGroupType` ``'composite'``.
 
     See Also
@@ -170,7 +170,7 @@ class Entry(Base):
     is_partial = Column(Boolean, default=False, nullable=False)
     comment = Column(String, nullable=True)
     citation = Column(String(2048), nullable=True)
-    
+
     license_id = Column(Integer, ForeignKey('licenses.id'))
     variable_id = Column(Integer, ForeignKey('variables.id'), nullable=False)
     datasource_id = Column(Integer, ForeignKey('datasources.id'))
@@ -203,10 +203,10 @@ class Entry(Base):
         Parameters
         ----------
         deep : bool
-            If True, all related objects will be included as 
+            If True, all related objects will be included as
             dictionary. Defaults to False
         stringify : bool
-            If True, all values will be turned into a string, 
+            If True, all values will be turned into a string,
             to make the object serializable.
         Returns
         -------
@@ -242,7 +242,7 @@ class Entry(Base):
 
         if self.datasource is not None:
             d['datasource'] = self.datasource.to_dict(deep=False)
-        
+
         # set optional attributes
         for attr in ('abstract', 'external_id','comment', 'citation'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
@@ -272,19 +272,19 @@ class Entry(Base):
     @property
     def latest_version(self):
         versions = [e.version for e in self.other_versions]
-        
+
         # no other versions, then self is the only
-        if len(versions):
+        if len(versions) == 1:
             return self
-        
+
         # if more versions exist, find the highest number
-        latest_index = version.index(max(versions))
+        latest_index = versions.index(max(versions))
         return self.other_versions[latest_index]
 
     @property
     def author(self):
         return [c.person for c in self.contributors if c.role.name == 'author'][0]
-    
+
     @author.setter
     def author(self, new_author):
         self.set_new_author(new_author)
@@ -299,15 +299,15 @@ class Entry(Base):
             The new first author. As of now the new author has to be passed as a
             model instance. Passing the ID or query parameter is not yet supported.
         commit : boolean
-            If True, the whole :class:`Entry <metacatalog.models.Entry>` will commit 
-            and persist itself to the database. 
+            If True, the whole :class:`Entry <metacatalog.models.Entry>` will commit
+            and persist itself to the database.
             .. note::
                 This will also affect other uncommited edits to the Entry.
 
         """
         if not isinstance(new_author, models.Person):
             raise AttributeError('The new author has to be of type metatacatalog.models.Person')
-        
+
         # find the association
         assoc_idx = [i for i, c in enumerate(self.contributors) if c.role.name == 'author'][0]
         self.contributors[assoc_idx].person = new_author
@@ -320,13 +320,13 @@ class Entry(Base):
             except Exception as e:
                 session.rollback()
                 raise e
-        
-    
+
+
     @property
     def authors(self):
         # get all
         coAuthors = [c for c in self.contributors if c.role.name == 'coAuthor']
-        
+
         # order
         idx = np.argsort([c.order for c in coAuthors])
 
@@ -344,7 +344,7 @@ class Entry(Base):
     @property
     def composite_entries(self):
         return [group for group in self.associated_groups if group.type.name.lower() == 'composite']
-    
+
     @property
     def location_shape(self):
         return to_shape(self.location)
@@ -352,25 +352,25 @@ class Entry(Base):
     @location_shape.setter
     def location_shape(self, shape):
         self.location = from_shape(shape)
-    
+
     def plain_keywords_list(self):
         """Metadata Keyword list
 
-        Returns list of controlled keywords associated with this 
-        instance of meta data. 
-        If there are any associated values or alias of the given 
+        Returns list of controlled keywords associated with this
+        instance of meta data.
+        If there are any associated values or alias of the given
         keywords, use the keywords_dict function
 
         """
         return [kw.keyword.path() for kw in self.keywords]
-    
+
     def plain_keywords_dict(self):
         return [kw.keyword.as_dict() for kw in self.keywords]
-    
+
     def keywords_dict(self):
         return [
             dict(
-                path=kw.keyword.full_path, 
+                path=kw.keyword.full_path,
                 alias=kw.alias,
                 value=kw.associated_value
             ) for kw in self.keywords
@@ -379,21 +379,21 @@ class Entry(Base):
     def details_dict(self, full=True):
         """
         Returns the associated details as dictionary.
-        
+
         Parameters
         ----------
         full : bool
-            If True (default) the keywords will contain the 
-            full info including key description, ids and 
+            If True (default) the keywords will contain the
+            full info including key description, ids and
             stemmed key. If false, it will be truncated to a
-            plain key:value dict 
+            plain key:value dict
 
         """
         if full:
             return {d.stem:d.to_dict() for d in self.details}
         else:
             return {d.stem:d.value for d in self.details}
-    
+
     def details_table(self, fmt='html'):
         """
         Return the associated details as table
@@ -402,7 +402,7 @@ class Entry(Base):
         ----------
         fmt : string
             Can be one of:
-            
+
             * `html` to return a HTML table
             * `latex` to return LaTeX table
             * `markdown` to return Markdown table
@@ -429,7 +429,7 @@ class Entry(Base):
             return df.to_markdown()
         else:
             raise ValueError("fmt has to be in ['html', 'latex', 'markdown']")
-    
+
     def add_details(self, details=None, commit=False, **kwargs):
         """
         Adds arbitrary key-value pairs to this entry.
@@ -445,17 +445,17 @@ class Entry(Base):
                     'value': '',
                     'description': ''
                 }]
-            where the ``description`` is optional and can be omitted. 
+            where the ``description`` is optional and can be omitted.
             If no descriptions are passed at all, you can also use `**kwargs`
             to pass ``key=value`` pairs.
         commit : bool
-            If True, the Entry session will be added to the 
+            If True, the Entry session will be added to the
             current session and the transaction is commited.
             Can have side-effects. Defaults to False.
-        
+
         """
         ps = nltk.PorterStemmer()
-        
+
         # build entries here
         detail_list = []
 
@@ -467,7 +467,7 @@ class Entry(Base):
                 'stem': ps.stem(k), 
                 'value': v
             })
-        
+
         # parse details
         if details is not None:
             for detail in details:
@@ -480,11 +480,11 @@ class Entry(Base):
                 if 'description' in detail.keys():
                     d['description'] = detail['description']
                 detail_list.append(d)
-        
+
         # build the models
         for detail in detail_list:
             self.details.append(models.Detail(**detail))
-        
+
         if commit:
             session = object_session(self)
             try:
@@ -494,32 +494,111 @@ class Entry(Base):
                 session.rollback()
                 raise e
 
+    def export(self, path=None, fmt='JSON', **kwargs):
+        r"""
+        Export the Entry. Exports the data using a metacatalog extension.
+        Refer to the note below to learn more about export extensions.
+
+        Parameters
+        ----------
+        path : str
+            If set, the export will be written into a file at the given
+            location.
+        fmt : str
+            Export format. Each export extension should at least support
+            json and XML export.
+        **kwargs
+            Any other argument given will be passed down to the actual
+            export function.
+
+        Notes
+        -----
+        Uses any extension prefixed with 'export-' activated, by passing
+        itself to the extension. If not format-specific extension is activated,
+        the default :class:`ExportExtension <metacatalog.ext.export.ExportExtension>`
+        will be used. A method of same name as ``fmt`` on theextension will be used. 
+        If such a method is not present, the 'export' method is used and the fmt 
+        attribute will be passed along. This can be used for format specific
+        extensions.
+        Refer to the notes about :any:`custom extensions <metacatalog.ext.base>`
+        to learn more about writing your own export extension.
+
+        Consider this example:
+
+        .. code-block:: Python
+
+            from metacatalog.ext import MetacatalogExtensionInterface
+            import json
+
+            class RawJSONExtension(MetacatalogExtensionInterface):
+                @classmethod
+                def init_extension(cls):
+                    pass
+                
+                @classmethod
+                def json(cls, entry, path, **kwargs):
+                    # get the dict
+                    data = entry.to_dict(stringify=True)
+                    if path is None:
+                        return data
+                    else:
+                        with open(path, 'w') as f:
+                            json.dump(data, f, indent=kwargs.get('indent', 4))
+        
+        You can activate and use it like:
+
+        >> from metacatalog import ext
+        >> ext.extension('export', RawJSONEXtension)
+        >> entry.export(path='testfile.json', fmt='json', indent=2)
+
+        """
+        # load the extension
+        from metacatalog import ext
+        try:
+            Export = ext.extension(f'export-{fmt.lower()}')
+        except AttributeError:
+            try:
+                Export = ext.extension('export')
+            except AttributeError:
+                from metacatalog.ext.export import ExportExtension as Export
+        
+        # get the export function
+        if  hasattr(Export, fmt.lower()):
+            exp_function = getattr(Export, fmt.lower())
+        elif hasattr(Export, 'export'):
+            exp_function = getattr(Export, 'export')
+        else:    
+            raise AttributeError(f'The current export extension cannot export {fmt}')
+
+        # return
+        return exp_function(self, path=path, **kwargs)
+
     def make_composite(self, others=[], title=None, description=None, commit=False):
         """
-        Create a composite EntryGroup from this Entry. A composite marks 
+        Create a composite EntryGroup from this Entry. A composite marks
         stand-alone (:attr:`is_partial` ``= False``) entries as inseparable.
-        A composite can also contain a partial Entry 
-        (:attr:`is_partial` ``= True``), whichs  data only makes sense in the 
+        A composite can also contain a partial Entry
+        (:attr:`is_partial` ``= True``), whichs  data only makes sense in the
         context of the composite group.
 
         Parameters
         ----------
         others : list of Entry
-            The other :class:`Entries <metacatalog.models.Entry>` that 
+            The other :class:`Entries <metacatalog.models.Entry>` that
             should be part of the composite.
         title : str
             Optional title of the composite, if applicable
         description : str
             Optional description of the composite if applicable
         commit : bool
-            If True, the newly created Group will be persisted in the 
+            If True, the newly created Group will be persisted in the
             database. Defaults to False.
 
         Returns
         -------
         composite : metacatalog.models.EntryGroup
             The newly created EntryGroup of EntryGroupType.name == 'Composite'
-        
+
         """
         # check type of others
         if isinstance(others, Entry):
@@ -540,14 +619,14 @@ class Entry(Base):
             except Exception as e:
                 session.rollback()
                 raise e
-        
+
         # return
         return composite
 
     def neighbors(self, distance, unit='meter', buffer_epsg=3857, as_sql=False, **kwargs):
         """
-        Find neighboring :class:`Entries <metacatalog.models.Entry>` around the 
-        location of this instance. You can return the result, or the sqlalchemy 
+        Find neighboring :class:`Entries <metacatalog.models.Entry>` around the
+        location of this instance. You can return the result, or the sqlalchemy
         Query object, which can be printed as plain SQL.
 
         Parameters
@@ -556,23 +635,23 @@ class Entry(Base):
             The maximum distance at which another Entry is still considered to be a neighbor.
         unit : str
             Has to be one of ['meter', 'km', 'mile', 'nautic'] to specify the unit
-            of the given distance. Note that the distance will always be transformed 
+            of the given distance. Note that the distance will always be transformed
             into meter.
         buffer_epsg : int
-            The EPSG identification number of any projected cartesian coordinate 
-            reference system that uses meter as unit. This CRS will be used to 
+            The EPSG identification number of any projected cartesian coordinate
+            reference system that uses meter as unit. This CRS will be used to
             apply the search distance (in meter).
-            .. note:: 
-                The default system is the transversal Mercartor projection, which is 
-                a global system. Thus, it can always be applied, but may introduce 
+            .. note::
+                The default system is the transversal Mercartor projection, which is
+                a global system. Thus, it can always be applied, but may introduce
                 large uncertainties in small areas. Replace this attribute by a
                 local CRS wherever possible.
         as_sql : bool
-            If False (default) the SQL query for neighbors will be executed and 
+            If False (default) the SQL query for neighbors will be executed and
             the result is returned. Else, the SQL query itself will be returned.
         kwargs : keyword arguments
-            Any passed keyword argument will be passed down to the 
-            :func:`api.find_entry <metacatalog.api.find_entry>` function to further 
+            Any passed keyword argument will be passed down to the
+            :func:`api.find_entry <metacatalog.api.find_entry>` function to further
             filter the results.
 
         See Also
@@ -587,10 +666,10 @@ class Entry(Base):
         # get the base filter query
         kwargs['return_iterator'] = True
         query = api.find_entry(session, **kwargs)
-        
+
         # get the area
         filter_query = around(self, distance=distance, unit=unit, query=query, buffer_use_epsg=buffer_epsg)
-        
+
         if as_sql:
             return filter_query
         else:
@@ -599,7 +678,7 @@ class Entry(Base):
     def create_datasource(self, path: str, type, datatype, commit=False, **args):
         """
         """
-        # 
+        #
         if self.datasource is not None:
             raise MetadataMissingError('Datasource already exists. You can edit that one.')
 
@@ -613,10 +692,10 @@ class Entry(Base):
             ds_type = api.find_datasource_type(session=session, name=type, return_iterator=True).first()
         else:
             raise AttributeError('type has to be of type int or str')
-        
+
         # TODO need the API for DataTypes here!!
         dtype = session.query(models.DataType).filter(models.DataType.name==datatype).one()
-        
+
         # build the datasource object
         ds = models.DataSource(type=ds_type, datatype=dtype, path=path)
 
@@ -633,28 +712,28 @@ class Entry(Base):
             except Exception as e:
                 session.rollback()
                 raise e
-        
+
         # return
         return ds
 
     def get_data(self, **kwargs):
         """
         .. versionchanged:: 0.1.12
-        
-        Read the data. This is only possible if a datasource is specified and 
-        any kind of IOExtension or IOInterface is activated. By default, 
-        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` 
+
+        Read the data. This is only possible if a datasource is specified and
+        any kind of IOExtension or IOInterface is activated. By default,
+        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>`
         is activated since version 0.1.12.
 
         """
         if self.datasource is None:
             raise MetadataMissingError('Entry need datasource information')
-        
+
         try:
             # check if an io_extension is set
             if self.io_extension is not None:
-                return self.io_extension.read(**kwargs)    
-            
+                return self.io_extension.read(**kwargs)
+
             # if no extension instance, maybe an interface class is set
             elif self.io_interface is not None:
                 reader = self.io_interface.get_reader(self.datasource)
@@ -668,29 +747,29 @@ class Entry(Base):
     def import_data(self, data, **kwargs):
         """
         .. versionchanged:: 0.1.12
-        
-        Import data. This is only possible if a datasource is specified and 
-        any kind of IOExtension or IOInterface is activated. By default, 
-        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` 
+
+        Import data. This is only possible if a datasource is specified and
+        any kind of IOExtension or IOInterface is activated. By default,
+        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>`
         is activated since version 0.1.12.
 
-        For the default interface, the datasource type and data type determine 
-        where the data will be stored and how the data has to look like. 
-        You can easily inherit from the 
-        :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to 
-        customize read and write behaviour. If you import i.e. a timeseries to 
-        the same database as metacatalog, you will need to prepared data to 
+        For the default interface, the datasource type and data type determine
+        where the data will be stored and how the data has to look like.
+        You can easily inherit from the
+        :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to
+        customize read and write behaviour. If you import i.e. a timeseries to
+        the same database as metacatalog, you will need to prepared data to
         to only hold an datetime index and the data to be stored.
 
         """
         if self.datasource is None:
             raise MetadataMissingError('Entry need datasource information')
-        
+
         try:
             # check if an io_extension is set
             if self.io_extension is not None:
-                return self.io_extension.import_(data, **kwargs)    
-        
+                return self.io_extension.import_(data, **kwargs)
+
             # if no extension instance, maybe an interface class is set
             elif self.io_interface is not None:
                 importer = self.io_interface.get_importer(self.datasource)
@@ -700,33 +779,33 @@ class Entry(Base):
         except IOOperationNotFoundError as e:
             print('[ERROR]: Operation not possible.\n%s' % str(e))
             return None
-    
+
     def append_data(self, data, **kwargs):
         """
         .. versionadded:: 0.1.12
 
-        Append data. This is only possible if a datasource is specified and 
-        any kind of IOExtension or IOInterface is activated. By default, 
-        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` 
+        Append data. This is only possible if a datasource is specified and
+        any kind of IOExtension or IOInterface is activated. By default,
+        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>`
         is activated since version 0.1.12.
 
-        For the default interface, the datasource type and data type determine 
-        where the data will be stored and how the data has to look like. 
-        You can easily inherit from the 
-        :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to 
-        customize read and write behaviour. If you import i.e. a timeseries to 
-        the same database as metacatalog, you will need to prepared data to 
+        For the default interface, the datasource type and data type determine
+        where the data will be stored and how the data has to look like.
+        You can easily inherit from the
+        :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to
+        customize read and write behaviour. If you import i.e. a timeseries to
+        the same database as metacatalog, you will need to prepared data to
         to only hold an datetime index and the data to be stored.
 
         """
         if self.datasource is None:
             raise MetadataMissingError('Entry need datasource information')
-        
+
         try:
             # check if an io_extension is set
             if self.io_extension is not None:
-                return self.io_extension.append(data, **kwargs)    
-            
+                return self.io_extension.append(data, **kwargs)
+
             # if no extension instance, maybe an interface class is set
             elif self.io_interface is not None:
                 appender = self.io_interface.get_appender(self.datasource)
@@ -736,38 +815,38 @@ class Entry(Base):
         except IOOperationNotFoundError as e:
             print('[ERROR]: Operation not possible.\n%s' % str(e))
             return None
-    
+
     def delete_data(self, delete_source=False, **kwargs):
         """
         .. versionadded:: 0.1.12
 
-        Delete data. This is only possible if a datasource is specified and 
-        any kind of IOExtension or IOInterface is activated. By default, 
-        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` 
+        Delete data. This is only possible if a datasource is specified and
+        any kind of IOExtension or IOInterface is activated. By default,
+        the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>`
         is activated since version 0.1.12.
 
-        For the default interface, the datasource type and data type determine 
-        where the data is stored and how the data will be delted. 
-        You can easily inherit from the 
-        :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to 
-        customize read and write behaviour. 
+        For the default interface, the datasource type and data type determine
+        where the data is stored and how the data will be delted.
+        You can easily inherit from the
+        :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to
+        customize read and write behaviour.
 
         Parameters
         ----------
         delete_source : bool
-            If True, the DataSource will be deleted as well after the data 
+            If True, the DataSource will be deleted as well after the data
             has been deleted.
 
         """
         if self.datasource is None:
             raise MetadataMissingError('Entry need datasource information')
-        
+
         kwargs['delete_source'] = delete_source
         try:
             # check if an io_extension is set
             if self.io_extension is not None:
-                return self.io_extension.delete(**kwargs)    
-            
+                return self.io_extension.delete(**kwargs)
+
             # if no extension instance, maybe an interface class is set
             elif self.io_interface is not None:
                 deleter = self.io_interface.get_deleter(self.datasource)
@@ -780,7 +859,7 @@ class Entry(Base):
 
     def __str__(self):
         return "<ID=%d %s [%s] >" % (
-            self.id, 
-            self.title[:20], 
+            self.id,
+            self.title[:20],
             self.variable.name
             )

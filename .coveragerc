@@ -2,6 +2,7 @@
 omit = 
     metacatalog/test/*
     alembic/*
+    ext/*
     setup.py
 
 [report]

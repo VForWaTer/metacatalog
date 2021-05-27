@@ -116,7 +116,7 @@ def add_unit(session, name, symbol, si=None):
     return add_record(session=session, tablename='units', **attrs)
 
 
-def add_variable(session, name, symbol, unit):
+def add_variable(session, name, symbol, column_names, unit):
     r"""Add variable record
 
     Add a new variable to the database.
@@ -130,6 +130,10 @@ def add_variable(session, name, symbol, unit):
     symbol : str
         The variable symbol. Try to use the correct
         physical variable symbols and avoid dublicates.
+    column_names : list
+          .. versionadded:: 0.3.0
+          List of default column names that will be displayed when exporting the data.
+          The columns are named in the same order as they appear in the list.
     unit : int, str
         Either the id or **full** name of the unit to be
         linked to this variable.
@@ -141,7 +145,7 @@ def add_variable(session, name, symbol, unit):
 
     """
     #create the attribute dict
-    attrs = dict(name=name, symbol=symbol)
+    attrs = dict(name=name, symbol=symbol, column_names=column_names)
 
     # get the unit
     if isinstance(unit, int):

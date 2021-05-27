@@ -1,7 +1,9 @@
 from datetime import datetime as dt
 
 import pandas as pd
+import numpy as np
 from sqlalchemy.orm import object_session
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from metacatalog.models.entry import Entry
 
@@ -24,20 +26,51 @@ def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
 
     # infer table column names order
     col_sql = 'select * from %s limit 0' % tablename
-    col_names = list(pd.read_sql_query(col_sql, session.bind).columns.values)
-    col_names.remove('entry_id')
-    if 'index' in col_names:
-        index_col = ['index']
-        col_names.remove('index')
-    elif 'tstamp' in col_names:
-        index_col = ['tstamp']
-        col_names.remove('tstamp')
+    col_names_sql = list(pd.read_sql_query(col_sql, session.bind).columns.values)
+    col_names_sql.remove('entry_id')
+
+    if 'index' in col_names_sql:
+        index_col_sql = ['index']
+        col_names_sql.remove('index')
+    elif 'tstamp' in col_names_sql:
+        index_col_sql = ['tstamp']
+        col_names_sql.remove('tstamp')
 
     # load data
-    df = pd.read_sql(sql, session.bind, index_col=index_col, columns=col_names)
+    df_sql = pd.read_sql(sql, session.bind, index_col=index_col_sql, columns=col_names_sql)
 
-    # map column names
-    df.columns = [entry.variable.name if _col== 'value' else _col for _col in df.columns]
+    # always use data_names from datasource as column names when exporting the data
+    col_names = datasource.data_names
+
+    # if the column 'data' exists, the new routine is used
+    if 'data' in df_sql.columns:
+        # unstack multi-dimensional data into the single columns
+        rawvalues = np.vstack(df_sql['data'].values)
+
+        # unstack precision (precision1, precision2, ...)
+        rawprecision = np.vstack(df_sql['precision'].values)
+
+        if not all(x is None for x in np.hstack(rawprecision)): # check if precision contains any values
+            # add precision column names to col_names, if data is contained
+            for i in range(1, len(rawprecision[0])+1):
+                precision_col = 'precision%s' % i
+                col_names.append(precision_col)
+        else:
+            rawprecision = np.array([], dtype=np.int64).reshape(len(rawprecision),0)
+
+        # horizontally stack data and precission
+        raw = np.hstack([rawvalues, rawprecision])
+
+        df = pd.DataFrame(data=raw, columns=col_names, index=df_sql.index)
+    elif 'value' in df_sql.columns:
+        # if 'data' does not appear in the column names, the old routine is used
+        df = df_sql.copy()
+        df.drop(['entry_id'], axis=1, inplace=True)
+
+        # map column names
+        df.columns = [datasource.data_names[0] if _col== 'value' else _col for _col in df.columns]
+    else:
+        print('Currently only "timeseries" and "timeseries_array" are supported.')
 
     return df
 
@@ -57,7 +90,7 @@ def read_from_local_csv_file(entry, datasource, **kwargs):
         data.set_index('tstamp', inplace=True)
     elif 'index' in data:
         data.set_index('index', inplace=True)
-    
+
     # map column names
     df.columns = [entry.variable.name if _col== 'value' else _col for _col in df.columns]
 
