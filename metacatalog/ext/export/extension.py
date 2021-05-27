@@ -446,9 +446,14 @@ class ExportExtension(MetacatalogExtensionInterface):
                 # add the UUID to reference attributes
                 column_meta[name] = dict(uuid=uuid)
                 for k, v in  metadata.items():
+                    # in case more than one variable is referenced
                     if k.startswith(f'variable.{uuid}') or k.startswith(f'datasource.{uuid}'):
                         new_key = '.'.join(k.split('.')[2:])
                         column_meta[name][new_key] = v
+                    
+                    # in case only one variable contained - the elif is important here
+                    elif k.startswith('variable.') or k.startswith('datasource.'):
+                        column_meta[name][k] = v
             
             # build the xarray
             xr = xarray.Dataset.from_dataframe(merged_df)
