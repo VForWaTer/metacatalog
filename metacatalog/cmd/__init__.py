@@ -8,3 +8,4 @@ from .show import show
 from .add import add
 from .catalog import get_uuid
 from .migration import migrate
+from .rest import run
