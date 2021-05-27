@@ -446,7 +446,7 @@ class ExportExtension(MetacatalogExtensionInterface):
                 # add the UUID to reference attributes
                 column_meta[name] = dict(uuid=uuid)
                 for k, v in  metadata.items():
-                    if k.startwith(f'variable.{uuid}') or k.startswith(f'datasource.{uuid}'):
+                    if k.startswith(f'variable.{uuid}') or k.startswith(f'datasource.{uuid}'):
                         new_key = '.'.join(k.split('.')[2:])
                         column_meta[name][new_key] = v
             
@@ -454,7 +454,7 @@ class ExportExtension(MetacatalogExtensionInterface):
             xr = xarray.Dataset.from_dataframe(merged_df)
 
             # add Dataset attributes
-            xr.attrs = {k: v for k, v in metadata.items() if not k.startwith(f'variable.{uuid}') and not k.startswith(f'datasource.{uuid}')}
+            xr.attrs = {k: v for k, v in metadata.items() if not k.startswith(f'variable.{uuid}') and not k.startswith(f'datasource.{uuid}')}
 
             # add column attributes
             for variable_name, attrs in column_meta.items():
