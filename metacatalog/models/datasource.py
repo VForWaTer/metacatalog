@@ -616,40 +616,5 @@ class DataSource(Base):
         scale = Cls(resolution=resolution, extent=extent, support=support)
         setattr(self, '%s_scale' % scale_dimension.lower(), scale)
 
-    def get_source_importer(self):
-        """
-        .. deprecated:: 0.1.12
-            Will be removed with version 0.2
-
-        This function is usually called by a
-        :class:`Entry <metacatalog.Entry>` object. It returns a function
-        that will import the data into the correct source.
-
-        """
-        IOExt = extension('io')
-        func = IOExt.get_importer(self)
-
-        def injected_func(entry, timeseries, **kwargs):
-            return func(entry, timeseries, self, **kwargs)
-        injected_func.__name__ = func.__name__
-        injected_func.__doc__ = func.__doc__
-
-        return injected_func
-
-    def get_source_reader(self):
-        """
-        .. deprecated:: 0.1.12
-            Will be removed with version 0.2
-        """
-        IOExt = extension('io')
-        func = IOExt.get_reader(self)
-
-        def injected_func(entry, **kwargs):
-            return func(entry, self, **kwargs)
-        injected_func.__name__ = func.__name__
-        injected_func.__doc__ = func.__doc__
-
-        return injected_func
-
     def __str__(self):
         return "%s data source at %s <ID=%d>" % (self.type.name, self.path, self.id)
