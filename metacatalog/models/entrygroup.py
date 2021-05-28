@@ -104,7 +104,7 @@ class EntryGroup(Base):
     id = Column(Integer, primary_key=True)
     uuid = Column(String(36), nullable=False, default=lambda: str(uuid4()))
     type_id = Column(Integer, ForeignKey('entrygroup_types.id'), nullable=False)
-    title = Column(String(40))
+    title = Column(String(250))
     description = Column(String)
 
     publication = Column(DateTime, default=dt.utcnow)
