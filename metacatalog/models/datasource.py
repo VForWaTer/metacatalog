@@ -230,12 +230,12 @@ class TemporalScale(Base):
         Forms the temporal extent toghether with `observation_start`.
     support : float
         The support gives the temporal validity for a single observation.
-        It specifies the time before and after observation, that is still
+        It specifies the time before an observation, that is still
         represented by the observation.
         It is given as a fraction of resolution.
         I.e. if ``support=0.5`` at ``resolution='10min'``, the observation
-        supports ``5min`` (2.5min before and after the timestamp) and the
-        resulting dataset would **not** be exhaustive.
+        supports ``5min`` (5min before the timestamp) and the resulting dataset
+        would **not** be exhaustive.
         Defaults to ``support=1.0``, which would make a temporal exhaustive
         dataset, but may not apply to each dataset.
 
