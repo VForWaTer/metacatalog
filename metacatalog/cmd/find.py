@@ -49,6 +49,29 @@ def find(args):
         cprint(args, 'Oops. Finding %s is not supported.' % entity)
         exit(0)
 
+    if args.export is not None and args.export != '':
+        # only entry and group can be exported
+        if entity.lower() not in ('entry', 'group'):
+            cprint(args, 'Can only export entity=Entry and entity=Group')
+            return
+        
+        # get the fmt and path
+        path = args.export
+        fmt = args.export.split('.')[-1]
+        fmt = 'netCDF' if fmt == 'nc' else fmt
+
+        # check amount of results
+        if len(results) == 1:
+            results[0].export(path=path, fmt=fmt)
+            cprint(args, f'Wrote {path}.')
+        else:
+            for i, result in enumerate(results):
+                path = '.'.join([*args.export.split('.')[:-1], f'_{i}', args.export.split('.')[-1]])
+                result.export(path=path, fmt=fmt)
+            cprint(args, f'Wrote {len(results)} files.')
+        
+        return
+
     # switch the output
     if args.json:
         obj = [serialize(r) for r in results]

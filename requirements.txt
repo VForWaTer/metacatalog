@@ -1,6 +1,7 @@
 sqlalchemy
 geoalchemy2
 pandas
+xarray
 numpy
 psycopg2-binary
 tabulate
@@ -8,3 +9,4 @@ nltk
 shapely
 pyproj
 requests
+dicttoxml

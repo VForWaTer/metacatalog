@@ -62,6 +62,7 @@ def main():
     find_parser.add_argument('--json', action="store_true", help="Output the found entities as JSON objects")
     find_parser.add_argument('--stdout', action="store_true", help="Default option. Print the string representation of found entities to StdOut.")
     find_parser.add_argument('--csv', action="store_true", help="Output the found entities as CSV.")
+    find_parser.add_argument('--export', type=str, default=None, help="Export a Entry or Group to any supported format: JSON, XML, pickle, netCDF.")
     find_parser.set_defaults(func=find)
 
     # show subparsers

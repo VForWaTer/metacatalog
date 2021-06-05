@@ -7,7 +7,6 @@ Developers
     :hidden:
 
     tests
-    ext
     iso19115
 
 Guide
