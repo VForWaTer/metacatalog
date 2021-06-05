@@ -29,11 +29,11 @@ def import_to_internal_table(entry, datasource, data, precision=None, force_data
         if isinstance(precision, pd.Series):
             precision = pd.DataFrame(precision)
 
-        # raise error if data and precision are of different length
+        # raise error if data and precision have different number of rows
         if len(precision) != len(data):
-            raise ValueError('Data and precision must be of same length.')
-        # raise error if data and precision are of different length
-        if all(precision.index != data.index):
+            raise ValueError('Data and precision must match in their number of rows.')
+        # raise error if data and precision index differ at any position
+        if any(precision.index != data.index):
             raise ValueError('Data and precision index are differing.')
 
         # flag if precision is passed to the function:
@@ -96,8 +96,8 @@ def import_to_internal_table(entry, datasource, data, precision=None, force_data
     # transform the data into a list of arrays
     values = [row for row in imp[data_columns].values]
 
-    # make importer.py compatible with the (old) 1D timeseries table
     if tablename == 'timeseries_1d':
+        # make importer.py compatible with the (old) 1D timeseries table
         # explicitly map the column types
         dtypes = {
             'tstamp': sa.TIMESTAMP,
@@ -122,7 +122,7 @@ def import_to_internal_table(entry, datasource, data, precision=None, force_data
         if_exists = kwargs.get('if_exists', 'append')
         imp_data.to_sql(tablename, session.bind, index=None, dtype=dtypes, if_exists=if_exists)
     else:
-        # else: the (new) timeseries_array is used
+        # store n-dimensional data and precision as array type timeseries data
         # explicitly map the column types
         dtypes = {
             'tstamp': sa.TIMESTAMP,
