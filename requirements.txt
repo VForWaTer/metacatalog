@@ -10,3 +10,5 @@ shapely
 pyproj
 requests
 dicttoxml
+flask
+flask-cors
