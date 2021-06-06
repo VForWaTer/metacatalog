@@ -81,7 +81,7 @@ def export_to_xml(group: EntryGroup):
 
     assert len(xml_str) > 0
 
-    assert '<title ' in xml_str
+    assert '<title>' in xml_str
 
     return True
 
