@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 
 from metacatalog import api
+from metacatalog.util.logging import get_logger
 
 def get_uuid(session: Session, uuid: str, not_found='raise'):
     """
