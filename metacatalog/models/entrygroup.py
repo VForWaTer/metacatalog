@@ -154,6 +154,86 @@ class EntryGroup(Base):
 
         return d
 
+    def export(self, path=None, fmt='JSON', **kwargs):
+        r"""
+        Export the EntryGroup. Exports the data using a metacatalog extension.
+        Refer to the note below to learn more about export extensions.
+
+        Parameters
+        ----------
+        path : str
+            If set, the export will be written into a file at the given
+            location.
+        fmt : str
+            Export format. Each export extension should at least support
+            json and XML export.
+        **kwargs
+            Any other argument given will be passed down to the actual
+            export function.
+
+        Notes
+        -----
+        Uses any extension prefixed with 'export-' activated, by passing
+        itself to the extension. If not format-specific extension is activated,
+        the default :class:`ExportExtension <metacatalog.ext.export.ExportExtension>`
+        will be used. A method of same name as ``fmt`` on the extension will be used. 
+        If such a method is not present, the 'export' method is used and the fmt 
+        attribute will be passed along. This can be used for format specific
+        extensions.
+        Refer to the notes about :any:`custom extensions <metacatalog.ext.base>`
+        to learn more about writing your own export extension.
+
+        Consider this example:
+
+        .. code-block:: Python
+
+            from metacatalog.ext import MetacatalogExtensionInterface
+            import json
+
+            class RawJSONExtension(MetacatalogExtensionInterface):
+                @classmethod
+                def init_extension(cls):
+                    pass
+                
+                @classmethod
+                def json(cls, group, path, **kwargs):
+                    # get the dict
+                    data = group.to_dict(stringify=True)
+                    if path is None:
+                        return data
+                    else:
+                        with open(path, 'w') as f:
+                            json.dump(data, f, indent=kwargs.get('indent', 4))
+        
+        You can activate and use it like:
+
+        >> from metacatalog import ext
+        >> ext.extension('export', RawJSONEXtension)
+        >> group.export(path='testfile.json', fmt='json', indent=2)
+
+        """
+        # load the extension
+        from metacatalog import ext
+        try:
+            Export = ext.extension(f'export-{fmt.lower()}')
+        except AttributeError:
+            try:
+                Export = ext.extension('export')
+            except AttributeError:
+                from metacatalog.ext.export import ExportExtension as Export
+        
+        # get the export function
+        if  hasattr(Export, fmt.lower()):
+            exp_function = getattr(Export, fmt.lower())
+        elif hasattr(Export, 'export'):
+            exp_function = getattr(Export, 'export')
+        else:    
+            raise AttributeError(f'The current export extension cannot export {fmt}')
+
+        # return
+        return exp_function(self, path=path, **kwargs)
+
+
     def __str__(self):
         return "%s%s <ID=%d>" % (
             self.type.name,
