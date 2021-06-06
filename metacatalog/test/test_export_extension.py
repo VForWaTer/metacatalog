@@ -4,9 +4,10 @@ import os
 from random import choice
 from string import ascii_letters
 import shutil
+import dicttoxml
 
 from metacatalog import api
-from metacatalog.models import Entry
+from metacatalog.models import Entry, EntryGroup
 from ._util import connect
 
 
@@ -32,6 +33,16 @@ def find_composite_entry(session):
     assert 'telegraph from 1855' in entry.abstract
 
     return entry
+
+def find_composite_group(session):
+    """
+    Find the Telegraph and Microphone group.
+    """
+    group = api.find_group(session, title="Awesome inventions")[0]
+
+    assert 'by David Edward Hughes' in group.description
+
+    return group
 
 
 def export_to_json(entry: Entry):
@@ -62,6 +73,31 @@ def export_to_json_file(entry: Entry, path: str):
     return True
 
 
+def export_to_xml(group: EntryGroup):
+    """
+    Test the XML export without data
+    """
+    xml_str = group.export(path=None, fmt='fast_xml', no_data=True)
+
+    assert len(xml_str) > 0
+
+    assert '<title>' in xml_str
+
+    return True
+
+
+def export_to_xml_file(group: EntryGroup, path: str):
+    """
+    Export to XML file and verify it exists
+    """
+    fpath = os.path.join(path, 'inventions.xml')
+    group.export(path=fpath, fmt='fast_xml')
+
+    assert os.path.exists(fpath)
+
+    return True
+
+
 @pytest.mark.depends(on=['groups'], name='export')
 def test_export_extension(folder_location):
     """
@@ -74,6 +110,13 @@ def test_export_extension(folder_location):
     # the first test returns the entry to be used for the others
     entry = find_composite_entry(session)
 
-    # run tests
+    # find the composite group
+    group = find_composite_group(session)
+
+    # run tests - Entry
     assert export_to_json(entry)
     assert export_to_json_file(entry, folder_location)
+
+    # Composite
+    assert export_to_xml(group)
+    assert export_to_xml_file(group, folder_location)

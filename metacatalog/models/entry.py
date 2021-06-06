@@ -516,7 +516,7 @@ class Entry(Base):
         Uses any extension prefixed with 'export-' activated, by passing
         itself to the extension. If not format-specific extension is activated,
         the default :class:`ExportExtension <metacatalog.ext.export.ExportExtension>`
-        will be used. A method of same name as ``fmt`` on theextension will be used. 
+        will be used. A method of same name as ``fmt`` on the extension will be used. 
         If such a method is not present, the 'export' method is used and the fmt 
         attribute will be passed along. This can be used for format specific
         extensions.
