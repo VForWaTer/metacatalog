@@ -77,7 +77,7 @@ def export_to_xml(group: EntryGroup):
     """
     Test the XML export without data
     """
-    xml_str = group.export(path=None, fmt='xml', no_data=True)
+    xml_str = group.export(path=None, fmt='fast_xml', no_data=True)
 
     assert len(xml_str) > 0
 
@@ -91,7 +91,7 @@ def export_to_xml_file(group: EntryGroup, path: str):
     Export to XML file and verify it exists
     """
     fpath = os.path.join(path, 'inventions.xml')
-    group.export(path=fpath, fmt='xml')
+    group.export(path=fpath, fmt='fast_xml')
 
     assert os.path.exists(fpath)
 
