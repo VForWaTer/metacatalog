@@ -107,6 +107,7 @@ def upgrade(session: Session, target='head'):
         mod = REVISIONS[current]
         try:
             mod.upgrade(session)
+            session.flush()
             set_remote_head_id(session, current)
             session.commit()
             print(' [%d] ->' % current, end='')
@@ -134,6 +135,7 @@ def downgrade(session: Session):
     try:
         # run the downgrade
         mod.downgrade(session)
+        session.flush()
         set_remote_head_id(session, new_rev_num)
         session.commit()
         print('Downgraded [%d] -> [%d]' % (rev_num, new_rev_num))
