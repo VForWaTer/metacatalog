@@ -84,7 +84,7 @@ class ExportExtension(MetacatalogExtensionInterface):
         pass
     
     @classmethod
-    def to_dict(cls, entry: Entry, use_keys: List[str] = ENTRY_KEYS, serialize = True, no_data = False, **kwargs) -> dict:
+    def to_dict(cls, entry: Entry, use_keys: List[str] = ENTRY_KEYS, serialize = True, no_data = False, clean = True, **kwargs) -> dict:
         """
         Return as dict to finally export.
         """
@@ -111,14 +111,30 @@ class ExportExtension(MetacatalogExtensionInterface):
         
         # handle data
         if not no_data:
-            data = cls.get_data(entry, **kwargs)
+            merged_df = pd.DataFrame()
 
-            # handle json output
-            json_data = {k: cls._serialize(v) for k, v in data.items()}
+            data = cls.get_data(entry, serialize=False, **kwargs)
+            uncompressed = []
 
-            out['data'] = json_data
+            for uuid, df in data.items():
+                if not isinstance(df, pd.DataFrame):
+                    uncompressed.append((uuid, df, ))
+                    continue
+                else:
+                    merged_df = pd.merge(merged_df, df, left_index=True, right_index=True, how='outer')
+        
+        # handle output
+        if not merged_df.empty:
+            merged_df.reset_index(inplace=True)
+            out['data'] = cls._serialize(merged_df.to_dict(orient='records'))
+
+        # non-mergable data
+        if len(uncompressed) > 0:
+            out['unmerged_data'] = {k: cls._serialize(v) for k,v in uncompressed}
         
         # return
+        if clean:
+            out = cls._clear_output(out)
         return out
 
     @classmethod
