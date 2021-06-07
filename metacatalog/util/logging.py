@@ -29,19 +29,11 @@ class LogHander(logging.Handler):
     
     def emit(self, record: logging.LogRecord):
         # create the log
-        log = Log()
-
-        # populate
-        log.tstamp = dt.fromtimestamp(record.created)
-        log.description = record.msg
-
-        # set the level
-        if record.levelno == 30:
-            log.code = LogCodes.warning
-        elif record.levelno >= 40:
-            log.code = LogCodes.error
-        else:
-            log.code = LogCodes.info
+        log = Log(
+            tstamp = dt.fromtimestamp(record.created),
+            description = record.msg,
+            code=record.levelno
+        )
 
         # store
         try:
