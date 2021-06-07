@@ -14,6 +14,7 @@ logger, to enable it.
 """
 import logging
 import sqlalchemy as sa
+from datetime import datetime as dt
 
 from metacatalog.models import Log, LogCodes
 
@@ -31,7 +32,7 @@ class LogHander(logging.Handler):
         log = Log()
 
         # populate
-        log.tstamp = record.created
+        log.tstamp = dt.fromtimestamp(record.created)
         log.description = record.msg
 
         # set the level
