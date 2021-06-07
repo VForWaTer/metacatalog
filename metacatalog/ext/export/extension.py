@@ -135,6 +135,7 @@ class ExportExtension(MetacatalogExtensionInterface):
         # return
         if clean:
             out = cls._clear_output(out)
+
         return out
 
     @classmethod
