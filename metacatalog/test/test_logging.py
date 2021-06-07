@@ -10,6 +10,9 @@ def log_every_level(session):
     # get a logger
     logger = api.get_logger(session)
 
+    # set loglevel to debug
+    logger.setLevel(10)
+
     logger.info('First info message')
     logger.warning('Serious warning')
     logger.error('Critical error')
