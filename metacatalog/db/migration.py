@@ -155,7 +155,7 @@ def get_remote_head_id(session: Session) -> int:
 
 def set_remote_head_id(session: Session, new_head_id: int, description=None):
     if description is None:
-        description = 'Migrated database to %d using metacatalog==%s' % (new_head_id, __version__)
+        description = 'Migrated database to v%d using metacatalog==%s' % (new_head_id, __version__)
     log = models.Log(code=models.LogCodes.migration, description=description, migration_head=new_head_id)
     session.add(log)
 
