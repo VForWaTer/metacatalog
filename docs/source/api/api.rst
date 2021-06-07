@@ -26,6 +26,7 @@ API
     api_show_attributes
     api_show_records
     api_get_uuid
+    api_get_logger
 
 Metacatalog API Overview
 ========================

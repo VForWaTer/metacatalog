@@ -18,15 +18,33 @@ class MetaCodes(type):
     
     @property
     def error(self):
-        return 99
+        return 40
     
     @property
     def warning(self):
-        return 10
+        return 30
 
     @property
     def info(self):
-        return 5
+        return 20
+    
+    @property
+    def debug(self):
+        return 10
+
+    @classmethod
+    def level_name(cls, code: int) -> str:
+        if code >= 40:
+            return 'ERROR'
+        elif code >= 30:
+            return 'WARNING'
+        elif code >= 20:
+            return 'INFO'
+        elif code > 1:
+            return 'DEBUG'
+        else:
+            return 'MIGRATION'
+
 
 class LogCodes(metaclass=MetaCodes):
     pass
@@ -40,14 +58,25 @@ class Log(Base):
     id = Column(Integer, primary_key=True)
     tstamp = Column(DateTime, nullable=False, default=dt.utcnow)
     code = Column(Integer, nullable=False)
+    code_name = Column(String(20), nullable=False)
     description = Column(String, nullable=False)
     migration_head = Column(Integer, nullable=True)
+
+    def __init__(self, **kwargs):
+        if 'code' in kwargs:
+            kwargs['code_name'] = LogCodes.level_name(kwargs['code'])
+        super(Log, self).__init__(**kwargs)
 
     @classmethod
     def load_migration_head(cls, session: Session) -> int:
         query = session.query(Log.migration_head).filter(Log.code==LogCodes.migration).order_by(Log.tstamp.desc())
 
-        return query.limit(1).scalar()
+        # This often blocks the logs table, no idea why, thus it 
+        # is now comitting the session.
+        head = query.limit(1).scalar()
+        session.commit()
+
+        return head
 
     @classmethod
     def load_last_incident(cls, session: Session, code: int=None):
@@ -72,3 +101,5 @@ class Log(Base):
 
         return query.limit(n).all()
 
+    def __str__(self):
+        return f"[{self.code_name}]: {self.description} ({self.tstamp.isoformat()})"

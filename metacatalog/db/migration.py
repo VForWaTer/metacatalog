@@ -107,6 +107,7 @@ def upgrade(session: Session, target='head'):
         mod = REVISIONS[current]
         try:
             mod.upgrade(session)
+            session.flush()
             set_remote_head_id(session, current)
             session.commit()
             print(' [%d] ->' % current, end='')
@@ -134,6 +135,7 @@ def downgrade(session: Session):
     try:
         # run the downgrade
         mod.downgrade(session)
+        session.flush()
         set_remote_head_id(session, new_rev_num)
         session.commit()
         print('Downgraded [%d] -> [%d]' % (rev_num, new_rev_num))
@@ -153,7 +155,7 @@ def get_remote_head_id(session: Session) -> int:
 
 def set_remote_head_id(session: Session, new_head_id: int, description=None):
     if description is None:
-        description = 'Migrated database to %d using metacatalog==%s' % (new_head_id, __version__)
+        description = 'Migrated database to v%d using metacatalog==%s' % (new_head_id, __version__)
     log = models.Log(code=models.LogCodes.migration, description=description, migration_head=new_head_id)
     session.add(log)
 
