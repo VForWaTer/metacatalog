@@ -123,15 +123,15 @@ class ExportExtension(MetacatalogExtensionInterface):
                 else:
                     merged_df = pd.merge(merged_df, df, left_index=True, right_index=True, how='outer')
         
-        # handle output
-        if not merged_df.empty:
-            merged_df.reset_index(inplace=True)
-            out['data'] = cls._serialize(merged_df.to_dict(orient='records'))
+            # handle output
+            if not merged_df.empty:
+                merged_df.reset_index(inplace=True)
+                out['data'] = cls._serialize(merged_df.to_dict(orient='records'))
 
-        # non-mergable data
-        if len(uncompressed) > 0:
-            out['unmerged_data'] = {k: cls._serialize(v) for k,v in uncompressed}
-        
+            # non-mergable data
+            if len(uncompressed) > 0:
+                out['unmerged_data'] = {k: cls._serialize(v) for k,v in uncompressed}
+            
         # return
         if clean:
             out = cls._clear_output(out)
