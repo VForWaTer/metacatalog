@@ -61,7 +61,7 @@ def read_from_internal_table(entry, datasource, start=None, end=None, **kwargs):
         # horizontally stack data and precission
         raw = np.hstack([rawvalues, rawprecision])
 
-        df = pd.DataFrame(data=raw, columns=col_names, index=df_sql.index)
+        df = pd.DataFrame(data=raw, columns=col_names, dtype=np.float64, index=df_sql.index)
     elif 'value' in df_sql.columns:
         # if 'value' appears in the column names, the old routine for 1D data is used
         df = df_sql.copy()
