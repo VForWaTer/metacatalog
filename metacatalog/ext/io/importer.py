@@ -126,8 +126,8 @@ def import_to_internal_table(entry, datasource, data, precision=None, force_data
         # explicitly map the column types
         dtypes = {
             'tstamp': sa.TIMESTAMP,
-            'data': ARRAY(sa.REAL),
-            'precision': ARRAY(sa.REAL)
+            'data': ARRAY(sa.NUMERIC),
+            'precision': ARRAY(sa.NUMERIC)
         }
 
         # add precision if handle_precision is set to True
