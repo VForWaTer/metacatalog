@@ -336,6 +336,8 @@ class ImmutableResultSet:
         for member in gen:
             # load and add
             if isinstance(member, Entry):
+                if member.datasource is None:
+                    continue
                 ds = member.get_data(**kwargs)
                 data[member.checksum] = ds
             
@@ -351,7 +353,7 @@ class ImmutableResultSet:
                     except MetadataMissingError:
                         # that's fine, just move on
                         continue
-                    
+
                     if isinstance(_df, pd.DataFrame):
                         df = pd.concat((df, _df))
                     else:
