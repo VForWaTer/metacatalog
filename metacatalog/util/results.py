@@ -127,7 +127,7 @@ class ImmutableResultSet:
         for g in entry.associated_groups:
             # Split datasets are nested
             if g.type.name == 'Split dataset':
-                if base_group.id == g.id:
+                if base_group is not None and base_group.id == g.id:
                     entries.extend([entry])
                 else:
                     entries.extend([ImmutableResultSet(g)])
