@@ -1,5 +1,4 @@
 import hashlib
-import json
 from metacatalog.util.dict_functions import serialize
 from uuid import uuid4
 from datetime import datetime as dt
@@ -124,14 +123,14 @@ class EntryGroup(Base):
         .. versionadded:: 0.3.9
 
         MD5 checksum of this entry. The checksum will change if any of the linked
-        Metadata changes. This can be used in application built on metacatalog to
+        Entries' checksum changes. This can be used in application built on metacatalog to
         verify integrity.
         """
-        # get a dict_representation
-        d = self.to_dict(deep=True, stringify=True)
+        # get the md5 hashes of all childs
+        md_list = ''.join([e.checksum for e in self.entries])
         
-        # calculate the hash
-        md5 = hashlib.md5(json.dumps(d).encode()).hexdigest()
+        # create the checksum of checksums
+        md5 = hashlib.md5(md_list.encode()).hexdigest()
 
         return md5
 
