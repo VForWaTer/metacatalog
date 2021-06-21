@@ -73,11 +73,11 @@ class ImmutableResultSet:
             if group is None:
                 members = ImmutableResultSet.expand_entry(instance)
             else:
-                members = [ImmutableResultSet.expand_entry(e) for e in group.entries]
+                members = [ImmutableResultSet.expand_entry(e, group) for e in group.entries]
         
         elif isinstance(instance, EntryGroup):
             group = instance
-            members = [ImmutableResultSet.expand_entry(e) for e in instance.entries]
+            members = [ImmutableResultSet.expand_entry(e, group) for e in instance.entries]
 
         # set attributes
         self.group = group
@@ -113,7 +113,7 @@ class ImmutableResultSet:
         return None
 
     @classmethod
-    def expand_entry(cls, entry: Entry, base_group: EntryGroup):
+    def expand_entry(cls, entry: Entry, base_group: EntryGroup = None):
         """
         Expand this Entry to all siblings.
 
