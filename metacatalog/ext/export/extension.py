@@ -149,26 +149,37 @@ class ExportExtension(MetacatalogExtensionInterface):
         # get a resultSet of the entry
         result = ImmutableResultSet(entry)
 
-        # output container
-        out = dict()
+        # # output container
+        # out = dict()
 
-        # add data
-        for e in result._members:
-            try:
-                data = e.get_data(**kwargs)
+        # # add data
+        # for e in result._members:
+        #     try:
+        #         data = e.get_data(**kwargs)
 
-                # handle strinify
-                if serialize and hasattr(data, 'to_dict'):
-                    data = data.to_dict(orient='records')
+        #         # handle strinify
+        #         if serialize and hasattr(data, 'to_dict'):
+        #             data = data.to_dict(orient='records')
                 
-                # append
-                out[e.uuid] = data
-            except Exception:
-                # do nothing
-                pass
-        
-        # return
-        return out
+        #         # append
+        #         out[e.uuid] = data
+        #     except Exception:
+        #         # do nothing
+        #         pass
+
+        data = result.get_data(**kwargs)
+
+        # apply serialize
+        if serialize:
+            out = dict()
+            for uuid, df in data.items():
+                if hasattr(df, 'to_dict'):
+                    df = df.to_dict(orient='records')
+                out[uuid] = df
+            return out
+        else:
+            # return
+            return data
     
     @classmethod
     def flat_keys(cls, data: dict, prefix = False, delimiter: str = '.', **kwargs) -> dict:

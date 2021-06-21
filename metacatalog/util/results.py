@@ -52,6 +52,8 @@ from typing import Union, List
 import hashlib
 import json
 from itertools import chain
+from tqdm import tqdm
+import pandas as pd
 
 from metacatalog.models import Entry, EntryGroup
 
@@ -71,11 +73,11 @@ class ImmutableResultSet:
             if group is None:
                 members = ImmutableResultSet.expand_entry(instance)
             else:
-                members = [ImmutableResultSet.expand_entry(e) for e in group.entries]
+                members = [ImmutableResultSet.expand_entry(e, group) for e in group.entries]
         
         elif isinstance(instance, EntryGroup):
             group = instance
-            members = [ImmutableResultSet.expand_entry(e) for e in instance.entries]
+            members = [ImmutableResultSet.expand_entry(e, instance) for e in instance.entries]
 
         # set attributes
         self.group = group
@@ -104,24 +106,31 @@ class ImmutableResultSet:
             idx = type_names.index('Composite')
             return groups[idx]
         
-        if 'Split dataset' in type_names:
-            idx = type_names.index('Split dataset')
-            return groups[idx]
+        # if 'Split dataset' in type_names:
+        #     idx = type_names.index('Split dataset')
+        #     return groups[idx]
         
         return None
 
     @classmethod
-    def expand_entry(cls, entry: Entry):
+    def expand_entry(cls, entry: Entry, base_group: EntryGroup = None):
         """
-        Expand this Entry to all siblings
+        Expand this Entry to all siblings.
+
+        .. versionchanged:: 0.3.8
+            Split datasets are now nested
+
         """
         # container
         entries = []
 
         for g in entry.associated_groups:
-            if g.type.name not in ('Composite', 'Split dataset'):
+            if base_group is not None and g.id == base_group.id:
                 continue
-            entries.extend(g.entries)
+            elif g.type.name == 'Split dataset':
+                entries.extend(ImmutableResultSet(g))
+            else:
+                entries.extend(g.entries)
 
         return entries
 
@@ -129,13 +138,16 @@ class ImmutableResultSet:
     def entry_set(cls, entries: List[Entry]):
         """
         Return a set of entries to remove duplicates
+
+        .. versionchanged:: 0.3.8
+            Can now handle nested ResultSets
         """
         # flat the list
         if any([isinstance(e, list) for e in entries]):
             entries = list(chain(*entries))
         
         # get the ids
-        ids = [e.id for e in entries]
+        ids = [e.checksum if isinstance(e, ImmutableResultSet) else e.id for e in entries]
 
         # return only the first occurence of each entry
         return [entries[i] for i, _id in enumerate(ids) if i==ids.index(_id)]
@@ -151,6 +163,9 @@ class ImmutableResultSet:
         duplicated metadata (i.e. for composites and split-
         datasets). If the set has a length of 1, the value
         itself will be returned
+
+        .. versionchanged:: 0.3.8
+            get can now handle nested ImmutableResultSets
 
         Parameters
         ----------
@@ -170,11 +185,15 @@ class ImmutableResultSet:
 
         # create the dictionaries
         for member in [self.group, *self._members]:
-            if not hasattr(member, name):
+            if isinstance(member, ImmutableResultSet):
+                val = member.get(name)
+            elif not hasattr(member, name):
                 continue
-
-            # get the value or callable
-            val = getattr(member, name)
+            else:
+                # get the value or callable
+                val = getattr(member, name)
+            
+            # if val is callable, execute it 
             if callable(val):
                 val = val()
             
@@ -186,7 +205,12 @@ class ImmutableResultSet:
             
             # append
             occurences.append(exp_val)
-            uuids.append(member.uuid)
+
+            # TODO: this needs to be improved
+            if isinstance(member, ImmutableResultSet):
+                uuids.append(member.checksum)
+            else:
+                uuids.append(member.uuid)
         
         # create the set
         occur_md5 = [hashlib.md5(json.dumps(str(o)).encode()).hexdigest() for o in occurences]
@@ -269,3 +293,38 @@ class ImmutableResultSet:
 
         # build the output dictionary
         return {key: self.get(key) for key in keys}
+
+    def get_data(self, verbose=False, **kwargs) -> dict:
+        """
+        Return the data as a UUID indexed dict
+        """
+        # output container
+        data = dict()
+
+        # create the generator 
+        if verbose:
+            gen = tqdm((m for m in self._members), total=len(self._members))
+        else:
+            gen = (m for m in self._members)
+        
+        # get the data
+        for member in gen:
+            try:
+                ds = member.get_data(**kwargs)
+                
+                if isinstance(member, ImmutableResultSet):
+                    # handle merging of split datasets
+                    if member.group.type.name == 'Split dataset':
+                        df = pd.DataFrame()
+                        for _df in ds.items():
+                            df = pd.concat((df, _df))
+                        data[member.checksum] = df
+                    else:
+                        data[member.checksum] = ds
+                else:
+                    data[member.uuid] = ds
+            except Exception:
+                # do nothing
+                pass
+        
+        return data
