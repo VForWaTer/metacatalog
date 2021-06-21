@@ -320,7 +320,7 @@ class ImmutableResultSet:
 
     def get_data(self, verbose=False, **kwargs) -> dict:
         """
-        Return the data as a UUID indexed dict
+        Return the data as a checksum indexed dict
         """
         # output container
         data = dict()
@@ -333,22 +333,33 @@ class ImmutableResultSet:
         
         # get the data
         for member in gen:
-            try:
+            # load and add
+            if isinstance(member, Entry):
                 ds = member.get_data(**kwargs)
-                
-                if isinstance(member, ImmutableResultSet):
-                    # handle merging of split datasets
-                    if member.group.type.name == 'Split dataset':
-                        df = pd.DataFrame()
-                        for _df in ds.items():
-                            df = pd.concat((df, _df))
-                        data[member.checksum] = df
+                data[member.checksum] = ds
+            
+            # nested groups
+            elif isinstance(member, ImmutableResultSet):
+                unmerged = []
+                df = pd.DataFrame()
+
+                # load all data from nested groups
+                for m in member._members:
+                    _df = m.get_data(**kwargs)
+                    if isinstance(_df, pd.DataFrame):
+                        df = pd.concat((df, _df))
                     else:
-                        data[member.checksum] = ds
-                else:
-                    data[member.uuid] = ds
-            except Exception:
-                # do nothing
-                pass
+                        unmerged.append(_df)
+                
+                # append
+                if len(df) > 0 and len(unmerged) > 0:
+                    data[member.checksum] = dict(
+                        merged=df,
+                        unmerged=unmerged
+                    )
+                elif not df.empty:
+                    data[member.checksum] = df
+                elif len(unmerged) > 0:
+                    data[member.checksum] = unmerged
         
         return data
