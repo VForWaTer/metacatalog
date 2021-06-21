@@ -129,7 +129,7 @@ class ImmutableResultSet:
                 continue
             elif g.type.name == 'Split dataset':
                 entries.extend(ImmutableResultSet(g))
-            else:
+            elif g.type.name == 'Composite':
                 entries.extend(g.entries)
 
         return entries
@@ -141,16 +141,17 @@ class ImmutableResultSet:
 
         .. versionchanged:: 0.3.8
             Can now handle nested ResultSets
+
         """
         # flat the list
         if any([isinstance(e, list) for e in entries]):
             entries = list(chain(*entries))
         
         # get the ids
-        ids = [e.checksum if isinstance(e, ImmutableResultSet) else e.id for e in entries]
+        checksums = [e.checksum for e in entries]
 
         # return only the first occurence of each entry
-        return [entries[i] for i, _id in enumerate(ids) if i==ids.index(_id)]
+        return [entries[i] for i, _id in enumerate(checksums) if i==checksums.index(_id)]
 
 
     def get(self, name: str, default=None):
