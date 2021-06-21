@@ -245,18 +245,37 @@ class ImmutableResultSet:
         uuids = [self.group.uuid] if self.group is not None else []
 
         # expand member uuids
-        uuids.extend([e.uuid for e in self._members])
+        uuids.extend([e.uuid for e in self._members if hasattr(e, 'uuid')])
 
         return uuids
+
+    @property
+    def checksums(self):
+        """
+        .. versionadded:: 0.3.8
+        
+        Return all checksums of all members
+        """
+        # get the group checksum
+        checksums = [self.group.checksum] if self.group is not None else []
+
+        # expand to all members
+        checksums.extend([e.checksum for e in self._members])
+
+        return checksums
 
     @property
     def checksum(self):
         """
         Return the md5 checksum for this result set to easily
         tell it appart from others.
-        The checksum is the md5 hash of the uuids.
+        The checksum is the md5 hash of all contained member checksums.
+
+        .. versionchanged:: 0.3.8
+            now hasing md5 of members instead of uuids
+
         """
-        return hashlib.md5(''.join(self.uuids).encode()).hexdigest()
+        return hashlib.md5(''.join(self.checksums).encode()).hexdigest()
 
     def contains_uuid(self, uuid: str):
         """
