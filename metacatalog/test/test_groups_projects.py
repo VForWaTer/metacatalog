@@ -59,8 +59,8 @@ def check_result_set(session):
 
     assert isinstance(result, ImmutableResultSet)
 
-    # there should be 3 uuids
-    assert len(result.get('uuid')) == 3
+    # there should
+    assert len(result.uuids) == 3
 
     # but only one author
     assert isinstance(result.get('author'), dict)
@@ -75,7 +75,7 @@ def check_result_set_from_group(session):
     result = api.find_group(session, title='Awesome inventions', as_result=True)[0]
 
     # assert like above
-    assert len(result.get('uuid')) == 3
+    assert len(result.uuids) == 3
 
     return True
 
