@@ -73,7 +73,7 @@ class ImmutableResultSet:
             if group is None:
                 members = ImmutableResultSet.expand_entry(instance)
             else:
-                members = [ImmutableResultSet.expand_entry(e, group) for e in group.entries]
+                members = [ImmutableResultSet.expand_entry(e) for e in group.entries]
         
         elif isinstance(instance, EntryGroup):
             group = instance
@@ -127,14 +127,14 @@ class ImmutableResultSet:
         for g in entry.associated_groups:
             # Split datasets are nested
             if g.type.name == 'Split dataset':
-                entries.extend(ImmutableResultSet(g))
+                if base_group.id == g.id:
+                    entries.extend([entry])
+                else:
+                    entries.extend([ImmutableResultSet(g)])
             
             # composites expand completely
             elif g.type.name == 'Composite':
-                if base_group is not None and base_group.type.id == g.id:
-                    continue
-                else:
-                    entries.extend(g.entries)
+                entries.extend(g.entries)
 
         return entries
 
