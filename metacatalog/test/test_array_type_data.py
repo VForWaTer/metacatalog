@@ -2,6 +2,7 @@ import pytest
 
 import pandas as pd
 import numpy as np
+from numpy.testing import assert_array_almost_equal
 from metacatalog import api
 from ._util import connect
 
@@ -242,6 +243,42 @@ def auto_force_data_names(session, df_1D_wind, df_3D_prec):
     return True
 
 
+def add_split_dataset(session):
+    # create dummy data
+    data = pd.DataFrame(data={'value': np.random.normal(10, 1, size=350), 'tstamp': pd.date_range('201309241100', periods=350, freq='15min')})
+    data.set_index('tstamp', inplace=True)
+
+    # add two entries as split datasets
+    kit = api.find_person(session, organisation_abbrev='KIT')[0]
+    historical_entry = api.add_entry(session, title='Historical data', abstract='Long descirption', location=(4.2, 42), variable=1, license=6, author=kit.id)
+    recent_entry = api.add.add_entry(session, title='Recent data', abstract='something bad happended that needs description', location=(4.2, 42), variable=1, license=6, author=kit.id)
+    
+    # create datasource
+    historical_entry.create_datasource(type=1, path='timeseries', datatype='timeseries')
+    recent_entry.create_datasource(type=1, path='timeseries', datatype='timeseries')
+    
+    # split the data
+    historical_entry.import_data(data=data.iloc[:300, :])
+    recent_entry.import_data(data=data.iloc[300:, :])
+    
+    full_dataset = api.add_group(session, 'Split dataset', [historical_entry.id, recent_entry.id])
+
+    # checkout
+    result = api.find_entry(session, id=recent_entry.id, as_result=True)[0]
+
+    # recover data
+    db_data = result.get_data()
+
+    # search for checksum - result.checksum is a checksum of member checksum, which is only one here
+    assert len(result.checksums) == 1
+    checksum = result.checksums[0]
+    assert checksum in db_data
+    
+    recovered_data = db_data[checksum].values
+    assert_array_almost_equal(data.values, recovered_data)
+
+    return True
+
 @pytest.mark.depends(on=['db_init'], name='array_type_data')
 def test_array_type_data():
     """
@@ -288,3 +325,4 @@ def test_array_type_data():
     assert force_data_names_true(session, df_3D_wind)
     assert precision_test(session, df_3D_wind, df_3D_prec)
     assert auto_force_data_names(session, df_1D_wind, df_3D_prec_copy)
+    assert add_split_dataset(session)

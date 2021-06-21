@@ -6,6 +6,8 @@ If a supported data format is used, Entry can load the data.
 
 """
 from datetime import datetime as dt
+import hashlib
+import json
 from dateutil.relativedelta import relativedelta as rd
 from uuid import uuid4
 
@@ -264,6 +266,23 @@ class Entry(Base):
     @classmethod
     def is_valid(cls, entry):
         return isinstance(entry, Entry) and entry.id is not None
+
+    @property
+    def checksum(self):
+        """
+        .. versionadded:: 0.3.8
+
+        MD5 checksum of this entry. The checksum will change if any of the linked
+        Metadata changes. This can be used in application built on metacatalog to
+        verify integrity.
+        """
+        # get a dict_representation
+        d = self.to_dict(deep=True, stringify=True)
+        
+        # calculate the hash
+        md5 = hashlib.md5(json.dumps(d).encode()).hexdigest()
+
+        return md5
 
     @property
     def is_latest_version(self):

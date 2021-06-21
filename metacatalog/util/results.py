@@ -52,8 +52,11 @@ from typing import Union, List
 import hashlib
 import json
 from itertools import chain
+from tqdm import tqdm
+import pandas as pd
 
 from metacatalog.models import Entry, EntryGroup
+from metacatalog.util.exceptions import MetadataMissingError
 
 
 class ImmutableResultSet:
@@ -75,7 +78,7 @@ class ImmutableResultSet:
         
         elif isinstance(instance, EntryGroup):
             group = instance
-            members = [ImmutableResultSet.expand_entry(e) for e in instance.entries]
+            members = [ImmutableResultSet.expand_entry(e, group) for e in instance.entries]
 
         # set attributes
         self.group = group
@@ -104,24 +107,35 @@ class ImmutableResultSet:
             idx = type_names.index('Composite')
             return groups[idx]
         
-        if 'Split dataset' in type_names:
-            idx = type_names.index('Split dataset')
-            return groups[idx]
+        # if 'Split dataset' in type_names:
+        #     idx = type_names.index('Split dataset')
+        #     return groups[idx]
         
         return None
 
     @classmethod
-    def expand_entry(cls, entry: Entry):
+    def expand_entry(cls, entry: Entry, base_group: EntryGroup = None):
         """
-        Expand this Entry to all siblings
+        Expand this Entry to all siblings.
+
+        .. versionchanged:: 0.3.8
+            Split datasets are now nested
+
         """
         # container
         entries = []
 
         for g in entry.associated_groups:
-            if g.type.name not in ('Composite', 'Split dataset'):
-                continue
-            entries.extend(g.entries)
+            # Split datasets are nested
+            if g.type.name == 'Split dataset':
+                if base_group is not None and base_group.id == g.id:
+                    entries.extend([entry])
+                else:
+                    entries.extend([ImmutableResultSet(g)])
+            
+            # composites expand completely
+            elif g.type.name == 'Composite':
+                entries.extend(g.entries)
 
         return entries
 
@@ -129,16 +143,20 @@ class ImmutableResultSet:
     def entry_set(cls, entries: List[Entry]):
         """
         Return a set of entries to remove duplicates
+
+        .. versionchanged:: 0.3.8
+            Can now handle nested ResultSets
+
         """
         # flat the list
         if any([isinstance(e, list) for e in entries]):
             entries = list(chain(*entries))
         
-        # get the ids
-        ids = [e.id for e in entries]
+        # get the checksums
+        checksums = [e.checksum for e in entries]
 
         # return only the first occurence of each entry
-        return [entries[i] for i, _id in enumerate(ids) if i==ids.index(_id)]
+        return [entries[i] for i, _id in enumerate(checksums) if i==checksums.index(_id)]
 
 
     def get(self, name: str, default=None):
@@ -151,6 +169,9 @@ class ImmutableResultSet:
         duplicated metadata (i.e. for composites and split-
         datasets). If the set has a length of 1, the value
         itself will be returned
+
+        .. versionchanged:: 0.3.8
+            get can now handle nested ImmutableResultSets
 
         Parameters
         ----------
@@ -170,11 +191,15 @@ class ImmutableResultSet:
 
         # create the dictionaries
         for member in [self.group, *self._members]:
-            if not hasattr(member, name):
+            if isinstance(member, ImmutableResultSet):
+                val = member.get(name)
+            elif not hasattr(member, name):
                 continue
-
-            # get the value or callable
-            val = getattr(member, name)
+            else:
+                # get the value or callable
+                val = getattr(member, name)
+            
+            # if val is callable, execute it 
             if callable(val):
                 val = val()
             
@@ -186,7 +211,12 @@ class ImmutableResultSet:
             
             # append
             occurences.append(exp_val)
-            uuids.append(member.uuid)
+
+            # TODO: this needs to be improved
+            if isinstance(member, ImmutableResultSet):
+                uuids.append(member.checksum)
+            else:
+                uuids.append(member.uuid)
         
         # create the set
         occur_md5 = [hashlib.md5(json.dumps(str(o)).encode()).hexdigest() for o in occurences]
@@ -216,18 +246,37 @@ class ImmutableResultSet:
         uuids = [self.group.uuid] if self.group is not None else []
 
         # expand member uuids
-        uuids.extend([e.uuid for e in self._members])
+        uuids.extend([e.uuid for e in self._members if hasattr(e, 'uuid')])
 
         return uuids
+
+    @property
+    def checksums(self):
+        """
+        .. versionadded:: 0.3.8
+        
+        Return all checksums of all members
+        """
+        # get the group checksum
+        checksums = [self.group.checksum] if self.group is not None else []
+
+        # expand to all members
+        checksums.extend([e.checksum for e in self._members])
+
+        return checksums
 
     @property
     def checksum(self):
         """
         Return the md5 checksum for this result set to easily
         tell it appart from others.
-        The checksum is the md5 hash of the uuids.
+        The checksum is the md5 hash of all contained member checksums.
+
+        .. versionchanged:: 0.3.8
+            now hasing md5 of members instead of uuids
+
         """
-        return hashlib.md5(''.join(self.uuids).encode()).hexdigest()
+        return hashlib.md5(''.join(self.checksums).encode()).hexdigest()
 
     def contains_uuid(self, uuid: str):
         """
@@ -269,3 +318,56 @@ class ImmutableResultSet:
 
         # build the output dictionary
         return {key: self.get(key) for key in keys}
+
+    def get_data(self, verbose=False, **kwargs) -> dict:
+        """
+        Return the data as a checksum indexed dict
+        """
+        # output container
+        data = dict()
+
+        # create the generator 
+        if verbose:
+            gen = tqdm((m for m in self._members), total=len(self._members))
+        else:
+            gen = (m for m in self._members)
+        
+        # get the data
+        for member in gen:
+            # load and add
+            if isinstance(member, Entry):
+                if member.datasource is None:
+                    continue
+                ds = member.get_data(**kwargs)
+                data[member.checksum] = ds
+            
+            # nested groups
+            elif isinstance(member, ImmutableResultSet):
+                unmerged = []
+                df = pd.DataFrame()
+
+                # load all data from nested groups
+                for m in member._members:
+                    try:
+                        _df = m.get_data(**kwargs)
+                    except MetadataMissingError:
+                        # that's fine, just move on
+                        continue
+
+                    if isinstance(_df, pd.DataFrame):
+                        df = pd.concat((df, _df))
+                    else:
+                        unmerged.append(_df)
+                
+                # append
+                if len(df) > 0 and len(unmerged) > 0:
+                    data[member.checksum] = dict(
+                        merged=df,
+                        unmerged=unmerged
+                    )
+                elif not df.empty:
+                    data[member.checksum] = df
+                elif len(unmerged) > 0:
+                    data[member.checksum] = unmerged
+        
+        return data

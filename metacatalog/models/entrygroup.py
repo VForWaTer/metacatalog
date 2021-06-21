@@ -1,3 +1,5 @@
+import hashlib
+from metacatalog.util.dict_functions import serialize
 from uuid import uuid4
 from datetime import datetime as dt
 
@@ -115,16 +117,39 @@ class EntryGroup(Base):
     type = relationship("EntryGroupType", back_populates='entries')
     entries = relationship("Entry", secondary="nm_entrygroups", back_populates="associated_groups")
 
-    def to_dict(self, deep=False) -> dict:
+    @property
+    def checksum(self):
+        """
+        .. versionadded:: 0.3.9
+
+        MD5 checksum of this entry. The checksum will change if any of the linked
+        Entries' checksum changes. This can be used in application built on metacatalog to
+        verify integrity.
+        """
+        # get the md5 hashes of all childs
+        md_list = ''.join([e.checksum for e in self.entries])
+        
+        # create the checksum of checksums
+        md5 = hashlib.md5(md_list.encode()).hexdigest()
+
+        return md5
+
+    def to_dict(self, deep=False, stringify=False) -> dict:
         """To dict
 
         Return the model as a python dictionary.
+
+        .. versionchanged:: 0.3.8
+            added stringify option
 
         Parameters
         ----------
         deep : bool
             If True, all related objects will be included as
             dictionary. Defaults to False
+        stringify : bool
+            If True, all values will be turned into a string,
+            to make the object serializable.
 
         Returns
         -------
@@ -148,9 +173,13 @@ class EntryGroup(Base):
 
         # lazy loading
         if deep:
-            d['entries'] = [e.to_dict() for e in self.entries]
+            d['entries'] = [e.to_dict(stringify=stringify) for e in self.entries]
         else:
             d['entries'] = [e.uuid for e in self.entries]
+
+        # serialize
+        if stringify:
+            d = serialize(d, stringify=True)
 
         return d
 
