@@ -245,7 +245,8 @@ def auto_force_data_names(session, df_1D_wind, df_3D_prec):
 
 def add_split_dataset(session):
     # create dummy data
-    data = pd.DataFrame(data=np.random.normal(10, 1, size=350), index=pd.date_range('201309241100', periods=350, freq='15min'))
+    data = pd.DataFrame(data={'value:': np.random.normal(10, 1, size=350), 'tstamp': pd.date_range('201309241100', periods=350, freq='15min')})
+    data.set_index('tstamp', inplace=True)
 
     # add two entries as split datasets
     kit = api.find_person(session, organisation_abbrev='KIT')[0]
