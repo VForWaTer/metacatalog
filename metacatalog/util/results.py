@@ -73,11 +73,11 @@ class ImmutableResultSet:
             if group is None:
                 members = ImmutableResultSet.expand_entry(instance)
             else:
-                members = [ImmutableResultSet.expand_entry(e, group) for e in group.entries]
+                members = [ImmutableResultSet.expand_entry(e) for e in group.entries]
         
         elif isinstance(instance, EntryGroup):
             group = instance
-            members = [ImmutableResultSet.expand_entry(e, instance) for e in instance.entries]
+            members = [ImmutableResultSet.expand_entry(e) for e in instance.entries]
 
         # set attributes
         self.group = group
@@ -113,7 +113,7 @@ class ImmutableResultSet:
         return None
 
     @classmethod
-    def expand_entry(cls, entry: Entry, base_group: EntryGroup = None):
+    def expand_entry(cls, entry: Entry, base_group: EntryGroup):
         """
         Expand this Entry to all siblings.
 
@@ -131,7 +131,10 @@ class ImmutableResultSet:
             
             # composites expand completely
             elif g.type.name == 'Composite':
-                entries.extend(g.entries)
+                if base_group is not None and base_group.type.id == g.id:
+                    continue
+                else:
+                    entries.extend(g.entries)
 
         return entries
 
