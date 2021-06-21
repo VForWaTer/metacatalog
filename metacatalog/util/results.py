@@ -56,6 +56,7 @@ from tqdm import tqdm
 import pandas as pd
 
 from metacatalog.models import Entry, EntryGroup
+from metacatalog.util.exceptions import MetadataMissingError
 
 
 class ImmutableResultSet:
@@ -345,7 +346,12 @@ class ImmutableResultSet:
 
                 # load all data from nested groups
                 for m in member._members:
-                    _df = m.get_data(**kwargs)
+                    try:
+                        _df = m.get_data(**kwargs)
+                    except MetadataMissingError:
+                        # that's fine, just move on
+                        continue
+                    
                     if isinstance(_df, pd.DataFrame):
                         df = pd.concat((df, _df))
                     else:
