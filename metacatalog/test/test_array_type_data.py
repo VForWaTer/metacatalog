@@ -267,14 +267,14 @@ def add_split_dataset(session):
     result = api.find_entry(session, id=recent_entry.id, as_result=True)[0]
 
     # recover data
-    data = result.get_data()
+    db_data = result.get_data()
 
     # search for checksum - result.checksum is a checksum of member checksum, which is only one here
     assert len(result.checksums) == 1
     checksum = result.checksums[0]
-    assert checksum in data
+    assert checksum in db_data
     
-    recovered_data = data[checksum].values
+    recovered_data = db_data[checksum].values
     assert_array_almost_equal(data.values, recovered_data)
 
     return True
