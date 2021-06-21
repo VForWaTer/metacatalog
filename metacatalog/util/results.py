@@ -125,10 +125,11 @@ class ImmutableResultSet:
         entries = []
 
         for g in entry.associated_groups:
-            if base_group is not None and g.id == base_group.id:
-                continue
-            elif g.type.name == 'Split dataset':
+            # Split datasets are nested
+            if g.type.name == 'Split dataset':
                 entries.extend(ImmutableResultSet(g))
+            
+            # composites expand completely
             elif g.type.name == 'Composite':
                 entries.extend(g.entries)
 
@@ -147,7 +148,7 @@ class ImmutableResultSet:
         if any([isinstance(e, list) for e in entries]):
             entries = list(chain(*entries))
         
-        # get the ids
+        # get the checksums
         checksums = [e.checksum for e in entries]
 
         # return only the first occurence of each entry
