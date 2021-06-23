@@ -44,7 +44,7 @@ def make_composite(session):
     
     composite = e1.make_composite(
         title='Awesome inventions', 
-        description='Invensions made by David Edward Hughes',
+        description='Inventions made by David Edward Hughes',
         others=[e2], commit=True
     )
 
@@ -80,6 +80,52 @@ def check_result_set_from_group(session):
     return True
 
 
+def add_partial_invention(session):
+    """
+    Add a partial invention to 'Inventions made by David Edward Hughes'
+    This is used to test the find_entry behavior
+    """
+    hughes = api.find_person(session, last_name='Hughes', return_iterator=True).one()
+
+    e3 = models.Entry(
+        title='Warp drive', abstract='Started, but never finished',
+        location="SRID=4326;POINT (51.505946 -0.132951)", license_id=5,
+        variable_id=1, is_partial=True
+    )
+
+    e3.contributors.append(models.PersonAssociation(relationship_type_id=1, person=hughes, order=1))
+
+    inventions = api.find_group(session, title='Awesome inventions', return_iterator=True).one()
+    inventions.entries.append(e3)
+
+    try:
+        session.add(e3)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    
+    assert len(inventions.entries) == 3
+
+    return True
+
+
+def find_partial_invention(session):
+    # do not find
+    warp = api.find_entry(session, title='Warp drive', return_iterator=True).first()
+    
+    # it should not be found
+    assert warp is None
+
+    warp = api.find_entry(session, title='Warp drive', include_partial=True, return_iterator=True).first()
+    
+    # make the tests
+    assert warp is not None
+    assert len(warp.associated_groups) == 1
+
+    return True
+
+
 @pytest.mark.depends(on=['db_init'], name='groups')
 def test_groups_and_projects():
     """
@@ -91,4 +137,5 @@ def test_groups_and_projects():
     assert make_composite(session)
     assert check_result_set(session)
     assert check_result_set_from_group(session)
-
+    assert add_partial_invention(session)
+    assert find_partial_invention(session)
