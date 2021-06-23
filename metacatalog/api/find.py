@@ -760,7 +760,8 @@ def find_entry(session,
     author=None, 
     contributor=None, 
     keywords=None, 
-    details=None, 
+    details=None,
+    include_partial=False,
     return_iterator=False,
     as_result=False,
     by_geometry=None,
@@ -852,6 +853,18 @@ def find_entry(session,
         specified as dictioniares of ``name=value`` pairs. If more than one
         pair is given, the query will combine the pairs by ``AND``.
         An ``OR`` search is not possible, through the API.
+    include_partial : bool
+        .. versionadded:: 0.3.9
+
+        Include partial entries into the response. Defaults to False.
+
+        .. note::
+            Partial Entries might not be usefull, as they can miss important
+            metadata. Thus, it is highly recommended to set ``as_result=True``.
+            Then, the returned 
+            :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>`
+            will lazy-load the sibling informations and merge them
+
     by_geometry : str, list
         .. versionadded:: 0.2.10
         The passed argument can be a WKT (string) or a list of numbers. If three
@@ -886,7 +899,11 @@ def find_entry(session,
             return query.first()
 
     # base query
-    query = session.query(models.Entry).filter(models.Entry.is_partial == false())
+    query = session.query(models.Entry)
+
+    # check for partial entries:
+    if not include_partial:
+        query = query.filter(models.Entry.is_partial == false())
 
     # make this an option
     if version == 'latest':
