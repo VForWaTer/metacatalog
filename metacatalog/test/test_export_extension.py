@@ -56,7 +56,8 @@ def export_to_json(entry: Entry):
     # parse back
     d = json.loads(json_str)
 
-    assert len(d['title']) == 3
+    # there is the partial entry now, which should be found
+    assert len(d['title']) == 4
 
     return True
 

@@ -60,6 +60,7 @@ def main():
     find_parser = subparsers.add_parser('find', parents=[default_options], add_help=True, help="Find records in the database on exact matches.")
     find_parser.add_argument('entity', type=str, help="Name of the requested database entity.")
     find_parser.add_argument('--by', type=str, action="append", nargs=2, help="key value pair to be used for finding record(s) in the database. Flag can be used multiple times.")
+    find_parser.add_argument('--include-partial', action="store_true", help="Allow the API to find partial entries.")
     find_parser.add_argument('--json', action="store_true", help="Output the found entities as JSON objects")
     find_parser.add_argument('--stdout', action="store_true", help="Default option. Print the string representation of found entities to StdOut.")
     find_parser.add_argument('--csv', action="store_true", help="Output the found entities as CSV.")

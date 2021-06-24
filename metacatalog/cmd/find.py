@@ -42,6 +42,8 @@ def find(args):
     elif entity.lower() == 'groups' or entity.lower() == 'group':
         results = api.find_group(session, **kwargs)
     elif entity.lower() == 'entries' or entity.lower() == 'entry':
+        if args.include_partial:
+            kwargs['include_partial'] = True
         results = api.find_entry(session, **kwargs)
     elif entity.lower() == 'thesaurus':
         results = api.find_thesaurus(session, **kwargs)
