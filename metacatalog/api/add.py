@@ -442,7 +442,7 @@ def add_group(session, group_type, entry_ids, title=None, description=None):
         raise AttributeError("Projects must not omit title and description.")
 
     # load entries
-    entries = [api.find_entry(session, id=id_)[0] for id_ in entry_ids]
+    entries = [api.find_entry(session, include_partial=True, id=id_)[0] for id_ in entry_ids]
 
     attr = dict(
         title=title,
