@@ -780,6 +780,11 @@ def find_entry(session,
     .. versionchanged:: 0.2.14
         Can be returned as ImmutableResultSet now.
 
+    .. versionchanged:: 0.3.9
+        By setting include_partial to True, the API can now find
+        partial Entries. This does only make sense in combination
+        with ``as_result=True``, to lazy-load the complete record.
+
 
     Parameters
     ----------
@@ -1045,5 +1050,6 @@ def find_entry(session,
         return query
     else:
         if as_result:
-            return [ImmutableResultSet(entry) for entry in query.all()]
+            results = [ImmutableResultSet(entry) for entry in query.all()]
+            return [result for result in results if not result.empty]
         return query.all()
