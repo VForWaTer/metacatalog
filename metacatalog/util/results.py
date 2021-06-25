@@ -238,6 +238,16 @@ class ImmutableResultSet:
             return {uuid: occur for uuid, occur in zip(uuid_list, occur_set)}
 
     @property
+    def empty(self):
+        """
+        .. versionadded:: 0.4.1
+
+        Returns True if there is no :class:`Entry <metacatalog.models.Entry>`
+        associated to this result.
+        """
+        return len(self._members) == 0 and self.group is None
+
+    @property
     def uuids(self):
         """
         Return all uuids that form this result set
