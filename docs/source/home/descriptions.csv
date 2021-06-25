@@ -1,0 +1,45 @@
+header,description,user_provided,mandatory
+external_id,"If the metadata is referencing the dataset in another system (i.e. on export), the external id should identify the original metadata set",yes,no
+uuid,"Version 4 universal unique identifier, that is assigned by the system. ",no,yes
+title,"The title of the dataset. It should delimit the dataset from similar, i.e. within the same campain. Use ie. IDs, or variable names",yes,yes
+citation,"Citation information, how the dataset should be cited. If empty, a default standard citation style will be applied on export.",optional,yes
+abstract,Detailed description of the dataset. Give as much information as possible in a natural english text. The abstract is full-text searchable. Please do also include any information about data proovenance and quality if available,yes,yes
+author,The one main author of the dataset.,yes,yes
+coAuthors,"List of additional co-authors to the dataset. They have the same structure as the first author but hold an additional order key to set the order of coAuthors.
+Note: Technically, other relationships than coAuthor can be set. On export to DataCite or ISO19115, anyone, who is not an author will become a coAuthor.",yes,no
+author.first_name,First name for real persons,yes,yes
+author.last_name,Last name for real persons,yes,yes
+author.affiliation,The persons affiliation if applicable.,yes,no
+author.order,only applies to coAuthors. Can be used to set the order of contributors,yes,no
+"contributors, editors, publishers, rightHolders, owners, originators","All lists of persons, just like coAuthors, but of different relationship. All are optional, one or more can be set. Persons can be in more than one list, except for contributors, which is mutually exclusive. Please note that all lists will be transformed to coAuthors on metadata export.",optional,no
+location,"WGS84 coordinates of the dataset. Important: this is only used as a reference location, thus only POINT geometry is allowed. If not applicable use the geometric center of the original geometry",yes,yes
+geom,WGS84 multi-geometry collection if the geometry of the dataset cannot be represented by a POINT (location) properly. Add a description to the abstract if used,yes,no
+variable,"The name of the used variable. Note, that the main design decision of the metadata scheme is that each dataset has only one variable. If more than one variable is contained in a dataset, you need to split them and create a 'Composite' dataset-group.",yes,yes
+unit,"The unit of the variable. Use SI or derived SI units, wherever possible.",yes,yes
+license,"Data license: Each dataset must contain usage information represented by a license. Available licenses are:
+- ODbL (Open Data COmmons Open Database License)
+- ODC-by  (Open data COmmons Attribution License v1.0)
+- CC BY 4.0  (Creative Commons Attribution 4.0 International)
+CC BY-NC 4.0  (Creative Commons Attribution-NonCommercial 4.0 International)
+Important: The usage of CC BY-NC is discouraged as it not an open license",yes,yes
+comment,"general comments, which are of more technical nature. Usually not used",yes,no
+temporalScale,"the Scale triplet for temporal scaled data. If you set a scale, you need to specify all three components",yes,no
+temporalScale.resolution,The temporal resolution of one time-step in the dataset. Please use ISO 8601 Durations to decribe the resolution,yes,no
+temporalScale.extent,"The temporal extent of the dataset. Provide a list of [start, end] for XML or JSON format or observation_start, observation_end for columnar metadata formats",yes,no
+temporalScale.support,"The ratio of the specified resolution that is actually supported by an observation. Defaults to 1.0, which means the full-timestep. Use smaller numbers if observations do not support the full resolution. I.e. if support is 0.5 and resolution 1hour, means the observation is only representative for the 30min up to the observation timestamp.",optional,no
+spatialScale,"the Scale triplet for spatially scaled datasets. If you set a scale, you need to specify all three components",yes,no
+spatialScale.resolution,"Spatial resolution in meter. Please estimate or approximate, if the datasource does not use a meter based CRS.",yes,no
+spatialScale.extent,"The extent of the dataset. Whenever possible use bounding boxes here. If not applicable, a POLYGON can be used.",yes,no
+spatialScale.support,"The ratio of the resolution that is supported by an observation. The support is usually always 1.0 for remote sensing products. If ground truthing is available, the support can be set to the share of resolution covered by ground truthing.",optional,no
+data_names,"The database stores default (column) names for the data on export. data_names can overwrite these settings. If used, you must describe the names in the abstract or via details keywords",optional,no
+encoding,"If the dataset is exported to a file-based format, it will by default be UTF-8 endcoded. If another encoding is needed for technical reasons, the encoding can be overwritten. ",optional,yes
+embargo,"The dataset can be kept private for the first two years after uploading, while i.e. a publication is in preparation. After this period, the dataset will be public under the specified license",optional,yes
+keywords,"The database implements the NASA GCMD Earth Science keywords (https://earthdata.nasa.gov/earth-observation-data/find-data/idn/gcmd-keywords). You can tag the dataset by as many as needed. As they are hierachical, only the uuid of the last element is needed.",optional,yes
+details,"A dataset can be described by an arbitrary amount of additonal information as key-value pairs. The keys should be short and descriptive. The values can be literals or nested structures like lists. Details can be provided as a key=value list of as nested structures ie. JSON: {""mykey"": {""value"": ""foobar"", ""description"": ""Text what mykey and foobar is all about""}}. Additinally, keys should be described in the abstract.",yes,no
+groups,"In the metadata sheme, groups are used to model relations between datasets. There are three important groups, that can be specified, if applicable:
+- Split-dataset:  If the metadata changes for one dataset, it has to be split up into two datasets, with their own metadata. A Split-dataset group will merge the data together again on export.
+- Composite-dataset: If this variables must not or cannot be used without another dataset, you can indicate a composite dataset, that will always export siblings along with the data.
+- Labeled-dataset: If there is any structuring within the Project, that groups datasets together, but not in a strict sense like a composite, a Label can be used. This is usually a Site or a place name, that makes working with the data more convenient",yes,no
+group.title,"The title of the group. For Composites and Split-datasets, the same title for the group and each dataset is commonly used.",yes,no
+group.description,"If necessary, an additional description for the group",yes,no
+project,"Any number of datasets, that were collected within the same context can be grouped together by a project. Technically, this is also a group, but it does not cause any lazy-loading of other datasets and has only descriptive character. If not specified, the original network is used as project, if applicable",optional,no

@@ -7,6 +7,7 @@ Home
     :hidden:
 
     install
+    scheme
     getting_started
 
 How the docs work
