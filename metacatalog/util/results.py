@@ -57,6 +57,7 @@ import pandas as pd
 
 from metacatalog.models import Entry, EntryGroup
 from metacatalog.util.exceptions import MetadataMissingError
+from metacatalog.util.dict_functions import flatten
 
 
 class ImmutableResultSet:
@@ -273,6 +274,9 @@ class ImmutableResultSet:
         # expand to all members
         checksums.extend([e.checksum for e in self._members])
 
+        # checksums need to be sorted
+        checksums = sorted(checksums)
+
         return checksums
 
     @property
@@ -381,3 +385,132 @@ class ImmutableResultSet:
                     data[member.checksum] = unmerged
         
         return data
+
+
+class ResultList:
+    """
+    Container class to handle multiple instances of 
+    :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>`.
+
+    """
+    def __init__(self, *members: List[Union[ImmutableResultSet, Entry, EntryGroup]]):
+        """
+        """
+        # set up the internal list
+        self._internal_list = []
+        
+        # check types
+        if not all([isinstance(m, (ImmutableResultSet, Entry, EntryGroup)) for m in members]):
+            raise AttributeError('Unallowed type found in members')
+
+        # lazy load anything that is not already a ImmutableResultSet
+        results = [ImmutableResultSet(m) if not isinstance(m, ImmutableResultSet) else m for m in members]
+
+        # set the filtered list
+        self._internal_list = self._filter_set(results)
+
+    @property
+    def checksums(self):
+        return [m.checksum for m in self._internal_list]
+    
+    def _filter_set(self, members: List[ImmutableResultSet]) -> List[ImmutableResultSet]:
+        """
+        Uses the checksum of each member to create a set od ImmutableResultSet
+        """
+        # extract the checksums
+        md5s = [m.checksum for m in members]
+
+        # find the first occurence of each
+        filtered = [members[i] for i, md5 in enumerate(md5s) if md5s.index(md5) == i]
+
+        return filtered
+
+    def append(self, item: Union[Entry, EntryGroup, ImmutableResultSet]):
+        """
+        Append a new ImmutableResultSet to the ResultList. Note that the
+        list does not allow duplicates and will raise a Warning if the 
+        item is already contained.
+        You can also pass :class:`Entry <metacatalog.models.Entry>` and
+        :class:`EntryGroup <metacatalog.models.EntryGroup>` instances,
+        which will be converted to ImmutableResultSets.
+
+        """
+        # convert if needed
+        if isinstance(item, (Entry, EntryGroup)):
+            item = ImmutableResultSet(item)
+
+        # check if exists
+        if item.checksum in self:
+            print('This ResultList already includes the item')
+        else:
+            self._internal_list.append(item)
+
+    def index(self, item: Union[ImmutableResultSet, Entry, EntryGroup, str]) -> int:
+        """
+        Get the index of a member in this list.
+        The function accepts many different types, which will be converted to 
+        a ImmutableResultSet. If a string is passed, it will first be interpreted
+        as a MD5 checksum of the ImmutableResultSet. If no occurence of that string
+        is found, *every* member is **recursively** searched for a key of that
+        string in the metadata. The first occurence is passed.
+
+        .. note::
+            This method is quite slow, due to the type casting, lazy-loading from
+            database and the recursive behavior. If you want to search by MD5 hash
+            you can directly use the ResultSet.checksums property, which preserves
+            the member order.
+        
+        Raises
+        ------
+        ValueError : if item is not present
+        AttributeError : if unsupported item is passed
+
+        """
+        # cast the item if needed
+        if isinstance(item, (Entry, EntryGroup)):
+            item = ImmutableResultSet(item)
+        
+        # handle ResultSet
+        if isinstance(item, ImmutableResultSet):
+            # check if we have this item
+            if item in self:
+                return self.checksums.index(item.checksum)
+
+        # handle strings
+        elif isinstance(item, str):
+            # check if the item is a checksum
+            if item in self.checksums:
+                return self.checksums.index(item)
+            
+            # otherwise check every member recursively
+            for i, member in enumerate(self._internal_list):
+                flatdict = flatten(member.to_dict())
+                
+                # this is a hit
+                if item in list(flatdict.values()):
+                    return i
+
+        # else the item is unsupported
+        else:
+            raise AttributeError('The item type is not supported')
+        
+        # if still not returned, raise the Value Error
+        raise ValueError('The item is not in the current ResultList')
+
+    def __call__(self) -> List[ImmutableResultSet]:
+        return self._internal_list
+
+    def __iter__(self):
+        yield from self._internal_list
+
+    def __len__(self):
+        return len(self._internal_list)
+
+    def __contains__(self, item: ImmutableResultSet) -> bool:
+        return item.checksum in [m.checksum for m in self._internal_list]
+
+    def __getitem__(self, key: Union[int, slice]):
+        return self._internal_list[key]
+    
+    def __setitem__(self, key, value):
+        raise NotImplementedError("You can't directly set items. Use the append method")
