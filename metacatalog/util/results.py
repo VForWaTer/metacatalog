@@ -514,3 +514,9 @@ class ResultList:
     
     def __setitem__(self, key, value):
         raise NotImplementedError("You can't directly set items. Use the append method")
+    
+    def __str__(self) -> str:
+        return self._internal_list.__str__()
+    
+    def __repr__(self) -> str:
+        return self._internal_list.__repr__()
