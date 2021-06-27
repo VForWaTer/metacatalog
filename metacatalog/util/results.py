@@ -497,6 +497,75 @@ class ResultList:
         # if still not returned, raise the Value Error
         raise ValueError('The item is not in the current ResultList')
 
+    @property
+    def temporal_scale(self):
+        """
+        Common temporal scale triplet for the whole ResultList.
+        Only information of :class:`Entries <metacatalog.models.Entry>`
+        that hold time scale information are included.
+        The common scale triplet is calculated:
+        The extent is the maximum period, where **all** members in 
+        the list have data. If extent is ``None``, no overlap was
+        found. 
+        The resolution is the maximum (most coarse) resolution
+        in the List, which needs to be aggregated to, if the data
+        should be harmonized.
+        The support is recalulated by converting the minimum
+        support and re-scaling it to the new resolution.  
+
+        Returns
+        -------
+        triplet : dict
+            Dict of extent, resolution and support key.
+
+        See Also
+        --------
+        TemporalScale : metacatalog.models.TemporalScale
+
+        """
+        # first collect the scaling information
+        scales = dict(start=[], end=[], resolution=[], support=[])
+        
+        # read out each resultset
+        for result in self._internal_list:
+            ds = result.get('datasource')
+
+            # check if exists
+            if ds is None:
+                continue
+            
+            sca = []
+            # flat reuslts
+            if 'temporal_scale' in ds.keys():
+                sca.append(ds['temporal_scale'])
+            # more than one datasource in result set
+            else:
+                for s in list(ds.values()):
+                    if isinstance(s, dict) and 'temporal_scale' in s:
+                        sca.append(s['temporal_scale'])
+            
+            # go for each scale triplet found
+            for s in sca:
+                scales['start'].append(s['extent'][0])
+                scales['end'].append(s['extent'][1])
+                scales['resolution'].append(pd.to_timedelta(s['resolution']).to_pytimedelta())
+                scales['support'].append(float(s['support']))
+        
+        # finally find the smallest
+        start = max(scales['start'])
+        end = min(scales['end'])
+        resolution = max(scales['resolution'])
+        # get the smallest support in seconds
+        support = min([r.seconds * s for r, s in zip(scales['resolution'], scales['support'])])
+        support = support / resolution.seconds
+
+        return dict(
+            extent=[start, end] if start < end else None,
+            resolution=pd.to_timedelta(resolution).isoformat(),
+            support=support
+        )
+            
+            
     def __call__(self) -> List[ImmutableResultSet]:
         return self._internal_list
 
