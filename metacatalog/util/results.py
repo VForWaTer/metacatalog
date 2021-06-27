@@ -84,6 +84,9 @@ class ImmutableResultSet:
         self.group = group
         self._members = ImmutableResultSet.entry_set(members)
 
+        # create a checksum lookup
+        self._checksum_lookup = {e.checksum: e for e in self._members}
+
     @classmethod
     def load_base_group(cls, entry: Entry):
         r"""
