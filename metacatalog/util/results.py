@@ -332,7 +332,7 @@ class ImmutableResultSet:
         # build the output dictionary
         return {key: self.get(key) for key in keys}
 
-    def get_data(self, verbose=False, **kwargs) -> dict:
+    def get_data(self, verbose=False, merge=False, **kwargs) -> dict:
         """
         Return the data as a checksum indexed dict
         """
@@ -383,4 +383,34 @@ class ImmutableResultSet:
                 elif len(unmerged) > 0:
                     data[member.checksum] = unmerged
         
-        return data
+        # Composites always try to merge
+        if self.group is not None and self.group.type.name == 'Composite':
+            merge = True
+
+        # handle merging
+        out = dict()
+        if merge:
+            all_data = pd.DataFrame()
+            unmerged = {}
+            
+            # merge everything that is a DataFrame
+            for checksum, dat in data.items():
+                if isinstance(dat, pd.DataFrame):
+                    all_data = pd.merge(all_data, dat, left_index=True, right_index=True, how='outer')
+                else:
+                    unmerged.update({checksum: dat})
+            
+            # specify return type
+            if len(unmerged.keys()) == 0 and not all_data.empty:
+                out = all_data
+            elif len(unmerged.keys()) > 0 and not all_data.emtpy:
+                out = dict(unmerged=unmerged, merged=all_data)
+            elif len(unmerged.keys()) > 0 and all_data.empty:
+                out = unmerged
+            else:
+                out = dict()
+        else:
+            out = data
+        
+        # return
+        return out
