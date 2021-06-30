@@ -405,7 +405,7 @@ class ImmutableResultSet:
             elif len(unmerged.keys()) > 0 and all_data.empty:
                 out = unmerged
             else:
-                out = None
+                out = dict()
         else:
             out = data
         
