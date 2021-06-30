@@ -564,8 +564,7 @@ class ResultList:
             resolution=pd.to_timedelta(resolution).isoformat(),
             support=support
         )
-            
-            
+
     def __call__(self) -> List[ImmutableResultSet]:
         return self._internal_list
 
