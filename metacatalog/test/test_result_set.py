@@ -8,9 +8,9 @@ from ._util import connect, read_to_df
 
 
 ENTRIES = """title,author,x,y,variable,abstract,license
-"Random Set: Old Record",Reeves,7.8,48.2,5,"Lorem ipsum",5
-"Random Set: Recent Record",Reeves,7.8,48.2,5,"Lorem ipsum",5
-"Random Set: Auxiliary data",Reeves,7.8,48.2,5,"Lorem ipsum",5
+"Random Set: Old Record",Simpson,7.8,48.2,5,"Lorem ipsum",5
+"Random Set: Recent Record",Simpson,7.8,48.2,5,"Lorem ipsum",5
+"Random Set: Auxiliary data",Simpson,7.8,48.2,5,"Lorem ipsum",5
 """
 
 
