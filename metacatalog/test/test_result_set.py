@@ -62,7 +62,7 @@ def add_data(session):
     idx = pd.date_range('201806131100', freq='15min', periods=100)
     nidx = pd.date_range('201806140900', freq='5min', periods=220)
     df = pd.DataFrame({'tstamp': idx, 'data': np.random.normal(15, 3, size=100)})
-    ndf = pd.DataFrmae({'tstamp': nidx, 'data': np.random.normal(15, 3, size=220)})
+    ndf = pd.DataFrame({'tstamp': nidx, 'data': np.random.normal(15, 3, size=220)})
     aux_df = pd.DataFrame({'tstamp': idx, 'data': np.random.gamma(35, 5, size=100)})
     
     # upload
