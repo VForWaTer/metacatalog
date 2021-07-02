@@ -65,7 +65,7 @@ def add_data(session):
     df.set_index('tstamp', inplace=True)
     ndf = pd.DataFrame({'tstamp': nidx, 'data': np.random.normal(15, 3, size=220)})
     ndf.set_index('tstamp', inplace=True)
-    aux_df = pd.DataFrame({'tstamp': idx, 'data': np.random.gamma(35, 5, size=100)})
+    aux_df = pd.DataFrame({'tstamp': idx, 'data': np.random.gamma(35, 5, size=96)})
     aux_df.set_index('tstamp', inplace=True)
     
     # upload
