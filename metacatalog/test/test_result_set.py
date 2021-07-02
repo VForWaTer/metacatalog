@@ -62,20 +62,23 @@ def add_data(session):
     idx = pd.date_range('201806131100', freq='15min', periods=100)
     nidx = pd.date_range('201806140900', freq='5min', periods=220)
     df = pd.DataFrame({'tstamp': idx, 'data': np.random.normal(15, 3, size=100)})
+    df.set_index('tstamp', inplace=True)
     ndf = pd.DataFrame({'tstamp': nidx, 'data': np.random.normal(15, 3, size=220)})
+    ndf.set_index('tstamp', inplace=True)
     aux_df = pd.DataFrame({'tstamp': idx, 'data': np.random.gamma(35, 5, size=100)})
+    aux_df.set_index('tstamp', inplace=True)
     
     # upload
     aux.create_datasource(type=1, path='timeseries', datatype='timeseries')
-    aux.datasource.create_scale(resolution='15min', extent=[aux_df.tstamp.min(), aux_df.tstamp.max()], support=1.0, scale_dimension='temporal')
+    aux.datasource.create_scale(resolution='15min', extent=[aux_df.index.min(), aux_df.index.max()], support=1.0, scale_dimension='temporal')
     aux.import_data(data=aux_df)
 
     old.create_datasource(type=1, path='timeseries', datatype='timeseries')
-    old.datasource.create_scale(resolution='15min', extent=[df.tstamp.min(), df.tstamp.max()], support=0.5, scale_dimension='temporal')
+    old.datasource.create_scale(resolution='15min', extent=[df.index.min(), df.index.max()], support=0.5, scale_dimension='temporal')
     old.import_data(data=df)
 
     new.create_datasource(type=1, path='timeseries', datatype='timeseries')
-    new.datasource.create_scale(resolution='5min', extent=[ndf.tstamp.min(), ndf.tstamp.max()], support=1.0, scale_dimension='temporal')
+    new.datasource.create_scale(resolution='5min', extent=[ndf.index.min(), ndf.index.max()], support=1.0, scale_dimension='temporal')
     old.import_data(data=ndf)
 
     return True
