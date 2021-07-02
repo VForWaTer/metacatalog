@@ -593,7 +593,7 @@ class ResultList:
         support = support / resolution.seconds
 
         return dict(
-            extent=[start, end] if start < end else None,
+            extent=[start, end] if start < end else [],
             resolution=pd.to_timedelta(resolution).isoformat(),
             support=support
         )
