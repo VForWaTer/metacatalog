@@ -59,9 +59,9 @@ def add_data(session):
     aux = [e for e in entries if 'Auxiliary' in e.title][0]
 
     # create the random data
-    idx = pd.date_range('201806131100', freq='15min', periods=100)
-    nidx = pd.date_range('201806140900', freq='5min', periods=220)
-    df = pd.DataFrame({'tstamp': idx, 'data': np.random.normal(15, 3, size=100)})
+    idx = pd.date_range('201806131100', freq='15min', periods=96)
+    nidx = pd.date_range('201806141100', freq='5min', periods=220)
+    df = pd.DataFrame({'tstamp': idx, 'data': np.random.normal(15, 3, size=96)})
     df.set_index('tstamp', inplace=True)
     ndf = pd.DataFrame({'tstamp': nidx, 'data': np.random.normal(15, 3, size=220)})
     ndf.set_index('tstamp', inplace=True)
@@ -79,7 +79,7 @@ def add_data(session):
 
     new.create_datasource(type=1, path='timeseries', datatype='timeseries')
     new.datasource.create_scale(resolution='5min', extent=[ndf.index.min(), ndf.index.max()], support=1.0, scale_dimension='temporal')
-    old.import_data(data=ndf)
+    new.import_data(data=ndf)
 
     return True
 
