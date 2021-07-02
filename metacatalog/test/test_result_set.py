@@ -99,8 +99,8 @@ def result_list_check_temporal_scale(session):
     triplet = rl.temporal_scale
     assert triplet.get('support') - 0.5 < 0.001
     assert triplet.get('resolution') == 'P0DT0H15M0S'
-    assert triplet.get('extent')[0] == dt(2018, 6, 13, 11, 0)
-    assert triplet.get('extent')[0] == dt(2018, 6, 14, 10, 45)
+    assert triplet.get('extent', [None])[0] == dt(2018, 6, 13, 11, 0)
+    assert triplet.get('extent', [None, None])[1] == dt(2018, 6, 14, 10, 45)
 
     return True
 
