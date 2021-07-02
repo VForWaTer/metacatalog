@@ -1,6 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
+from datetime import datetime as dt
 
 from metacatalog import api
 from metacatalog.util.results import ResultList
@@ -69,22 +70,22 @@ def add_data(session):
     aux_df.set_index('tstamp', inplace=True)
     
     # upload
-    aux.create_datasource(type=1, path='timeseries', datatype='timeseries')
+    aux.create_datasource(type=1, path='timeseries', datatype='timeseries', commit=True)
     aux.datasource.create_scale(resolution='15min', extent=[aux_df.index.min(), aux_df.index.max()], support=1.0, scale_dimension='temporal')
     aux.import_data(data=aux_df)
 
-    old.create_datasource(type=1, path='timeseries', datatype='timeseries')
+    old.create_datasource(type=1, path='timeseries', datatype='timeseries', commit=True)
     old.datasource.create_scale(resolution='15min', extent=[df.index.min(), df.index.max()], support=0.5, scale_dimension='temporal')
     old.import_data(data=df)
 
-    new.create_datasource(type=1, path='timeseries', datatype='timeseries')
+    new.create_datasource(type=1, path='timeseries', datatype='timeseries', commit=True)
     new.datasource.create_scale(resolution='5min', extent=[ndf.index.min(), ndf.index.max()], support=1.0, scale_dimension='temporal')
     new.import_data(data=ndf)
 
     return True
 
 
-def result_list_checks(session):
+def result_list_check_temporal_scale(session):
     # find the entries
     entries = api.find_entry(session, title='Random Set:*')
 
@@ -94,11 +95,49 @@ def result_list_checks(session):
     # this should only contain the composite
     assert len(rl) == 1
 
+    # get the scale triplet
     triplet = rl.temporal_scale
-    print(triplet)
+    assert triplet.get('support') - 0.5 < 0.001
+    assert triplet.get('resolution') == 'P0DT0H15M0S'
+    assert triplet.get('extent')[0] == dt(2018, 6, 13, 11, 0)
+    assert triplet.get('extent')[0] == dt(2018, 6, 14, 10, 45)
 
     return True
 
+
+def result_list_check_index(session):
+    # get all entries
+    entries = api.find_entry(session)
+    resultSet = api.find_entry(session, title='Random Set: Recent Record', as_result=True)[0]
+
+    rl = ResultList(*entries)
+
+    # get the index of the object
+    idx = rl.index('Random set')
+    idx_obj = rl.index(resultSet)
+
+    # should be the same
+    assert idx == idx_obj
+    
+    return True
+
+
+def result_list_check_append(session):
+    # get Hughes entries
+    entries = api.find_entry(session, author='Hughes')
+
+    rl = ResultList(*entries)
+    oldLen = len(rl)
+    
+    # append the Random Set dataset
+    randomSet = api.find_entry(session, title='Random Set:*')[0]
+    rl.append(randomSet)
+
+    newLen = len(rl)
+
+    assert oldLen + 1 == newLen
+    
+    return True
 
 @pytest.mark.depends(on=['add_find'], name='resutlset')
 def test_result_set():
@@ -112,4 +151,4 @@ def test_result_set():
     # run single tests
     assert add_entries(session)
     assert add_data(session)
-    assert result_list_checks(session)
+    assert result_list_check_temporal_scale(session)
