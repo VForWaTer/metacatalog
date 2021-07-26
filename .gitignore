@@ -108,3 +108,6 @@ venv.bak/
 DBNAME
 tutorials
 Playground.ipynb
+
+# MacOS .DS_Store
+.DS_Store
