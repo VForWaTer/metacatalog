@@ -137,7 +137,7 @@ def import_table_data(fname, InstanceClass, array_col_name=None):
         df[array_col_name] = [[cell] for cell in df[array_col_name].values]
 
     # build an instance for each line and return
-    return [InstanceClass(**_remove_nan_from_dict(d)) for d in df.to_dict(orient='record')]
+    return [InstanceClass(**_remove_nan_from_dict(d)) for d in df.to_dict('records')]
 
 
 def import_direct(session, table_name, file_name):
