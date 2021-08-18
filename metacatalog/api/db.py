@@ -3,6 +3,7 @@ from os.path import join as pjoin
 
 import pandas as pd
 from pandas.errors import ParserError
+import numpy as np
 
 #from metacatalog import Base
 from metacatalog import BASEPATH, __version__
@@ -129,14 +130,14 @@ def import_table_data(fname, InstanceClass, array_col_name=None):
         return []
 
     # replace nan with None
-    df = df.where(df.notnull(), None)
+    df = df.replace({np.nan: None})
 
     # handle arrays
     if array_col_name is not None:
         df[array_col_name] = [[cell] for cell in df[array_col_name].values]
 
     # build an instance for each line and return
-    return [InstanceClass(**_remove_nan_from_dict(d)) for d in df.to_dict(orient='record')]
+    return [InstanceClass(**_remove_nan_from_dict(d)) for d in df.to_dict('records')]
 
 
 def import_direct(session, table_name, file_name):
