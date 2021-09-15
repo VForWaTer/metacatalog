@@ -278,7 +278,7 @@ def add_split_dataset(session):
     assert_array_almost_equal(data.values, recovered_data)
 
     # Split datasets are concatenated row-wise (pd.concat) -> only one column
-    assert db_data.shape == (350, 1)
+    assert db_data[checksum].shape == (350, 1)
 
     return True
 
