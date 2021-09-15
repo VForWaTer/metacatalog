@@ -384,7 +384,7 @@ class ImmutableResultSet:
                     data[member.checksum] = unmerged
         
         # Composites and Split datasets always try to merge
-        if self.group is not None and self.group.type.name ('Composite', 'Split dataset'):
+        if self.group is not None and self.group.type.name in ('Composite', 'Split dataset'):
             merge = True
 
         # handle merging
