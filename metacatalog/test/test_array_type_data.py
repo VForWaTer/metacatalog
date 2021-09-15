@@ -277,7 +277,46 @@ def add_split_dataset(session):
     recovered_data = db_data[checksum].values
     assert_array_almost_equal(data.values, recovered_data)
 
+    # Split datasets are concatenated row-wise (pd.concat) -> only one column
+    assert db_data.shape == (350, 1)
+
     return True
+
+def add_composite_dataset(session):
+    # create dummy data
+    data_left = pd.DataFrame(data={'value': np.random.normal(10, 1, size=350), 'tstamp': pd.date_range('201309241100', periods=350, freq='15min')})
+    data_left.set_index('tstamp', inplace=True)
+
+    data_right = pd.DataFrame(data={'value': np.random.normal(10, 1, size=352), 'tstamp': pd.date_range('201309241100', periods=350, freq='15min')})
+    data_right.set_index('tstamp', inplace=True)
+
+    # add two entries as split datasets
+    kit = api.find_person(session, organisation_abbrev='KIT')[0]
+    entry_left = api.add_entry(session, title='Left column data', abstract='Left data for merging', location=(4.2, 42), variable=1, license=6, author=kit.id)
+    entry_right = api.add.add_entry(session, title='Right column data', abstract='Right data for merging', location=(4.2, 42), variable=2, license=6, author=kit.id)
+    
+    # create datasource
+    entry_left.create_datasource(type=1, path='timeseries', datatype='timeseries')
+    entry_right.create_datasource(type=1, path='timeseries', datatype='timeseries')
+    
+    # split the data
+    entry_left.import_data(data=data_left)
+    entry_right.import_data(data=data_right)
+    
+    full_dataset = api.add_group(session, 'Composite', [entry_left.id, entry_right.id])
+
+    # checkout
+    result = api.find_entry(session, id=entry_right.id, as_result=True)[0]
+
+    # recover data
+    db_data = result.get_data()
+    
+    # Composite datasets are merged column-wise (pd.merge) -> keep columns
+    assert db_data.shape == (352, 2)
+    assert list(db_data.columns) == ['air_temperature', 'soil_temperature']
+
+    return True
+
 
 @pytest.mark.depends(on=['db_init'], name='array_type_data')
 def test_array_type_data():
@@ -326,3 +365,4 @@ def test_array_type_data():
     assert precision_test(session, df_3D_wind, df_3D_prec)
     assert auto_force_data_names(session, df_1D_wind, df_3D_prec_copy)
     assert add_split_dataset(session)
+    assert add_composite_dataset(session)
