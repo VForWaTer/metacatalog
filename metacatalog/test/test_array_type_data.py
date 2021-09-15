@@ -287,7 +287,7 @@ def add_composite_dataset(session):
     data_left = pd.DataFrame(data={'value': np.random.normal(10, 1, size=350), 'tstamp': pd.date_range('201309241100', periods=350, freq='15min')})
     data_left.set_index('tstamp', inplace=True)
 
-    data_right = pd.DataFrame(data={'value': np.random.normal(10, 1, size=352), 'tstamp': pd.date_range('201309241100', periods=350, freq='15min')})
+    data_right = pd.DataFrame(data={'value': np.random.normal(10, 1, size=352), 'tstamp': pd.date_range('201309241100', periods=352, freq='15min')})
     data_right.set_index('tstamp', inplace=True)
 
     # add two entries as split datasets
