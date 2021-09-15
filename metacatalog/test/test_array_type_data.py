@@ -311,7 +311,7 @@ def add_composite_dataset(session):
     # recover data
     db_data = result.get_data()
     
-    # Composite datasets are merged column-wise (pd.merge) -> keep columns
+    # Composite datasets are merged column-wise (pd.merge) -> keep columns and maximal number of rows
     assert db_data.shape == (352, 2)
     assert list(db_data.columns) == ['air_temperature', 'soil_temperature']
 
