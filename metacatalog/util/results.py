@@ -383,8 +383,8 @@ class ImmutableResultSet:
                 elif len(unmerged) > 0:
                     data[member.checksum] = unmerged
         
-        # Composites always try to merge
-        if self.group is not None and self.group.type.name == 'Composite':
+        # Composites and Split datasets always try to merge
+        if self.group is not None and self.group.type.name ('Composite', 'Split dataset'):
             merge = True
 
         # handle merging
@@ -396,7 +396,7 @@ class ImmutableResultSet:
             # merge everything that is a DataFrame
             for checksum, dat in data.items():
                 if isinstance(dat, pd.DataFrame):
-                    all_data = pd.merge(all_data, dat, left_index=True, right_index=True, how='outer')
+                    all_data = pd.concat([all_data, dat])
                 else:
                     unmerged.update({checksum: dat})
             
