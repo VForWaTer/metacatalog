@@ -15,7 +15,7 @@ from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape, from_shape
-from sqlalchemy.orm import relationship, backref, object_session
+from sqlalchemy.orm import relationship, backref, object_session, Session
 
 import nltk
 import pandas as pd
@@ -262,6 +262,93 @@ class Entry(Base):
         if stringify:
             return serialize(d, stringify=True)
         return d
+
+    @classmethod
+    def from_dict(cls, data: dict, session: Session) -> 'Entry':
+        """
+        .. versionadded:: 0.4.8
+
+        Create a *new* Entry in the database from the given dict.
+
+        Parameters
+        ----------
+        data : dict
+            The dictionary to create the Entry from.
+
+        Returns
+        -------
+        entry : Entry
+            The newly created Entry.
+
+        Notes
+        -----
+        Currently, uploading data sources and data records is not supported.
+
+        """
+        if 'id' in data:
+            raise NotImplementedError('Updating an Entry is not yet supported.')
+        
+        # create or load variable
+        variable_data = data.get('variable', {})
+        if 'id' in variable_data:
+            variable_id = variable_data['id']
+        elif len(variable_data) > 0:
+            variable_id = models.Variable.from_dict(variable_data, session).id
+        else:
+            raise ValueError('No variable data given.')
+        
+        # create or load author
+        author_data = data.get('author', {})
+        if 'id' in author_data:
+            author_id = author_data['id']
+        elif len(author_data) > 0:
+            author_id = models.Person.from_dict(author_data, session).id
+        else:
+            raise ValueError('No author data given.')
+
+        # create or load license
+        license_data = data.get('license', {})
+        if 'id' in license_data:
+            license_id = license_data['id']
+        else:
+            license_id = None
+        
+        # add the entry
+        entry = api.add_entry(
+            session=session,
+            title=data['title'],
+            author=author_id,
+            location=data.get('location'),
+            variable=variable_id,
+            abstract=data.get('abstract'),
+            external_id=data.get('external_id'),
+            geom=data.get('geom'),
+            license=license_id,
+            embargo=data.get('embargo', False)
+        )
+
+        # add coauthors
+        coauthors = [models.Person.from_dict(a, session) for a in data.get('coauthors', [])]
+        api.add_persons_to_entries(
+            session,
+            entries=[entry],
+            persons=coauthors,
+            roles=['coAuthor'] * len(coauthors),
+            order=[_ + 2 for _ in range(len(coauthors))]
+        )
+
+        # add keywords
+        keyword_uuids = data.get('keywords', [])
+        if len(keyword_uuids) > 0:
+            keywords = [api.get_uuid(session, uuid) for uuid in keyword_uuids]
+            api.add_keywords_to_entries(session=session, entries=[entry], keywords=keywords)
+
+        # add details
+        details = data.get('details', [])
+        if len(details) > 0:
+            api.add_details_to_entries(session, [entry], data.get('details', []))
+
+        return entry
 
     @classmethod
     def is_valid(cls, entry):

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Session
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from metacatalog.db.base import Base
@@ -165,5 +165,71 @@ class Variable(Base):
 
         return d
 
+    @classmethod
+    def from_dict(cls, data: dict, session: Session) -> 'Variable':
+        """From dict
+
+        Create a new Variable from a python dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            The dictionary containing the data
+        session : Session
+            The database session
+
+        Returns
+        -------
+        obj : Variable
+            The new Variable
+
+        """
+        # check if the data has an ID
+        from metacatalog import api
+        if 'id' in data:
+            return api.find_variable(session, id=data['id'], return_iterator=True).one()
+
+        # check the unit data
+        unit_data = data.get('unit', {})
+        if 'id' in unit_data:
+            unit_id = unit_data['id']
+        elif len(unit_data) > 0:
+            # add the unit
+            unit = Unit(**unit_data)
+            try:
+                session.add(unit)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
+            
+            # ge the unit
+            unit_id = unit.id
+        else:
+            raise ValueError("Unit data is missing")
+        
+        if isinstance(data['column_names'], list):
+            column_names = data['column_names']
+        elif isinstance(data['column_names'], str):
+            column_names = [data['column_names']]
+
+        # create new object
+        variable = cls(
+            name=data['name'],
+            symbol=data['symbol'],
+            unit_id=unit_id,
+            column_names=column_names
+        )
+
+        # create the variable
+        try:
+            session.add(variable)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
+
+        return variable
+        
     def __str__(self) -> str:
         return "%s [%s] <ID=%d>" % (self.name, self.unit.symbol,self.id)
