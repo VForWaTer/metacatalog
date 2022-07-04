@@ -86,7 +86,7 @@ def _log(session, message, code=models.LogCodes.info):
         session.add(log)
         session.commit()
     except:
-        session.rollbac()
+        session.rollback()
 
 
 
@@ -103,7 +103,7 @@ def create_tables(session):
     
     """
     Base.metadata.create_all(session.bind)
-    _log(session, 'Creting tables')
+    _log(session, 'Creating tables')
 
     # set the latest version
     _set_migration_head(session)
