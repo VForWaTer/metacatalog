@@ -2,6 +2,7 @@ import pytest
 import os
 import glob
 import pandas as pd
+import numpy as np
 
 from metacatalog import api
 from ._util import connect, PATH
@@ -44,14 +45,14 @@ def check_defaults(session, capsys):
 
         # load datafile
         datafile = pd.read_csv(fname, sep=',')
-        datafile = datafile.where(datafile.notnull(), None) # replace NaN by None
+        datafile.replace({np.nan: None}, inplace=True) # replace NaN by None
 
         # load table from db
         table = pd.read_sql_table(tablename, session.bind)
 
         # drop publication and lastUpdate columns as they are autofilled
         table.drop(['publication', 'lastUpdate'], axis=1, errors='ignore', inplace=True)
-        table = table.where(table.notnull(), None) # replace NaN by None
+        table.replace({np.nan: None}, inplace=True) # replace NaN by None
 
         assert datafile.equals(table)
 
