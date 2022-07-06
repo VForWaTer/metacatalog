@@ -585,8 +585,8 @@ class ResultList:
                 scales['support'].append(float(s['support']))
         
         # finally find the smallest
-        start = max(scales['start'])
-        end = min(scales['end'])
+        start = min(scales['start'])
+        end = max(scales['end'])
         resolution = max(scales['resolution'])
         # get the smallest support in seconds
         support = min([r.seconds * s for r, s in zip(scales['resolution'], scales['support'])])
