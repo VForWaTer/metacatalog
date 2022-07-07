@@ -386,9 +386,9 @@ class ImmutableResultSet:
                     data[member.checksum] = df
                 elif len(unmerged) > 0:
                     data[member.checksum] = unmerged
-        
-                # Composites always try to merge
-        if self.group is not None and self.group.type.name == 'Composite':
+
+        # Composites and Split datasets always try to merge
+        if self.group is not None and self.group.type.name in ('Composite', 'Split dataset'):
             merge = True
 
         # handle merging
@@ -397,12 +397,27 @@ class ImmutableResultSet:
             all_data = pd.DataFrame()
             unmerged = {}
             
-            # merge everything that is a DataFrame
-            for checksum, dat in data.items():
-                if isinstance(dat, pd.DataFrame):
-                    all_data = pd.merge(all_data, dat, left_index=True, right_index=True, how='outer')
-                else:
-                    unmerged.update({checksum: dat})
+            # Composite: merge everything that is a DataFrame
+            if self.group is not None and self.group.type.name == 'Composite':
+                for checksum, dat in data.items():
+                    if isinstance(dat, pd.DataFrame):
+                        all_data = pd.merge(all_data, dat, left_index=True, right_index=True, how='outer')
+                    else:
+                        unmerged.update({checksum: dat})
+            # Split dataset: concat everything that is a DataFrame
+            elif self.group is not None and self.group.type.name == 'Split dataset':
+                for checksum, dat in data.items():
+                    if isinstance(dat, pd.DataFrame):
+                        all_data = pd.concat([all_data, dat])
+                    else:
+                        unmerged.update({checksum: dat})
+            # other EntryGroup types?
+            else:
+                for checksum, dat in data.items():
+                    if isinstance(dat, pd.DataFrame):
+                        all_data = pd.merge(all_data, dat, left_index=True, right_index=True, how='outer')
+                    else:
+                        unmerged.update({checksum: dat})
             
             # specify return type
             if len(unmerged.keys()) == 0 and not all_data.empty:

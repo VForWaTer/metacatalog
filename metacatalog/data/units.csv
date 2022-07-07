@@ -23,7 +23,7 @@ id,name,symbol,si
 22,mass flux density per hour,cm^3/cm^2h,10^-3*m^3*10^2*m^-2*3600^-1*s*-1
 23,hour,h,3600*s
 24,megapascal,MPa,10^6*kg*m^-1*s^-2
-25,electrical conductivity,EC,S*m^-1
+25,millisiemens per centimeter,mS/cm,S*m^-1
 101,degree Celsius,C,K
 102,milimeter,10^-3*m
 103,mm per day,mm/d,10^-3*m*86400^-1*s^-1

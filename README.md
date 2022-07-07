@@ -5,6 +5,7 @@
 [![Dev status](https://img.shields.io/badge/development%20status-2%20--%20Alpha-yellow)](https://pypi.org/classifiers/)
 ![e2e Test](https://github.com/VForWaTer/metacatalog/workflows/e2e%20Test/badge.svg)
 ![Documentation](https://github.com/VForWaTer/metacatalog/workflows/Documentation/badge.svg)
+[![DOI](https://zenodo.org/badge/203124792.svg)](https://zenodo.org/badge/latestdoi/203124792)
 
 Management tool for the V-FOR-WaTer metadata database application. Although developed in and for the [V-FOR-WaTer project](https://vforwater.de), metacatalog is a standalone database application, that can be used on its own.
 

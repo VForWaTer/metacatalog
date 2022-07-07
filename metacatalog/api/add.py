@@ -637,7 +637,7 @@ def add_details_to_entries(session, entries, details=None, **kwargs):
         entry.add_details(details=details, commit=True, **kwargs)
 
 
-def add_keywords_to_entries(session, entries, keywords, alias=None, values=None):
+def add_keywords_to_entries(session, entries, keywords, alias=None):
     r"""Associate keyword(s) to entrie(s)
 
     Adds associations between entries and keywords. The Entry and Keyword
@@ -662,16 +662,9 @@ def add_keywords_to_entries(session, entries, keywords, alias=None, values=None)
         keywords parameter. These alias will rename the keywords on
         association. In case one instance should not recive an alias,
         pass None instead.
-    values : list
-        List of, or single value. The shape has to match the
-        keywords parameter. These values will be stored along with the
-        association to the entries. In case one instance should not
-        be associated to a value pass None instead.
 
-        .. deprecated:: 0.1.6
-            `values` will be removed in 0.2. Rather use
-            `metacatalog.models.Detail` to store custom key-values
-
+        .. deprecated:: 0.4.5
+            'alias' will be removed with a future release
 
     Returns
     -------
@@ -688,10 +681,8 @@ def add_keywords_to_entries(session, entries, keywords, alias=None, values=None)
         entries = [entries]
     if not isinstance(keywords, list):
         keywords = [keywords]
-    if not isinstance(alias, list):
-        alias = [alias] * len(keywords)
-    if not isinstance(values, list):
-        values = [values] * len(keywords)
+#    if not isinstance(alias, list):
+#        alias = [alias] * len(keywords)
 
     # add for each entry
     for entry_id in entries:
@@ -709,7 +700,7 @@ def add_keywords_to_entries(session, entries, keywords, alias=None, values=None)
 
         # add each keyword
         assocs = []
-        for keyword_id, alias_name, value in zip(keywords, alias, values):
+        for keyword_id in keywords:
             # load the keyword
             if isinstance(keyword_id, models.Keyword):
                 keyword = keyword_id
@@ -721,7 +712,7 @@ def add_keywords_to_entries(session, entries, keywords, alias=None, values=None)
                 raise AttributeError("Value '%s' not allowed for keywords" % str(type(keyword_id)))
 
             # create a new keyword association
-            assocs.append(models.KeywordAssociation(entry=entry, keyword=keyword, alias=alias_name, associated_value=value))
+            assocs.append(models.KeywordAssociation(entry=entry, keyword=keyword))
 
         # add keyword to current entry
         try:
