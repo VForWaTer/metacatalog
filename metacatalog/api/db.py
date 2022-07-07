@@ -87,7 +87,7 @@ def _log(session, message, code=models.LogCodes.info):
         session.add(log)
         session.commit()
     except:
-        session.rollbac()
+        session.rollback()
 
 
 
@@ -104,7 +104,7 @@ def create_tables(session):
     
     """
     Base.metadata.create_all(session.bind)
-    _log(session, 'Creting tables')
+    _log(session, 'Creating tables')
 
     # set the latest version
     _set_migration_head(session)
@@ -113,7 +113,7 @@ def create_tables(session):
 def _remove_nan_from_dict(d):
     out_d = dict()
     for k,v in d.items():
-        if v is None:
+        if pd.isnull(v):
             continue
         elif isinstance(v, dict):
             out_d[k] = _remove_nan_from_dict(v)
@@ -224,8 +224,8 @@ def populate_defaults(session, ignore_tables=[], bump_sequences=10000):
         if table in ignore_tables:
             continue
 
-        # keywords has to be handled extra as there is a self-reference
-        if table == 'keywords':
+        # keywords and datatypes have to be handled extra as there is a self-reference
+        if table in ['keywords', 'datatypes']:
             print('Populating %s' % table)
             import_direct(session, table, os.path.join(DATAPATH, '%s.csv' % table))
             print('Finished %s' % table)

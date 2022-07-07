@@ -151,7 +151,7 @@ def build_query(query: Query, area: Polygon) -> Query:
 
     """
     # turn the area to an SQL clause
-    search = ST_SetSRID(ST_GeomFromText(area.to_wkt()), 4326)
+    search = ST_SetSRID(ST_GeomFromText(area.wkt), 4326)
 
     # create the filter
     return query.filter(ST_Within(models.Entry.location, search))
