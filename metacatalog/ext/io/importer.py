@@ -84,6 +84,8 @@ def import_to_internal_table(entry, datasource, data, precision=None, force_data
         datasource.data_names = data_columns
     else:
         datasource.data_names = entry.variable.column_names
+    # update datasource
+    __update_datasource(datasource)
 
     # get the path / table name into which the data should be imported
     if datasource.path is None:
