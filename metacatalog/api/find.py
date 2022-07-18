@@ -858,6 +858,7 @@ def find_entry(session,
         specified as dictioniares of ``name=value`` pairs. If more than one
         pair is given, the query will combine the pairs by ``AND``.
         An ``OR`` search is not possible, through the API.
+        Search for value only, using a wildcard for the key ``*=value``.
     include_partial : bool
         .. versionadded:: 0.3.9
 
@@ -1037,13 +1038,13 @@ def find_entry(session,
         ps = nltk.PorterStemmer()
 
         for key, value in details.items():
-            query = query.filter(models.Detail.stem==ps.stem(key))
+            query = query.filter(_match(models.Detail.stem, ps.stem(key)))
             
             # handle nested json data
             if isinstance(value, (list, tuple, dict)):
                 query = query.filter(models.Detail.raw_value.contains(value))
             else:
-                query = query.filter(models.Detail.raw_value.contains({'__literal__': value}))
+                query = query.filter(_match(models.Detail.raw_value['__literal__'].astext, str(value)))
 
     # return
     if return_iterator:

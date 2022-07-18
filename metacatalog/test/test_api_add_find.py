@@ -271,12 +271,25 @@ def add_details(session):
     e2.details_table(fmt='markdown')
 
     # find the details
+    # find by key and value
     found_entry = api.find_entry(session, details=dict(answer=42))[0]
     assert e2.id == found_entry.id
 
-    # find nested details
-    found_entry2 = api.find_entry(session, details=dict(foo=dict(baz=42)))[0]
+    # find by key (wildcard) and value
+    found_entry2 = api.find_entry(session, details={'a*wer':42})[0]
     assert e2.id == found_entry2.id
+
+    # find by key and value (wildcard)
+    found_entry3 = api.find_entry(session, details={'banana':'both *e it'})
+    assert len(found_entry3) == 2
+
+    # find nested details
+    found_entry4 = api.find_entry(session, details=dict(foo=dict(baz=42)))[0]
+    assert e2.id == found_entry4.id
+
+    # find by value only
+    found_entry4 = api.find_entry(session, details={'*': 'both *ove it'})
+    assert len(found_entry4) == 2
 
     return True
 
