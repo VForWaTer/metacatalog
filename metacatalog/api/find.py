@@ -858,6 +858,7 @@ def find_entry(session,
         specified as dictioniares of ``name=value`` pairs. If more than one
         pair is given, the query will combine the pairs by ``AND``.
         An ``OR`` search is not possible, through the API.
+        Search for value only, using a wildcard for the key ``*=value``.
     include_partial : bool
         .. versionadded:: 0.3.9
 
