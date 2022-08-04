@@ -5,6 +5,7 @@ from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import relationship, Session
 
 from metacatalog.db.base import Base
+from metacatalog.util.exceptions import MetadataMissingError
 
 
 class Person(Base):
@@ -138,7 +139,10 @@ class Person(Base):
         # check if there is an ID in the data
         if 'id' in data:
             from metacatalog import api
-            return api.find_person(session, id=data['id'], return_iterator=True).one()
+            try:
+                return api.find_person(session, id=data['id'], return_iterator=True).one()
+            except:
+                raise MetadataMissingError(f"Person with id {data['id']} not found in database.")                
         
         # create
         person = cls(**data)
