@@ -14,8 +14,9 @@ def requirements():
 
 
 def version():
-    with open('VERSION') as f:
-        return f.read().strip()
+    import importlib
+    mod = importlib.import_module('metacatalog')
+    return mod.__version__
 
 
 def readme():
