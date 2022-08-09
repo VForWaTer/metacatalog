@@ -13,7 +13,8 @@ class IOExtension(IOExtensionInterface):
     This is the default extension for all kind of CRUD operations on the 
     actual data described by metacatalog. It can be used on two different 
     levels. As a class, it offers classmethods to add and return new 
-    functions for performing the actual
+    functions for performing the actual 
+    TODO: finish documentation
     """
     @classmethod
     def init_extension(cls):
@@ -27,7 +28,6 @@ class IOExtension(IOExtensionInterface):
         # define an event to listen for Entry load events
         @event.listens_for(Entry, 'load')
         def init_io_ext(instance, context):
-            instance.foo = 'bar'
             instance.io_extension = instance.io_interface(instance)
 
     def read(self, **kwargs):
