@@ -1,0 +1,425 @@
+<!-- https://www.ncei.noaa.gov/sites/default/files/2020-04/ISO%2019115-2%20Workbook_Part%20II%20Extentions%20for%20imagery%20and%20Gridded%20Data.pdf -->
+
+<gmi:MI_Metadata xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns="http://www.isotc211.org/2005/gmi" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmi http://www.ngdc.noaa.gov/metadata/published/xsd/schema.xsd">
+    <gmd:fileIdentifier>
+        <gco:CharacterString>{{uuid}}</gco:CharacterString>
+    </gmd:fileIdentifier>
+    <gmd:language>
+        {# always english #}
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="eng">eng</gmd:LanguageCode>
+    </gmd:language>
+    <gmd:characterSet>
+    {% if datasource %}
+        {# if datasource exists: use datasource.encoding #}
+        <gmd:MD_CharacterSetCode codeListValue="{{datasource.encoding|replace("-", "")}}" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
+    {% else %}
+        {# no datasource: utf8 #}
+        <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
+    {% endif %}
+    </gmd:characterSet>
+    {% if isPartial %}
+    {# if Entry isPartial: ids of associated groups #}
+    <gmd:parentIdentifier>
+        {# parentIdentifier: EntryGroup.id / EntryGroup.uuid ?? #}
+        {% for group in associated_groups %}
+        <gco:CharacterString>{{group.uuid}}</gco:CharacterString>
+        {% endfor %}
+    </gmd:parentIdentifier>
+    {% endif %}
+    <gmd:hierarchyLevel>
+        {# always dataset #}
+        <gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" codeSpace="005">dataset</gmd:MD_ScopeCode>
+    </gmd:hierarchyLevel>
+
+    {# this would be our contact (pointOfContact) #}
+    <gmd:contact xlink:title="DOC/NOAA/NESDIS/NODC/NCDDC&gt; National Coastal Data Development Center (pointOfContact)">
+        <gmd:CI_ResponsibleParty uuid="7c7d17a0-4d66-11df-9879-0800200c9a66">
+            <gmd:organisationName>
+                <gco:CharacterString>DOC/NOAA/NESDIS/NODC/NCDDC&gt; National Coastal Data Development Center</gco:CharacterString>
+            </gmd:organisationName>
+            <gmd:contactInfo>
+                <gmd:CI_Contact>
+                    <gmd:phone>
+                        <gmd:CI_Telephone>
+                            <gmd:voice>
+                                <gco:CharacterString>228-688-2936</gco:CharacterString>
+                            </gmd:voice>
+                            <gmd:voice>
+                                <gco:CharacterString>866-732-2382</gco:CharacterString>
+                            </gmd:voice>
+                            <gmd:facsimile>
+                                <gco:CharacterString>228-688-2010</gco:CharacterString>
+                            </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                    </gmd:phone>
+                    <gmd:address>
+                        <gmd:CI_Address>
+                            <gmd:deliveryPoint>
+                                <gco:CharacterString>Bldg 1100 Rm 101</gco:CharacterString>
+                            </gmd:deliveryPoint>
+                            <gmd:city>
+                                <gco:CharacterString>Stennis Space Center</gco:CharacterString>
+                            </gmd:city>
+                            <gmd:administrativeArea>
+                                <gco:CharacterString>MS</gco:CharacterString>
+                            </gmd:administrativeArea>
+                            <gmd:postalCode>
+                                <gco:CharacterString>39529</gco:CharacterString>
+                            </gmd:postalCode>
+                            <gmd:country>
+                                <gco:CharacterString>USA</gco:CharacterString>
+                            </gmd:country>
+                            <gmd:electronicMailAddress>
+                                <gco:CharacterString>ncddc@noaa.gov</gco:CharacterString>
+                            </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                    </gmd:address>
+                    <gmd:hoursOfService>
+                        <gco:CharacterString>Monday - Friday 8:00am - 5:00pm</gco:CharacterString>
+                    </gmd:hoursOfService>
+                </gmd:CI_Contact>
+            </gmd:contactInfo>
+            <gmd:role>
+                <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact" codeSpace="007">pointOfContact</gmd:CI_RoleCode>
+            </gmd:role>
+        </gmd:CI_ResponsibleParty>
+    </gmd:contact>
+    <gmd:dateStamp>
+        <gco:DateTime>{{lastUpdate.isoformat()}}</gco:DateTime>
+    </gmd:dateStamp>
+    <gmd:metadataStandardName>
+        {# template from workbook is 'ISO 19115-2 Geographic Information - Metadata - Part 2: Extensions for Imagery and Gridded Data' #}
+        <gco:CharacterString>ISO 19115-2 Geographic information - Metadata - Part 2: Extensions for acquisition and processing</gco:CharacterString>
+    </gmd:metadataStandardName>
+    <gmd:metadataStandardVersion>
+        {# template from workbook is 'ISO 19115-2:2009(E)'#}
+        <gco:CharacterString>ISO 19115-2:2019</gco:CharacterString>
+    </gmd:metadataStandardVersion>
+
+
+    {# not straightforward -> TODO: discuss#}
+    <gmd:spatialRepresentationInfo>
+        <gmd:MD_GridSpatialRepresentation>
+        {# Type: MD_VectorSpatialRepresentation or MD_GridSpatialRepresentation or MD_Georectified or MI_Georectified or MD_Georeferenceable or MI_Georeferenceable #}
+        {# MD_VectorSpatialRepresentation for timeseries, MD_GridSpatialRepresentation for spatial data?? #}
+            <gmd:numberOfDimensions>
+                <gco:Integer>3</gco:Integer>
+            </gmd:numberOfDimensions>
+            <gmd:axisDimensionProperties>
+                <gmd:MD_Dimension>
+                    <gmd:dimensionName>
+                        <gmd:MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="row" codeSpace="001">row</gmd:MD_DimensionNameTypeCode>
+                    </gmd:dimensionName>
+                    <gmd:dimensionSize gco:nilReason="unknown" />
+                    <gmd:resolution>
+                        <gco:Scale uom="decimalDegrees">0.000001</gco:Scale>
+                    </gmd:resolution>
+                </gmd:MD_Dimension>
+            </gmd:axisDimensionProperties>
+            <gmd:axisDimensionProperties>
+                <gmd:MD_Dimension>
+                    <gmd:dimensionName>
+                        <gmd:MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="column" codeSpace="002">column</gmd:MD_DimensionNameTypeCode>
+                    </gmd:dimensionName>
+                    <gmd:dimensionSize gco:nilReason="unknown" />
+                    <gmd:resolution>
+                        <gco:Scale uom="decimalDegrees">0.000001</gco:Scale>
+                    </gmd:resolution>
+                </gmd:MD_Dimension>
+            </gmd:axisDimensionProperties>
+            <gmd:axisDimensionProperties>
+                <gmd:MD_Dimension>
+                    <gmd:dimensionName>
+                        <gmd:MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="vertical" codeSpace="003">vertical</gmd:MD_DimensionNameTypeCode>
+                    </gmd:dimensionName>
+                    <gmd:dimensionSize gco:nilReason="unknown" />
+                    <gmd:resolution>
+                        <gco:Scale uom="meters">1</gco:Scale>
+                    </gmd:resolution>
+                </gmd:MD_Dimension>
+            </gmd:axisDimensionProperties>
+            <gmd:cellGeometry>
+                <gmd:MD_CellGeometryCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CellGeometryCode" codeListValue="point" codeSpace="001">point</gmd:MD_CellGeometryCode>
+            </gmd:cellGeometry>
+            <gmd:transformationParameterAvailability>
+                <gco:Boolean>false</gco:Boolean>
+            </gmd:transformationParameterAvailability>
+        </gmd:MD_GridSpatialRepresentation>
+    </gmd:spatialRepresentationInfo>
+
+
+    <gmd:referenceSystemInfo>
+        <gmd:MD_ReferenceSystem>
+            <gmd:referenceSystemIdentifier>
+                <gmd:RS_Identifier>
+                    <gmd:code>
+                        {# always EPSG:4326 #}
+                        <gco:CharacterString>urn:ogc:def:crs:EPSG:4326</gco:CharacterString>
+                    </gmd:code>
+                </gmd:RS_Identifier>
+            </gmd:referenceSystemIdentifier>
+        </gmd:MD_ReferenceSystem>
+    </gmd:referenceSystemInfo>
+
+
+
+    <gmd:identificationInfo>
+        <gmd:MD_DataIdentification>
+            <gmd:citation>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                        <gco:CharacterString>{{title}}</gco:CharacterString>
+                    </gmd:title>
+                    <gmd:date>
+                        <gmd:CI_Date> 
+                            <gmd:date>
+                                <gco:DateTime>{{publication.isoformat()}}</gco:DateTime>
+                            </gmd:date>
+                            <gmd:dateType>
+                                <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" codeSpace="002">publication</gmd:CI_DateTypeCode>
+                            </gmd:dateType>
+                        </gmd:CI_Date>
+                    </gmd:date>
+                    <edition>
+                        <gco:CharacterString>{{version}}</gco:CharacterString>
+                    </edition>
+                    <editionDate>
+                        <gco:DateTime>{{publication.isoformat()}}</gco:DateTime>
+                    </editionDate>
+                    
+                    {# TODO: discuss series #}
+                    {# series? -> EntryGroup.uuid? -> CI_Series #}
+                    {# colletiveTitle? -> EntryGroup.title #}
+                    {# which EntryGroup if there are more than one in Entry.associatedGroups? -> all of them? #}
+                    
+                    {# TODO: do we need citedResponsibleParty here? -> 'Identification of the contact for the resource.' #}
+                    <gmd:citedResponsibleParty>
+                        <gmd:CI_ResponsibleParty>
+                            <gmd:organisationName>
+                                <gco:CharacterString>NOAA's Office of Response and Restoration (OR&amp;R)</gco:CharacterString>
+                            </gmd:organisationName>
+                            <gmd:role>
+                                <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="originator" codeSpace="006">originator</gmd:CI_RoleCode>
+                            </gmd:role>                        
+                        </gmd:CI_ResponsibleParty>
+                    </gmd:citedResponsibleParty>
+                </gmd:CI_Citation>
+            </gmd:citation>
+            <gmd:abstract>
+                <gco:CharacterString>{{abstract}}</gco:CharacterString>
+            </gmd:abstract>
+
+
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:individualName>
+                        {# format: last_name, first_name #}
+                        <gco:CharacterString>{{author.last_name}}, {{author.first_name}}</gco:CharacterString>
+                    </gmd:individualName>
+                    <gmd:organisationName>
+                        <gco:CharacterString>{{author.organisation_name}}</gco:CharacterString>
+                    </gmd:organisationName>
+                    <gmd:role>
+                        {# role always author #}
+                        <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+
+
+            
+            <gmd:descriptiveKeywords>
+            {# our details are key-value pairs -> just store them here? #}
+            {# we had the idea of tags -> would be stored here #}
+                <gmd:MD_Keywords>
+                    {# implementation of thesaurus keywords like GFZ #}
+                    {% for keyword in keywords %}
+                    <gmd:keyword>
+                        <gco:CharacterString>{{keyword.full_path}}</gco:CharacterString>
+                    </gmd:keyword>
+                    {% endfor %}
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>{{thesaurus.name}}</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date gco:nilReason="missing"/>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:resourceConstraints xlink:href="{{license.link}}">
+                <gmd:MD_Constraints>
+                    <gmd:useLimitation>
+                        {# decided for short title (like GFZ) #}
+                        <gco:CharacterString>{{license.short_title}}</gco:CharacterString>
+                    </gmd:useLimitation>
+                </gmd:MD_Constraints>
+            </gmd:resourceConstraints>
+
+            {% for group in associated_groups %}
+            {# all associated groups here (TODO: discuss) #}
+            {# absolute minimum version, as we don't have a general author / contact of EntryGroups #}
+            {# another possibility (from Github docs): Entry.associated_groups.entries.uuid #}
+            <gmd:aggregationInfo>
+                <gmd:MD_AggregateInformation>
+                    <gmd:aggregateDataSetIdentifier>
+                        <gmd:RS_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>{{group.uuid}}</gco:CharacterString>
+                            </gmd:code>
+                            <gmd:codeSpace>
+                                <gco:CharacterString>UUID</gco:CharacterString>
+                            </gmd:codeSpace>
+                        </gmd:RS_Identifier>
+                    </gmd:aggregateDataSetIdentifier>
+                    <gmd:associationType>
+                        {% if group.type.name in ['Project', 'Label'] %}
+                        <gmd:DS_AssociationTypeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="crossReference">crossReference</gmd:DS_AssociationTypeCode>
+                        {% elif group.type.name in ['Composite', 'Split dataset'] %}
+                        <gmd:DS_AssociationTypeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="largerWorkCitation">largerWorkCitation</gmd:DS_AssociationTypeCode>                        
+                        {% endif %}
+                    </gmd:associationType>
+                </gmd:MD_AggregateInformation>
+            </gmd:aggregationInfo>
+            {% endfor %}
+
+            {# spatialRepresentation: only valid for spatial / geographical data! -> we will only store 'grid' spatial data?? #}
+            {% if datasource %}
+            {% if datasource.spatial_scale %}
+            <gmd:spatialRepresentationType>
+                <gmd:MD_SpatialRepresentationTypeCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue='grid'>'grid</gmd:MD_SpatialRepresentationTypeCode>
+            </gmd:spatialRepresentationType>
+            <gmd:spatialResolution>
+                <gmd:MD_Resolution>
+                    {# is distance really resolution? 'Ground sample distance' #}
+                    <gmd:distance>
+                        <gco:Distance uom="meters">{{datasource.spatial_scale.resolution}}</gco:Distance>
+                    </gmd:distance>
+                </gmd:MD_Resolution>
+            </gmd:spatialResolution>
+            {% endif %}
+            {% endif %}
+
+            <gmd:language>
+                {# always english #}
+                <gco:CharacterString>eng</gco:CharacterString>
+            </gmd:language>
+            <gmd:characterSet>
+            {% if datasource %}
+                {# if datasource exists: use datasource.encoding #}
+                <gmd:MD_CharacterSetCode codeListValue="{{datasource.encoding|replace("-", "")}}" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
+            {% else %}
+                {# no datasource: utf8 #}
+                <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
+            {% endif %}
+            </gmd:characterSet>
+
+
+            <gmd:topicCategory>
+                {# currently always 'environment', but other values are often better -> how do we map them? TODO #}
+                <gmd:MD_TopicCategoryCode>environment</gmd:MD_TopicCategoryCode>
+            </gmd:topicCategory>
+            
+            {% if datasource %}
+            <gmd:extent>
+                <gmd:EX_Extent id="boundingExtent">
+                    {# geographic extent only for datasources with spatial_scale #}
+                    {% if datasource.spatial_scale %}
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicBoundingBox id="boundingGeographicBoundingBox">
+                            {# TODO: get bounding box parameters from column extent (atm no example present) #}
+                            <gmd:westBoundLongitude>
+                                <gco:Decimal>{{datasource.spatial_scale.extent}}</gco:Decimal>
+                            </gmd:westBoundLongitude>
+                            <gmd:eastBoundLongitude>
+                                <gco:Decimal>{{datasource.spatial_scale.extent}}</gco:Decimal>
+                            </gmd:eastBoundLongitude>
+                            <gmd:southBoundLatitude>
+                                <gco:Decimal>{{datasource.spatial_scale.extent}}</gco:Decimal>
+                            </gmd:southBoundLatitude>
+                            <gmd:northBoundLatitude>
+                                <gco:Decimal>{{datasource.spatial_scale.extent}}</gco:Decimal>
+                            </gmd:northBoundLatitude>
+                        </gmd:EX_GeographicBoundingBox>
+                    </gmd:geographicElement>
+                    {% endif %}
+                    {% if datasource.temporal_scale %}
+                    <gmd:temporalElement>
+                        <gmd:EX_TemporalExtent>
+                            <gmd:extent>
+                                <gml:TimePeriod gml:id="boundingTemporalExtent">
+                                    <gml:beginPosition>{{datasource.temporal_scale.observation_start.isoformat()}}</gml:beginPosition>
+                                    <gml:endPosition>{{datasource.temporal_scale.end.isoformat()}}</gml:endPosition>
+                                    <gml:timeInterval unit="seconds">{{datasource.temporal_scale.resolution|temporal_resolution_to_seconds}}</gml:timeInterval>
+                                </gml:TimePeriod>
+                            </gmd:extent>
+                        </gmd:EX_TemporalExtent>
+                    </gmd:temporalElement>
+                    {% endif %}
+                    {# TODO or else: <TimeInstant>: single datetime, e.g. land-use for one timestep? #}
+                </gmd:EX_Extent>
+            </gmd:extent>
+            <gmd:supplementalInformation>
+                {# this is usually not helpful on export but potentially necessary for re-import #}
+                {# TODO: evenutally data_names? -> If there is no other good place. #}
+                <gco:CharacterString>{{datasource.args}}</gco:CharacterString>
+            </gmd:supplementalInformation>
+            {% endif %}
+        </gmd:MD_DataIdentification>
+    </gmd:identificationInfo>
+
+
+    {# TODO: dataQualityInfo (not yet implemented) #}
+    <gmd:dataQualityInfo>
+        <gmd:DQ_DataQuality>
+            <gmd:scope>
+                <gmd:DQ_Scope>
+                    <gmd:level>
+                        {# currently always dataset, with the export of EntryGroups, this would be 'series' #}
+                        <gmd:MD_ScopeCode codeListValue="dataset" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_ScopeCode"/>
+                    </gmd:level>
+                </gmd:DQ_Scope>
+            </gmd:scope>
+            <gmd:report>
+                <gmd:DQ_CompletenessCommission>
+                    <gmd:evaluationMethodDescription>
+                        <gco:CharacterString>The V-For-WaTer group currently cannot provide any warranty as to the accuracy, reliability, or completeness of furnished data.</gco:CharacterString>
+                    </gmd:evaluationMethodDescription>
+                    <gmd:result gco:nilReason="unknown" />
+                </gmd:DQ_CompletenessCommission>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_CompletenessOmission>
+                    <gmd:evaluationMethodDescription>
+                        <gco:CharacterString>The V-For-WaTer group currently cannot provide any warranty as to the accuracy, reliability, or completeness of furnished data.</gco:CharacterString>
+                    </gmd:evaluationMethodDescription>
+                    <gmd:result gco:nilReason="unknown" />
+                </gmd:DQ_CompletenessOmission>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_ConceptualConsistency>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>The V-For-WaTer group currently cannot guarantee the scope, accuracy or timeliness of this information.</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result gco:nilReason="unknown" />
+                </gmd:DQ_ConceptualConsistency>
+            </gmd:report>
+            {# <lineage> goes here when implemented #}
+        </gmd:DQ_DataQuality>
+    </gmd:dataQualityInfo>
+    {#
+    - <gmd:portrayalCatalogueInfo>
+    - <gmd:metadataConstraints>
+    - <gmd:applicationSchemaInfo>
+    - <gmd:metadataMaintenance>
+    - <gmd:acquisitionInformation>
+    #}
+</gmi:MI_Metadata>
