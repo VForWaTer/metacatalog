@@ -15,14 +15,17 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join('.', '..')))
 
 def get_version():
-    B = os.path.abspath(os.path.dirname(__file__))
-    with open(os.path.join(B, '..', '..', 'VERSION'), 'r') as f:
-        return f.read().strip()
+    with open('../../metacatalog/__version__.py') as f:
+        c = f.read()
+
+    d = dict()
+    exec(c, d, d)
+    return d['__version__']
 
 # -- Project information -----------------------------------------------------
 
 project = 'Metacatalog'
-copyright = '2020, Mirko Mälicke'
+copyright = '2022, Mirko Mälicke'
 author = 'Mirko Mälicke <mirko.maelicke@kit.edu>'
 
 # The full version, including alpha/beta/rc tags

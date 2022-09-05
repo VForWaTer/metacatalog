@@ -2,9 +2,10 @@ from uuid import uuid4
 
 from sqlalchemy import Column, ForeignKey, CheckConstraint
 from sqlalchemy import Integer, String, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Session
 
 from metacatalog.db.base import Base
+from metacatalog.util.exceptions import MetadataMissingError
 
 
 class Person(Base):
@@ -115,6 +116,46 @@ class Person(Base):
             d['entries'] = [e.to_dict() for e in self.entries]
 
         return d
+
+    @classmethod
+    def from_dict(cls, data: dict, session: Session) -> 'Person':
+        """From dict
+
+        Create a new Person from a python dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            The dictionary containing the data
+        session : Session
+            The database session
+
+        Returns
+        -------
+        obj : Person
+            The new Person
+
+        """
+        # check if there is an ID in the data
+        if 'id' in data:
+            from metacatalog import api
+            try:
+                return api.find_person(session, id=data['id'], return_iterator=True).one()
+            except:
+                raise MetadataMissingError(f"Person with id {data['id']} not found in database.")                
+        
+        # create
+        person = cls(**data)
+
+        # add the person
+        try:
+            session.add(person)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
+        
+        return person
 
     @property
     def full_name(self):

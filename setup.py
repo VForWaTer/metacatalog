@@ -14,8 +14,12 @@ def requirements():
 
 
 def version():
-    with open('VERSION') as f:
-        return f.read().strip()
+    with open('metacatalog/__version__.py') as f:
+        c = f.read()
+
+    d = dict()
+    exec(c, d, d)
+    return d['__version__']
 
 
 def readme():
