@@ -97,57 +97,6 @@
     </gmd:metadataStandardVersion>
 
 
-    {# not straightforward -> TODO: discuss#}
-    <gmd:spatialRepresentationInfo>
-        <gmd:MD_GridSpatialRepresentation>
-        {# Type: MD_VectorSpatialRepresentation or MD_GridSpatialRepresentation or MD_Georectified or MI_Georectified or MD_Georeferenceable or MI_Georeferenceable #}
-        {# MD_VectorSpatialRepresentation for timeseries, MD_GridSpatialRepresentation for spatial data?? #}
-            <gmd:numberOfDimensions>
-                <gco:Integer>3</gco:Integer>
-            </gmd:numberOfDimensions>
-            <gmd:axisDimensionProperties>
-                <gmd:MD_Dimension>
-                    <gmd:dimensionName>
-                        <gmd:MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="row" codeSpace="001">row</gmd:MD_DimensionNameTypeCode>
-                    </gmd:dimensionName>
-                    <gmd:dimensionSize gco:nilReason="unknown" />
-                    <gmd:resolution>
-                        <gco:Scale uom="decimalDegrees">0.000001</gco:Scale>
-                    </gmd:resolution>
-                </gmd:MD_Dimension>
-            </gmd:axisDimensionProperties>
-            <gmd:axisDimensionProperties>
-                <gmd:MD_Dimension>
-                    <gmd:dimensionName>
-                        <gmd:MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="column" codeSpace="002">column</gmd:MD_DimensionNameTypeCode>
-                    </gmd:dimensionName>
-                    <gmd:dimensionSize gco:nilReason="unknown" />
-                    <gmd:resolution>
-                        <gco:Scale uom="decimalDegrees">0.000001</gco:Scale>
-                    </gmd:resolution>
-                </gmd:MD_Dimension>
-            </gmd:axisDimensionProperties>
-            <gmd:axisDimensionProperties>
-                <gmd:MD_Dimension>
-                    <gmd:dimensionName>
-                        <gmd:MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="vertical" codeSpace="003">vertical</gmd:MD_DimensionNameTypeCode>
-                    </gmd:dimensionName>
-                    <gmd:dimensionSize gco:nilReason="unknown" />
-                    <gmd:resolution>
-                        <gco:Scale uom="meters">1</gco:Scale>
-                    </gmd:resolution>
-                </gmd:MD_Dimension>
-            </gmd:axisDimensionProperties>
-            <gmd:cellGeometry>
-                <gmd:MD_CellGeometryCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CellGeometryCode" codeListValue="point" codeSpace="001">point</gmd:MD_CellGeometryCode>
-            </gmd:cellGeometry>
-            <gmd:transformationParameterAvailability>
-                <gco:Boolean>false</gco:Boolean>
-            </gmd:transformationParameterAvailability>
-        </gmd:MD_GridSpatialRepresentation>
-    </gmd:spatialRepresentationInfo>
-
-
     <gmd:referenceSystemInfo>
         <gmd:MD_ReferenceSystem>
             <gmd:referenceSystemIdentifier>
@@ -370,14 +319,32 @@
                             </gmd:northBoundLatitude>
                         </gmd:EX_GeographicBoundingBox>
                     </gmd:geographicElement>
+                    {% elif 'POINT' in location %}
+                    {# store point location as "bounding box" #}
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicBoundingBox>
+                            <gmd:westBoundLongitude>
+                                <gco:Decimal>{{location.split(' ')[1].split('(')[1] | float}}</gco:Decimal>
+                            </gmd:westBoundLongitude>
+                            <gmd:eastBoundLongitude>
+                                <gco:Decimal>{{location.split(' ')[1].split('(')[1] | float}}</gco:Decimal>
+                            </gmd:eastBoundLongitude>
+                            <gmd:southBoundLatitude>
+                                <gco:Decimal>{{location.split(' ')[2].split(')')[0] | float}}</gco:Decimal>
+                            </gmd:southBoundLatitude>
+                            <gmd:northBoundLatitude>
+                                <gco:Decimal>{{location.split(' ')[2].split(')')[0] | float}}</gco:Decimal>
+                            </gmd:northBoundLatitude>
+                        </gmd:EX_GeographicBoundingBox>
+                    </gmd:geographicElement>
                     {% endif %}
                     {% if datasource.temporal_scale %}
                     <gmd:temporalElement>
                         <gmd:EX_TemporalExtent>
                             <gmd:extent>
                                 <gml:TimePeriod gml:id="boundingTemporalExtent">
-                                    <gml:beginPosition>{{datasource.temporal_scale.observation_start.isoformat()}}</gml:beginPosition>
-                                    <gml:endPosition>{{datasource.temporal_scale.end.isoformat()}}</gml:endPosition>
+                                    <gml:beginPosition>{{datasource.temporal_scale.extent[0].isoformat()}}</gml:beginPosition>
+                                    <gml:endPosition>{{datasource.temporal_scale.extent[1].isoformat()}}</gml:endPosition>
                                     <gml:timeInterval unit="seconds">{{datasource.temporal_scale.resolution|temporal_resolution_to_seconds}}</gml:timeInterval>
                                 </gml:TimePeriod>
                             </gmd:extent>
