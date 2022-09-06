@@ -209,7 +209,7 @@
                 <gco:CharacterString>{{abstract}}</gco:CharacterString>
             </gmd:abstract>
 
-
+            {# first author #}
             <gmd:pointOfContact>
                 <gmd:CI_ResponsibleParty>
                     <gmd:individualName>
@@ -220,11 +220,31 @@
                         <gco:CharacterString>{{author.organisation_name}}</gco:CharacterString>
                     </gmd:organisationName>
                     <gmd:role>
-                        {# role always author #}
-                        <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+                        <gmd:CI_RoleCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
                     </gmd:role>
                 </gmd:CI_ResponsibleParty>
             </gmd:pointOfContact>
+
+            {# coauthors#}
+            {% if authors %}
+            {% for coauthor in authors %}
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:individualName>
+                        {# format: last_name, first_name #}
+                        <gco:CharacterString>{{coauthor.last_name}}, {{coauthor.first_name}}</gco:CharacterString>
+                    </gmd:individualName>
+                    <gmd:organisationName>
+                        <gco:CharacterString>{{coauthor.organisation_name}}</gco:CharacterString>
+                    </gmd:organisationName>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="coAuthor">coAuthor</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            {% endfor %}
+            {% endif %}
+
 
 
             

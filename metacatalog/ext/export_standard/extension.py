@@ -3,7 +3,7 @@ from metacatalog.ext import MetacatalogExtensionInterface
 
 from metacatalog import api
 
-from metacatalog.models import Entry
+from metacatalog.models import Entry, Person
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 import pandas as pd
@@ -174,7 +174,7 @@ class StandardExportExtension(MetacatalogExtensionInterface):
 
 
     @classmethod
-    def iso_xml_import(xml, session):
+    def iso_xml_import(xml, session, commit=True):
         """
         Import an ISO 19115 XML file and convert to an Entry with the 
         metacatalog metadata model.
@@ -188,6 +188,12 @@ class StandardExportExtension(MetacatalogExtensionInterface):
             
         session : 
             
+        commit : bool
+            If commit is True, the Entry is directly created in the passed
+            metacatalog session. If False, the metadata dictionary is returned,
+            which can be checked, the Entry can then be created with 
+            `Entry.from_dict()`.
+
         no_data : 
             
 
@@ -225,26 +231,47 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         # title
         title = metadata.get('gmd:identificationInfo', {}).get('gmd:MD_DataIdentification', {}).get('gmd:citation', {}).get('gmd:CI_Citation', {}).get('gmd:title', {}).get('gco:CharacterString')
 
-        # author
-        # evenutally if <gmd:role> == 'author'
-        author_fullname = metadata.get('gmd:identificationInfo', {}).get('gmd:MD_DataIdentification', {}).get('gmd:pointOfContact', {}).get('gmd:CI_ResponsibleParty', {}).get('gmd:individualName', {}).get('gco:CharacterString')
-        if author_fullname:
-            author_first_name = author_fullname.split(', ')[0]
-            author_last_name = author_fullname.split(', ')[1]
-        else:
-            raise ValueError("No information about author first and last name provided.")
-        author_organisation_name = metadata.get('gmd:identificationInfo', {}).get('gmd:MD_DataIdentification', {}).get('gmd:pointOfContact', {}).get('gmd:CI_ResponsibleParty', {}).get('gmd:organisationName', {}).get('gco:CharacterString')
+        # author and coauthors
+        authors = metadata.get('gmd:identificationInfo', {}).get('gmd:MD_DataIdentification', {}).get('gmd:pointOfContact', [])
 
-        author_dict = dict(
-            first_name = author_first_name,
-            last_name = author_last_name,
-            organisation_name = author_organisation_name
-        ) 
+        coauthors_list = []
 
-        # co-authors
-        # TODO: add to template: CI_RoleCode: coAuthor instead of author!
-        # evenutally if <gmd:role> == 'coAuthor' -> or first author is the author, next authors are co-authors?
+        for author in authors:
+            role = author.get('gmd:CI_ResponsibleParty', {}).get('gmd:role', {}).get('gmd:CI_RoleCode', {}).get('#text')
+            if role == 'author':
+                fullname = author.get('gmd:CI_ResponsibleParty', {}).get('gmd:individualName', {}).get('gco:CharacterString')
+                if fullname:
+                    first_name = fullname.split(', ')[0]
+                    last_name = fullname.split(', ')[1]
+                else:
+                    raise ValueError("No information about author first and last name provided.")
+        
+                organisation_name = author.get('gmd:CI_ResponsibleParty', {}).get('gmd:organisationName', {}).get('gco:CharacterString')
 
+                author_dict = dict(
+                    first_name = first_name,
+                    last_name = last_name,
+                    organisation_name = organisation_name
+                ) 
+                author = Person.from_dict(author_dict)
+            elif role == 'coAuthor':
+                fullname = author.get('gmd:CI_ResponsibleParty', {}).get('gmd:individualName', {}).get('gco:CharacterString')
+                if fullname:
+                    first_name = fullname.split(', ')[0]
+                    last_name = fullname.split(', ')[1]
+                else:
+                    raise ValueError("No information about author first and last name provided.")
+
+                organisation_name = author.get('gmd:CI_ResponsibleParty', {}).get('gmd:organisationName', {}).get('gco:CharacterString')
+
+                coauthor_dict = dict(
+                    first_name = first_name,
+                    last_name = last_name,
+                    organisation_name = organisation_name,
+                    role = role
+                    #order=i -> not sure if we need an order
+                ) 
+                coauthors_list.append(coauthor_dict)
 
         # locationShape
 
@@ -315,27 +342,42 @@ class StandardExportExtension(MetacatalogExtensionInterface):
                 composites_splits.append(group_uuid)
 
 
+        # ADD ENTRY (by hand), we could also use Entry.from_dict()
 
-        # base dictionary
-        d = dict(
-            id=self.id,
-            uuid=self.uuid,
-            title=self.title,
-            author=self.author.to_dict(deep=False),
-            authors=[a.to_dict(deep=False) for a in self.authors],
-            locationShape=self.location_shape.wkt,
-            location=self.location_shape.wkt,
-            variable=self.variable.to_dict(deep=False),
-            embargo=self.embargo,
-            embargo_end=self.embargo_end,
-            version=self.version,
-            isPartial=self.is_partial,
-            publication=self.publication,
-            lastUpdate=self.lastUpdate,
-            keywords=self.plain_keywords_dict()
+        # add the entry
+        entry = api.add_entry(
+            session=session,
+            title=title,
+            author=author,
+            location=location,
+            variable=variable,
+            abstract=abstract,
+            external_id=external_id,
+            geom=geom,
+            license=license,
+            embargo=embargo
         )
 
-        # USE Entry.from_dict() after the dictionary is built??
+
+        d = dict(
+            #id=id,
+            uuid=uuid,
+            title=title,
+            author=author_dict(deep=False),
+            authors=[a.to_dict(deep=False) for a in self.authors],
+            locationShape=location_shape.wkt,
+            location=location_shape.wkt,
+            variable=variable.to_dict(deep=False),
+            embargo=embargo,
+            embargo_end=embargo_end,
+            version=version,
+            isPartial=is_partial,
+            publication=publication,
+            lastUpdate=lastUpdate,
+            keywords=self.plain_keywords_dict()
+            # datasource
+        )
+
 
         # lazy loading
         if deep:
@@ -347,4 +389,20 @@ class StandardExportExtension(MetacatalogExtensionInterface):
                 d['composite_entries'] = [e.to_dict(deep=False) for e in comp]
         # HIER FEHLEN AUCH LABELS UND SPLIT DATASETS!
 
+
+        coauthors = [Person.from_dict(a, session) for a in coauthors_list]
+        api.add_persons_to_entries(
+            session,
+            entries=[entry],
+            persons=coauthors,
+            roles=['coAuthor'] * len(coauthors),
+            order=[_ + 2 for _ in range(len(coauthors))]
+        )
+
+
+        # USE Entry.from_dict() after the dictionary is built??
+        if commit:
+            Entry.from_dict(d)
+        else:
+            return d
     
