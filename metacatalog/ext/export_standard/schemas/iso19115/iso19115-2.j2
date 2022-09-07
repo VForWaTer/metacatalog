@@ -353,6 +353,16 @@
         </gmd:MD_DataIdentification>
     </gmd:identificationInfo>
 
+    {# TODO: contentInfo: variable and datasource?? how? -> what about featureCatalogue? #}
+    <gmd:contentInfo>
+        <gmd:MD_FeatureCatalogueDescription>
+            <gmd:includedWithDataset>
+                <gco:Boolean>0</gco:Boolean>
+            </gmd:includedWithDataset>
+            <gmd:featureCatalogueCitation gco:nilReason="unknown" />
+        </gmd:MD_FeatureCatalogueDescription>
+    </gmd:contentInfo>
+
 
     {# TODO: dataQualityInfo (not yet implemented) #}
     <gmd:dataQualityInfo>
