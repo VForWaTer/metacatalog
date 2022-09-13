@@ -81,6 +81,10 @@ class ImmutableResultSet:
             group = instance
             members = [ImmutableResultSet.expand_entry(e, group) for e in instance.entries]
 
+        # no sibling entries: add entry itself
+        if not members:
+            members.extend([instance])
+
         # set attributes
         self.group = group
         self._members = ImmutableResultSet.entry_set(members)
