@@ -63,6 +63,7 @@ from .add import (
     add_unit, 
     add_variable,
     add_person, 
+    add_organisation,
     add_entry,
     add_group,
     add_project,
