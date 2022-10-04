@@ -11,6 +11,8 @@ from sqlalchemy.orm.session import Session
 from lxml import etree
 import xmltodict
 
+from metacatalog.util.results import ImmutableResultSet
+
 
 
 # DEV not sure if this is a good place...
@@ -38,6 +40,7 @@ ENTRY_KEYS = (
 )
 
 import os
+
 def _init_iso19115_jinja():
         """
         Initialize jinja envirnoment for ISO 19115 export.
@@ -73,28 +76,34 @@ def _init_iso19115_jinja():
         return env, template
 
 
-def _init_entry_dict(entry: Entry) -> dict:
+def _init_immutableResultSet_dict(entry: Entry) -> dict:
     """
-    Not all attributes / relations of an Entry are included in `Entry.to_dict(deep=True)`.
+    Loads the ImmutableResultSet of the input Entry and returns `ImmutableResultSet.to_dict()`.
+
+
+
+    Not all attributes / relations of an Entry are included in `ImmutableResultSet.to_dict()`.
     The attributes required for ISO 19115 XML export are added to the dictionary with
     the help of this function.
-    Includes `associated_groups`, `keywords` and `thesaurus`.
+    Includes `associated_groups`, and `thesaurus`.
     """
-    entry_dict = entry.to_dict(deep=True)
+    # get ImmutableResultSet
+    rs = ImmutableResultSet(entry)
 
-    # associated_groups
-    # deep=True: also contains information about entries in groups
-    entry_dict['associated_groups'] = [
-        e.to_dict(deep=True) for e in entry.associated_groups]
+    # get ImmutableResultSet dictionary
+    rs_dict = rs.to_dict()
 
-    # keywords
-    entry_dict['keywords'] = entry.keywords
+    # ImmutableResultSet base group
+    rs_dict['base_group'] = rs.group
+
+    # Entry associated groups
+    rs_dict['associated_groups'] = [g.to_dict() for g in entry.associated_groups]
 
     # thesaurus -> I think there is no link from Entry to the used thesaurus, currently only GCMD is implemented.
     session = Session.object_session(entry)
-    entry_dict['thesaurus'] = api.find_thesaurus(session)[0].to_dict()
+    rs_dict['thesaurus'] = api.find_thesaurus(session)[0].to_dict()
 
-    return entry_dict
+    return rs_dict
 
 
 def _validate_xml(xml: str) -> bool:
@@ -151,11 +160,11 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         # get initialized jinja environment and template
         env, template = _init_iso19115_jinja()
 
-        # get Entry as dictionary
-        entry_dict = _init_entry_dict(entry)
+        # get ImmutableResultSet dictionary
+        rs_dict = _init_immutableResultSet_dict(entry)
 
         # render template with entry_dict
-        xml = template.render(**entry_dict)
+        xml = template.render(**rs_dict)
 
         # check whether xml is well-formed
         _validate_xml(xml)
