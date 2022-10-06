@@ -18,6 +18,9 @@ COMMIT;
 """
 
 DOWNGRADE_SQL = """
+-- replace eventually existing NULL values with (POINT 0 0)
+UPDATE entries SET location = 'POINT (0 0)' WHERE location IS NULL;
+COMMIT; 
 -- entries.location not nullable
 ALTER TABLE entries ALTER COLUMN location SET NOT NULL;
 COMMIT;
