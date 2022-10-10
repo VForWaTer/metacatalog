@@ -337,9 +337,12 @@ class SpatialScale(Base):
         cell size, which only applies to gridded datasets. Use the
         :attr:`resolution_str` property for a string representation
     extent : geoalchemy2.Geometry
-        The spatial extent of the dataset is given as a ``'POLYGON'``. While
-        metacatalog is capable of storing any kind of valid POLYGON as extent,
-        it is best practice to allow only Bounding Boxes on upload.
+        The spatial extent of the dataset is given as a ``'POLYGON'``. 
+        .. versionchanged:: 0.5.3
+        From this ``POLYGON``, a bounding box and the centroid are internally
+        calculated.
+        To specify a point location here, use the same value for easting and
+        westing and the same value for northing and southing.
     support : float
         The support gives the spatial validity for a single observation.
         It specifies the spatial extent at which an observed value is valid.

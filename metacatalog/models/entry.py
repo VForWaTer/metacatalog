@@ -69,9 +69,11 @@ class Entry(Base):
         exernal_id is only stored for reference reasons.
     location : str, tuple
         .. versionchanged:: 0.5.3
-        location is now nullable, as spatial / raster data cannot be represented
-        as POINT location. Please add the spatial representation of the data to
-        `Datasource.spatial_scale`.
+        A POINT location should be specified here if there is a physical measurement 
+        point that is different from the centroid of the spatial extent (e.g., 
+        discharge measurement with the extent of the catchment).
+        Otherwise, ``Datasource.spatial_scale.extent`` should be used to specify the
+        location of the measured data.
 
         The location as a POINT Geometry in unprojected WGS84 (EPSG: 4326).
         The location is primarily used to show all Entry objects on a map, or
