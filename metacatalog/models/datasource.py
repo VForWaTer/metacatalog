@@ -13,6 +13,7 @@ import pandas as pd
 
 from metacatalog.db.base import Base
 from metacatalog.ext import extension
+from metacatalog.util.exceptions import MetadataMissingError
 
 
 class DataSourceType(Base):
@@ -610,14 +611,27 @@ class DataSource(Base):
         # get the correct class
         if scale_dimension.lower() == 'temporal':
             Cls = TemporalScale
+            if self.temporal_scale is not None:
+                raise MetadataMissingError('Temporal scale already exists. You can edit that one.')
         elif scale_dimension.lower() == 'spatial':
             Cls = SpatialScale
+            if self.spatial_scale is not None:
+                raise MetadataMissingError('Spatial scale already exists. You can edit that one.')
         else:
             raise AttributeError("scale_dimension has to be in ['temporal', 'spatial']")
 
         # build the scale and append
         scale = Cls(resolution=resolution, extent=extent, support=support)
         setattr(self, '%s_scale' % scale_dimension.lower(), scale)
+
+        # commit
+        try:
+            session = object_session(self)
+            session.add(self)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
 
     def __str__(self):
         return "%s data source at %s <ID=%d>" % (self.type.name, self.path, self.id)
