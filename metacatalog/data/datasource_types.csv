@@ -3,4 +3,4 @@ id,name,title,description
 2,external,External Table,"SQL table in an external database instance, but of same structure."
 3,csv,Local CSV File,"Standard csv file source on the database server machine."
 4,local,Local Blob,"Any kind of local file without I/O capabilities. Generic fallback type."
-5,cf-netCDF,Local cf conform netCDF,"CF conform netCDF file source on the database server machine."
+5,netCDF,Local netCDF File,"netCDF file source on the database server machine."

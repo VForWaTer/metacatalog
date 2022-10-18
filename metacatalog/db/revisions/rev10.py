@@ -5,7 +5,7 @@ date: 2022-10-18T11:22:31.732508
 
 revision #10
 
-Add the datasource_type "cf-netCDF"
+Add the datasource_type "netCDF"
 
 
 """
@@ -13,15 +13,15 @@ from sqlalchemy.orm import Session
 from metacatalog import api, models
 
 UPGRADE_SQL = """
--- add new datasource_type ("cf-netCDF")
+-- add new datasource_type ("netCDF")
 INSERT INTO datasource_types (name, title, description) VALUES 
-('cf-netCDF','Local cf conform netCDF','CF conform netCDF file source on the database server machine.');
+('netCDF','Local netCDF File','netCDF file source on the database server machine.');
 COMMIT;
 """
 
 DOWNGRADE_SQL = """
--- delete new datasource_type ("cf-netCDF")
-DELETE FROM datasource_types WHERE name='cf-netCDF';
+-- delete new datasource_type ("netCDF")
+DELETE FROM datasource_types WHERE name='netCDF';
 COMMIT;
 """
 
