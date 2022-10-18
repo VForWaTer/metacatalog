@@ -1,6 +1,8 @@
 import os
+import shutil
 
 import pandas as pd
+import xarray as xr
 import sqlalchemy as sa
 from sqlalchemy.orm import object_session
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -188,8 +190,73 @@ def import_to_local_csv_file(entry, datasource, data, **kwargs):
         if os.path.exists(path):
             raise ValueError('%s already exists.' % path)
         else:
-            data.to_csv(path, index=None)
+            imp.to_csv(path, index=None)
 
+    else:
+        raise ValueError("if_exists has to be one of ['fail', 'append', 'replace']")
+
+
+def import_to_local_netcdf_file(entry, datasource, data, **kwargs):
+    """
+    .. versionadded:: 0.5.3
+    
+    Import to netCDF
+    Saves data to a local netCDF file.
+    Any existing file will be overwritten.
+    The default location can be overwritten using the path keyword.
+
+    Parameters
+        ----------
+    entry : metacatlog.models.Entry
+        Metacatalog entry for which the data is to be uploaded.
+    datasource : metacatalog.models.Datasource
+        Datasource of the given entry.
+    data : Union[str, xarray.Dataset]
+        Can be either the path to your locally saved netCDF file
+        or a xarray.Dataset
+
+    """
+    assert Entry.is_valid(entry)
+
+    # get the path
+    if datasource.path is None:
+        path = os.path.join(os.path.expanduser('~'))
+
+    # check for filename
+    if not path.endswith('.nc'):
+        path = os.path.join(path, 'entry_%d.nc' % entry.id)
+        datasource.path = path
+
+        # save new path
+        __update_datasource(datasource)
+
+    if_exists = kwargs.get('if_exists', 'replace')
+
+    # check type of data
+    if type(data) not in [str, xr.Dataset]:
+        raise TypeError("The type of data has to be str or xr.Dataset")
+
+    # save the data
+    if if_exists == 'replace':
+        if type(data) == xr.Dataset:
+            data.to_netcdf(path, mode='w')
+        else:
+            shutil.copy(data, path)
+
+    elif if_exists == 'append':
+        if type(data) == xr.Dataset:
+            data.to_netcdf(path, mode='a')
+        else:
+            raise ValueError("Append mode is currently not supported for netCDF files.")
+
+    elif if_exists == 'fail':
+        if os.path.exists(path):
+            raise ValueError('%s already exists.' % path)
+        else:
+            if type(data) == xr.Dataset:
+                data.to_netcdf(path, mode='w')
+            else:
+                shutil.copy(data, path)
     else:
         raise ValueError("if_exists has to be one of ['fail', 'append', 'replace']")
 

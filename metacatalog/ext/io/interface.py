@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from .importer import import_to_internal_table, import_to_local_csv_file
+from .importer import import_to_internal_table, import_to_local_csv_file, import_to_local_netcdf_file
 from .reader import read_from_internal_table, read_from_local_csv_file
 from .deleter import delete_from_internal_table, delete_from_local_csv
 from .appender import append_to_internal_table, append_to_local_csv_file
@@ -43,6 +43,9 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         csv={
             'array': import_to_local_csv_file,
             'ndarray': import_to_local_csv_file
+        },
+        netCDF={
+            'raster': import_to_local_netcdf_file
         }
     )
     APPENDER = dict(
