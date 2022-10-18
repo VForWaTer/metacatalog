@@ -3,7 +3,7 @@ from abc import abstractmethod
 from .importer import import_to_internal_table, import_to_local_csv_file, import_to_local_netcdf_file
 from .reader import read_from_internal_table, read_from_local_csv_file
 from .deleter import delete_from_internal_table, delete_from_local_csv
-from .appender import append_to_internal_table, append_to_local_csv_file
+from .appender import append_to_internal_table, append_to_local_csv_file, append_to_local_netcdf_file
 
 from metacatalog.util.exceptions import IOOperationNotFoundError
 from metacatalog.models import DataSource, Entry
@@ -60,6 +60,9 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
             'timeseries': append_to_local_csv_file,
             'idataframe': append_to_local_csv_file,
             'time-dataframe': append_to_local_csv_file
+        },
+        netCDF={
+            'raster': append_to_local_netcdf_file
         }
     )
     DELETER = dict(
