@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from .importer import import_to_internal_table, import_to_local_csv_file, import_to_local_netcdf_file
 from .reader import read_from_internal_table, read_from_local_csv_file
-from .deleter import delete_from_internal_table, delete_from_local_csv
+from .deleter import delete_from_internal_table, delete_from_local_csv, delete_from_local_netcdf
 from .appender import append_to_internal_table, append_to_local_csv_file, append_to_local_netcdf_file
 
 from metacatalog.util.exceptions import IOOperationNotFoundError
@@ -73,6 +73,9 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         csv={
             'array': delete_from_local_csv,
             'ndarray': delete_from_local_csv
+        },
+        netCDF={
+            'raster': delete_from_local_netcdf
         }
     )
     def __init__(self, entry: Entry):
