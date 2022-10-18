@@ -234,7 +234,7 @@ def import_to_local_netcdf_file(entry, datasource, data, **kwargs):
 
     # check type of data
     if type(data) not in [str, xr.Dataset]:
-        raise TypeError("The type of data has to be str or xr.Dataset")
+        raise TypeError("The type of data has to be str (path) or xr.Dataset")
 
     # save the data
     if if_exists == 'replace':
@@ -247,7 +247,11 @@ def import_to_local_netcdf_file(entry, datasource, data, **kwargs):
         if type(data) == xr.Dataset:
             data.to_netcdf(path, mode='a')
         else:
-            raise ValueError("Append mode is currently not supported for netCDF files.")
+            # open the netCDF file in path and in data and combine
+            ds_combined = xr.open_mfdataset([path, data], combine='by_coords', concat_dim='time')
+
+            # save combined netCDF to path, overwrite existing/old netCDF
+            ds_combined.to_netcdf(path, mode='w')
 
     elif if_exists == 'fail':
         if os.path.exists(path):
