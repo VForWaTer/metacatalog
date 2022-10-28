@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from .importer import import_to_internal_table, import_to_local_csv_file, import_to_local_netcdf_file
-from .reader import read_from_internal_table, read_from_local_csv_file
+from .reader import read_from_internal_table, read_from_local_csv_file, read_from_local_netcdf
 from .deleter import delete_from_internal_table, delete_from_local_csv, delete_from_local_netcdf
 from .appender import append_to_internal_table, append_to_local_csv_file, append_to_local_netcdf_file
 
@@ -33,6 +33,9 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         csv={
             'array': read_from_local_csv_file,
             'ndarray': read_from_local_csv_file
+        },
+        netcdf={
+            'raster': read_from_local_netcdf
         }
     )
     IMPORTER = dict(
@@ -44,7 +47,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
             'array': import_to_local_csv_file,
             'ndarray': import_to_local_csv_file
         },
-        netCDF={
+        netcdf={
             'raster': import_to_local_netcdf_file
         }
     )
@@ -61,7 +64,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
             'idataframe': append_to_local_csv_file,
             'time-dataframe': append_to_local_csv_file
         },
-        netCDF={
+        netcdf={
             'raster': append_to_local_netcdf_file
         }
     )
@@ -74,7 +77,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
             'array': delete_from_local_csv,
             'ndarray': delete_from_local_csv
         },
-        netCDF={
+        netcdf={
             'raster': delete_from_local_netcdf
         }
     )

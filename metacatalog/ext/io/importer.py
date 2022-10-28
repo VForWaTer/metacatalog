@@ -163,6 +163,11 @@ def import_to_local_csv_file(entry, datasource, data, **kwargs):
     # get the path
     if datasource.path is None:
         path = os.path.join(os.path.expanduser('~'))
+    else:
+        path = datasource.path
+    
+    # always use absolute paths
+    path = os.path.abspath(path)
 
     # check for filename
     if not path.endswith('.csv'):
@@ -221,6 +226,11 @@ def import_to_local_netcdf_file(entry, datasource, data, **kwargs):
     # get the path
     if datasource.path is None:
         path = os.path.join(os.path.expanduser('~'))
+    else:
+        path = datasource.path
+
+    # always use absolute paths
+    path = os.path.abspath(path)
 
     # check for filename
     if not path.endswith('.nc'):

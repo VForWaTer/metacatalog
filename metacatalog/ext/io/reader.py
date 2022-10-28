@@ -2,6 +2,7 @@ from datetime import datetime as dt
 
 import pandas as pd
 import numpy as np
+import xarray as xr
 from sqlalchemy.orm import object_session
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -90,6 +91,20 @@ def read_from_local_csv_file(entry, datasource, **kwargs):
         data.set_index('index', inplace=True)
 
     # map column names
-    df.columns = [entry.variable.name if _col== 'value' else _col for _col in df.columns]
+    data.columns = [entry.variable.name if _col== 'value' else _col for _col in data.columns]
 
     return data
+
+
+def read_from_local_netcdf(entry, datasource, **kwargs):
+    # check validity
+    assert Entry.is_valid(entry)
+
+    # get the filename
+    fname = datasource.path
+
+    # read the file
+    data = xr.open_dataset(fname)
+
+    return data
+    
