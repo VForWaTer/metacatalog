@@ -1,4 +1,4 @@
---CREATE OR REPLACE VIEW locations AS
+--CREATE OR REPLACE VIEW locations_realdata AS
 select 
 	st_asewkt(t.point_location),
 	t.*,
@@ -15,23 +15,12 @@ entries.id,
  			case when entries.geom is not null then
  				st_centroid(entries.geom)
  			else
-				null
+				null::geometry
  			end
 		end
 	end  
 	as point_location
 	,
- 
- 	case when entries.geom is not null then
- 		st_envelope(entries.geom)
- 	else
-		case when spatial_scales.extent is not null then
-			st_envelope(spatial_scales.extent)
-		else 
-			entries.location
-		end 
-	end
- 	as "bbox",
  	case when entries.geom is not null then
  		entries.geom
  	else
@@ -46,6 +35,5 @@ FROM entries
 LEFT JOIN datasources ON entries.datasource_id = datasources.id
 LEFT JOIN spatial_scales ON spatial_scales.id = datasources.spatial_scale_id
  ) as t
- 
+
 order by t.id asc
-limit 25
