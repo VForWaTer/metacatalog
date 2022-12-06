@@ -14,8 +14,8 @@ from metacatalog import api, models
 
 UPGRADE_SQL = """
 -- add new datasource_type ("netCDF")
-INSERT INTO datasource_types (name, title, description) VALUES 
-('netCDF','Local netCDF File','netCDF file source on the database server machine.');
+INSERT INTO datasource_types (id, name, title, description) VALUES 
+(5, 'netCDF','Local netCDF File','netCDF file source on the local file system.');
 COMMIT;
 """
 
