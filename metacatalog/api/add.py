@@ -543,24 +543,23 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     )
     attr.update(kwargs)
 
-    # parse the author
+    # parse the author, search for person first, if no person is found, search for organisation
     if isinstance(author, int):
-        author = api.find_person(session=session, id=author, return_iterator=True).one()
+        try:
+            author = api.find_person(session=session, id=author, return_iterator=True).one()
+        except:
+            author = api.find_organisation(session=session, id=author, return_iterator=True).one()
     elif isinstance(author, str):
-        author = api.find_person(session=session, last_name=author, return_iterator=True).first()
+        try:
+            author = api.find_person(session=session, last_name=author, return_iterator=True).first()
+        except:
+            author = api.find_organisation(session=session, organisation_name=author, return_iterator=True).first()
     else:
         raise AttributeError('author has to be of type int or str')
     
-    # if author is None, search for organisation
-    if author is None:
-        if isinstance(author, int):
-            author = api.find_organisation(session=session, id=author, return_iterator=True).one()
-        elif isinstance(author, str):
-            author = api.find_organisation(session=session, organisation_name=author, return_iterator=True).first()
-    
-    # if author is still None, raise error
-    if author is None:
-        raise AttributeError(f"No author or organisation found with author = {author}.")
+    # if author is still not a metacatalog Person, raise error
+    if not isinstance(author, models.Person):
+        raise AttributeError(f"No author or organisation found for author = {author}.")
 
     # parse the location and geom
     if isinstance(location, str):
