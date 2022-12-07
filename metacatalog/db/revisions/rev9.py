@@ -13,8 +13,8 @@ from metacatalog import api, models
 
 UPGRADE_SQL = """
 -- add new license ("dl-by-de/2.0")
-INSERT INTO licenses (short_title, title, summary, link, by_attribution, share_alike, commercial_use) VALUES 
-('dl-by-de/2.0','Data licence Germany – attribution – version 2.0','Data and metadata may be (commercially and non-commercially) copied, printed, presented, altered, processed and transmitted to third parties; be merged with own and third party data; be integrated into internal and external business processes, products and applications if the user ensures that the source reference includes the name of the provider, the reference to this license and a reference to the dataset (URI) and that changes, editing, new designs or other amendments are marked in the source references.','http://www.govdata.de/dl-de/by-2-0',True,True,True);
+INSERT INTO licenses (id, short_title, title, summary, link, by_attribution, share_alike, commercial_use) VALUES 
+(10, 'dl-by-de/2.0','Data licence Germany – attribution – version 2.0','Data and metadata may be (commercially and non-commercially) copied, printed, presented, altered, processed and transmitted to third parties; be merged with own and third party data; be integrated into internal and external business processes, products and applications if the user ensures that the source reference includes the name of the provider, the reference to this license and a reference to the dataset (URI) and that changes, editing, new designs or other amendments are marked in the source references.','http://www.govdata.de/dl-de/by-2-0',True,True,True);
 COMMIT;
 """
 
