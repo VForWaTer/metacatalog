@@ -103,8 +103,15 @@ def read_from_local_netcdf(entry, datasource, **kwargs):
     # get the filename
     fname = datasource.path
 
-    # read the file
-    data = xr.open_dataset(fname)
+    # get engine, if available
+    engine = kwargs.get('engine', 'netcdf4')
+    
+    if fname.endswith('.nc'):
+        # read the file
+        data = xr.open_dataset(fname, engine=engine)
+    else:
+        # read the files in the folder
+        data = xr.open_mfdataset(f"{fname}/*", engine=engine)
 
     return data
     
