@@ -550,7 +550,7 @@ class DataSource(Base):
 
         # parse and return
         else:
-            return json.loads(self.args)['args'] # datasource.args always has the top-level-key 'args'
+            return json.loads(self.args)
 
     def load_args(self) -> dict:
         """

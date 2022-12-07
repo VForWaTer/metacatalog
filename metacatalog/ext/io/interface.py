@@ -118,7 +118,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         args.update(kwargs)
 
         # read the data
-        data = reader(self.entry, self.entry.datasource, **kwargs)
+        data = reader(self.entry, self.entry.datasource, **args)
         return self.after_read(data)
 
     def after_read(self, data):
@@ -146,7 +146,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         args.update(kwargs)
 
         # import the data
-        importer(self.entry, self.entry.datasource, data, **kwargs)
+        importer(self.entry, self.entry.datasource, data, **args)
         return self.after_import()
 
     def after_import(self):
@@ -174,7 +174,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         args.update(kwargs)
 
         # append the data
-        appender(self.entry, self.entry.datasource, data, **kwargs)
+        appender(self.entry, self.entry.datasource, data, **args)
         return self.after_append()
 
     def after_append(self):
@@ -202,7 +202,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         args.update(kwargs)
 
         # delte the datasource
-        deleter(self.entry, self.entry.datasource, **kwargs)
+        deleter(self.entry, self.entry.datasource, **args)
         return self.after_delete()
 
     def after_delete(self):
