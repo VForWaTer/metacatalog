@@ -550,7 +550,7 @@ class DataSource(Base):
 
         # parse and return
         else:
-            return json.loads(self.args)
+            return json.loads(self.args)['args'] # datasource.args always has the top-level-key 'args'
 
     def load_args(self) -> dict:
         """
@@ -600,7 +600,7 @@ class DataSource(Base):
                 session.rollback()
                 raise e
 
-    def create_scale(self, resolution, extent, support, scale_dimension):
+    def create_scale(self, resolution, extent, support, scale_dimension, commit=False):
         """
         Create a new scale for the dataset
         """
@@ -615,6 +615,15 @@ class DataSource(Base):
         # build the scale and append
         scale = Cls(resolution=resolution, extent=extent, support=support)
         setattr(self, '%s_scale' % scale_dimension.lower(), scale)
+
+        if commit:
+            try:
+                session = object_session(self)
+                session.add(self)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
 
     def __str__(self):
         return "%s data source at %s <ID=%d>" % (self.type.name, self.path, self.id)
