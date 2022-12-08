@@ -503,6 +503,9 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     author : int, str
         First author of the Entry. The Person record has to exist already in the
         database and can be found by exact match on id (int) or last_name (str).
+        .. versionadded:: 0.2.6
+        Organisations can also be added as an author, can be found by exact match
+        on id (int) or organisation_name (str).
     location : str, tuple
         Can be either a WKT of a EPSG:4326 location, or the coordinates as a
         tuple. It has to be (X,Y), to (longitude, latitude)
@@ -540,13 +543,23 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     )
     attr.update(kwargs)
 
-    # parse the author
+    # parse the author, search for person first, if no person is found, search for organisation
     if isinstance(author, int):
-        author = api.find_person(session=session, id=author, return_iterator=True).one()
+        try:
+            author = api.find_person(session=session, id=author, return_iterator=True).one()
+        except:
+            author = api.find_organisation(session=session, id=author, return_iterator=True).one()
     elif isinstance(author, str):
-        author = api.find_person(session=session, last_name=author, return_iterator=True).first()
+        try:
+            author = api.find_person(session=session, last_name=author, return_iterator=True).first()
+        except:
+            author = api.find_organisation(session=session, organisation_name=author, return_iterator=True).first()
     else:
         raise AttributeError('author has to be of type int or str')
+    
+    # if author is still not a metacatalog Person, raise error
+    if not isinstance(author, models.Person):
+        raise AttributeError(f"No author or organisation found for author = {author}.")
 
     # parse the location and geom
     if isinstance(location, str):
