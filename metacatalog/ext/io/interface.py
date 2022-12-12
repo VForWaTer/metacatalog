@@ -1,9 +1,9 @@
 from abc import abstractmethod
 
-from .importer import import_to_internal_table, import_to_local_csv_file
-from .reader import read_from_internal_table, read_from_local_csv_file
-from .deleter import delete_from_internal_table, delete_from_local_csv
-from .appender import append_to_internal_table, append_to_local_csv_file
+from .importer import import_to_internal_table, import_to_local_csv_file, import_to_local_netcdf_file
+from .reader import read_from_internal_table, read_from_local_csv_file, read_from_local_netcdf
+from .deleter import delete_from_internal_table, delete_from_local_csv, delete_from_local_netcdf
+from .appender import append_to_internal_table, append_to_local_csv_file, append_to_local_netcdf_file
 
 from metacatalog.util.exceptions import IOOperationNotFoundError
 from metacatalog.models import DataSource, Entry
@@ -33,6 +33,9 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         csv={
             'array': read_from_local_csv_file,
             'ndarray': read_from_local_csv_file
+        },
+        netcdf={
+            'raster': read_from_local_netcdf
         }
     )
     IMPORTER = dict(
@@ -43,6 +46,9 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         csv={
             'array': import_to_local_csv_file,
             'ndarray': import_to_local_csv_file
+        },
+        netcdf={
+            'raster': import_to_local_netcdf_file
         }
     )
     APPENDER = dict(
@@ -57,6 +63,9 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
             'timeseries': append_to_local_csv_file,
             'idataframe': append_to_local_csv_file,
             'time-dataframe': append_to_local_csv_file
+        },
+        netcdf={
+            'raster': append_to_local_netcdf_file
         }
     )
     DELETER = dict(
@@ -67,6 +76,9 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         csv={
             'array': delete_from_local_csv,
             'ndarray': delete_from_local_csv
+        },
+        netcdf={
+            'raster': delete_from_local_netcdf
         }
     )
     def __init__(self, entry: Entry):
@@ -106,7 +118,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         args.update(kwargs)
 
         # read the data
-        data = reader(self.entry, self.entry.datasource, **kwargs)
+        data = reader(self.entry, self.entry.datasource, **args)
         return self.after_read(data)
 
     def after_read(self, data):
@@ -134,7 +146,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         args.update(kwargs)
 
         # import the data
-        importer(self.entry, self.entry.datasource, data, **kwargs)
+        importer(self.entry, self.entry.datasource, data, **args)
         return self.after_import()
 
     def after_import(self):
@@ -162,7 +174,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         args.update(kwargs)
 
         # append the data
-        appender(self.entry, self.entry.datasource, data, **kwargs)
+        appender(self.entry, self.entry.datasource, data, **args)
         return self.after_append()
 
     def after_append(self):
@@ -190,7 +202,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         args.update(kwargs)
 
         # delte the datasource
-        deleter(self.entry, self.entry.datasource, **kwargs)
+        deleter(self.entry, self.entry.datasource, **args)
         return self.after_delete()
 
     def after_delete(self):
