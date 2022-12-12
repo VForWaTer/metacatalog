@@ -68,6 +68,13 @@ class Entry(Base):
         Usually an unque ID field of other data-storage solutions. The
         exernal_id is only stored for reference reasons.
     location : str, tuple
+        .. versionchanged:: 0.6.1
+        A POINT location should be specified here if there is a physical measurement 
+        point that is different from the centroid of the spatial extent (e.g., 
+        discharge measurement with the extent of the catchment).
+        Otherwise, ``Datasource.spatial_scale.extent`` should be used to specify the
+        location of the measured data.
+
         The location as a POINT Geometry in unprojected WGS84 (EPSG: 4326).
         The location is primarily used to show all Entry objects on a map, or
         perform geo-searches. If the data-source needs to store more complex
@@ -165,7 +172,7 @@ class Entry(Base):
     title = Column(String(512), nullable=False)
     abstract = Column(String)
     external_id = Column(String)
-    location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=False)
+    location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=True)
     geom = Column(Geometry)
     version = Column(Integer, default=1, nullable=False)
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)

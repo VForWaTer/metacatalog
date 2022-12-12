@@ -508,7 +508,14 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
         on id (int) or organisation_name (str).
     location : str, tuple
         Can be either a WKT of a EPSG:4326 location, or the coordinates as a
-        tuple. It has to be (X,Y), to (longitude, latitude)
+        tuple. It has to be (X,Y), to (longitude, latitude).
+
+        .. versionchanged:: 0.6.1
+        A POINT location should be specified here if there is a physical measurement 
+        point that is different from the centroid of the spatial extent (e.g., 
+        discharge measurement with the extent of the catchment).
+        Otherwise, ``Datasource.spatial_scale.extent`` should be used to specify the
+        location of the measured data.
     variable : int, str
         **Full** variable name (str) or ID (int) of the data described by the Entry.
     abstract : str
