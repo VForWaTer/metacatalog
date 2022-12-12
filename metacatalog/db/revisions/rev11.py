@@ -3,9 +3,12 @@ Metacatalog database revision
 -----------------------------
 date: 2022-10-05T14:41:32.055433
 
-revision #10
+revision #11
 
 Make column entries.location nullable (raster data do not have a POINT location).
+Attention, the downgrade sets everywhere where entries.location == NULL to 
+(POINT 0 0), which may not correspond to the state of the database before upgrading,
+so the revision upgrade cannot be undone. 
 
 """
 from sqlalchemy.orm import Session

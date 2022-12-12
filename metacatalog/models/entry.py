@@ -68,7 +68,7 @@ class Entry(Base):
         Usually an unque ID field of other data-storage solutions. The
         exernal_id is only stored for reference reasons.
     location : str, tuple
-        .. versionchanged:: 0.5.3
+        .. versionchanged:: 0.6.1
         A POINT location should be specified here if there is a physical measurement 
         point that is different from the centroid of the spatial extent (e.g., 
         discharge measurement with the extent of the catchment).

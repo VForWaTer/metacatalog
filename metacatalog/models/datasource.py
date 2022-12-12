@@ -339,7 +339,7 @@ class SpatialScale(Base):
         :attr:`resolution_str` property for a string representation
     extent : geoalchemy2.Geometry
         The spatial extent of the dataset is given as a ``'POLYGON'``. 
-        .. versionchanged:: 0.5.3
+        .. versionchanged:: 0.6.1
         From this ``POLYGON``, a bounding box and the centroid are internally
         calculated.
         To specify a point location here, use the same value for easting and
@@ -604,7 +604,7 @@ class DataSource(Base):
                 session.rollback()
                 raise e
 
-    def create_scale(self, resolution, extent, support, scale_dimension):
+    def create_scale(self, resolution, extent, support, scale_dimension, commit=False):
         """
         Create a new scale for the dataset
         """
@@ -624,14 +624,14 @@ class DataSource(Base):
         scale = Cls(resolution=resolution, extent=extent, support=support)
         setattr(self, '%s_scale' % scale_dimension.lower(), scale)
 
-        # commit
-        try:
-            session = object_session(self)
-            session.add(self)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise e
+        if commit:
+            try:
+                session = object_session(self)
+                session.add(self)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
 
     def __str__(self):
         return "%s data source at %s <ID=%d>" % (self.type.name, self.path, self.id)
