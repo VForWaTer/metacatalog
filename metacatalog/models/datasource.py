@@ -384,7 +384,7 @@ class SpatialScale(Base):
     @property
     def support_str(self):
         if (self.support * self.resolution) / 1000 > 1:
-            return '%d km' % (int((self.support * self.resultion) / 1000))
+            return '%d km' % (int((self.support * self.resolution) / 1000))
         return '%.1f m' % (self.support * self.resolution)
 
     def to_dict(self, deep=False) -> dict:
