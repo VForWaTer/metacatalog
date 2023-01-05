@@ -39,9 +39,19 @@ class Detail(Base):
     key : str
         The key of the key vaule par. Maximum 20 letters,
         ideally no whitespaces.
+        .. versionchanged:: 0.6.2
+        Maximum letters changed from 20 to 60.
+        Ideally, the key should come from a thesaurus available in the 
+        database. In this case, also link the detail to the thesaurus
+        via :attr:`thesaurus_id`.
     stem : str
         Stemmed key using a `nltk.PorterStemmer`. The stemmed
         key can be used to search for related keys
+    title : str
+        .. versionadded:: 0.6.2
+        Optional longer and more descriptive title than :attr:`key`, 
+        use this field e.g. if you used a thesaurus for attr:`key`, but 
+        a longer or more precise title provides additional information.
     value : str, list
         .. versionchanged:: 0.3.0
         The actual value of this detail. This can be a string
@@ -72,8 +82,9 @@ class Detail(Base):
     # columns
     id = Column(Integer, primary_key=True, autoincrement=True)
     entry_id = Column(Integer, ForeignKey('entries.id'))
-    key = Column(String(20), nullable=False)
+    key = Column(String(60), nullable=False)
     stem = Column(String(20), nullable=False)
+    title = Column(String, nullable=True)
     raw_value = Column(MutableDict.as_mutable(JSONB), nullable=False)
     description = Column(String, nullable=True)
     thesaurus_id = Column(Integer, ForeignKey('thesaurus.id'))

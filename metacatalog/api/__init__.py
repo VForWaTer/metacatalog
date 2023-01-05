@@ -49,7 +49,8 @@ from .find import (
     find_variable,
     find_datasource_type,
     find_role, 
-    find_person, 
+    find_person,
+    find_organisation,
     find_group_type, 
     find_group, 
     find_entry

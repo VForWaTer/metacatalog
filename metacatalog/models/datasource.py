@@ -13,6 +13,7 @@ import pandas as pd
 
 from metacatalog.db.base import Base
 from metacatalog.ext import extension
+from metacatalog.util.exceptions import MetadataMissingError
 
 
 class DataSourceType(Base):
@@ -337,9 +338,12 @@ class SpatialScale(Base):
         cell size, which only applies to gridded datasets. Use the
         :attr:`resolution_str` property for a string representation
     extent : geoalchemy2.Geometry
-        The spatial extent of the dataset is given as a ``'POLYGON'``. While
-        metacatalog is capable of storing any kind of valid POLYGON as extent,
-        it is best practice to allow only Bounding Boxes on upload.
+        The spatial extent of the dataset is given as a ``'POLYGON'``. 
+        .. versionchanged:: 0.6.1
+        From this ``POLYGON``, a bounding box and the centroid are internally
+        calculated.
+        To specify a point location here, use the same value for easting and
+        westing and the same value for northing and southing.
     support : float
         The support gives the spatial validity for a single observation.
         It specifies the spatial extent at which an observed value is valid.
@@ -379,8 +383,8 @@ class SpatialScale(Base):
 
     @property
     def support_str(self):
-        if (self.support * self.resultion) / 1000 > 1:
-            return '%d km' % (int((self.support * self.resultion) / 1000))
+        if (self.support * self.resolution) / 1000 > 1:
+            return '%d km' % (int((self.support * self.resolution) / 1000))
         return '%.1f m' % (self.support * self.resolution)
 
     def to_dict(self, deep=False) -> dict:
@@ -600,21 +604,34 @@ class DataSource(Base):
                 session.rollback()
                 raise e
 
-    def create_scale(self, resolution, extent, support, scale_dimension):
+    def create_scale(self, resolution, extent, support, scale_dimension, commit=False):
         """
         Create a new scale for the dataset
         """
         # get the correct class
         if scale_dimension.lower() == 'temporal':
             Cls = TemporalScale
+            if self.temporal_scale is not None:
+                raise MetadataMissingError('Temporal scale already exists. You can edit that one.')
         elif scale_dimension.lower() == 'spatial':
             Cls = SpatialScale
+            if self.spatial_scale is not None:
+                raise MetadataMissingError('Spatial scale already exists. You can edit that one.')
         else:
             raise AttributeError("scale_dimension has to be in ['temporal', 'spatial']")
 
         # build the scale and append
         scale = Cls(resolution=resolution, extent=extent, support=support)
         setattr(self, '%s_scale' % scale_dimension.lower(), scale)
+
+        if commit:
+            try:
+                session = object_session(self)
+                session.add(self)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
 
     def __str__(self):
         return "%s data source at %s <ID=%d>" % (self.type.name, self.path, self.id)
