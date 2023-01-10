@@ -20,7 +20,7 @@
     {% if isPartial %}
     {# if Entry isPartial: ids of associated groups #}
     <gmd:parentIdentifier>
-        {# parentIdentifier: EntryGroup.id / EntryGroup.uuid ?? #}
+        {# parentIdentifier: EntryGroup.uuid #}
         {% for group in associated_groups %}
         <gco:CharacterString>{{group.uuid}}</gco:CharacterString>
         {% endfor %}
@@ -31,24 +31,24 @@
         <gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" codeSpace="005">dataset</gmd:MD_ScopeCode>
     </gmd:hierarchyLevel>
 
-    {# this would be our contact (pointOfContact) #}
-    <gmd:contact xlink:title="DOC/NOAA/NESDIS/NODC/NCDDC&gt; National Coastal Data Development Center (pointOfContact)">
+
+    <gmd:contact>
         <gmd:CI_ResponsibleParty>
             <gmd:organisationName>
-                <gco:CharacterString>Karlsruhe Institute for Technology (KIT) - Institute of Water and River Basin Management - Hydrology</gco:CharacterString>
+                <gco:CharacterString>Karlsruhe Institute of Technology (KIT) - Institute of Water and River Basin Management - Chair of Hydrology</gco:CharacterString>
             </gmd:organisationName>
             <gmd:contactInfo>
                 <gmd:CI_Contact>
                     <gmd:address>
                         <gmd:CI_Address>
                             <gmd:deliveryPoint>
-                                <gco:CharacterString>Building 10.81</gco:CharacterString>
+                                <gco:CharacterString>Otto-Ammann-Platz 1, Building 10.81</gco:CharacterString>
                             </gmd:deliveryPoint>
                             <gmd:city>
                                 <gco:CharacterString>Karlsruhe</gco:CharacterString>
                             </gmd:city>
                             <gmd:administrativeArea>
-                                <gco:CharacterString>Baden Wurttemberg</gco:CharacterString>
+                                <gco:CharacterString>Baden-Wuerttemberg</gco:CharacterString>
                             </gmd:administrativeArea>
                             <gmd:postalCode>
                                 <gco:CharacterString>76131</gco:CharacterString>
@@ -64,9 +64,19 @@
                             </gmd:electronicMailAddress>
                         </gmd:CI_Address>
                     </gmd:address>
-                    <gmd:hoursOfService>
-                        <gco:CharacterString>Monday - Friday 9:00am - 5:00pm</gco:CharacterString>
-                    </gmd:hoursOfService>
+                    <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>https://portal.vforwater.de/</gmd:URL>
+                            </gmd:linkage>
+                            <gmd:name>
+                                <gco:CharacterString>V-FOR-WaTer</gco:CharacterString>
+                            </gmd:name>
+                            <gmd:description>
+                                <gco:CharacterString>Virtual research environment for water and terrestrial environmental research</gco:CharacterString>
+                            </gmd:description>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onlineResource>
                 </gmd:CI_Contact>
             </gmd:contactInfo>
             <gmd:role>
@@ -78,12 +88,10 @@
         <gco:DateTime>{{lastUpdate.isoformat()}}</gco:DateTime>
     </gmd:dateStamp>
     <gmd:metadataStandardName>
-        {# template from workbook is 'ISO 19115-2 Geographic Information - Metadata - Part 2: Extensions for Imagery and Gridded Data' #}
-        <gco:CharacterString>ISO 19115-2 Geographic information - Metadata - Part 2: Extensions for acquisition and processing</gco:CharacterString>
+        <gco:CharacterString>ISO 19115-2 Geographic Information – Metadata – Part 2: Extensions for Imagery and Gridded Data</gco:CharacterString>
     </gmd:metadataStandardName>
     <gmd:metadataStandardVersion>
-        {# template from workbook is 'ISO 19115-2:2009(E)'#}
-        <gco:CharacterString>ISO 19115-2:2019</gco:CharacterString>
+        <gco:CharacterString>ISO 19115-2:2009(E)</gco:CharacterString>
     </gmd:metadataStandardVersion>
 
 
@@ -186,7 +194,7 @@
 
 
 
-            
+            {% if keywords %}
             <gmd:descriptiveKeywords>
             {# our details are key-value pairs -> just store them here? #}
             {# we had the idea of tags -> would be stored here #}
@@ -200,7 +208,7 @@
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>
                             <gmd:title>
-                                <gco:CharacterString>{{thesaurus.name}}</gco:CharacterString>
+                                <gco:CharacterString>{{thesaurus.title}}</gco:CharacterString>
                             </gmd:title>
                             <gmd:date>
                                 <gmd:CI_Date>
@@ -222,6 +230,7 @@
                     </gmd:useLimitation>
                 </gmd:MD_Constraints>
             </gmd:resourceConstraints>
+            {% endif %}
 
             {% for group in associated_groups %}
             {# all associated groups here (TODO: discuss) #}
