@@ -9,13 +9,8 @@
         <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="eng">eng</gmd:LanguageCode>
     </gmd:language>
     <gmd:characterSet>
-    {% if datasource %}
-        {# if datasource exists: use datasource.encoding #}
-        <gmd:MD_CharacterSetCode codeListValue="{{datasource.encoding|replace("-", "")}}" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
-    {% else %}
-        {# no datasource: utf8 #}
+        {# always utf8 #}
         <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
-    {% endif %}
     </gmd:characterSet>
     {% if isPartial %}
     {# if Entry isPartial: ids of associated groups #}
@@ -100,7 +95,6 @@
             <gmd:referenceSystemIdentifier>
                 <gmd:RS_Identifier>
                     <gmd:code>
-                        {# always EPSG:4326 #}
                         <gco:CharacterString>urn:ogc:def:crs:EPSG:4326</gco:CharacterString>
                     </gmd:code>
                 </gmd:RS_Identifier>
@@ -123,7 +117,17 @@
                                 <gco:DateTime>{{publication.isoformat()}}</gco:DateTime>
                             </gmd:date>
                             <gmd:dateType>
-                                <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" codeSpace="002">publication</gmd:CI_DateTypeCode>
+                                <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" codeSpace="001">creation</gmd:CI_DateTypeCode>
+                            </gmd:dateType>
+                        </gmd:CI_Date>
+                    </gmd:date>
+                    <gmd:date>
+                        <gmd:CI_Date> 
+                            <gmd:date>
+                                <gco:DateTime>{{lastUpdate.isoformat()}}</gco:DateTime>
+                            </gmd:date>
+                            <gmd:dateType>
+                                <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision" codeSpace="003">revision</gmd:CI_DateTypeCode>
                             </gmd:dateType>
                         </gmd:CI_Date>
                     </gmd:date>
@@ -140,12 +144,14 @@
                     {# which EntryGroup if there are more than one in Entry.associatedGroups? -> all of them? #}
                     
                     {# TODO: do we need citedResponsibleParty here? -> 'Identification of the contact for the resource.' #}
+                    {# GFZ lists all authors here, below (<gmd:pointOfContact>) only first author (again) #}
                     <gmd:citedResponsibleParty>
                         <gmd:CI_ResponsibleParty>
                             <gmd:organisationName>
                                 <gco:CharacterString>NOAA's Office of Response and Restoration (OR&amp;R)</gco:CharacterString>
                             </gmd:organisationName>
                             <gmd:role>
+                                {# connect person to person_role! #}
                                 <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="originator" codeSpace="006">originator</gmd:CI_RoleCode>
                             </gmd:role>                        
                         </gmd:CI_ResponsibleParty>
@@ -167,6 +173,7 @@
                         <gco:CharacterString>{{author.organisation_name}}</gco:CharacterString>
                     </gmd:organisationName>
                     <gmd:role>
+                        {# connect person to person_role! #}
                         <gmd:CI_RoleCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
                     </gmd:role>
                 </gmd:CI_ResponsibleParty>
@@ -194,6 +201,9 @@
 
 
 
+            {# TODO: details #}
+
+
             {% if keywords %}
             <gmd:descriptiveKeywords>
             {# our details are key-value pairs -> just store them here? #}
@@ -208,6 +218,7 @@
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>
                             <gmd:title>
+                                {# thesaurus not connected to keywords! #}
                                 <gco:CharacterString>{{thesaurus.title}}</gco:CharacterString>
                             </gmd:title>
                             <gmd:date>
