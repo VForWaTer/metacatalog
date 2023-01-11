@@ -3,7 +3,7 @@ Metacatalog database revision
 -----------------------------
 date: 2023-01-11T16:12:15.136872
 
-revision #12
+revision #13
 
 Update column keywords.thesaurus_id, which is [null] at
 the moment. Currently, only GCMD thesaurus (id=1) is 
