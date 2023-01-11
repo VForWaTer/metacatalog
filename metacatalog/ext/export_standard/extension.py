@@ -1,3 +1,4 @@
+from typing import Union
 from numpy import fromstring, full
 from metacatalog.ext import MetacatalogExtensionInterface
 
@@ -41,9 +42,14 @@ ENTRY_KEYS = (
 
 import os
 
-def _init_iso19115_jinja():
+def _init_iso19115_jinja(rs_dict):
         """
-        Initialize jinja envirnoment for ISO 19115 export.
+        Initialize jinja environment for ISO 19115 export.
+
+        Parameters
+        ----------
+        rs_dict : dict
+            ImmutableResultSet dictionary of exported entry
         """
         # folder containing ISO 19115 templates
         absolute_path = os.path.dirname(__file__)
@@ -52,7 +58,6 @@ def _init_iso19115_jinja():
         
         env = Environment(loader=FileSystemLoader(searchpath=full_path))
         
-        
         # prevent whitespaces / newlines from jinja blocks in template
         env.trim_blocks = True
         env.lstrip_blocks = True
@@ -60,8 +65,8 @@ def _init_iso19115_jinja():
         # custom jinja filter functions
         def temporal_resolution_to_seconds(resolution: str):
             """
-            As temporal resolution is stored as a string in metacatalog but ISO 19915
-            XML requires resolution as type float, this function can is used to return
+            As temporal resolution is stored as a string in metacatalog but ISO 19115
+            XML requires resolution as type float, this function is used to return
             the temporal resolution in seconds.
             """
             resolution = pd.to_timedelta(resolution)
@@ -70,13 +75,16 @@ def _init_iso19115_jinja():
         # register custom filter functions in jinja environment
         env.filters['temporal_resolution_to_seconds'] = temporal_resolution_to_seconds
 
-        # get template inside folder
-        template = env.get_template("iso19115-2.j2")
+        # get template matching ImmutableResultSet
+        if type(rs_dict['id'] == int):
+            template = env.get_template("one_entry_in_rs.j2")
+        else:
+            raise NotImplementedError("Currently, only entries without any dependencies to other entries can be exported.")
 
         return env, template
 
 
-def _init_immutableResultSet_dict(entry: Entry) -> dict:
+def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> dict:
     """
     Loads the ImmutableResultSet of the input Entry and returns `ImmutableResultSet.to_dict()`.
 
@@ -87,8 +95,11 @@ def _init_immutableResultSet_dict(entry: Entry) -> dict:
     the help of this function.
     Includes `associated_groups`, and `thesaurus`.
     """
-    # get ImmutableResultSet
-    rs = ImmutableResultSet(entry)
+    if isinstance(entry_or_resultset, Entry):
+        # get ImmutableResultSet
+        rs = ImmutableResultSet(entry_or_resultset)
+    else:
+        rs = entry_or_resultset
 
     # get ImmutableResultSet dictionary
     rs_dict = rs.to_dict()
@@ -128,15 +139,16 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         pass
 
     @classmethod
-    def iso_xml_export(cls, entry:Entry, path=None, no_data=False, **kwargs):
+    def iso_xml_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], path=None, no_data=False, **kwargs):
         """
-        Export a :class:`Entry <metacatalog.models.Entry>` to XML in ISO
+        Export a :class:`Entry <metacatalog.models.Entry>` or 
+        :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet> to XML in ISO
         19115 standard.
         If a path is given, a new file will be created.
 
         Parameters
         ----------
-        entry : metacatalog.models.Entry
+        entry_or_resultset : Union[Entry, ImmutableResultSet]
             The entry instance to be exported
         path : str
             If given, a file location for export.
@@ -147,7 +159,7 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         Returns
         -------
         out : str
-            The the XML str if path is None, else None
+            The XML str if path is None, else None
 
         Notes
         -----
@@ -155,13 +167,13 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         The content of the file will be created using a 
         :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`.
         This will lazy-load sibling Entries and parent groups as needed for
-        an useful Metadata export.
+        a useful Metadata export.
         """
-        # get initialized jinja environment and template
-        env, template = _init_iso19115_jinja()
-
         # get ImmutableResultSet dictionary
-        rs_dict = _init_immutableResultSet_dict(entry)
+        rs_dict = _init_immutableResultSet_dict(entry_or_resultset)
+
+        # get initialized jinja environment and template
+        env, template = _init_iso19115_jinja(rs_dict)
 
         # render template with entry_dict
         xml = template.render(**rs_dict)
@@ -169,7 +181,7 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         # check whether xml is well-formed
         _validate_xml(xml)
 
-       # check path settings
+        # check path settings
         if path is None:
             #xml=etree.fromstring(xml)
             #xml=etree.tostring(xml) # binary string
