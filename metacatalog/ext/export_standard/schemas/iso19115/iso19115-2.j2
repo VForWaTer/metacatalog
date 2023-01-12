@@ -30,45 +30,44 @@
     <gmd:contact>
         <gmd:CI_ResponsibleParty>
             <gmd:organisationName>
-                <gco:CharacterString>Karlsruhe Institute of Technology (KIT) - Institute of Water and River Basin Management - Chair of Hydrology</gco:CharacterString>
+                <gco:CharacterString>{{contact.organisationName}}</gco:CharacterString>
             </gmd:organisationName>
             <gmd:contactInfo>
                 <gmd:CI_Contact>
                     <gmd:address>
                         <gmd:CI_Address>
                             <gmd:deliveryPoint>
-                                <gco:CharacterString>Otto-Ammann-Platz 1, Building 10.81</gco:CharacterString>
+                                <gco:CharacterString>{{contact.deliveryPoint}}</gco:CharacterString>
                             </gmd:deliveryPoint>
                             <gmd:city>
-                                <gco:CharacterString>Karlsruhe</gco:CharacterString>
+                                <gco:CharacterString>{{contact.city}}</gco:CharacterString>
                             </gmd:city>
                             <gmd:administrativeArea>
-                                <gco:CharacterString>Baden-Wuerttemberg</gco:CharacterString>
+                                <gco:CharacterString>{{contact.administrativeArea}}</gco:CharacterString>
                             </gmd:administrativeArea>
                             <gmd:postalCode>
-                                <gco:CharacterString>76131</gco:CharacterString>
+                                <gco:CharacterString>{{contact.postalCode}}</gco:CharacterString>
                             </gmd:postalCode>
                             <gmd:country>
-                                <gco:CharacterString>Germany</gco:CharacterString>
+                                <gco:CharacterString>{{contact.country}}</gco:CharacterString>
                             </gmd:country>
+                            {% for email in contact.electronicMailAddress %}
                             <gmd:electronicMailAddress>
-                                <gco:CharacterString>alexander.dolich@kit.edu</gco:CharacterString>
+                                <gco:CharacterString>{{email}}</gco:CharacterString>
                             </gmd:electronicMailAddress>
-                            <gmd:electronicMailAddress>
-                                <gco:CharacterString>mirko.maelicke@kit.edu</gco:CharacterString>
-                            </gmd:electronicMailAddress>
+                            {% endfor %}
                         </gmd:CI_Address>
                     </gmd:address>
                     <gmd:onlineResource>
                         <gmd:CI_OnlineResource>
                             <gmd:linkage>
-                                <gmd:URL>https://portal.vforwater.de/</gmd:URL>
+                                <gmd:URL>{{contact.linkage}}</gmd:URL>
                             </gmd:linkage>
                             <gmd:name>
-                                <gco:CharacterString>V-FOR-WaTer</gco:CharacterString>
+                                <gco:CharacterString>{{contact.linkage_name}}</gco:CharacterString>
                             </gmd:name>
                             <gmd:description>
-                                <gco:CharacterString>Virtual research environment for water and terrestrial environmental research</gco:CharacterString>
+                                <gco:CharacterString>{{contact.linkage_description}}</gco:CharacterString>
                             </gmd:description>
                         </gmd:CI_OnlineResource>
                     </gmd:onlineResource>

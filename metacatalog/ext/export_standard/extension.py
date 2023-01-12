@@ -5,6 +5,7 @@ from metacatalog.ext import MetacatalogExtensionInterface
 from metacatalog import api
 
 from metacatalog.models import Entry, Person
+from metacatalog.util.results import ImmutableResultSet
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 import pandas as pd
@@ -12,7 +13,7 @@ from sqlalchemy.orm.session import Session
 from lxml import etree
 import xmltodict
 
-from metacatalog.util.results import ImmutableResultSet
+from geoalchemy2.shape import to_shape
 
 
 
@@ -75,12 +76,9 @@ def _init_iso19115_jinja(rs_dict):
         # register custom filter functions in jinja environment
         env.filters['temporal_resolution_to_seconds'] = temporal_resolution_to_seconds
 
-        # get template matching ImmutableResultSet
-        if type(rs_dict['id'] == int):
-            template = env.get_template("one_entry_in_rs.j2")
-        else:
-            raise NotImplementedError("Currently, only entries without any dependencies to other entries can be exported.")
-
+        # get template
+        template = env.get_template("iso19115-2.j2")
+        
         return env, template
 
 
@@ -107,12 +105,15 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # ImmutableResultSet base group
     rs_dict['base_group'] = rs.group
 
+    # ImmutableResultSet.to_dict() returns location as WKBElement -> convert to WKT string
+    rs_dict['location'] = to_shape(rs_dict['location']).wkt
+
     # Entry associated groups
-    rs_dict['associated_groups'] = [g.to_dict() for g in entry.associated_groups]
+    #rs_dict['associated_groups'] = [g.to_dict() for g in entry.associated_groups]
 
     # thesaurus -> I think there is no link from Entry to the used thesaurus, currently only GCMD is implemented.
-    session = Session.object_session(entry)
-    rs_dict['thesaurus'] = api.find_thesaurus(session)[0].to_dict()
+    #session = Session.object_session(rs)
+    #rs_dict['thesaurus'] = api.find_thesaurus(session)[0].to_dict()
 
     return rs_dict
 
@@ -139,7 +140,7 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         pass
 
     @classmethod
-    def iso_xml_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], path=None, no_data=False, **kwargs):
+    def iso_xml_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict:dict, path: str=None, no_data=False, **kwargs):
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
         :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet> to XML in ISO
@@ -150,6 +151,9 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         ----------
         entry_or_resultset : Union[Entry, ImmutableResultSet]
             The entry instance to be exported
+        config_dict : dict
+            Configuration dictionary, containing information about the data provider
+            - contact
         path : str
             If given, a file location for export.
         no_data : bool
@@ -176,7 +180,7 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         env, template = _init_iso19115_jinja(rs_dict)
 
         # render template with entry_dict
-        xml = template.render(**rs_dict)
+        xml = template.render(**rs_dict, **config_dict)
 
         # check whether xml is well-formed
         _validate_xml(xml)
