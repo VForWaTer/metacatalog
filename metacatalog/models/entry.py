@@ -526,8 +526,18 @@ class Entry(Base):
         details = dict()
         for key, detail in self.details_dict(full=True).items():
             if isinstance(detail['value'], dict):
-                expand = {f'{key}.{k}': dict(value=v, id=detail['id'], key=detail['key'], stem=detail['stem']) for k,v in detail['value'].items()}
-                details.update(expand)
+                for k, v in detail['value'].items():
+                    expand = {
+                        f'{key}.{k}': dict(
+                            value=v,
+                            id=detail['id'],
+                            key=detail['key'],
+                            stem=detail['stem'],
+                            entry_id=detail['entry_id'],
+                            entry_uuid=detail['entry_uuid']
+                        )
+                    }
+                    details.update(expand)
             else:
                 details[key] = detail
 
