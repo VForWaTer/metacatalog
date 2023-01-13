@@ -105,8 +105,11 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # ImmutableResultSet base group
     rs_dict['base_group'] = rs.group
 
-    # ImmutableResultSet.to_dict() returns location as WKBElement -> convert to WKT string
-    rs_dict['location'] = to_shape(rs_dict['location']).wkt
+    # get locations of all entries in ImmutableResultSet
+    rs_dict['locations'] = [entry['location'] for entry in rs_dict['entries']]
+
+    # Put details as table in field abstract for now TODO: IRS with more than one entry
+    rs_dict['details_tables'] = [entry.details_table(fmt="md") for entry in rs._members]
 
     # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date -> set
 

@@ -158,7 +158,11 @@
                 </gmd:CI_Citation>
             </gmd:citation>
             <gmd:abstract>
-                <gco:CharacterString>{{abstract}}</gco:CharacterString>
+                <gco:CharacterString>{{abstract}}
+                {% for details_table in details_tables%}   
+                {{detail_table.encode('string_escape')}}
+                {% endfor %}
+                </gco:CharacterString>
             </gmd:abstract>
 
             {# first author #}
