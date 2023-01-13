@@ -108,6 +108,8 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # ImmutableResultSet.to_dict() returns location as WKBElement -> convert to WKT string
     rs_dict['location'] = to_shape(rs_dict['location']).wkt
 
+    # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date -> set
+
     # Entry associated groups
     #rs_dict['associated_groups'] = [g.to_dict() for g in entry.associated_groups]
 

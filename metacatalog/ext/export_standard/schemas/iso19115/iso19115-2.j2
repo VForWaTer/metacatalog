@@ -308,10 +308,12 @@
             
             {% if datasource %}
             <gmd:extent>
+                {# TODO: neue location implementation -> View kann hier nicht verwendet werden -> drüber nachdenken wie wir das machen #}
                 <gmd:EX_Extent id="boundingExtent">
                     {# geographic extent only for datasources with spatial_scale #}
                     {% if datasource.spatial_scale %}
                     <gmd:geographicElement>
+                        {# TODO: IRS repeatable location #}
                         <gmd:EX_GeographicBoundingBox id="boundingGeographicBoundingBox">
                             {# TODO: get bounding box parameters from column extent (atm no example present) #}
                             <gmd:westBoundLongitude>
@@ -330,6 +332,7 @@
                     </gmd:geographicElement>
                     {% elif 'POINT' in location %}
                     {# store point location as "bounding box" #}
+                    {# TODO:  #}
                     <gmd:geographicElement>
                         <gmd:EX_GeographicBoundingBox>
                             <gmd:westBoundLongitude>
