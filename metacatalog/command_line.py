@@ -113,11 +113,11 @@ def main():
     # RUN THE TOOL
     #-------------------
     # print version
-    if hasattr(args, 'version'):
+    if hasattr(args, 'version') and args.version:
         print(VERSION)
     
     # if development mode, do not handle errors
-    elif hasattr(args, 'dev'):
+    elif hasattr(args, 'dev') and args.dev:
         args.func(args)
     
     # else, catch all errors and print to file
