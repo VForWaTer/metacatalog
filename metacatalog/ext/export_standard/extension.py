@@ -72,9 +72,18 @@ def _init_iso19115_jinja(rs_dict):
             """
             resolution = pd.to_timedelta(resolution)
             return resolution.total_seconds()
+        
+        def datetime_to_date(datetime):
+            """
+            DateTime fields in metacatalog contain microseconds.
+            For ISO export, we drop the time and just use the date.
+            Use this filter to convert datetime to date and return in isoformat.
+            """
+            return datetime.date().isoformat()
 
         # register custom filter functions in jinja environment
         env.filters['temporal_resolution_to_seconds'] = temporal_resolution_to_seconds
+        env.filters['datetime_to_date'] = datetime_to_date
 
         # get template
         template = env.get_template("iso19115-2.j2")

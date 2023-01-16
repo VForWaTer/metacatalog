@@ -113,7 +113,7 @@
                     <gmd:date>
                         <gmd:CI_Date> 
                             <gmd:date>
-                                <gco:DateTime>{{entry_dict.publication.isoformat()}}</gco:DateTime>
+                                <gco:Date>{{entry_dict.publication | datetime_to_date}}</gco:Date>
                             </gmd:date>
                             <gmd:dateType>
                                 <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" codeSpace="001">creation</gmd:CI_DateTypeCode>
@@ -123,7 +123,7 @@
                     <gmd:date>
                         <gmd:CI_Date> 
                             <gmd:date>
-                                <gco:DateTime>{{entry_dict.lastUpdate.isoformat()}}</gco:DateTime>
+                                <gco:Date>{{entry_dict.lastUpdate | datetime_to_date}}</gco:Date>
                             </gmd:date>
                             <gmd:dateType>
                                 <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision" codeSpace="003">revision</gmd:CI_DateTypeCode>
@@ -134,7 +134,7 @@
                         <gco:CharacterString>{{entry_dict.version}}</gco:CharacterString>
                     </edition>
                     <editionDate>
-                        <gco:DateTime>{{entry_dict.publication.isoformat()}}</gco:DateTime>
+                        <gco:Date>{{entry_dict.publication | datetime_to_date}}</gco:Date>
                     </editionDate>
                     
                     {# TODO: discuss series #}
@@ -158,8 +158,12 @@
                 </gmd:CI_Citation>
             </gmd:citation>
             <gmd:abstract>
-                <gco:CharacterString>{{entry_dict.abstract}}
-                {{entry_dict.details_table}}
+                <gco:CharacterString>
+                Abstract: 
+                {{entry_dict.abstract}}
+
+                Details:
+                {{entry_dict.details_table | indent(16)}}
                 </gco:CharacterString>
             </gmd:abstract>
 
@@ -359,7 +363,7 @@
                                 <gml:TimePeriod gml:id="boundingTemporalExtent">
                                     <gml:beginPosition>{{datasource.temporal_scale.extent[0].isoformat()}}</gml:beginPosition>
                                     <gml:endPosition>{{datasource.temporal_scale.extent[1].isoformat()}}</gml:endPosition>
-                                    <gml:timeInterval unit="seconds">{{datasource.temporal_scale.resolution|temporal_resolution_to_seconds}}</gml:timeInterval>
+                                    <gml:timeInterval unit="seconds">{{datasource.temporal_scale.resolution | temporal_resolution_to_seconds}}</gml:timeInterval>
                                 </gml:TimePeriod>
                             </gmd:extent>
                         </gmd:EX_TemporalExtent>
