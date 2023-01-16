@@ -152,10 +152,29 @@
                     
                     {# TODO: do we need citedResponsibleParty here? -> 'Identification of the contact for the resource.' #}
                     {# GFZ lists all authors here, below (<gmd:pointOfContact>) only first author (again) #}
+
+
+                    {# list all associated persons here #}
+                    {% for author in entry_dict.authors %}
+                    <gmd:CI_ResponsibleParty>
+                        <gmd:individualName>
+                            {# format: last_name, first_name #}
+                            <gco:CharacterString>{{author.last_name}}, {{author.first_name}}</gco:CharacterString>
+                        </gmd:individualName>
+                        <gmd:organisationName>
+                            <gco:CharacterString>{{author.organisation_name}}</gco:CharacterString>
+                        </gmd:organisationName>
+                        <gmd:role>
+                            {# TODO: connect person to person_role, fill automatically! #}
+                            <gmd:CI_RoleCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+                        </gmd:role>
+                    </gmd:CI_ResponsibleParty>
+                    {% endfor %}
+                    {# originator: from config_dict #}
                     <gmd:citedResponsibleParty>
                         <gmd:CI_ResponsibleParty>
                             <gmd:organisationName>
-                                <gco:CharacterString>NOAA's Office of Response and Restoration (OR&amp;R)</gco:CharacterString>
+                                <gco:CharacterString>{{originator.organisation_name}}</gco:CharacterString>
                             </gmd:organisationName>
                             <gmd:role>
                                 {# connect person to person_role! #}
@@ -175,48 +194,23 @@
                 </gco:CharacterString>
             </gmd:abstract>
 
-            {# first author #}
+            {# first author again as pointOfContact (like GFZ) #}
             <gmd:pointOfContact>
                 <gmd:CI_ResponsibleParty>
                     <gmd:individualName>
                         {# format: last_name, first_name #}
-                        <gco:CharacterString>{{author.last_name}}, {{author.first_name}}</gco:CharacterString>
+                        <gco:CharacterString>{{entry_dict.author.last_name}}, {{entry_dict.author.first_name}}</gco:CharacterString>
                     </gmd:individualName>
                     <gmd:organisationName>
-                        <gco:CharacterString>{{author.organisation_name}}</gco:CharacterString>
+                        <gco:CharacterString>{{entry_dict.author.organisation_name}}</gco:CharacterString>
                     </gmd:organisationName>
                     <gmd:role>
                         {# connect person to person_role! #}
-                        <gmd:CI_RoleCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+                        <gmd:CI_RoleCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
                     </gmd:role>
                 </gmd:CI_ResponsibleParty>
             </gmd:pointOfContact>
-
-            {# coauthors#}
-            {% if authors %}
-            {% for coauthor in authors %}
-            <gmd:pointOfContact>
-                <gmd:CI_ResponsibleParty>
-                    <gmd:individualName>
-                        {# format: last_name, first_name #}
-                        <gco:CharacterString>{{coauthor.last_name}}, {{coauthor.first_name}}</gco:CharacterString>
-                    </gmd:individualName>
-                    <gmd:organisationName>
-                        <gco:CharacterString>{{coauthor.organisation_name}}</gco:CharacterString>
-                    </gmd:organisationName>
-                    <gmd:role>
-                        <gmd:CI_RoleCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="coAuthor">coAuthor</gmd:CI_RoleCode>
-                    </gmd:role>
-                </gmd:CI_ResponsibleParty>
-            </gmd:pointOfContact>
-            {% endfor %}
-            {% endif %}
-
-
-
             {# TODO: details -> for now in abstract #}
-
-
             {% if keywords %}
             <gmd:descriptiveKeywords>
             {# our details are key-value pairs -> just store them here? #}
