@@ -136,6 +136,14 @@
                     <editionDate>
                         <gco:Date>{{entry_dict.publication | datetime_to_date}}</gco:Date>
                     </editionDate>
+                    <gmd:identifier>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                {# put Entry.uuid here, not sure if this is correct, GFZ uses DOI #}
+                                <gco:CharacterString>{{entry_dict.uuid}}</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:identifier>
                     
                     {# TODO: discuss series #}
                     {# series? -> EntryGroup.uuid? -> CI_Series #}
