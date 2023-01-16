@@ -79,10 +79,10 @@
         </gmd:CI_ResponsibleParty>
     </gmd:contact>
     <gmd:dateStamp>
-        <gco:DateTime>{{lastUpdate.isoformat()}}</gco:DateTime>
+        <gco:Date>{{lastUpdate_date.isoformat()}}</gco:Date>
     </gmd:dateStamp>
     <gmd:metadataStandardName>
-        <gco:CharacterString>ISO 19115-2 Geographic Information – Metadata – Part 2: Extensions for Imagery and Gridded Data</gco:CharacterString>
+        <gco:CharacterString>ISO 19115-2 Geographic Information - Metadata - Part 2: Extensions for Imagery and Gridded Data</gco:CharacterString>
     </gmd:metadataStandardName>
     <gmd:metadataStandardVersion>
         <gco:CharacterString>ISO 19115-2:2009(E)</gco:CharacterString>
@@ -101,19 +101,19 @@
         </gmd:MD_ReferenceSystem>
     </gmd:referenceSystemInfo>
 
-
-
+    {# repeat identificationInfo for all members/entries in ImmutableResultSet #}
+    {% for entry_dict in entry_dicts %}
     <gmd:identificationInfo>
         <gmd:MD_DataIdentification>
             <gmd:citation>
                 <gmd:CI_Citation>
                     <gmd:title>
-                        <gco:CharacterString>{{title}}</gco:CharacterString>
+                        <gco:CharacterString>{{entry_dict.title}}</gco:CharacterString>
                     </gmd:title>
                     <gmd:date>
                         <gmd:CI_Date> 
                             <gmd:date>
-                                <gco:DateTime>{{publication.isoformat()}}</gco:DateTime>
+                                <gco:DateTime>{{entry_dict.publication.isoformat()}}</gco:DateTime>
                             </gmd:date>
                             <gmd:dateType>
                                 <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" codeSpace="001">creation</gmd:CI_DateTypeCode>
@@ -123,7 +123,7 @@
                     <gmd:date>
                         <gmd:CI_Date> 
                             <gmd:date>
-                                <gco:DateTime>{{lastUpdate.isoformat()}}</gco:DateTime>
+                                <gco:DateTime>{{entry_dict.lastUpdate.isoformat()}}</gco:DateTime>
                             </gmd:date>
                             <gmd:dateType>
                                 <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision" codeSpace="003">revision</gmd:CI_DateTypeCode>
@@ -131,10 +131,10 @@
                         </gmd:CI_Date>
                     </gmd:date>
                     <edition>
-                        <gco:CharacterString>{{version}}</gco:CharacterString>
+                        <gco:CharacterString>{{entry_dict.version}}</gco:CharacterString>
                     </edition>
                     <editionDate>
-                        <gco:DateTime>{{publication.isoformat()}}</gco:DateTime>
+                        <gco:DateTime>{{entry_dict.publication.isoformat()}}</gco:DateTime>
                     </editionDate>
                     
                     {# TODO: discuss series #}
@@ -158,10 +158,8 @@
                 </gmd:CI_Citation>
             </gmd:citation>
             <gmd:abstract>
-                <gco:CharacterString>{{abstract}}
-                {% for details_table in details_tables%}   
-                {{detail_table.encode('string_escape')}}
-                {% endfor %}
+                <gco:CharacterString>{{entry_dict.abstract}}
+                {{entry_dict.details_table}}
                 </gco:CharacterString>
             </gmd:abstract>
 
@@ -204,7 +202,7 @@
 
 
 
-            {# TODO: details #}
+            {# TODO: details -> for now in abstract #}
 
 
             {% if keywords %}
@@ -378,6 +376,7 @@
             {% endif %}
         </gmd:MD_DataIdentification>
     </gmd:identificationInfo>
+    {% endfor %}
 
     {# TODO: contentInfo: variable and datasource?? how? -> what about featureCatalogue? #}
     <gmd:contentInfo>

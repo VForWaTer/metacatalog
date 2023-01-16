@@ -102,16 +102,33 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # get ImmutableResultSet dictionary
     rs_dict = rs.to_dict()
 
+    # XML field <gmd:IdentificationInfo> is repeatable -> put information of all entries in ImmutableResultSet here
+    # list containing all dictionaries of entries in ImmutableResultSet
+    entry_dicts = []
+    for entry in rs._members:
+        entry_dict = entry.to_dict()
+        # include details table to put into abstract
+        entry_dict['details_table'] = entry.details_table(fmt='md')
+        # append to entry_dict to entry_dicts
+        entry_dicts.append(entry_dict)
+    
+    # add entry_dicts to rs_dict
+    rs_dict['entry_dicts'] = entry_dicts
+
     # ImmutableResultSet base group
     rs_dict['base_group'] = rs.group
 
     # get locations of all entries in ImmutableResultSet
     rs_dict['locations'] = [entry['location'] for entry in rs_dict['entries']]
 
-    # Put details as table in field abstract for now TODO: IRS with more than one entry
-    rs_dict['details_tables'] = [entry.details_table(fmt="md") for entry in rs._members]
+    # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date
+    rs_dict['lastUpdate_date'] = list(set([datetime.date() for datetime in rs_dict["lastUpdate"].values()]))
+    # if entries in ImmutableResultSet have differing lastUpdate values: raise NotImplementedError (future idea: use basegroup?)
+    if len(rs_dict['lastUpdate_date']) == 1:
+        rs_dict['lastUpdate_date'] = rs_dict['lastUpdate_date'][0]
+    else:
+        raise NotImplementedError("Entries in ImmutableResultSet have differing dates for lastUpdate, export not possible yet.")
 
-    # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date -> set
 
     # Entry associated groups
     #rs_dict['associated_groups'] = [g.to_dict() for g in entry.associated_groups]
