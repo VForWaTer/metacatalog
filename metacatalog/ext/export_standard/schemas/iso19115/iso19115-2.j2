@@ -211,13 +211,13 @@
                 </gmd:CI_ResponsibleParty>
             </gmd:pointOfContact>
             {# TODO: details -> for now in abstract #}
-            {% if keywords %}
+            {% if entry_dict.keywords %}
             <gmd:descriptiveKeywords>
             {# our details are key-value pairs -> just store them here? #}
             {# we had the idea of tags -> would be stored here #}
                 <gmd:MD_Keywords>
                     {# implementation of thesaurus keywords like GFZ #}
-                    {% for keyword in keywords %}
+                    {% for keyword in entry_dict.keywords %}
                     <gmd:keyword>
                         <gco:CharacterString>{{keyword.full_path}}</gco:CharacterString>
                     </gmd:keyword>
@@ -240,15 +240,15 @@
                     </gmd:thesaurusName>
                 </gmd:MD_Keywords>
             </gmd:descriptiveKeywords>
-            <gmd:resourceConstraints xlink:href="{{license.link}}">
+            {% endif %}
+            <gmd:resourceConstraints xlink:href="{{entry_dict.license.link}}">
                 <gmd:MD_Constraints>
                     <gmd:useLimitation>
                         {# decided for short title (like GFZ) #}
-                        <gco:CharacterString>{{license.short_title}}</gco:CharacterString>
+                        <gco:CharacterString>{{entry_dict.license.short_title}}</gco:CharacterString>
                     </gmd:useLimitation>
                 </gmd:MD_Constraints>
             </gmd:resourceConstraints>
-            {% endif %}
 
             {% for group in associated_groups %}
             {# all associated groups here (TODO: discuss) #}
