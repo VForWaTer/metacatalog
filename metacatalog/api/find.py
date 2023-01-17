@@ -130,7 +130,7 @@ def find_keyword(session, id=None, uuid=None, value=None, thesaurus_name=None, r
         return query.all()
 
 
-def find_thesaurus(session, id=None, name=None, title=None, organisation=None, description=None, return_iterator=False):
+def find_thesaurus(session, id=None, uuid=None, name=None, title=None, organisation=None, description=None, return_iterator=False):
     """Find Thesaurii
     ..versionadded:: 0.1.10
 
@@ -145,6 +145,10 @@ def find_thesaurus(session, id=None, name=None, title=None, organisation=None, d
     id : integer
         Database unique ID of the requested record. Will
         return only one record.
+    uuid : str
+        .. versionadded:: 0.6.6
+        Find by version 4 UUID. If uuid is given, all other options
+        will be ignored.
     name : str
         Short name of the Thesaurus. No wildcard use is possible.
         Names are unique, thus no multiple thesaurii will be found.
@@ -169,6 +173,14 @@ def find_thesaurus(session, id=None, name=None, title=None, organisation=None, d
     """
     # base query
     query = session.query(models.Thesaurus)
+
+    # handle uuid first
+    if uuid is not None:
+        query = query.filter(models.Thesaurus.uuid==uuid)
+        if return_iterator:
+            return query
+        else:
+            return query.first()
 
     # add needed filter
     if id is not None:
