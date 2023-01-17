@@ -131,6 +131,8 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # ImmutableResultSet base group
     rs_dict['base_group'] = rs.group
 
+    # add thesaurus to entry_dict
+
     # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date
     if isinstance(rs_dict['lastUpdate'], dict):
         rs_dict['lastUpdate_date'] = list(set([datetime.date() for datetime in rs_dict['lastUpdate'].values()]))
