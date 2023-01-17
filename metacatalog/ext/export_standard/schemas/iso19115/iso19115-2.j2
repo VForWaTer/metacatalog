@@ -221,11 +221,12 @@
                     <gmd:keyword>
                         <gco:CharacterString>{{keyword.full_path}}</gco:CharacterString>
                     </gmd:keyword>
-                    {% endfor %}
+                    {# not sure if thesaurusName is repeatable (must be?), GFZ lists all keywords first, one thesaurusName afterwards #}
+                    {# <gmd:descriptiveKeywords would be repeatable -> group by thesaurus?? #}
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>
                             <gmd:title>
-                                <gco:CharacterString>{{entry_dict.thesaurus.title}}</gco:CharacterString>
+                                <gco:CharacterString>{{keyword.thesaurusName.title}}</gco:CharacterString>
                             </gmd:title>
                             <gmd:date>
                                 <gmd:CI_Date>
@@ -237,6 +238,7 @@
                             </gmd:date>
                         </gmd:CI_Citation>
                     </gmd:thesaurusName>
+                    {% endfor %}
                 </gmd:MD_Keywords>
             </gmd:descriptiveKeywords>
             {% endif %}
