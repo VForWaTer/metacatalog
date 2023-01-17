@@ -478,7 +478,7 @@ class Entry(Base):
         return [kw.keyword.path() for kw in self.keywords]
 
     def plain_keywords_dict(self):
-        return [kw.keyword.as_dict() for kw in self.keywords]
+        return [kw.keyword.to_dict() for kw in self.keywords]
 
     def keywords_dict(self):
         return [
