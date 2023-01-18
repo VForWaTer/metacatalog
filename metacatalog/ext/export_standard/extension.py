@@ -13,8 +13,7 @@ from sqlalchemy.orm.session import Session
 from lxml import etree
 import xmltodict
 
-from geoalchemy2.shape import to_shape
-
+import shapely
 
 
 # DEV not sure if this is a good place...
@@ -122,6 +121,29 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         # include associated groups
         entry_dict['associated_groups'] = entry.associated_groups
 
+        # process location
+        if 'datasource' in entry_dict:
+            if 'spatial_scale' in entry_dict['datasource']:
+                # get location from spatial_extent, spatial_scale is always a POLYGON, also for point locations
+                location = entry_dict['datasource']['spatial_scale']['extent']
+                # convert wkt to shapely shape to infer coordinates
+                P = shapely.wkt.loads(location)
+                # get support points of polygon
+                min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
+                max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
+        elif 'location' in entry_dict:
+            # Entry.location is always a POINT
+            location = entry_dict['location']
+            # convert wkt to shapely shape to infer coordinates
+            P = shapely.wkt.loads(location)
+            # get coordinates of point
+            min_lon = max_lon = P.coords[0][0]
+            min_lat = max_lat = P.coords[0][1]
+        else:
+            raise ValueError("No location associated with Entry.")
+        # append to entry_dict
+        entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
+
         # append entry_dict to list of entry_dicts
         entry_dicts.append(entry_dict)
     
@@ -131,7 +153,8 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # ImmutableResultSet base group
     rs_dict['base_group'] = rs.group
 
-    # add thesaurus to entry_dict
+    # check location
+
 
     # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date
     if isinstance(rs_dict['lastUpdate'], dict):
@@ -144,13 +167,6 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     else:
         raise NotImplementedError("Entries in ImmutableResultSet have differing dates for lastUpdate, export not possible yet.")
 
-
-    # Entry associated groups
-    #rs_dict['associated_groups'] = [g.to_dict() for g in entry.associated_groups]
-
-    # thesaurus -> I think there is no link from Entry to the used thesaurus, currently only GCMD is implemented.
-    #session = Session.object_session(rs)
-    #rs_dict['thesaurus'] = api.find_thesaurus(session)[0].to_dict()
 
     return rs_dict
 

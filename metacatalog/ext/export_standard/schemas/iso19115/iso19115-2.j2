@@ -79,7 +79,7 @@
         </gmd:CI_ResponsibleParty>
     </gmd:contact>
     <gmd:dateStamp>
-        <gco:Date>{{lastUpdate_date.isoformat()}}</gco:Date>
+        <gco:Date>{{lastUpdate_date | datetime_to_date}}</gco:Date>
     </gmd:dateStamp>
     <gmd:metadataStandardName>
         <gco:CharacterString>ISO 19115-2 Geographic Information - Metadata - Part 2: Extensions for Imagery and Gridded Data</gco:CharacterString>
@@ -314,51 +314,30 @@
                 <gmd:MD_TopicCategoryCode>environment</gmd:MD_TopicCategoryCode>
             </gmd:topicCategory>
             
-            {% if datasource %}
             <gmd:extent>
                 {# TODO: neue location implementation -> View kann hier nicht verwendet werden -> drüber nachdenken wie wir das machen #}
                 <gmd:EX_Extent id="boundingExtent">
                     {# geographic extent only for datasources with spatial_scale #}
-                    {% if datasource.spatial_scale %}
+                    {% if entry_dict.bbox_location %}
                     <gmd:geographicElement>
-                        {# TODO: IRS repeatable location #}
                         <gmd:EX_GeographicBoundingBox id="boundingGeographicBoundingBox">
                             {# TODO: get bounding box parameters from column extent (atm no example present) #}
                             <gmd:westBoundLongitude>
-                                <gco:Decimal>{{datasource.spatial_scale.extent}}</gco:Decimal>
+                                <gco:Decimal>{{entry_dict.bbox_location.min_lon}}</gco:Decimal>
                             </gmd:westBoundLongitude>
                             <gmd:eastBoundLongitude>
-                                <gco:Decimal>{{datasource.spatial_scale.extent}}</gco:Decimal>
+                                <gco:Decimal>{{entry_dict.bbox_location.max_lon}}</gco:Decimal>
                             </gmd:eastBoundLongitude>
                             <gmd:southBoundLatitude>
-                                <gco:Decimal>{{datasource.spatial_scale.extent}}</gco:Decimal>
+                                <gco:Decimal>{{entry_dict.bbox_location.min_lat}}</gco:Decimal>
                             </gmd:southBoundLatitude>
                             <gmd:northBoundLatitude>
-                                <gco:Decimal>{{datasource.spatial_scale.extent}}</gco:Decimal>
-                            </gmd:northBoundLatitude>
-                        </gmd:EX_GeographicBoundingBox>
-                    </gmd:geographicElement>
-                    {% elif 'POINT' in location %}
-                    {# store point location as "bounding box" #}
-                    {# TODO:  #}
-                    <gmd:geographicElement>
-                        <gmd:EX_GeographicBoundingBox>
-                            <gmd:westBoundLongitude>
-                                <gco:Decimal>{{location.split(' ')[1].split('(')[1] | float}}</gco:Decimal>
-                            </gmd:westBoundLongitude>
-                            <gmd:eastBoundLongitude>
-                                <gco:Decimal>{{location.split(' ')[1].split('(')[1] | float}}</gco:Decimal>
-                            </gmd:eastBoundLongitude>
-                            <gmd:southBoundLatitude>
-                                <gco:Decimal>{{location.split(' ')[2].split(')')[0] | float}}</gco:Decimal>
-                            </gmd:southBoundLatitude>
-                            <gmd:northBoundLatitude>
-                                <gco:Decimal>{{location.split(' ')[2].split(')')[0] | float}}</gco:Decimal>
+                                <gco:Decimal>{{entry_dict.bbox_location.max_lon}}</gco:Decimal>
                             </gmd:northBoundLatitude>
                         </gmd:EX_GeographicBoundingBox>
                     </gmd:geographicElement>
                     {% endif %}
-                    {% if datasource.temporal_scale %}
+                    {% if entry_dict.datasource and entry_dict.datasource.temporal_scale %}
                     <gmd:temporalElement>
                         <gmd:EX_TemporalExtent>
                             <gmd:extent>
@@ -374,11 +353,14 @@
                     {# TODO or else: <TimeInstant>: single datetime, e.g. land-use for one timestep? #}
                 </gmd:EX_Extent>
             </gmd:extent>
+            {% if datasource %}
+            {% if datasource.args %}
             <gmd:supplementalInformation>
                 {# this is usually not helpful on export but potentially necessary for re-import #}
                 {# TODO: evenutally data_names? -> If there is no other good place. #}
                 <gco:CharacterString>{{datasource.args}}</gco:CharacterString>
             </gmd:supplementalInformation>
+            {% endif %}
             {% endif %}
         </gmd:MD_DataIdentification>
     </gmd:identificationInfo>
