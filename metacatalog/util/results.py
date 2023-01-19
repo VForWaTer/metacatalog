@@ -111,9 +111,9 @@ class ImmutableResultSet:
             idx = type_names.index('Composite')
             return groups[idx]
         
-        # if 'Split dataset' in type_names:
-        #     idx = type_names.index('Split dataset')
-        #     return groups[idx]
+        if 'Split dataset' in type_names:
+            idx = type_names.index('Split dataset')
+            return groups[idx]
         
         return None
 
