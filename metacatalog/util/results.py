@@ -255,6 +255,11 @@ class ImmutableResultSet:
     def uuids(self):
         """
         Return all uuids that form this result set
+
+        .. versionchanged:: 0.6.8
+            If a member in in _members is an ImmutableResultSet, call this
+            method recursively
+
         """
         # get the group uuid
         uuids = [self.group.uuid] if self.group is not None else []
@@ -262,7 +267,7 @@ class ImmutableResultSet:
         # expand member uuids
         uuids.extend([e.uuid for e in self._members if hasattr(e, 'uuid')])
 
-        # if member is an ImmutableResultSet, check for uuids in ImmutableResultSet
+        # if member is a ImmutableResultSet again, call this method recursicely
         for m in self._members:
             if hasattr(m, 'uuids'):
                 uuids.extend(m.uuids)
@@ -327,6 +332,12 @@ class ImmutableResultSet:
         """
         Generate a full dictionary output of this result set.
 
+        .. versionchanged:: 0.6.8
+            Parameter `orient` added. The default value is `'dict'`, which returns
+            a dictionary with unique keys.
+            The value `'uuids'` will give the dictionary with uuids as keys, this
+            should make it easier to i.e. loop over the uuids / entities of an
+            ImmutableResultSet.
         """
         # first get a list of all available keys
         keys = []
