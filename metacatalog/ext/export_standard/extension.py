@@ -113,7 +113,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # XML field <gmd:IdentificationInfo> is repeatable -> put information of all entries in ImmutableResultSet here
     # list containing all dictionaries of entries in ImmutableResultSet
     entry_dicts = []
-    for entry in rs._members:
+    for entry in rs._members if isinstance(entry, Entry) else :
         entry_dict = entry.to_dict()
         # include details table to put into abstract
         entry_dict['details_table'] = entry.details_table(fmt='md')
@@ -126,23 +126,31 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             if 'spatial_scale' in entry_dict['datasource']:
                 # get location from spatial_extent, spatial_scale is always a POLYGON, also for point locations
                 location = entry_dict['datasource']['spatial_scale']['extent']
+                
                 # convert wkt to shapely shape to infer coordinates
                 P = shapely.wkt.loads(location)
+                
                 # get support points of polygon
                 min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
                 max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
+                
+                # append to entry_dict
+                entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
         elif 'location' in entry_dict:
             # Entry.location is always a POINT
             location = entry_dict['location']
+            
             # convert wkt to shapely shape to infer coordinates
             P = shapely.wkt.loads(location)
+            
             # get coordinates of point
             min_lon = max_lon = P.coords[0][0]
             min_lat = max_lat = P.coords[0][1]
+
+            # append to entry_dict
+            entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
         else:
             raise ValueError("No location associated with Entry.")
-        # append to entry_dict
-        entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
 
         # append entry_dict to list of entry_dicts
         entry_dicts.append(entry_dict)
@@ -153,10 +161,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # ImmutableResultSet base group
     rs_dict['base_group'] = rs.group
 
-    # check location
-
-
-    # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date
+    # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date, set
     if isinstance(rs_dict['lastUpdate'], dict):
         rs_dict['lastUpdate_date'] = list(set([datetime.date() for datetime in rs_dict['lastUpdate'].values()]))
     else:

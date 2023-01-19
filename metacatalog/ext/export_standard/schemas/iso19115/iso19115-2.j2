@@ -79,7 +79,7 @@
         </gmd:CI_ResponsibleParty>
     </gmd:contact>
     <gmd:dateStamp>
-        <gco:Date>{{lastUpdate_date | datetime_to_date}}</gco:Date>
+        <gco:Date>{{lastUpdate_date}}</gco:Date>
     </gmd:dateStamp>
     <gmd:metadataStandardName>
         <gco:CharacterString>ISO 19115-2 Geographic Information - Metadata - Part 2: Extensions for Imagery and Gridded Data</gco:CharacterString>
@@ -353,12 +353,12 @@
                     {# TODO or else: <TimeInstant>: single datetime, e.g. land-use for one timestep? #}
                 </gmd:EX_Extent>
             </gmd:extent>
-            {% if datasource %}
-            {% if datasource.args %}
+            {% if entry_dict.datasource %}
+            {% if entry_dict.datasource.args %}
             <gmd:supplementalInformation>
                 {# this is usually not helpful on export but potentially necessary for re-import #}
                 {# TODO: evenutally data_names? -> If there is no other good place. #}
-                <gco:CharacterString>{{datasource.args}}</gco:CharacterString>
+                <gco:CharacterString>{{entry_dict.datasource.args}}</gco:CharacterString>
             </gmd:supplementalInformation>
             {% endif %}
             {% endif %}
