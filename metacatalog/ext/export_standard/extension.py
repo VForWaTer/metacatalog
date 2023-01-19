@@ -92,14 +92,12 @@ def _init_iso19115_jinja(rs_dict):
 
 def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> dict:
     """
-    Loads the ImmutableResultSet of the input Entry and returns `ImmutableResultSet.to_dict()`.
-
-
+    Loads the ImmutableResultSet of the input Entry (if not already an ImmutableResultSet) 
+    and extracts the information necessary for ISO export from `ImmutableResultSet.to_dict()`.
 
     Not all attributes / relations of an Entry are included in `ImmutableResultSet.to_dict()`.
     The attributes required for ISO 19115 XML export are added to the dictionary with
     the help of this function.
-    Includes `associated_groups`, and `thesaurus`.
     """
     if isinstance(entry_or_resultset, Entry):
         # get ImmutableResultSet
@@ -110,67 +108,106 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # get ImmutableResultSet dictionary
     rs_dict = rs.to_dict()
 
+    # TODO: fileIdentifier
+
+
+    # TODO: lastUpdate
+
+
+    # TODO: title
+
+
+    # TODO: publication
+
+
+    # TODO: version
+
+
+    # TODO: uuid (/fileIdentifier)
+
+
+    # TODO: authors (last_name, first_name, organisation_name, role)
+
+
+    # TODO: abstract
+
+
+    # TODO: details_table
+
+
+    # TODO: keywords (full_path, thesaurusName.title)
+
+
+    # TODO: license (link, short_title)
+
+
+    # TODO: associated_groups (uuid, type.name)
+
+
+    # TODO: datasources (datasource.encoding, spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution, datasource.args)
+
+
     # XML field <gmd:IdentificationInfo> is repeatable -> put information of all entries in ImmutableResultSet here
     # list containing all dictionaries of entries in ImmutableResultSet
-    entry_dicts = []
-    for entry in rs._members if isinstance(entry, Entry) else :
-        entry_dict = entry.to_dict()
-        # include details table to put into abstract
-        entry_dict['details_table'] = entry.details_table(fmt='md')
+    # entry_dicts = []
+    # for entry in rs._members:
+    #     entry_dict = entry.to_dict()
+    #     # include details table to put into abstract
+    #     entry_dict['details_table'] = entry.details_table(fmt='md')
 
-        # include associated groups
-        entry_dict['associated_groups'] = entry.associated_groups
+    #     # include associated groups
+    #     entry_dict['associated_groups'] = entry.associated_groups
 
-        # process location
-        if 'datasource' in entry_dict:
-            if 'spatial_scale' in entry_dict['datasource']:
-                # get location from spatial_extent, spatial_scale is always a POLYGON, also for point locations
-                location = entry_dict['datasource']['spatial_scale']['extent']
+    #     # process location
+    #     if 'datasource' in entry_dict:
+    #         if 'spatial_scale' in entry_dict['datasource']:
+    #             # get location from spatial_extent, spatial_scale is always a POLYGON, also for point locations
+    #             location = entry_dict['datasource']['spatial_scale']['extent']
                 
-                # convert wkt to shapely shape to infer coordinates
-                P = shapely.wkt.loads(location)
+    #             # convert wkt to shapely shape to infer coordinates
+    #             P = shapely.wkt.loads(location)
                 
-                # get support points of polygon
-                min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
-                max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
+    #             # get support points of polygon
+    #             min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
+    #             max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
                 
-                # append to entry_dict
-                entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
-        elif 'location' in entry_dict:
-            # Entry.location is always a POINT
-            location = entry_dict['location']
+    #             # append to entry_dict
+    #             entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
+    #     elif 'location' in entry_dict:
+    #         # Entry.location is always a POINT
+    #         location = entry_dict['location']
             
-            # convert wkt to shapely shape to infer coordinates
-            P = shapely.wkt.loads(location)
+    #         # convert wkt to shapely shape to infer coordinates
+    #         P = shapely.wkt.loads(location)
             
-            # get coordinates of point
-            min_lon = max_lon = P.coords[0][0]
-            min_lat = max_lat = P.coords[0][1]
+    #         # get coordinates of point
+    #         min_lon = max_lon = P.coords[0][0]
+    #         min_lat = max_lat = P.coords[0][1]
 
-            # append to entry_dict
-            entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
-        else:
-            raise ValueError("No location associated with Entry.")
+    #         # append to entry_dict
+    #         entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
+    #     else:
+    #         raise ValueError("No location associated with Entry.")
 
-        # append entry_dict to list of entry_dicts
-        entry_dicts.append(entry_dict)
+    #     # append entry_dict to list of entry_dicts
+    #     entry_dicts.append(entry_dict)
     
-    # add entry_dicts to rs_dict
-    rs_dict['entry_dicts'] = entry_dicts
+    # # add entry_dicts to rs_dict
+    # rs_dict['entry_dicts'] = entry_dicts
 
-    # ImmutableResultSet base group
-    rs_dict['base_group'] = rs.group
+    # # ImmutableResultSet base group
+    # rs_dict['base_group'] = rs.group
 
-    # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date, set
-    if isinstance(rs_dict['lastUpdate'], dict):
-        rs_dict['lastUpdate_date'] = list(set([datetime.date() for datetime in rs_dict['lastUpdate'].values()]))
-    else:
-        rs_dict['lastUpdate_date'] = [rs_dict['lastUpdate']]
-    # if entries in ImmutableResultSet have differing lastUpdate values: raise NotImplementedError (future idea: use basegroup?)
-    if len(rs_dict['lastUpdate_date']) == 1:
-        rs_dict['lastUpdate_date'] = rs_dict['lastUpdate_date'][0]
-    else:
-        raise NotImplementedError("Entries in ImmutableResultSet have differing dates for lastUpdate, export not possible yet.")
+    # # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date, set
+    # if isinstance(rs_dict['lastUpdate'], dict):
+    #     rs_dict['lastUpdate_date'] = list(set([datetime.date() for datetime in rs_dict['lastUpdate'].values()]))
+    # else:
+    #     rs_dict['lastUpdate_date'] = [rs_dict['lastUpdate']]
+    # # if entries in ImmutableResultSet have differing lastUpdate values: raise NotImplementedError (future idea: use basegroup?)
+    # if len(rs_dict['lastUpdate_date']) == 1:
+    #     rs_dict['lastUpdate_date'] = rs_dict['lastUpdate_date'][0]
+    # else:
+    #     raise NotImplementedError("Entries in ImmutableResultSet have differing dates for lastUpdate, export not possible yet.")
 
 
     return rs_dict
