@@ -262,6 +262,11 @@ class ImmutableResultSet:
         # expand member uuids
         uuids.extend([e.uuid for e in self._members if hasattr(e, 'uuid')])
 
+        # if member is an ImmutableResultSet, check for uuids in ImmutableResultSet
+        for m in self._members:
+            if hasattr(m, 'uuids'):
+                uuids.extend(m.uuids)
+
         return uuids
 
     @property
@@ -318,7 +323,7 @@ class ImmutableResultSet:
         # build the output dictionary
         return {key: self.get(key) for key in keys}
 
-    def to_dict(self):
+    def to_dict(self, orient: str = 'dict'):
         """
         Generate a full dictionary output of this result set.
 
@@ -334,7 +339,12 @@ class ImmutableResultSet:
         keys = set(keys)
 
         # build the output dictionary
-        return {key: self.get(key) for key in keys}
+        if orient.lower() == 'dict':
+            return {key: self.get(key) for key in keys}
+        elif orient.lower() == 'uuids':
+            raise NotImplementedError
+        else:
+            raise AttributeError(f"orient = '{orient}' is not supported. Use one of ['dict', 'uuids']")
 
     def get_data(self, verbose=False, merge=False, **kwargs) -> dict:
         """
