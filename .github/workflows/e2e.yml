@@ -1,16 +1,22 @@
 # e2e-tests for Metacatalog
 name: e2e Test
 
-on: ['push']
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
 
 jobs:
   test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        py_version: [3.7, 3.8, 3.9, 3.10]
+        pg_version: [10-2.5, 13-3.3, 15-3.3]
     
     # create the postgis service - the version is hardcoded atm
     services:
       postgis:
-        image: postgis/postgis:10-2.5
+        image: postgis/postgis:${{ matrix.pg_version }}
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -21,12 +27,12 @@ jobs:
     
     steps:
     - name: Chechout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     
     - name: Install Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4.5.0
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.py_version }}
 
     # install metacatalog and test dependencies
     # e2e-tests rely on pytest and pytest-depends so far 
@@ -51,7 +57,8 @@ jobs:
         POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}  
     
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+      if: matrix.py_version == '3.9' && matrix.pg_version == '10.2-5'
+      uses: codecov/codecov-action@v3.1.1
       with:
         file: ./coverage.xml
         flags: e2e
