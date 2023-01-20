@@ -61,7 +61,7 @@ from metacatalog.util.dict_functions import flatten
 
 
 class ImmutableResultSet:
-    def __init__(self, instance: Union[Entry, EntryGroup]):
+    def __init__(self, instance: Union[Entry, EntryGroup, 'ImmutableResultSet']):
         """
         ImmutableResultSet for the given EntryGroup or Entry.
         
@@ -80,6 +80,10 @@ class ImmutableResultSet:
         elif isinstance(instance, EntryGroup):
             group = instance
             members = [ImmutableResultSet.expand_entry(e, group) for e in instance.entries]
+
+        elif isinstance(instance, ImmutableResultSet):
+            group = instance.group
+            members = instance._members
 
         # set attributes
         self.group = group
@@ -135,7 +139,7 @@ class ImmutableResultSet:
                 if base_group is not None and base_group.id == g.id:
                     entries.extend([entry])
                 else:
-                    entries.extend([ImmutableResultSet(g)])
+                    entries.extend(ImmutableResultSet(g)._members)
             
             # composites expand completely
             elif g.type.name == 'Composite':
@@ -425,13 +429,16 @@ class ImmutableResultSet:
                         all_data = pd.merge(all_data, dat, left_index=True, right_index=True, how='outer')
                     else:
                         unmerged.update({checksum: dat})
+            
             # Split dataset: concat everything that is a DataFrame
             elif self.group is not None and self.group.type.name == 'Split dataset':
                 for checksum, dat in data.items():
                     if isinstance(dat, pd.DataFrame):
+                        # TODO: update with better pandas function!
                         all_data = pd.concat([all_data, dat])
                     else:
                         unmerged.update({checksum: dat})
+            
             # other EntryGroup types?
             else:
                 for checksum, dat in data.items():
