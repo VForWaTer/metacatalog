@@ -13,8 +13,7 @@ from sqlalchemy.orm.session import Session
 from lxml import etree
 import xmltodict
 
-import shapely
-
+from datetime import datetime
 
 # DEV not sure if this is a good place...
 ENTRY_KEYS = (
@@ -111,10 +110,21 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # TODO: fileIdentifier
 
 
-    # TODO: lastUpdate
+    ### lastUpdate, round to date, convert to isoformat
+    # if a base group exists, use the title of the base group
+    if rs.group:
+        lastUpdate = rs.group.lastUpdate.date().isoformat()
+
+     # if there is only one lastUpdate / entry in the ImmutableResultSet, use its lastUpdate
+    elif isinstance(rs.get('lastUpdate'), datetime):
+        lastUpdate = rs.get('lastUpdate').date().isoformat()
+
+    # if there are more lastUpdates in ImmutableResultSet, a dict is returned, use latest
+    elif isinstance(rs.get('lastUpdate'), dict):
+        lastUpdate = max(rs.get('lastUpdate').values()).date().isoformat()
 
 
-    # title
+    ### title
     # if a base group exists, use the title of the base group
     if rs.group:
         title = rs.group.title
