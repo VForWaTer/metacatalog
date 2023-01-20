@@ -252,7 +252,6 @@ class Keyword(Base):
             d['children'] = [k.to_dict(deep=True) for k in self.children]
             d['tagged_entries'] = [e.entry.uuid for e in self.tagged_entries]
         else:
-            d['thesaurus_id'] = self.thesaurus_id
             d['thesaurusName'] = self.thesaurusName.to_dict(deep=False)
         
         return d
