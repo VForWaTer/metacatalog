@@ -259,12 +259,22 @@ class ImmutableResultSet:
     def uuids(self):
         """
         Return all uuids that form this result set
+
+        .. versionchanged:: 0.6.8
+            If a member in in _members is an ImmutableResultSet, call this
+            method recursively
+
         """
         # get the group uuid
         uuids = [self.group.uuid] if self.group is not None else []
 
         # expand member uuids
         uuids.extend([e.uuid for e in self._members if hasattr(e, 'uuid')])
+
+        # if member is a ImmutableResultSet again, call this method recursicely
+        for m in self._members:
+            if hasattr(m, 'uuids'):
+                uuids.extend(m.uuids)
 
         return uuids
 
@@ -322,10 +332,16 @@ class ImmutableResultSet:
         # build the output dictionary
         return {key: self.get(key) for key in keys}
 
-    def to_dict(self):
+    def to_dict(self, orient: str = 'dict'):
         """
         Generate a full dictionary output of this result set.
 
+        .. versionchanged:: 0.6.8
+            Parameter `orient` added. The default value is `'dict'`, which returns
+            a dictionary with unique keys.
+            The value `'uuids'` will give the dictionary with uuids as keys, this
+            should make it easier to i.e. loop over the uuids / entities of an
+            ImmutableResultSet.
         """
         # first get a list of all available keys
         keys = []
@@ -338,7 +354,12 @@ class ImmutableResultSet:
         keys = set(keys)
 
         # build the output dictionary
-        return {key: self.get(key) for key in keys}
+        if orient.lower() == 'dict':
+            return {key: self.get(key) for key in keys}
+        elif orient.lower() == 'uuids':
+            raise NotImplementedError
+        else:
+            raise AttributeError(f"orient = '{orient}' is not supported. Use one of ['dict', 'uuids']")
 
     def get_data(self, verbose=False, merge=False, **kwargs) -> dict:
         """
