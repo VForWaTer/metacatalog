@@ -166,6 +166,15 @@ def check_project_group(session):
 
     return True
 
+def check_find_result_without_duplicates(session):
+    """
+    Find the the composite Dummy entries as result set without duplicates.
+    """
+    dummy_entries = api.find_entry(title="Dummy*")
+    dummy_results = api.find_entry(title="Dummy*", as_result=True)
+
+    assert len(dummy_results) == 1
+    assert len(dummy_entries) > 1
 
 def check_composite_raises_error(session):
     with pytest.raises(TypeError) as excinfo:
