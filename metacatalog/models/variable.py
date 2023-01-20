@@ -152,7 +152,7 @@ class Variable(Base):
             symbol=self.symbol,
             unit=self.unit.to_dict(deep=False),
             column_names=self.column_names,
-            keyword=self.keyword.value
+            keyword=self.keyword.to_dict(deep=False)
         )
 
         # set optionals
