@@ -1063,6 +1063,15 @@ def find_entry(session,
         return query
     else:
         if as_result:
-            results = [ImmutableResultSet(entry) for entry in query.all()]
-            return [result for result in results if not result.empty]
+            all_irs = [ImmutableResultSet(entry) for entry in query.all()]
+            results = []
+            
+            # do not return empty or duplicates results
+            for irs in all_irs:
+                if irs.empty or irs.checksum in [r.checksum for r in results]:
+                    continue
+                else:
+                    results.append(irs)
+            return results
+            
         return query.all()

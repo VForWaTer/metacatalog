@@ -254,8 +254,8 @@ def add_split_dataset(session):
     recent_entry = api.add.add_entry(session, title='Recent data', abstract='something bad happended that needs description', location=(4.2, 42), variable=1, license=6, author=kit.id)
     
     # create datasource
-    historical_entry.create_datasource(type=1, path='timeseries', datatype='timeseries')
-    recent_entry.create_datasource(type=1, path='timeseries', datatype='timeseries')
+    historical_entry.create_datasource(type=1, path='timeseries', datatype='timeseries', commit=True)
+    recent_entry.create_datasource(type=1, path='timeseries', datatype='timeseries', commit=True)
     
     # split the data
     historical_entry.import_data(data=data.iloc[:300, :])
@@ -270,15 +270,14 @@ def add_split_dataset(session):
     db_data = result.get_data()
 
     # search for checksum - result.checksum is a checksum of member checksum, which is only one here
-    assert len(result.checksums) == 1
-    checksum = result.checksums[0]
-    assert checksum in db_data
+    # 3 checksums recent, historical and group
+    assert len(result.checksums) == 3
     
-    recovered_data = db_data[checksum].values
-    assert_array_almost_equal(data.values, recovered_data)
+    # Split datasets merge by default
+    assert_array_almost_equal(data.values, db_data.values)
 
     # Split datasets are concatenated row-wise (pd.concat) -> only one column
-    assert db_data[checksum].shape == (350, 1)
+    assert db_data.shape == (350, 1)
 
     return True
 
