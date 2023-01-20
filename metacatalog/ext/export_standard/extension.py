@@ -115,7 +115,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
 
 
     # TODO: title
-
+    title = rs_dict.get('title')
 
     # TODO: publication
 
