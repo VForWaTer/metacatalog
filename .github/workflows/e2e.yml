@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        py_version: [3.7, 3.8, 3.9, 3.10]
-        pg_version: [10-2.5, 13-3.3, 15-3.3]
+        py_version: ['3.7', '3.8', '3.9', '3.10']
+        pg_version: ['10-2.5', '13-3.3', '15-3.3']
     
     # create the postgis service - the version is hardcoded atm
     services:
