@@ -114,8 +114,19 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # TODO: lastUpdate
 
 
-    # TODO: title
-    title = rs_dict.get('title')
+    # title
+    # if a base group exists, use the title of the base group
+    if rs.group:
+        title = rs.group.title
+
+    # if there is only one title / entry in the ImmutableResultSet, use its title
+    elif isinstance(rs.get('title'), str):
+        title = rs.get('title')
+
+    # if there are more titles in ImmutableResultSet, a dict is returned, concatenate titles
+    elif isinstance(rs.get('title'), dict):
+        for i, _title in enumerate(rs.get('title').values()):
+            title += f"Title {i+1}: {_title}\n"
 
     # TODO: publication
 
