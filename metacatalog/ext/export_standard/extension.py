@@ -107,7 +107,19 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # get ImmutableResultSet dictionary
     rs_dict = rs.to_dict()
 
-    # TODO: fileIdentifier
+    ### uuid / fileIdentifier
+    # if a base group exists, use the uuid of the base group
+    if rs.group:
+        uuid = rs.group.uuid
+
+    # if there is only one entry in the ImmutableResultSet, use its uuid
+    elif isinstance(rs.get('uuid'), datetime):
+        uuid = rs.get('uuid')
+
+    # if there are more uuids in ImmutableResultSet, a list is returned, use latest
+    elif isinstance(rs.get('uuid'), list):
+        for i, _uuid in enumerate(rs.get('uuid')):
+            uuid += f"uuid {i+1}: {_uuid}\n"
 
 
     ### lastUpdate, round to date, convert to isoformat
@@ -115,7 +127,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     if rs.group:
         lastUpdate = rs.group.lastUpdate.date().isoformat()
 
-     # if there is only one lastUpdate / entry in the ImmutableResultSet, use its lastUpdate
+    # if there is only one lastUpdate / entry in the ImmutableResultSet, use its lastUpdate
     elif isinstance(rs.get('lastUpdate'), datetime):
         lastUpdate = rs.get('lastUpdate').date().isoformat()
 
@@ -137,6 +149,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     elif isinstance(rs.get('title'), dict):
         for i, _title in enumerate(rs.get('title').values()):
             title += f"Title {i+1}: {_title}\n"
+    # TODO: sort titles?? sort everything? (like uuid)
 
     # TODO: publication
 
