@@ -112,13 +112,14 @@ setup(
     long_description=readme(),
     long_description_content_type="text/markdown",
     packages=find_packages(),
-    scripts=['metacatalog/metacatalog'],
     cmdclass={
         'develop': PostDevelopCommand,
         'install': PostInstallCommand
     },
     entrypoints={
-        'console_scripts': ['metacatalog = metacatalog.command_line:main']
+        'console_scripts': [
+            'metacatalog = metacatalog.command_line:main'
+        ]
     },
     include_package_data=True,
     zip_safe=False
