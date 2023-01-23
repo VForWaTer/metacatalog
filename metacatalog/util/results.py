@@ -79,7 +79,7 @@ class ImmutableResultSet:
         
         elif isinstance(instance, EntryGroup):
             group = instance
-            members = [ImmutableResultSet.expand_entry(e, group) for e in instance.entries]
+            members = [ImmutableResultSet.expand_entry(e) for e in instance.entries]
 
         elif isinstance(instance, ImmutableResultSet):
             group = instance.group
@@ -122,27 +122,22 @@ class ImmutableResultSet:
         return None
 
     @classmethod
-    def expand_entry(cls, entry: Entry, base_group: EntryGroup = None):
+    def expand_entry(cls, entry: Entry):
         """
         Expand this Entry to all siblings.
 
         .. versionchanged:: 0.3.8
             Split datasets are now nested
+        
+        .. versionchanged:: 0.6.11
+            the calling entry is now always part of the expansion set.
 
         """
         # container
-        entries = []
+        entries = [entry]
 
         for g in entry.associated_groups:
-            # Split datasets are nested
-            if g.type.name == 'Split dataset':
-                if base_group is not None and base_group.id == g.id:
-                    entries.extend([entry])
-                else:
-                    entries.extend(ImmutableResultSet(g)._members)
-            
-            # composites expand completely
-            elif g.type.name == 'Composite':
+            if g.type.name in ['Split dataset', 'Composite']:
                 entries.extend(g.entries)
 
         return entries
