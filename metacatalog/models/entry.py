@@ -16,7 +16,6 @@ from sqlalchemy import Integer, String, Boolean, DateTime
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape, from_shape
 from sqlalchemy.orm import relationship, backref, object_session, Session
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 import nltk
 import pandas as pd
@@ -188,7 +187,7 @@ class Entry(Base):
     embargo = Column(Boolean, default=False, nullable=False)
     embargo_end = Column(DateTime, default=get_embargo_end)
 
-    publication = Column(TIMESTAMP(precision=0), default=dt.utcnow)
+    publication = Column(DateTime, default=dt.utcnow)
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
