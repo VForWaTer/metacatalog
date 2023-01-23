@@ -116,7 +116,7 @@ setup(
         'develop': PostDevelopCommand,
         'install': PostInstallCommand
     },
-    entrypoints={
+    entry_points={
         'console_scripts': [
             'metacatalog = metacatalog.command_line:main'
         ]
