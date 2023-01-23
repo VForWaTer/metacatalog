@@ -176,6 +176,8 @@ def check_find_result_without_duplicates(session):
     assert len(dummy_results) == 1
     assert len(dummy_entries) > 1
 
+    return True
+
 def check_composite_raises_error(session):
     with pytest.raises(TypeError) as excinfo:
         dummies = api.find_group(session, title="Dumm%")[0]
@@ -347,6 +349,7 @@ def test_add_and_find():
     assert add_project_group(session)
     assert check_composite_raises_error(session)
     assert check_project_group(session)
+    assert check_find_result_without_duplicates(session)
     assert find_by_project(session)
     assert check_get_by_uuid(session)
     assert find_by_author(session)
