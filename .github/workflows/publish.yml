@@ -11,7 +11,6 @@ name: Upload Python Package
 on: push
 
 jobs:
-  jobs:
   release:
     name: Create Github release
     runs-on: ubuntu-20.04
