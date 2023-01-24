@@ -155,8 +155,9 @@ class Variable(Base):
         )
 
         # set optionals
-        if self.keyword:
-            d['keyword'] = self.keyword.to_dict(deep=False) 
+        for attr in ['keyword']:
+            if hasattr(self, attr) and getattr(self, attr) is not None:
+                d[attr] = getattr(self, attr).to_dict(deep=False)
 
         # lazy loading
         if deep:
