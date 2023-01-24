@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime as dt
 
 from metacatalog import api
-from metacatalog.util.results import ResultList
+from metacatalog.util.results import ImmutableResultSet, ResultList
 from ._util import connect, read_to_df
 
 
@@ -85,6 +85,36 @@ def add_data(session):
     return True
 
 
+def result_set_check_resultset_of_resultset(session):
+    """
+    Check that the `ImmutableResultSet` of an `ImmutableResultSet`
+    is the same `ImmutableResultSet` via its checksum.
+    """
+    rs = api.find_entry(session, title='Random Set:*', as_result=True)[0]
+
+    # the checksum of rs has to be the same as ImmutableResultSet(rs)
+    assert rs.checksum == ImmutableResultSet(rs).checksum
+
+
+def result_set_check_not_empty(session):
+    """
+    Check that the `ImmutableResultSet` of an entry without any
+    associated groups is not empty.
+    """
+    # find entry without any associated groups
+    entry = api.find_entry(session, title="3-dimensional windspeed data")[0]
+
+    # assert if entry is associated to any groups
+    assert entry.associated_groups == []
+
+    # ImmutableResultSet of entry
+    rs = ImmutableResultSet(entry)
+
+    # assert if ImmutableResultSet has no members and if title of contained entry is wrong
+    assert rs._members > 0
+    assert rs._members[0].title == "3-dimensional windspeed data"
+
+
 def result_list_check_temporal_scale(session):
     # find the entries
     entries = api.find_entry(session, title='Random Set:*')
@@ -140,7 +170,7 @@ def result_list_check_append(session):
     
     return True
 
-@pytest.mark.depends(on=['add_find'], name='resutlset')
+@pytest.mark.depends(on=['add_find'], name='resultset')
 def test_result_set():
     """
     ImmutableResultSet and ResultList tests to check that 
