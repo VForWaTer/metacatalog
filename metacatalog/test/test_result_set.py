@@ -204,3 +204,6 @@ def test_result_set():
     assert add_entries(session)
     assert add_data(session)
     assert result_list_check_temporal_scale(session)
+    assert result_set_check_resultset_of_resultset(session)
+    assert result_set_check_resultset_of_resultset(session)
+    assert result_set_check_to_dict(session)
