@@ -19,8 +19,6 @@ import nltk
 
 def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=False) -> BinaryExpression:
     """
-    Create Column based Compare logic
-
     For building filters, the Column should be filtered for
     records that match the given value. If the compare value
     contains a `'%'` or `'*'`, a LIKE clause instrumenting this
@@ -71,8 +69,7 @@ def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=Fa
 
 
 def find_keyword(session, id=None, uuid=None, value=None, thesaurus_name=None, return_iterator=False):
-    """Find keyword
-
+    """
     Return one or many keyword entries from the database on
     exact matches.
 
@@ -85,6 +82,7 @@ def find_keyword(session, id=None, uuid=None, value=None, thesaurus_name=None, r
         return only one record.
     uuid : str
         .. versionadded:: 0.1.13
+
         Find by version 4 UUID. If uuid is given, all other options
         will be ignored.
     value : str
@@ -92,6 +90,7 @@ def find_keyword(session, id=None, uuid=None, value=None, thesaurus_name=None, r
         return is possible.
     thesaurus_name : str
         .. versionadded:: 0.1.10
+
         The name of the thesaurus, the keyword originates from.
         At the current stage, only 'GCMD' science keywords are
         implemented.
@@ -103,6 +102,7 @@ def find_keyword(session, id=None, uuid=None, value=None, thesaurus_name=None, r
     -------
     records : list of metacatalog.Keyword
         List of matched Keyword instance.
+
     """
     # base query
     query = session.query(models.Keyword)
@@ -131,12 +131,12 @@ def find_keyword(session, id=None, uuid=None, value=None, thesaurus_name=None, r
 
 
 def find_thesaurus(session, id=None, uuid=None, name=None, title=None, organisation=None, description=None, return_iterator=False):
-    """Find Thesaurii
-    ..versionadded:: 0.1.10
-
+    """
     Retun one or many thesaurii references from the database
     on exact matches. You can  use `'%'` and `'*'` as wildcards
     and prepend a str with `!` to invert the filter.
+
+    ..versionadded:: 0.1.10
 
     Parameters
     ----------
@@ -147,6 +147,7 @@ def find_thesaurus(session, id=None, uuid=None, name=None, title=None, organisat
         return only one record.
     uuid : str
         .. versionadded:: 0.6.6
+
         Find by version 4 UUID. If uuid is given, all other options
         will be ignored.
     name : str
@@ -221,6 +222,7 @@ def find_license(session, id=None, title=None, short_title=None, by_attribution=
         return only one record.
     title : str
         .. versionadded:: 0.1.8
+
         Full title attribute of the requested license(s).
         Multiple record return is possible.
     short_title : str
@@ -489,18 +491,21 @@ def find_person(session, id=None, uuid=None, first_name=None, last_name=None, ro
         a person. Will most likely return many persons.
     organisation_name :  str
         .. versionadded:: 0.1.10
+
         The name of the head organisation, without department
         and group specification.
         .. note::
             Not all Persons may have an organisation_name.
     organisation_abbrev : str
         .. versionadded:: 0.2.6
+
         A short abbreviation of the head organisation if
         applicable.
         .. note::
             Not all Persons may have a head organisation
     attribution : str
         .. versionadded:: 0.2.8
+
         Attribtion recommondation, which is associated 
         to all datasets, the user is first author of
     return_iterator : bool
@@ -703,6 +708,7 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return only one record.
     uuid : str
         .. versionadded:: 0.1.13
+
         Find by version 4 UUID. If uuid is given, all other options
         will be ignored.
     title : str
@@ -807,6 +813,7 @@ def find_entry(session,
         return only one record.
     uuid : str
         .. versionadded:: 0.1.13
+
         Find by version 4 UUID. If uuid is given, all other options
         will be ignored.
     title : str
@@ -820,14 +827,17 @@ def find_entry(session,
             The abstract is usually a full text and the FIND operation
             uses **exact** matches. Therefore be sure to use a wildcard
 
-        .. code-block:: python
+        .. code-block:: Python
             api.find_entry(session, abstract='*phrase to find*')
+
     license : str, int
         .. versionadded:: 0.2.2
+
         The license can be a :class:``License <metacatalog.models.License>`,
         its id (int) or the short_title (str).
     variable : str, int
         .. versionadded:: 0.2.2
+
         The variable can be a :class:`Variable <metacatalog.models.Variable>`,
         its id (int) or the name (str).
     external_id : str
@@ -843,29 +853,34 @@ def find_entry(session,
         If None, all version are integrated.
     project : int, str
         .. versionadded:: 0.2.2
+
         The project can be a :class:`EntryGroup <metacatalog.models.EntryGroup>` of
         :class:`EntryGroupType.name=='Project' <metacatalog.models.EntryGroupType>`,
         its id (int) or title (str)
     author : int, str
         .. versionadded:: 0.2.2
+
         The author can be a :class:`Person <metacatalog.models.Person>`,
         his id (int) or name (str). A string argument will match first and last
         names. The author is only the first author. For other contributors see
         :attr:`contributor`.
     contributor : int, str
         .. versionadded:: 0.2.2
+
         The contributor can be a :class:`Person <metacatalog.models.Person>`,
         his id (int) or name (str). A string argument will match first and last
         names. A contributor is anyone associated as first or co-author. For
         first author only, see :attr:`author`.
     keywords : list of str, int
         .. versionadded:: 0.2.2
+
         The entries can be filtered by tagged controlled keywords. The given
         keyword or list of keywords will be matched against the value (str)  or
         id (int). If more than one is given, the entries need to be tagged by
         **all** keywords. An ``OR`` search is not possible, through the API.
     details : dict
         ..versionadded:: 0.2.2
+
         Entries can be filtered by additional details. The details need to be
         specified as dictioniares of ``name=value`` pairs. If more than one
         pair is given, the query will combine the pairs by ``AND``.
@@ -900,7 +915,6 @@ def find_entry(session,
     return_iterator : bool
         If True, an iterator returning the requested objects
         instead of the objects themselves is returned.
-
 
     Returns
     -------

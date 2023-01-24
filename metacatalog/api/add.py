@@ -349,11 +349,13 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
 
 
 def add_organisation(session, organisation_name, organisation_abbrev=None, affiliation=None, attribution=None):
-    r"""Add new Organisation
-    .. versionadded:: 0.2.6
+    r"""
+    Add new Organisation
 
     Add a new Organisation to the database. This is internally handled as a
     Person, but with ``is_organisation==True``.
+
+    .. versionadded:: 0.2.6
 
     Parameters
     ----------
@@ -396,9 +398,9 @@ def add_organisation(session, organisation_name, organisation_abbrev=None, affil
 
 def add_group(session, group_type, entry_ids, title=None, description=None):
     """
-    .. versionadded:: 0.2
     Adds a new EntryGroup to the database. The Entry(s) have to exist in the
     database to be associated correctly.
+    .. versionadded:: 0.2
 
     Parameters
     ----------
@@ -456,9 +458,10 @@ def add_group(session, group_type, entry_ids, title=None, description=None):
 
 def add_project(session, entry_ids, title=None, description=None):
     """
-    .. versionadded:: 0.2
     Adds a new Project EntryGroup to the database.
     The Entry(s) have to exist in the database to be associated correctly.
+
+    .. versionadded:: 0.2
 
     Parameters
     ----------
@@ -501,9 +504,10 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     title : str
         Title of the Entry
     author : int, str
+        .. versionadded:: 0.2.6
+        
         First author of the Entry. The Person record has to exist already in the
         database and can be found by exact match on id (int) or last_name (str).
-        .. versionadded:: 0.2.6
         Organisations can also be added as an author, can be found by exact match
         on id (int) or organisation_name (str).
     location : str, tuple
@@ -511,11 +515,12 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
         tuple. It has to be (X,Y), to (longitude, latitude).
 
         .. versionchanged:: 0.6.1
-        A POINT location should be specified here if there is a physical measurement 
-        point that is different from the centroid of the spatial extent (e.g., 
-        discharge measurement with the extent of the catchment).
-        Otherwise, ``Datasource.spatial_scale.extent`` should be used to specify the
-        location of the measured data.
+            A POINT location should be specified here if there is a physical measurement 
+            point that is different from the centroid of the spatial extent (e.g., 
+            discharge measurement with the extent of the catchment).
+            Otherwise, ``Datasource.spatial_scale.extent`` should be used to specify the
+            location of the measured data.
+
     variable : int, str
         **Full** variable name (str) or ID (int) of the data described by the Entry.
     abstract : str
@@ -538,7 +543,6 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     -------
     entry: metacatalog.Entry
         Entry instance of the added entry entity
-
 
     """
     # create the attribute dict
@@ -619,20 +623,23 @@ def add_details_to_entries(session, entries, details=None, **kwargs):
         Can also pass a metacatalog.Entry object.
     details : list, None
         .. versionadded:: 0.1.8
+
         List of dict of structure:
-        .. code-block::
+        .. code-block:: json
             [{
                 'key': '',
                 'value': '',
                 'description': ''
             }]
+
         where the ``description`` is optional and can be omitted.
         If no descriptions are passed at all, you can also use `**kwargs`
         to pass ``key=value`` pairs. You can mix `details` and `kwargs`
-    kwargs : keyword arguments
-        Each keyword argument will be added as a
-        py:class:`metacatalog.models.Detail` and linked to
-        each entry
+    
+    Note
+    ----
+    Each keyword argument will be added as a py:class:`metacatalog.models.Detail`
+    and linked to each entry.
 
     """
     # check the input shapes
