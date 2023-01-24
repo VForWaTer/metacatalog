@@ -41,6 +41,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
+    'sphinx.ext.todo',
     'nbsphinx',
     'sphinx_gallery.load_style'
 #    'sphinx.ext.inheritance_diagram',
