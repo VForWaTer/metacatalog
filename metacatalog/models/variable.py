@@ -151,12 +151,11 @@ class Variable(Base):
             name=self.name,
             symbol=self.symbol,
             unit=self.unit.to_dict(deep=False),
-            column_names=self.column_names,
-            keyword=self.keyword.to_dict(deep=False)
+            column_names=self.column_names
         )
 
         # set optionals
-        for attr in ('keyword'):
+        for attr in ['keyword']:
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr).to_dict(deep=False)
 
