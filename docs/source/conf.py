@@ -25,7 +25,7 @@ def get_version():
 # -- Project information -----------------------------------------------------
 
 project = 'Metacatalog'
-copyright = '2022, Mirko Mälicke'
+copyright = '2022, Mirko Mälicke, Alexander Dolich'
 author = 'Mirko Mälicke <mirko.maelicke@kit.edu>'
 
 # The full version, including alpha/beta/rc tags
