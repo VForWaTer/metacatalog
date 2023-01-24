@@ -170,11 +170,11 @@ def check_find_result_without_duplicates(session):
     """
     Find the the composite Dummy entries as result set without duplicates.
     """
-    dummy_entries = api.find_entry(session, title="Dummy*")
-    dummy_results = api.find_entry(session, title="Dummy*", as_result=True)
+    dummy_entries = api.find_group(session, title="Dumm*", as_result=False)[0].entries
+    dummy_results = api.find_group(session, title="Dumm*", as_result=True)
 
     assert len(dummy_results) == 1
-    assert len(dummy_entries) > 1
+    assert len(dummy_entries) == 2
 
     return True
 
