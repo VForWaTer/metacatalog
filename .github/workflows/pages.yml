@@ -21,7 +21,7 @@ jobs:
           pip install wheel
           
       - name: Install package
-        run: python setup.py develop
+        run: pip install -e .
 
       - name: Activate Extensions
         run: |
