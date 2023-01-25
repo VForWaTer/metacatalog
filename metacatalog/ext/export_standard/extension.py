@@ -150,7 +150,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         title = ''
         for i, _title in enumerate(rs.get('title').values()):
             title += f"Title {i+1}: {_title}\n"
-    # TODO: sort titles?? sort everything? (like uuid)
+    # TODO: sort titles?? sort everything? (like uuid) -> uuid as 'index'?
 
 
     ### publication, round to date, convert to isoformat
@@ -192,7 +192,21 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         for i, _uuid in enumerate(rs.get('uuid')):
             uuid += f"UUID {i+1}: {_uuid}\n"
 
-    # TODO: authors (last_name, first_name, organisation_name, role)
+
+    ### authors (last_name, first_name, organisation_name, role), always as list of dicts
+    # rs.get('authors') gives the first author and all coAuthors
+    for entry_uuid, entry_authors in rs.get('authors').items():
+        authors = []
+        for entry_author in entry_authors:
+            authors.append(
+                {
+                'entry_uuid': entry_uuid, # use entry_uuid as 'index' to connect authors to entry
+                'first_name': entry_author['first_name'],
+                'last_name': entry_author['last_name'],
+                'organisation_name': entry_author['organisation_name'],
+                'role': 'coAuthor' 
+            })
+            #TODO there is no coAuthor in ISO?? -> role for all: 'author'
 
 
     # TODO: abstract
