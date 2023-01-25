@@ -61,7 +61,7 @@ from metacatalog.util.dict_functions import flatten
 
 
 class ImmutableResultSet:
-    def __init__(self, instance: Union[Entry, EntryGroup]):
+    def __init__(self, instance: Union[Entry, EntryGroup, 'ImmutableResultSet']):
         """
         ImmutableResultSet for the given EntryGroup or Entry.
         
@@ -80,6 +80,10 @@ class ImmutableResultSet:
         elif isinstance(instance, EntryGroup):
             group = instance
             members = [ImmutableResultSet.expand_entry(e) for e in instance.entries]
+
+        elif isinstance(instance, ImmutableResultSet):
+            group = instance.group
+            members = instance._members
 
         # set attributes
         self.group = group
@@ -190,6 +194,8 @@ class ImmutableResultSet:
 
         # create the dictionaries
         for member in [self.group, *self._members]:
+            # if isinstance(member, ImmutableResultSet): # TODO: NUR HIER ImmutableResultSet löschen????
+            #     val = member.get(name)
             if not hasattr(member, name):
                 continue
             else:
@@ -209,6 +215,10 @@ class ImmutableResultSet:
             # append
             occurences.append(exp_val)
 
+            # TODO: this needs to be improved
+            # if isinstance(member, ImmutableResultSet):
+            #     uuids.append(member.checksum)
+            # else:
             uuids.append(member.uuid)
         
         # create the set
