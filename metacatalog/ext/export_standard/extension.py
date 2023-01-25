@@ -221,10 +221,39 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             abstract += f"Abstract {i+1}: {_abstract}\n"
 
     
+    ### details_table, put details into field <abstract> as markdown table for now
+    # create list with details_table for all entries in ImmutableResultSet
+    details = []
 
-    
+    for entry_uuid, entry_details_list in rs.get('details').items():
+        _details = {}
+        for detail in entry_details_list:
+            # nested details
+            if isinstance(detail['value'], dict):
+                for k, v in detail['value'].items():
+                    expand = {
+                        f"{detail['key']}.{k}": dict(
+                        value=v,
+                        #id=detail['id'],
+                        key=detail['key'],
+                        #stem=detail['stem'],
+                        #entry_id=detail['entry_id'],
+                        entry_uuid=detail['entry_uuid'],
+                        description=detail.get('description', 'nan') #TODO: description is never included in Entry.details_table()!
+                        )
+                    }
+                    _details.update(expand)
+            # un-nested details
+            else:
+                _details[detail['key']] = detail
+                # remove unwanted key-value pairs
+                _details[detail['key']] = {key: val for key, val in _details[detail['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
 
-    # TODO: details_table
+        # turn into a transposed datarame
+        df = pd.DataFrame(_details).T
+
+        # append markdown table to details
+        details.append(df.to_markdown())
 
 
     # TODO: keywords (full_path, thesaurusName.title)
