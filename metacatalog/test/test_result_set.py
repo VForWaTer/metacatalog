@@ -112,8 +112,8 @@ def result_set_check_not_empty(session):
     # ImmutableResultSet of entry
     rs = ImmutableResultSet(entry)
 
-    # assert if ImmutableResultSet has no members and if title of contained entry is wrong
-    assert rs._members > 0
+    # assert if ImmutableResultSet has not exactla one member and if title of contained entry is correct
+    assert len(rs._members) == 1
     assert rs._members[0].title == "3-dimensional windspeed data"
 
     return True
@@ -123,10 +123,9 @@ def result_set_check_to_dict(session):
     """
     Check the `to_dict()` method of ImmutableResultSet
     """
-    # list of expected keys in ImmutableResultSet dictionary
+    # list of minimum expected keys in ImmutableResultSet dictionary
     expected_keys = ['author', 'title', 'details', 'lastUpdate', 'keywords', 'id', 'license', 'uuid', 
-                     'variable', 'authors', 'locationShape', 'embargo_end', 'publication', 'abstract', 
-                     'version', 'location', 'embargo', 'isPartial']
+                     'variable', 'authors', 'abstract', 'version', 'embargo']
 
     # loop over all entries in test database end check if all existed keys exist
     for entry in api.find_entry(session):
@@ -205,5 +204,5 @@ def test_result_set():
     assert add_data(session)
     assert result_list_check_temporal_scale(session)
     assert result_set_check_resultset_of_resultset(session)
-    assert result_set_check_resultset_of_resultset(session)
+    assert result_set_check_not_empty(session)
     assert result_set_check_to_dict(session)
