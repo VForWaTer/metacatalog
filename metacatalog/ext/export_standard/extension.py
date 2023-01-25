@@ -176,8 +176,20 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         version = max(rs.get('version').values())
 
 
-    # TODO: uuid (/fileIdentifier)
+    ### uuid (/fileIdentifier)
+    # if a base group exists, use the uuid of the base group
+    if rs.group:
+        uuid = rs.group.uuid
 
+    # if there is only one uuid / entry in the ImmutableResultSet, use its uuid
+    elif isinstance(rs.get('uuid'), str):
+        uuid = rs.get('uuid')
+
+    #  if there is more than one uuid in ImmutableResultSet, concatenate uuids
+    elif isinstance(rs.get('uuid'), list):
+        uuid = ''
+        for i, _uuid in enumerate(rs.get('uuid')):
+            uuid += f"UUID {i+1}: {_uuid}\n"
 
     # TODO: authors (last_name, first_name, organisation_name, role)
 
