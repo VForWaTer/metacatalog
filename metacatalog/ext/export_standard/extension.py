@@ -166,7 +166,14 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         publication = max(rs.get('publication').values()).date().isoformat()
 
 
-    # TODO: version
+    ### version
+    # if there is only one version in the ImmutableResultSet, use it
+    if isinstance(rs.get('version'), int):
+        version = rs.get('version')
+
+    # if there are more than one version in ImmutableResultSet, us latest
+    elif isinstance(rs.get('version'), int):
+        version = max(rs.get('version').values())
 
 
     # TODO: uuid (/fileIdentifier)
