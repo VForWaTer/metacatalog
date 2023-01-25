@@ -209,8 +209,20 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             #TODO there is no coAuthor in ISO?? -> role for all: 'author'
 
 
-    # TODO: abstract
+    ### abstract
+    # if there is only one entry in the ImmutableResultSet, use its abstract
+    if isinstance(rs.get('abstract'), str):
+        abstract = rs.get('abstract')
 
+    #  if there is more than one abstract in ImmutableResultSet, concatenate abstracts
+    elif isinstance(rs.get('abstract'), dict):
+        abstract = ''
+        for i, _abstract in enumerate(rs.get('abstract').values()):
+            abstract += f"Abstract {i+1}: {_abstract}\n"
+
+    
+
+    
 
     # TODO: details_table
 
