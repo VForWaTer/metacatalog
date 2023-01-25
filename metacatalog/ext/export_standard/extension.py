@@ -98,7 +98,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     The attributes required for ISO 19115 XML export are added to the dictionary with
     the help of this function.
     """
-    if isinstance(entry_or_resultset, Entry):
+    if not isinstance(entry_or_resultset, ImmutableResultSet):
         # get ImmutableResultSet
         rs = ImmutableResultSet(entry_or_resultset)
     else:
@@ -147,6 +147,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
 
     # if there are more titles in ImmutableResultSet, a dict is returned, concatenate titles
     elif isinstance(rs.get('title'), dict):
+        title = ''
         for i, _title in enumerate(rs.get('title').values()):
             title += f"Title {i+1}: {_title}\n"
     # TODO: sort titles?? sort everything? (like uuid)
