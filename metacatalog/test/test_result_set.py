@@ -127,7 +127,7 @@ def result_set_check_to_dict(session):
     expected_keys = ['author', 'title', 'details', 'lastUpdate', 'keywords', 'id', 'license', 'uuid', 
                      'variable', 'authors', 'abstract', 'version', 'embargo']
 
-    # loop over all entries in test database end check if all existed keys exist
+    # loop over all entries in test database end check if all expected keys exist
     for entry in api.find_entry(session):
         rs_dict = ImmutableResultSet(entry).to_dict()
         assert all(expected_key in rs_dict.keys() for expected_key in expected_keys)
