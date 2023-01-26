@@ -468,7 +468,7 @@ def find_person(session, id=None, uuid=None, first_name=None, last_name=None, ro
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
 
-    .. versaionchanged:: 0.2.6
+    .. versionchanged:: 0.2.6
         organisation_abbrev is now available.
 
     Parameters
@@ -784,8 +784,7 @@ def find_entry(session,
     as_result=False,
     by_geometry=None,
 ):
-    """Find Entry
-
+    """
     Find an meta data Entry on exact matches. Entries can be
     identified by id, title, external_id and version. The
     version can be added to all other matching types, which
@@ -828,6 +827,7 @@ def find_entry(session,
             uses **exact** matches. Therefore be sure to use a wildcard
 
         .. code-block:: Python
+
             api.find_entry(session, abstract='*phrase to find*')
 
     license : str, int

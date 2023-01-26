@@ -1,6 +1,3 @@
-from copy import deepcopy
-
-from sqlalchemy.orm import reconstructor
 from sqlalchemy import event
 
 from .interface import IOExtensionInterface
