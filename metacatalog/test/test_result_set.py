@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime as dt
 
 from metacatalog import api
-from metacatalog.util.results import ResultList
+from metacatalog.util.results import ImmutableResultSet, ResultList
 from ._util import connect, read_to_df
 
 
@@ -85,6 +85,56 @@ def add_data(session):
     return True
 
 
+def result_set_check_resultset_of_resultset(session):
+    """
+    Check that the `ImmutableResultSet` of an `ImmutableResultSet`
+    is the same `ImmutableResultSet` via its checksum.
+    """
+    rs = api.find_entry(session, title='Random Set:*', as_result=True)[0]
+
+    # the checksum of rs has to be the same as ImmutableResultSet(rs)
+    assert rs.checksum == ImmutableResultSet(rs).checksum
+
+    return True
+
+
+def result_set_check_not_empty(session):
+    """
+    Check that the `ImmutableResultSet` of an entry without any
+    associated groups is not empty.
+    """
+    # find entry without any associated groups
+    entry = api.find_entry(session, title="3-dimensional windspeed data")[0]
+
+    # assert if entry is associated to any groups
+    assert entry.associated_groups == []
+
+    # ImmutableResultSet of entry
+    rs = ImmutableResultSet(entry)
+
+    # assert if ImmutableResultSet has not exactla one member and if title of contained entry is correct
+    assert len(rs._members) == 1
+    assert rs._members[0].title == "3-dimensional windspeed data"
+
+    return True
+
+
+def result_set_check_to_dict(session):
+    """
+    Check the `to_dict()` method of ImmutableResultSet
+    """
+    # list of minimum expected keys in ImmutableResultSet dictionary
+    expected_keys = ['author', 'title', 'details', 'lastUpdate', 'keywords', 'id', 'license', 'uuid', 
+                     'variable', 'authors', 'abstract', 'version', 'embargo']
+
+    # loop over all entries in test database end check if all expected keys exist
+    for entry in api.find_entry(session):
+        rs_dict = ImmutableResultSet(entry).to_dict()
+        assert all(expected_key in rs_dict.keys() for expected_key in expected_keys)
+
+    return True
+
+
 def result_list_check_temporal_scale(session):
     # find the entries
     entries = api.find_entry(session, title='Random Set:*')
@@ -140,7 +190,7 @@ def result_list_check_append(session):
     
     return True
 
-@pytest.mark.depends(on=['add_find'], name='resutlset')
+@pytest.mark.depends(on=['add_find'], name='resultset')
 def test_result_set():
     """
     ImmutableResultSet and ResultList tests to check that 
@@ -153,3 +203,6 @@ def test_result_set():
     assert add_entries(session)
     assert add_data(session)
     assert result_list_check_temporal_scale(session)
+    assert result_set_check_resultset_of_resultset(session)
+    assert result_set_check_not_empty(session)
+    assert result_set_check_to_dict(session)
