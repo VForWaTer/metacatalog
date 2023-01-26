@@ -194,9 +194,7 @@ class ImmutableResultSet:
 
         # create the dictionaries
         for member in [self.group, *self._members]:
-            if isinstance(member, ImmutableResultSet):
-                val = member.get(name)
-            elif not hasattr(member, name):
+            if not hasattr(member, name):
                 continue
             else:
                 # get the value or callable
@@ -215,11 +213,7 @@ class ImmutableResultSet:
             # append
             occurences.append(exp_val)
 
-            # TODO: this needs to be improved
-            if isinstance(member, ImmutableResultSet):
-                uuids.append(member.checksum)
-            else:
-                uuids.append(member.uuid)
+            uuids.append(member.uuid)
         
         # create the set
         occur_md5 = [hashlib.md5(json.dumps(str(o)).encode()).hexdigest() for o in occurences]
