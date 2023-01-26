@@ -229,6 +229,14 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         for detail in entry_details_list:
             # nested details
             if isinstance(detail['value'], dict):
+                # include top-level detail of nested detail
+                _details[detail['key']] = detail.copy()
+                _details[detail['key']]['value'] = 'nested'
+                
+                # remove unwanted key-value pairs
+                _details[detail['key']] = {key: val for key, val in _details[detail['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+
+                # go for nested details
                 for k, v in detail['value'].items():
                     expand = {
                         f"{detail['key']}.{k}": dict(
