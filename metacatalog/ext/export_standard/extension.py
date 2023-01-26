@@ -203,10 +203,9 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
                 'entry_uuid': entry_uuid, # use entry_uuid as 'index' to connect authors to entry
                 'first_name': entry_author['first_name'],
                 'last_name': entry_author['last_name'],
-                'organisation_name': entry_author['organisation_name'],
-                'role': 'coAuthor' 
+                'organisation_name': entry_author['organisation_name']
+                #'role': 'XYZ' # TODO: connect role to persons?, for now always 'author' in ISO template
             })
-            #TODO there is no coAuthor in ISO?? -> role for all: 'author'
 
 
     ### abstract
@@ -257,7 +256,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
 
 
     # TODO: keywords (full_path, thesaurusName.title)
-    
+
 
     # TODO: license (link, short_title)
 
