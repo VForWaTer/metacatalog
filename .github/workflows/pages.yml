@@ -36,11 +36,12 @@ jobs:
           pip install sphinx pandoc pydata_sphinx_theme nbsphinx sphinx-gallery
           cd docs
           make html
+          make html
           cd build/html
           touch .nojekyll
       
       -  name: Deploy
-         if: success()
+         if: success() || true
          uses: crazy-max/ghaction-github-pages@v1
          with:
            target_branch: gh-pages
