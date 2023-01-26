@@ -257,7 +257,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
 
 
     # TODO: keywords (full_path, thesaurusName.title)
-
+    
 
     # TODO: license (link, short_title)
 
