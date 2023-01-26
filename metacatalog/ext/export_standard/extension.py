@@ -266,7 +266,19 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # TODO: keywords (full_path, thesaurusName.title)
 
 
-    # TODO: license (link, short_title)
+    ### license (link, short_title)
+    # if there is only one license in the ImmutableResultSet, there are no nested dicts
+    if not any(isinstance(i,dict) for i in rs.get('license').values()):
+        link = rs.get('license')['link']
+        short_title = rs.get('license')['short_title']
+
+    #  if there is more than one license in ImmutableResultSet, a uuid-indexed dict of licenses is returned, concatenate license information
+    elif any(isinstance(i,dict) for i in rs.get('license').values()):
+        link = ''
+        short_title = ''
+        for i, (entry_uuid, license_dict) in enumerate(rs.get('license').items()):
+            link += f"License {i+1}: {license_dict['link']}\n"
+            short_title += f"License {i+1}: {license_dict['short_title']}\n"
 
 
     # TODO: associated_groups (uuid, type.name)
