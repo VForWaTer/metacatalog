@@ -194,8 +194,6 @@ class ImmutableResultSet:
 
         # create the dictionaries
         for member in [self.group, *self._members]:
-            # if isinstance(member, ImmutableResultSet): # TODO: NUR HIER ImmutableResultSet löschen????
-            #     val = member.get(name)
             if not hasattr(member, name):
                 continue
             else:
@@ -215,10 +213,6 @@ class ImmutableResultSet:
             # append
             occurences.append(exp_val)
 
-            # TODO: this needs to be improved
-            # if isinstance(member, ImmutableResultSet):
-            #     uuids.append(member.checksum)
-            # else:
             uuids.append(member.uuid)
         
         # create the set
