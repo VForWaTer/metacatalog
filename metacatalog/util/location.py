@@ -19,7 +19,9 @@ def get_search_shape(arg, buffer=None, buffer_use_epsg=3857) -> BaseGeometry:
     """
     Calculate a search shape from a whole bunch of arguments.
     The search shape can optionally be buffered. 
+
     .. note::
+    
         Some arguments might resolve to a Point geometry. In these cases
         make sure to **use a buffer value**, at least by a small value.
         Otherwise the query will end up to search for **exact** matches, 

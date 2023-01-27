@@ -574,7 +574,7 @@ class Entry(Base):
 
             List of dict of structure:
             
-            .. code-block:: json
+            .. code-block:: text
 
                 [{
                     'key': '',
