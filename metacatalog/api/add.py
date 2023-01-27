@@ -629,7 +629,8 @@ def add_details_to_entries(session, entries, details=None, **kwargs):
         .. versionadded:: 0.1.8
 
         List of dict of structure:
-        .. code-block:: json
+        
+        .. code-block:: text
 
             [{
                 'key': '',
@@ -638,12 +639,12 @@ def add_details_to_entries(session, entries, details=None, **kwargs):
             }]
 
         where the ``description`` is optional and can be omitted.
-        If no descriptions are passed at all, you can also use `**kwargs`
-        to pass ``key=value`` pairs. You can mix `details` and `kwargs`
+        If no descriptions are passed at all, you can also use ``**kwargs``
+        to pass ``key=value`` pairs. You can mix ``details`` and ``kwargs``
     
     Note
     ----
-    Each keyword argument will be added as a py:class:`metacatalog.models.Detail`
+    Each keyword argument will be added as a py:class:`Detail <metacatalog.models.Detail>`
     and linked to each entry.
 
     """
