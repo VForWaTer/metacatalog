@@ -525,7 +525,7 @@ class DataSource(Base):
         if self.data_names is not None:
             d['data_names'] = self.data_names
         if self.args is not None:
-            d['args'] = self.parse_args()
+            d['args'] = self.load_args()
         if self.encoding is not None:
             d['encoding'] = self.encoding
         if self.temporal_scale is not None:
