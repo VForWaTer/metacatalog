@@ -17,18 +17,8 @@ from metacatalog.util.exceptions import MetadataMissingError
 
 
 class DataSourceType(Base):
-    r"""Data Source Type
-
+    r"""
     Model to represent a type of datasource.
-
-    Note
-    ----
-    While it is possible to add more records to the table,
-    this is the only Class that needs actual Python functions to
-    handle the database input. Usually, each type of datasource
-    relies on a specific :mod:`importer <metacatalog.util.importer>`
-    and reader :mod:`reader <metacatalog.util.reader>` that can use
-    the information saved in a :class:`DataSource` to perform I/O operations.
 
     Attributes
     ----------
@@ -40,6 +30,17 @@ class DataSourceType(Base):
         The full title of this Type.
     description : str
         Optional description about this type
+    
+    Note
+    ----
+    While it is possible to add more records to the table,
+    this is the only Class that needs actual Python functions to
+    handle the database input. Usually, each type of datasource
+    relies on a specific :mod:`importer <metacatalog.util.importer>`
+    and reader :mod:`reader <metacatalog.util.reader>` that can use
+    the information saved in a :class:`DataSource <metacatalog.models.DataSource>`
+    to perform I/O operations.
+
 
     """
     __tablename__ = 'datasource_types'
@@ -54,8 +55,7 @@ class DataSourceType(Base):
     sources = relationship("DataSource", back_populates='type')
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -127,8 +127,7 @@ class DataType(Base):
     children = relationship("DataType", backref=backref('parent', remote_side=[id]))
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -194,6 +193,7 @@ class DataType(Base):
         datatypes for the current datatype.
         Otherwise, the list contains all child datatypes that
         are inheriting the current datatype.
+
         """
         children = []
 
@@ -292,8 +292,7 @@ class TemporalScale(Base):
         self.observation_start, self.observation_end = extent
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -388,8 +387,7 @@ class SpatialScale(Base):
         return '%.1f m' % (self.support * self.resolution)
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -421,11 +419,11 @@ class SpatialScale(Base):
 
 
 class DataSource(Base):
-    r"""DataSource
-
+    r"""
     Model to represent a datasource of a specific
     :class:`Entry <metacatalog.models.Entry>`. The datasource further specifies
-    an :class:`DataSourceType` by setting a ``path`` and ``args``.
+    an :class:`DataSourceType <metacatalog.models.DataSourceType>` 
+    by setting a ``path`` and ``args``.
 
     Attributes
     ----------
@@ -442,12 +440,13 @@ class DataSource(Base):
         as a JSON-serializable str. Will be parsed into a dict and passed to the
         I/O functions as **kwargs.
     type_id : int
-        Foreign key referencing the :class:`DataSourceType`.
+        Foreign key referencing the ::class:`DataSourceType <metacatalog.models.DataSourceType>`.
     type : metacatalog.models.DataSourceType
-        The referenced :class:`DataSourceType`. Can be used instead of setting
-        ``type_id``.
+        The referenced :class:`DataSourceType <metacatalog.models.DataSourceType>`. 
+        Can be used instead of setting``type_id``.
     data_names : list
           .. versionadded:: 0.3.0
+          
           List of column names that will be displayed when exporting the data.
           The columns are named in the same order as they appear in the list.
 

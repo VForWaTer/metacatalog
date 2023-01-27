@@ -132,11 +132,14 @@ class Keyword(Base):
     full_path : str
         The full keyword including all ancestors keyword values. Usually, 
         the term 'Keyword' refers to the full path of the keyword.
+        
         .. note::
+
             The `Keyword` does also have a method `Keyword.path` to 
             *contruct* the path by recursively querying the parents' 
             values. You can use this function to store the result in 
             `full_path` for convenience.
+        
     thesaurusName : metacatalog.models.Thesaurus
         .. versionadded:: 0.1.10 
 
@@ -212,16 +215,6 @@ class Keyword(Base):
             parent = parent.parent
         
         return ' > '.join(reversed(path))
-
-    def as_dict(self):
-        """
-        .. deprecated:: 0.1.10
-            Use `Keyword.to_dict`. Will be removed in version 0.2
-        """
-        return {
-            'path': self.path(),
-            'uuid': self.uuid
-        }
 
     def to_dict(self, deep=False) -> dict:
         """
