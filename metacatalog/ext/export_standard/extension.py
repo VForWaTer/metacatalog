@@ -12,6 +12,7 @@ import pandas as pd
 from sqlalchemy.orm.session import Session
 from lxml import etree
 import xmltodict
+import shapely
 
 from datetime import datetime
 
@@ -281,24 +282,48 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             short_title += f"License {i+1}: {license_dict['short_title']}\n"
 
 
-    # TODO: associated_groups (uuid, type.name)
-
-
     ### datasources (datasource.encoding, spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution, datasource.args)
     # datasource can be empty / no datasource associated
     if not rs.get('datasource'):
         pass
 
     # if there is only one datasource in the ImmutableResultSet, use its values
-    if not any(isinstance(val, dict) for val in rs.get('datasource').values()):
+    elif not any(isinstance(val, dict) for val in rs.get('datasource').values()):
         encoding = rs.get('datasource')['encoding']
 
         # temporal_scale
         if 'temporal_scale' in rs.get('datasource').keys():
-            temporal_scale = {}
-            temporal_scale['extent'] = rs.get('datasource')['temporal_scale']['extent']
+            # extent
+            temporal_extent_start = rs.get('datasource')['temporal_scale']['extent'][0].isoformat()
+            temporal_extent_end = rs.get('datasource')['temporal_scale']['extent'][1].isoformat()
+            # resolution in seconds
+            temporal_resolution = rs.get('datasource')['temporal_scale']['resolution']
+            temporal_resolution = pd.to_timedelta(temporal_resolution)
 
-        # spatial_scale
+        # spatial extent, always as a bounding box
+        # go for spatial_scale in datasource first
+        if 'spatial_scale' in rs.get('datasource').keys():
+            location = rs.get('datasource')['spatial_scale']['extent']
+            
+            # convert wkt to shapely shape to infer coordinates
+            P = shapely.wkt.loads(location)
+            
+            # get support points of polygon
+            min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
+            max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
+            
+            # save as dict
+            bbox_location = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
+
+    # if there is only one datasource in the ImmutableResultSet, use its values
+    elif
+
+    # TODO: location
+    # if bbox_location is not filled from datasource above, go for Entry.location
+    if not bbox_location:
+        rs.get('location')
+    # raise ValueError if location is neither specified in datasource.spatial_scale nor in Entry.location
+
 
     # XML field <gmd:IdentificationInfo> is repeatable -> put information of all entries in ImmutableResultSet here
     # list containing all dictionaries of entries in ImmutableResultSet
