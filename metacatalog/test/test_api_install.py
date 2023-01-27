@@ -4,6 +4,7 @@ import glob
 import pandas as pd
 import numpy as np
 
+from sqlalchemy.orm import Session
 from metacatalog import api
 from ._util import connect, PATH
 
@@ -27,7 +28,7 @@ def populate_defaults(session):
     return True
 
 
-def check_defaults(session, capsys):
+def check_defaults(session: Session, capsys):
     """
     Load data files from metacatalog and check against
     the populated database

@@ -1,7 +1,8 @@
 import os, json
 
-from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker, object_session
+from sqlalchemy import event
+from sqlalchemy.future.engine import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from metacatalog import models
 from metacatalog.db.migration import check_database_version
@@ -68,7 +69,7 @@ def get_engine(*args, **kwargs):
     kwargs.setdefault('connect_args', {'application_name': 'metacatalog_session'})
 
     # create a connection
-    engine = create_engine(*args, **kwargs)
+    engine = create_engine(*args, **kwargs, future=True)
 
     return engine
     

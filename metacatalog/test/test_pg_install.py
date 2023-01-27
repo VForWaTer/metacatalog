@@ -20,6 +20,9 @@ import random
 import string
 import pytest
 
+from sqlalchemy.sql import text
+from sqlalchemy.future.engine import Engine
+
 from ._util import connect
 
 PATH = os.path.abspath(os.path.dirname(__file__))
@@ -33,11 +36,12 @@ def test_database_install():
     # make up a random name
     name = 'test_%s' % ''.join([random.choice(string.ascii_lowercase) for _ in range(8)])
     # get engine
-    engine = connect(mode='engine')
+    engine: Engine = connect(mode='engine')
 
     with engine.connect() as con:
-        con.execute('commit')
-        con.execute('CREATE DATABASE %s' % name)
+        con.execute(text('COMMIT;'))
+        con.execute(text('CREATE DATABASE %s;' % name))
+
 
     # export the db name
     os.putenv("POSTGRES_TESTDB", name)
@@ -57,9 +61,9 @@ def test_postgis_install(capsys):
 
     # create postgis and check 
     with engine.connect() as con:
-        con.execute('CREATE EXTENSION postgis;')
-        con.execute('commit')
-        res = con.execute('SELECT PostGIS_full_version();').scalar()
+        con.execute(text('CREATE EXTENSION postgis;'))
+        con.commit()
+        res = con.execute(text('SELECT PostGIS_full_version();')).scalar()
     
     # get the version
     assert 'POSTGIS=' in res

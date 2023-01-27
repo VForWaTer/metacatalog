@@ -2,7 +2,8 @@ import os
 import io
 
 import pandas as pd
-from sqlalchemy import create_engine
+#from sqlalchemy import create_engine
+from sqlalchemy.future import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 
@@ -35,7 +36,7 @@ def connect(mode='string'):
     elif mode.lower() == 'dict':
         return SETTINGS
     elif mode.lower() == 'engine':
-        return create_engine(URI, poolclass=NullPool)
+        return create_engine(URI, poolclass=NullPool, future=True)
     elif mode.lower() == 'session':
         Session = sessionmaker(bind=create_engine(URI, poolclass=NullPool))
         return Session()
