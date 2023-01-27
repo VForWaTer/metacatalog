@@ -6,6 +6,8 @@
 Welcome to Metacatalog's documentation!
 =======================================
 
+More info 
+
 .. toctree::
    :maxdepth: 3
    :caption: Contents:
