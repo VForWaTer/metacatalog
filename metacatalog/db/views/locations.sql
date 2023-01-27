@@ -1,4 +1,4 @@
---CREATE OR REPLACE VIEW locations_realdata AS
+--CREATE OR REPLACE VIEW locations AS
 select 
 	st_asewkt(t.point_location),
 	t.*,
@@ -8,28 +8,20 @@ from
 entries.id,
 	case when entries.location is not null then
 		entries.location
-	else 
+	else
 		case when spatial_scales.extent is not null then
 			st_centroid(spatial_scales.extent)
 		else 
- 			case when entries.geom is not null then
- 				st_centroid(entries.geom)
- 			else
-				null::geometry
- 			end
+			null::geometry
 		end
 	end  
 	as point_location
 	,
- 	case when entries.geom is not null then
- 		entries.geom
- 	else
-		case when spatial_scales.extent is not null then
-			spatial_scales.extent
-		else 
-			entries.location
-		end 
-	end
+	case when spatial_scales.extent is not null then
+		spatial_scales.extent
+	else 
+		entries.location
+	end 
  	as "geom"
 FROM entries
 LEFT JOIN datasources ON entries.datasource_id = datasources.id
