@@ -535,7 +535,7 @@ class Entry(Base):
                         f'{key}.{k}': dict(
                             value=v,
                             id=detail['id'],
-                            key=detail['key'],
+                            key=f"{key}.{k}",
                             stem=detail['stem'],
                             entry_id=detail['entry_id'],
                             entry_uuid=detail['entry_uuid']
