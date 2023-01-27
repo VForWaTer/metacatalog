@@ -524,13 +524,18 @@ class Entry(Base):
         # get the details
         details = dict()
         for key, detail in self.details_dict(full=True).items():
+            # nested details
             if isinstance(detail['value'], dict):
+                # include top-level detail of nested detail
+                details[key] = detail.copy()
+                details[key]['value'] = '-'
+                # go for nested details
                 for k, v in detail['value'].items():
                     expand = {
                         f'{key}.{k}': dict(
                             value=v,
                             id=detail['id'],
-                            key=detail['key'],
+                            key=f"{key}.{k}",
                             stem=detail['stem'],
                             entry_id=detail['entry_id'],
                             entry_uuid=detail['entry_uuid']
