@@ -117,8 +117,7 @@ def add_unit(session, name, symbol, si=None):
 
 
 def add_variable(session, name, symbol, column_names, unit):
-    r"""Add variable record
-
+    r"""
     Add a new variable to the database.
 
     Parameters
@@ -132,6 +131,7 @@ def add_variable(session, name, symbol, column_names, unit):
         physical variable symbols and avoid dublicates.
     column_names : list
           .. versionadded:: 0.3.0
+
           List of default column names that will be displayed when exporting the data.
           The columns are named in the same order as they appear in the list.
     unit : int, str
@@ -162,8 +162,7 @@ def add_variable(session, name, symbol, column_names, unit):
 
 
 def add_keyword(session, path, thesaurus):
-    r"""Add Keyword
-
+    r"""
     Add a new keyword to the database. The keyword is
     added by the full path.
 
@@ -177,6 +176,7 @@ def add_keyword(session, path, thesaurus):
         Topic > Term > Variable_level_1 etc.
     thesaurus : dict, int
         .. versionadded:: 0.1.10
+
         Either a thesaurus entity, that distributes the
         controlled keywords, or an id of the an already
         existing thesaurusName. It is highly recommended
@@ -187,7 +187,9 @@ def add_keyword(session, path, thesaurus):
     This API endpoint is designed to add custom keywords to
     metacatalog. It will use the full path keywords and split
     them automatically for convenience.
+
     .. warning::
+
         Each keyword part will receive a **new** UUID, thus you
         have to use the `metacatalog.models.Keyword` interface
         to add **existing** keywords, that already contain a
@@ -284,8 +286,7 @@ def add_thesaurus(session, name, title, organisation, url, description=None, uui
 
 
 def add_person(session, first_name, last_name, organisation_name=None, organisation_abbrev=None, affiliation=None, attribution=None, uuid=None):
-    r"""Add new Person
-
+    r"""
     Add a new Person to the database. A person can be a real Person
     or an institution. Then, the institution name goes into the
     last_name column and first_name can actively be set to None.
@@ -297,6 +298,7 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
         SQLAlchemy session connected to the database.
     uuid : str
         .. versionadded: 0.2.7
+
         An UUID version 4 to globally identify the person list.
         If you add a new person, do not set the UUID as a new
         UUID will be set.
@@ -308,10 +310,12 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
         last_name is assumed to be an institution.
     organisation_name : str
         .. versionadded:: 0.1.10
+
         Optional, but **highly_recommended** if applicable. Name of
         the head institution, whithout department.
     organisation_abbrev : str
         .. versionadded:: 0.2.6
+
         Optional, abbreviated version of the Institution. I.e. the
         famous Karlsruhe Institute of Technology is better known as 'KIT'
     affiliation : str
@@ -608,8 +612,8 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
 
 
 def add_details_to_entries(session, entries, details=None, **kwargs):
-    """Associate detail(s) to entrie(s)
-
+    """
+    Associate detail(s) to entrie(s).
     Add key-value pair details to one, or many Entry(s).
     The Entry(s) have to already exist in the database.
 
@@ -626,6 +630,7 @@ def add_details_to_entries(session, entries, details=None, **kwargs):
 
         List of dict of structure:
         .. code-block:: json
+
             [{
                 'key': '',
                 'value': '',

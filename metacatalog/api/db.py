@@ -26,9 +26,8 @@ IMPORTABLE_TABLES = dict(
 )
 
 def connect_database(*args, **kwargs):
-    """Connect to database
-
-    Returns a 
+    """
+    Connect to database and returns a 
     `sqlalchemy Session <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#sqlalchemy.orm.session.Session>`_ 
     to the database. 
     

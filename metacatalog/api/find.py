@@ -800,8 +800,8 @@ def find_entry(session,
 
     .. versionchanged:: 0.1.8
 
-        string matches now allow `'%'` and `'*'` wildcards and can
-        be inverted by prepending `!`
+        string matches now allow ``'%'`` and ``'*'`` wildcards 
+        and can be inverted by prepending ``!``
     
     .. versionchanged:: 0.2.14
 
@@ -845,7 +845,7 @@ def find_entry(session,
     license : str, int
         .. versionadded:: 0.2.2
 
-        The license can be a :class:``License <metacatalog.models.License>`,
+        The license can be a :class:`License <metacatalog.models.License>`,
         its id (int) or the short_title (str).
     variable : str, int
         .. versionadded:: 0.2.2
