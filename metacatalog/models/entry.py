@@ -77,23 +77,10 @@ class Entry(Base):
 
         The location as a POINT Geometry in unprojected WGS84 (EPSG: 4326).
         The location is primarily used to show all Entry objects on a map, or
-        perform geo-searches. If the data-source needs to store more complex
-        Geometries, you can use the ``geom`` argument.
+        perform geo-searches.
         The location can be passed as WKT or a tuple of (x, y) coordinates.
         Note that it will be returned and stored as WKB. The output value will
         be reworked in a future release
-    geom : str
-        .. deprecated:: 0.1.11
-
-            The geom attribute will be reomved with a future version
-
-        .. warning::
-
-            The geom attribute is completely untested so far and might be
-            reworked or removed in a future release
-            It takes a WKT of any kind of OGC-conform Geometry. The return value
-            will be the same Geometry as WKB.
-
     creation : datetime.datetime
         Following the ISO19115 the *creation* date is referring to the creation
         date of the **data resource** described by the Entry, not the Entry
@@ -182,7 +169,6 @@ class Entry(Base):
     abstract = Column(String)
     external_id = Column(String)
     location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=True)
-    geom = Column(Geometry)
     version = Column(Integer, default=1, nullable=False)
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)
     is_partial = Column(Boolean, default=False, nullable=False)
@@ -338,7 +324,6 @@ class Entry(Base):
             variable=variable_id,
             abstract=data.get('abstract'),
             external_id=data.get('external_id'),
-            geom=data.get('geom'),
             license=license_id,
             embargo=data.get('embargo', False)
         )
