@@ -282,13 +282,18 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             short_title += f"License {i+1}: {license_dict['short_title']}\n"
 
 
-    ### datasources (datasource.encoding, spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution, datasource.args)
+    ### datasource (datasource.encoding, spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution, datasource.args)
     # datasource can be empty / no datasource associated
     if not rs.get('datasource'):
         pass
 
+
+    # TODO: encoding auch bei IdentificationInfo immer utf-8?? denke schon
+    
+
     # if there is only one datasource in the ImmutableResultSet, use its values
     elif not any(isinstance(val, dict) for val in rs.get('datasource').values()):
+        # encoding
         encoding = rs.get('datasource')['encoding']
 
         # temporal_scale
@@ -312,18 +317,30 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
             max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
             
-            # save as dict
-            bbox_location = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
+            # save as list(dict)
+            bbox_location = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
 
     # if there is only one datasource in the ImmutableResultSet, use its values
-    elif
+    elif any(isinstance(val, dict) for val in rs.get('datasource').values()):
+        encoding = []
+        for i ,(entry_uuid, ds_dict) in enumerate(rs.get('datasource').items()):
+            # encoding
+            encoding.append(ds_dict['encoding'])
+
+        # check encoding
+        if len(set(encoding)) == 1:
+            encoding = encoding[0]
+        else:
+
 
     # TODO: location
     # if bbox_location is not filled from datasource above, go for Entry.location
     if not bbox_location:
         rs.get('location')
-    # raise ValueError if location is neither specified in datasource.spatial_scale nor in Entry.location
 
+    # raise ValueError if location is neither specified in datasource.spatial_scale nor in Entry.location
+    if not bbox_location:
+        raise ValueError("No location information associated with instance to be exported.")
 
     # XML field <gmd:IdentificationInfo> is repeatable -> put information of all entries in ImmutableResultSet here
     # list containing all dictionaries of entries in ImmutableResultSet
