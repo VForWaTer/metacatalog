@@ -12,16 +12,19 @@ from metacatalog.util.logging import get_logger
 
 def get_uuid(session: Session, uuid: str, not_found='raise'):
     """
-    .. versionadded:: 0.1.13
-
     Return the Metacatalog object of given
     version 4 UUID. The supported objects are:
 
     - Entry
     - EntryGroup
     - Keyword
-    .. versionadded:: 0.2.7
     - Person
+
+    .. versionadded:: 0.1.13
+
+    .. versionchanged:: 0.2.7
+        Now, also :class:`Persons <metacatalog.model.Person` can be
+        found by UUID
 
     """
     # check if an Entry exists

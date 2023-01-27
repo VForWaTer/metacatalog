@@ -28,12 +28,14 @@ class Person(Base):
         Unique id of the record. If not specified, the database will assign it.
     uuid : str
         .. versionadded: 0.2.7
+
         Version 4 UUID string to identify the Entry across installations.
         This field is read-only and will be assigned on creation. It is primarily
         used to export Entry into ISO19115 metadata.
     first_name : str
         .. versionchanged:: 0.1.10
             Now mandatory.
+        
         Person's first name.
     last_name : str
         Person's last name.
@@ -46,6 +48,7 @@ class Person(Base):
         working group for affiliation information.
     attribution : str
         .. versionadded: 0.1.10
+
         Optional. The user may define an attribtion recommondation here,
         which is associated to all datasets, the user is first author of.
         If not given, the system running metacatalog should give automatic
@@ -119,8 +122,7 @@ class Person(Base):
 
     @classmethod
     def from_dict(cls, data: dict, session: Session) -> 'Person':
-        """From dict
-
+        """
         Create a new Person from a python dictionary.
 
         Parameters
@@ -197,8 +199,7 @@ class PersonRole(Base):
     persons_with_role = relationship("PersonAssociation", back_populates='role')
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -249,8 +250,7 @@ class PersonAssociation(Base):
     entry = relationship("Entry", back_populates='contributors')
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters

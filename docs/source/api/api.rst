@@ -7,7 +7,7 @@ API
     :Caption: API Overview
     :hidden:
 
-    api_connect_databases
+    api_connect_database
     api_create_tables
     api_populate_defaults
     api_add_entry

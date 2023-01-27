@@ -85,13 +85,11 @@ class Variable(Base):
 
     However, technically, you can also create a new variable that describes a
     combined data type and reference a newly created table via
-    `DataSource <metacatalog.models.DataSource>`. This can make sense if in the
+    :class:`DataSource <metacatalog.models.DataSource>`. This can make sense if in the
     scope and context of the metacatalog installation a sensor like a Decagon
     5TE always records three parameters at a time like Temperature, Moisture
     and Conductance. That can be implemented as a new '5TE' variable and the
     datasource would point to a table containing all three measurements.
-    **Note that this should not be common practice and will make your
-    metadata unusable in other contexts**.
 
     Attributes
     ----------
@@ -109,8 +107,10 @@ class Variable(Base):
         Lazy loaded list of Variables that use the current unit
     column_names : list
           .. versionadded:: 0.3.0
+
           List of default column names that will be displayed when exporting the data.
           The columns are named in the same order as they appear in the list.
+
 
     """
     __tablename__ = 'variables'
@@ -167,8 +167,7 @@ class Variable(Base):
 
     @classmethod
     def from_dict(cls, data: dict, session: Session) -> 'Variable':
-        """From dict
-
+        """
         Create a new Variable from a python dictionary.
 
         Parameters

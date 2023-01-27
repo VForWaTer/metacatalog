@@ -463,12 +463,12 @@ MD_SecurityConstraints
     - [1]
     - note the warning below
 
-  .. warning::
+.. warning::
 
-    Please also see MD_LegalConstraints. The metadata in metacatalog is always 
-    ``'unclassified'``. If you wish to implement classified information, you need a 
-    security middleware. However, ISO 19115 and INSPIRE define this field as 
-    mandatory and you have to include it.
+  Please also see MD_LegalConstraints. The metadata in metacatalog is always 
+  ``'unclassified'``. If you wish to implement classified information, you need a 
+  security middleware. However, ISO 19115 and INSPIRE define this field as 
+  mandatory and you have to include it.
 
 DQ_DataQuality
 -------------- 
