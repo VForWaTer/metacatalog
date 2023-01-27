@@ -528,7 +528,7 @@ class Entry(Base):
             if isinstance(detail['value'], dict):
                 # include top-level detail of nested detail
                 details[key] = detail.copy()
-                details[key]['value'] = 'nested'
+                details[key]['value'] = '-'
                 # go for nested details
                 for k, v in detail['value'].items():
                     expand = {
