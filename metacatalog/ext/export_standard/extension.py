@@ -268,12 +268,12 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
 
     ### license (link, short_title)
     # if there is only one license in the ImmutableResultSet, there are no nested dicts
-    if not any(isinstance(i,dict) for i in rs.get('license').values()):
+    if not any(isinstance(val, dict) for val in rs.get('license').values()):
         link = rs.get('license')['link']
         short_title = rs.get('license')['short_title']
 
     #  if there is more than one license in ImmutableResultSet, a uuid-indexed dict of licenses is returned, concatenate license information
-    elif any(isinstance(i,dict) for i in rs.get('license').values()):
+    elif any(isinstance(val, dict) for val in rs.get('license').values()):
         link = ''
         short_title = ''
         for i, (entry_uuid, license_dict) in enumerate(rs.get('license').items()):
@@ -284,8 +284,21 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # TODO: associated_groups (uuid, type.name)
 
 
-    # TODO: datasources (datasource.encoding, spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution, datasource.args)
+    ### datasources (datasource.encoding, spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution, datasource.args)
+    # datasource can be empty / no datasource associated
+    if not rs.get('datasource'):
+        pass
 
+    # if there is only one datasource in the ImmutableResultSet, use its values
+    if not any(isinstance(val, dict) for val in rs.get('datasource').values()):
+        encoding = rs.get('datasource')['encoding']
+
+        # temporal_scale
+        if 'temporal_scale' in rs.get('datasource').keys():
+            temporal_scale = {}
+            temporal_scale['extent'] = rs.get('datasource')['temporal_scale']['extent']
+
+        # spatial_scale
 
     # XML field <gmd:IdentificationInfo> is repeatable -> put information of all entries in ImmutableResultSet here
     # list containing all dictionaries of entries in ImmutableResultSet
