@@ -457,18 +457,19 @@ def find_role(session, id=None, name=None, return_iterator=False):
 
 
 def find_person(session, id=None, uuid=None, first_name=None, last_name=None, role=None, organisation_name=None, organisation_abbrev=None, attribution=None, return_iterator=False):
-    """Find Person
-
+    """
     Return person record on exact matches. Persons can be
     identified by id, first_name, last_name, organisation details or associated roles.
     Since version ``0.2.5`` only Persons which have a ``is_organisation==False``
     will be returned
 
     .. versionchanged:: 0.1.8
+
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
 
     .. versionchanged:: 0.2.6
+
         organisation_abbrev is now available.
 
     Parameters
@@ -480,6 +481,7 @@ def find_person(session, id=None, uuid=None, first_name=None, last_name=None, ro
         return only one record.
     uuid : str
         .. versionadded:: 0.2.7
+
         Find by version 4 UUID. If uuid is given, all other options
         will be ignored.
     first_name : str
@@ -494,15 +496,21 @@ def find_person(session, id=None, uuid=None, first_name=None, last_name=None, ro
 
         The name of the head organisation, without department
         and group specification.
+        
         .. note::
+
             Not all Persons may have an organisation_name.
+
     organisation_abbrev : str
         .. versionadded:: 0.2.6
 
         A short abbreviation of the head organisation if
         applicable.
+        
         .. note::
+
             Not all Persons may have a head organisation
+
     attribution : str
         .. versionadded:: 0.2.8
 
@@ -791,13 +799,16 @@ def find_entry(session,
     are mutually exclusive.
 
     .. versionchanged:: 0.1.8
+
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
     
     .. versionchanged:: 0.2.14
+
         Can be returned as ImmutableResultSet now.
 
     .. versionchanged:: 0.3.9
+
         By setting include_partial to True, the API can now find
         partial Entries. This does only make sense in combination
         with ``as_result=True``, to lazy-load the complete record.
@@ -823,6 +834,7 @@ def find_entry(session,
         Abstract attibute of the Entry.
 
         .. note::
+
             The abstract is usually a full text and the FIND operation
             uses **exact** matches. Therefore be sure to use a wildcard
 
@@ -844,6 +856,7 @@ def find_entry(session,
         External id attrinbute of the Entry.
     version : int, str
         .. versionchanged:: 0.2
+
             The default value is now 'latest'
 
         Version number of the Entry. Can be combined with
@@ -892,6 +905,7 @@ def find_entry(session,
         Include partial entries into the response. Defaults to False.
 
         .. note::
+
             Partial Entries might not be usefull, as they can miss important
             metadata. Thus, it is highly recommended to set ``as_result=True``.
             Then, the returned 
@@ -900,6 +914,7 @@ def find_entry(session,
 
     by_geometry : str, list
         .. versionadded:: 0.2.10
+        
         The passed argument can be a WKT (string) or a list of numbers. If three
         numbers are passed, this is interpreted as a center point and a buffer 
         distance in meter. If four numbers are passed, this is a bounding box.

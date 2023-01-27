@@ -33,7 +33,7 @@ jobs:
       
       - name: Build Sphinx
         run: |
-          pip install sphinx pandoc pydata_sphinx_theme nbsphinx sphinx-gallery
+          pip install "sphinx<6" pandoc pydata_sphinx_theme nbsphinx sphinx-gallery
           cd docs
           make html
           make html
