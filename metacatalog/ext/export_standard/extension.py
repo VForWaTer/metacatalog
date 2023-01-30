@@ -303,7 +303,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             temporal_extent_end = rs.get('datasource')['temporal_scale']['extent'][1].isoformat()
             # resolution in seconds
             temporal_resolution = rs.get('datasource')['temporal_scale']['resolution']
-            temporal_resolution = pd.to_timedelta(temporal_resolution)
+            temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
 
         # spatial extent, always as a bounding box
         # go for spatial_scale in datasource first
@@ -323,9 +323,27 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # if there is only one datasource in the ImmutableResultSet, use its values
     elif any(isinstance(val, dict) for val in rs.get('datasource').values()):
         encoding = []
+        temporal_scale = []
         for i ,(entry_uuid, ds_dict) in enumerate(rs.get('datasource').items()):
             # encoding
             encoding.append(ds_dict['encoding'])
+
+            # temporal_scale
+            if ds_dict['temporal_scale']:
+                # extent
+                temporal_extent_start = ds_dict['temporal_scale']['extent'][0].isoformat()
+                temporal_extent_end = ds_dict['temporal_scale']['extent'][1].isoformat()
+                # resolution in seconds
+                temporal_resolution = ds_dict['temporal_scale']['resolution']
+                temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
+
+                temporal_scale.append({
+                    "temporal_extent_start": temporal_extent_start,
+                    "temporal_extent_end": temporal_extent_end,
+                    "temporal_resolution": temporal_resolution
+                })
+
+
 
         # check encoding -> TODO: ist das nicht eh immer utf-8?
         if len(set(encoding)) == 1:
