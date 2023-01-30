@@ -327,10 +327,11 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             # encoding
             encoding.append(ds_dict['encoding'])
 
-        # check encoding
+        # check encoding -> TODO: ist das nicht eh immer utf-8?
         if len(set(encoding)) == 1:
             encoding = encoding[0]
         else:
+            NotImplementedError("I think we don't need that..")
 
 
     # TODO: location
@@ -341,6 +342,12 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # raise ValueError if location is neither specified in datasource.spatial_scale nor in Entry.location
     if not bbox_location:
         raise ValueError("No location information associated with instance to be exported.")
+
+
+
+
+
+
 
     # XML field <gmd:IdentificationInfo> is repeatable -> put information of all entries in ImmutableResultSet here
     # list containing all dictionaries of entries in ImmutableResultSet
