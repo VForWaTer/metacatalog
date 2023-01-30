@@ -5,11 +5,13 @@ one type of environmental variable. It can hold a reference and interface to the
 If a supported data format is used, Entry can load the data.
 
 """
+from typing import List, Dict
 from datetime import datetime as dt
 import hashlib
 import json
 from dateutil.relativedelta import relativedelta as rd
 from uuid import uuid4
+import warnings
 
 from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
@@ -187,7 +189,7 @@ class Entry(Base):
 
     # relationships
     contributors = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
-    keywords = relationship("KeywordAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
+    keywords = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
     license = relationship("License", back_populates='entries')
     variable = relationship("Variable", back_populates='entries')
     datasource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
@@ -462,25 +464,43 @@ class Entry(Base):
     def location_shape(self, shape):
         self.location = from_shape(shape)
 
-    def plain_keywords_list(self):
+    def keyword_list(self) -> List[str]:
+        """
+        List of tagged keywords associated to this instance. 
+        The keywords are related via the association table.
+
+        """
+        # keywords
+        return [kw.path() for kw in self.keywords]
+
+    def plain_keywords_list(self) -> List[str]:
         """
         Returns list of controlled keywords associated with this
         instance of meta data.
-        If there are any associated values or alias of the given
-        keywords, use the keywords_dict function
+        The List only includes the full path
 
         """
-        return [kw.keyword.path() for kw in self.keywords]
+        warnings.warn("Entry.plain_keyword_list is deprecated since 0.7.3, use Entry.keyword_list instead.", category=DeprecationWarning)
 
-    def plain_keywords_dict(self):
-        return [kw.keyword.to_dict() for kw in self.keywords]
+        return self.keyword_list()
+
+    def plain_keywords_dict(self) -> List[Dict[str, str]]:
+        """
+        Get a list of dictionaries containing a dict representation
+        of each associated keyword to this Entry.
+
+        """
+        warnings.warn("plain_keywords_dict is deprecated. Use [k.to_dict() for k in Entry.keywords] instead.", category=DeprecationWarning)
+        return [kw.to_dict() for kw in self.keywords]
 
     def keywords_dict(self):
+        """
+        """
+        warnings.warn("keywords_dict is deprecated and will be removed with a future release", category=DeprecationWarning)
         return [
             dict(
-                path=kw.keyword.full_path,
-                alias=kw.alias,
-                value=kw.associated_value
+                path=kw.full_path,
+                value=kw.value
             ) for kw in self.keywords
         ]
 

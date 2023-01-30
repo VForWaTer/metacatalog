@@ -191,7 +191,7 @@ class Keyword(Base):
 
     # relationships
     children = relationship("Keyword", backref=backref('parent', remote_side=[id]))
-    tagged_entries = relationship("KeywordAssociation", back_populates='keyword')
+    tagged_entries = relationship("Entry", secondary="nm_keywords_entries", back_populates='keywords')
     thesaurusName = relationship("Thesaurus", back_populates="keywords")
 
     def path(self):
@@ -276,8 +276,8 @@ class KeywordAssociation(Base):
     entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)
 
     # relationships
-    keyword = relationship("Keyword", back_populates='tagged_entries')
-    entry = relationship("Entry", back_populates='keywords')
+    #keyword = relationship("Keyword", viewonly=True)#, back_populates='tagged_entries')
+    #entry = relationship("Entry", viewonly=True)#, back_populates='keywords')
 
     def __str__(self):
         return "<Entry ID=%d> tagged %s" % (self.entry.id, self.keyword.value)
