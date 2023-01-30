@@ -234,7 +234,7 @@ class Entry(Base):
             isPartial=self.is_partial,
             publication=self.publication,
             lastUpdate=self.lastUpdate,
-            keywords=self.plain_keywords_dict()
+            keywords=[kw.to_dict() for kw in self.keywords]
         )
 
         # optional relations
