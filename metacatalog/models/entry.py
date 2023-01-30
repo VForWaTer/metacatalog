@@ -187,7 +187,7 @@ class Entry(Base):
 
     # relationships
     contributors = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
-    keywords = relationship("KeywordAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
+    keywords = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
     license = relationship("License", back_populates='entries')
     variable = relationship("Variable", back_populates='entries')
     datasource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
