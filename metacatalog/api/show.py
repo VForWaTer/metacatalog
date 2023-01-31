@@ -1,4 +1,4 @@
-"""SHOW API
+"""
 The Show API endpoint can be used to pretty print database records 
 or show the database structure, like attributes.
 """
@@ -17,13 +17,12 @@ def __infer_model_from_name(table_name):
     return Model
 
 def show_attributes(table_name, add_type=False):
-    """SHOW attributes
-
+    """
     Returns a list of available attributes on the given table.
     The table_name has to match the actual table in the database.
 
-    Params
-    ------
+    Parameters
+    ----------
     table_name : str
         Name of the table the attributes are requested for.
     add_type : bool
@@ -45,8 +44,7 @@ def show_attributes(table_name, add_type=False):
 
 
 def show_records(session, table_name, limit=None, where=None, as_dict=True):
-    """SHOW records
-
+    """
     Returns a list or dictionary of raw table contents in 
     the database. 
 
@@ -71,6 +69,7 @@ def show_records(session, table_name, limit=None, where=None, as_dict=True):
     -------
     records : list
         List of dicts or tuples representing the records.
+
     """
     # get the model 
     Model = __infer_model_from_name(table_name)

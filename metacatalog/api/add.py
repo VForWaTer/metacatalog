@@ -117,8 +117,7 @@ def add_unit(session, name, symbol, si=None):
 
 
 def add_variable(session, name, symbol, column_names, unit):
-    r"""Add variable record
-
+    r"""
     Add a new variable to the database.
 
     Parameters
@@ -132,6 +131,7 @@ def add_variable(session, name, symbol, column_names, unit):
         physical variable symbols and avoid dublicates.
     column_names : list
           .. versionadded:: 0.3.0
+
           List of default column names that will be displayed when exporting the data.
           The columns are named in the same order as they appear in the list.
     unit : int, str
@@ -162,8 +162,7 @@ def add_variable(session, name, symbol, column_names, unit):
 
 
 def add_keyword(session, path, thesaurus):
-    r"""Add Keyword
-
+    r"""
     Add a new keyword to the database. The keyword is
     added by the full path.
 
@@ -177,6 +176,7 @@ def add_keyword(session, path, thesaurus):
         Topic > Term > Variable_level_1 etc.
     thesaurus : dict, int
         .. versionadded:: 0.1.10
+
         Either a thesaurus entity, that distributes the
         controlled keywords, or an id of the an already
         existing thesaurusName. It is highly recommended
@@ -187,7 +187,9 @@ def add_keyword(session, path, thesaurus):
     This API endpoint is designed to add custom keywords to
     metacatalog. It will use the full path keywords and split
     them automatically for convenience.
+
     .. warning::
+
         Each keyword part will receive a **new** UUID, thus you
         have to use the `metacatalog.models.Keyword` interface
         to add **existing** keywords, that already contain a
@@ -284,8 +286,7 @@ def add_thesaurus(session, name, title, organisation, url, description=None, uui
 
 
 def add_person(session, first_name, last_name, organisation_name=None, organisation_abbrev=None, affiliation=None, attribution=None, uuid=None):
-    r"""Add new Person
-
+    r"""
     Add a new Person to the database. A person can be a real Person
     or an institution. Then, the institution name goes into the
     last_name column and first_name can actively be set to None.
@@ -297,6 +298,7 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
         SQLAlchemy session connected to the database.
     uuid : str
         .. versionadded: 0.2.7
+
         An UUID version 4 to globally identify the person list.
         If you add a new person, do not set the UUID as a new
         UUID will be set.
@@ -308,10 +310,12 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
         last_name is assumed to be an institution.
     organisation_name : str
         .. versionadded:: 0.1.10
+
         Optional, but **highly_recommended** if applicable. Name of
         the head institution, whithout department.
     organisation_abbrev : str
         .. versionadded:: 0.2.6
+
         Optional, abbreviated version of the Institution. I.e. the
         famous Karlsruhe Institute of Technology is better known as 'KIT'
     affiliation : str
@@ -349,11 +353,13 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
 
 
 def add_organisation(session, organisation_name, organisation_abbrev=None, affiliation=None, attribution=None):
-    r"""Add new Organisation
-    .. versionadded:: 0.2.6
+    r"""
+    Add new Organisation
 
     Add a new Organisation to the database. This is internally handled as a
     Person, but with ``is_organisation==True``.
+
+    .. versionadded:: 0.2.6
 
     Parameters
     ----------
@@ -396,9 +402,9 @@ def add_organisation(session, organisation_name, organisation_abbrev=None, affil
 
 def add_group(session, group_type, entry_ids, title=None, description=None):
     """
-    .. versionadded:: 0.2
     Adds a new EntryGroup to the database. The Entry(s) have to exist in the
     database to be associated correctly.
+    .. versionadded:: 0.2
 
     Parameters
     ----------
@@ -456,9 +462,10 @@ def add_group(session, group_type, entry_ids, title=None, description=None):
 
 def add_project(session, entry_ids, title=None, description=None):
     """
-    .. versionadded:: 0.2
     Adds a new Project EntryGroup to the database.
     The Entry(s) have to exist in the database to be associated correctly.
+
+    .. versionadded:: 0.2
 
     Parameters
     ----------
@@ -501,9 +508,10 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     title : str
         Title of the Entry
     author : int, str
+        .. versionadded:: 0.2.6
+        
         First author of the Entry. The Person record has to exist already in the
         database and can be found by exact match on id (int) or last_name (str).
-        .. versionadded:: 0.2.6
         Organisations can also be added as an author, can be found by exact match
         on id (int) or organisation_name (str).
     location : str, tuple
@@ -511,11 +519,12 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
         tuple. It has to be (X,Y), to (longitude, latitude).
 
         .. versionchanged:: 0.6.1
-        A POINT location should be specified here if there is a physical measurement 
-        point that is different from the centroid of the spatial extent (e.g., 
-        discharge measurement with the extent of the catchment).
-        Otherwise, ``Datasource.spatial_scale.extent`` should be used to specify the
-        location of the measured data.
+            A POINT location should be specified here if there is a physical measurement 
+            point that is different from the centroid of the spatial extent (e.g., 
+            discharge measurement with the extent of the catchment).
+            Otherwise, ``Datasource.spatial_scale.extent`` should be used to specify the
+            location of the measured data.
+
     variable : int, str
         **Full** variable name (str) or ID (int) of the data described by the Entry.
     abstract : str
@@ -538,7 +547,6 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     -------
     entry: metacatalog.Entry
         Entry instance of the added entry entity
-
 
     """
     # create the attribute dict
@@ -604,8 +612,8 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
 
 
 def add_details_to_entries(session, entries, details=None, **kwargs):
-    """Associate detail(s) to entrie(s)
-
+    """
+    Associate detail(s) to entrie(s).
     Add key-value pair details to one, or many Entry(s).
     The Entry(s) have to already exist in the database.
 
@@ -619,20 +627,25 @@ def add_details_to_entries(session, entries, details=None, **kwargs):
         Can also pass a metacatalog.Entry object.
     details : list, None
         .. versionadded:: 0.1.8
+
         List of dict of structure:
-        .. code-block::
+        
+        .. code-block:: text
+
             [{
                 'key': '',
                 'value': '',
                 'description': ''
             }]
+
         where the ``description`` is optional and can be omitted.
-        If no descriptions are passed at all, you can also use `**kwargs`
-        to pass ``key=value`` pairs. You can mix `details` and `kwargs`
-    kwargs : keyword arguments
-        Each keyword argument will be added as a
-        py:class:`metacatalog.models.Detail` and linked to
-        each entry
+        If no descriptions are passed at all, you can also use ``**kwargs``
+        to pass ``key=value`` pairs. You can mix ``details`` and ``kwargs``
+    
+    Note
+    ----
+    Each keyword argument will be added as a py:class:`Detail <metacatalog.models.Detail>`
+    and linked to each entry.
 
     """
     # check the input shapes

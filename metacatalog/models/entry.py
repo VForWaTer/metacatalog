@@ -5,11 +5,13 @@ one type of environmental variable. It can hold a reference and interface to the
 If a supported data format is used, Entry can load the data.
 
 """
+from typing import List, Dict
 from datetime import datetime as dt
 import hashlib
 import json
 from dateutil.relativedelta import relativedelta as rd
 from uuid import uuid4
+import warnings
 
 from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
@@ -36,8 +38,7 @@ def get_embargo_end(datetime=None):
 
 
 class Entry(Base):
-    r"""Entry
-
+    r"""
     The Entry is the main entity in metacatalog. An object instance models a
     set of metadata needed to store and manage a datasource. The Entry is not
     the actual data.
@@ -69,27 +70,19 @@ class Entry(Base):
         exernal_id is only stored for reference reasons.
     location : str, tuple
         .. versionchanged:: 0.6.1
+
         A POINT location should be specified here if there is a physical measurement 
         point that is different from the centroid of the spatial extent (e.g., 
-        discharge measurement with the extent of the catchment).
-        Otherwise, ``Datasource.spatial_scale.extent`` should be used to specify the
-        location of the measured data.
+        discharge measurement with the extent of the catchment).Otherwise, 
+        :class:`Datasource.spatial_scale.extent <metacatalog.models.SpatialScale.extent>` 
+        should be used to specify the location of the measured data.
 
         The location as a POINT Geometry in unprojected WGS84 (EPSG: 4326).
         The location is primarily used to show all Entry objects on a map, or
-        perform geo-searches. If the data-source needs to store more complex
-        Geometries, you can use the ``geom`` argument.
+        perform geo-searches.
         The location can be passed as WKT or a tuple of (x, y) coordinates.
         Note that it will be returned and stored as WKB. The output value will
         be reworked in a future release
-    geom : str
-        .. deprecated:: 0.1.11
-            The geom attribute will be reomved with version 0.2
-        .. warning::
-            The geom attribute is completely untested so far and might be
-            reworked or removed in a future release
-            It takes a WKT of any kind of OGC-conform Geometry. The return value
-            will be the same Geometry as WKB.
     creation : datetime.datetime
         Following the ISO19115 the *creation* date is referring to the creation
         date of the **data resource** described by the Entry, not the Entry
@@ -102,17 +95,20 @@ class Entry(Base):
         The version of this Entry. Usually metacatalog will handle the version
         itself and there is not need to set the version manually.
     latest_version_id : int
-        Foreign key to `Entry.id`. This key is self-referencing the another
+        Foreign key to ``Entry.id``. This key is self-referencing the another
         Entry. This has to be set if the current Entry is not the latest one.
         If latest_version_id is None, the Entry is the most recent one and
         database operations that find multiple entries will in a future release
         filter to 'version duplicates'.
     is_partial : bool
         .. versionadded:: 0.1.10
+
         If an Entry is partial, it is not self-contained and **has** to be part
         of a :class:`EntryGroup <metacatalog.models.EntryGroup>` of type
         composite.
+
         .. note::
+
             To make it possbile to add partial Entrys via the models submodule,
             The Entry class itself will  **not** check integrity. This has to
             be done on adding partial Entry records, or by checking the database
@@ -120,6 +116,7 @@ class Entry(Base):
         Arbitrary free-text comment to the Entry
     citation : str
         .. versionadded:: 0.1.13
+
         Citation informatio for this Entry. Note, that metacatalog does not
         assign DOIs and thus a citation is only useful if the associated
         data has a DOI and the bibliographic information applies to the Entry
@@ -130,7 +127,7 @@ class Entry(Base):
             export the reference to the resource in a common citation style.
     license : metacatalog.models.License
         Data License associated to the data and the metadata. You can pass
-        the `License <metacatalog.models.License>`_ itself, or use the
+        the :class:`License <metacatalog.models.License>` itself, or use the
         license_id attribute.
     license_id : int
         Foreign key to the data license.
@@ -138,15 +135,15 @@ class Entry(Base):
         :class:`Person <metacatalog.models.Person>` that acts as first author
         for the given entry. Only one first author is possible, co-authors can
         be requested from either the contributors list or the
-        :py:attr:`authors` property. `author` is a property and setting a
+        :py:attr:`authors` property. ``author`` is a property and setting a
         new author using this property is not supported.
     authors : list
         List of :class:`Person <metacatalog.models.Person>`. The first element
         is the first author, see :py:attr:`~author`. The others are
         :class:`Person <metacatalog.models.Person>`s associated with the
         :class:`Role <metacatalog.models.PersonRole>` of ``'coAuthor' ``.
-        The list of authors is sorted by the `order` attribute.
-        `authors` is a property and setting a new list of authors using this
+        The list of authors is sorted by the ``order`` attribute.
+        ``authors`` is a property and setting a new list of authors using this
         property is not supported.
 
     Note
@@ -163,6 +160,7 @@ class Entry(Base):
     --------
     `EntryGroup`
     `EntryGroupType
+
     """
     __tablename__ = 'entries'
 
@@ -173,7 +171,6 @@ class Entry(Base):
     abstract = Column(String)
     external_id = Column(String)
     location = Column(Geometry(geometry_type='POINT', srid=4326), nullable=True)
-    geom = Column(Geometry)
     version = Column(Integer, default=1, nullable=False)
     latest_version_id = Column(Integer, ForeignKey('entries.id'), nullable=True)
     is_partial = Column(Boolean, default=False, nullable=False)
@@ -192,7 +189,7 @@ class Entry(Base):
 
     # relationships
     contributors = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
-    keywords = relationship("KeywordAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
+    keywords = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
     license = relationship("License", back_populates='entries')
     variable = relationship("Variable", back_populates='entries')
     datasource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
@@ -205,8 +202,7 @@ class Entry(Base):
     io_interface = None
 
     def to_dict(self, deep=False, stringify=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -217,6 +213,7 @@ class Entry(Base):
         stringify : bool
             If True, all values will be turned into a string,
             to make the object serializable.
+        
         Returns
         -------
         obj : dict
@@ -239,7 +236,7 @@ class Entry(Base):
             isPartial=self.is_partial,
             publication=self.publication,
             lastUpdate=self.lastUpdate,
-            keywords=self.plain_keywords_dict()
+            keywords=[kw.to_dict() for kw in self.keywords]
         )
 
         # optional relations
@@ -273,9 +270,9 @@ class Entry(Base):
     @classmethod
     def from_dict(cls, data: dict, session: Session) -> 'Entry':
         """
-        .. versionadded:: 0.4.8
-
         Create a *new* Entry in the database from the given dict.
+
+        .. versionadded:: 0.4.8
 
         Parameters
         ----------
@@ -329,7 +326,6 @@ class Entry(Base):
             variable=variable_id,
             abstract=data.get('abstract'),
             external_id=data.get('external_id'),
-            geom=data.get('geom'),
             license=license_id,
             embargo=data.get('embargo', False)
         )
@@ -364,11 +360,12 @@ class Entry(Base):
     @property
     def checksum(self):
         """
-        .. versionadded:: 0.3.8
-
         MD5 checksum of this entry. The checksum will change if any of the linked
         Metadata changes. This can be used in application built on metacatalog to
         verify integrity.
+
+        .. versionadded:: 0.3.8
+
         """
         # get a dict_representation
         d = self.to_dict(deep=True, stringify=True)
@@ -414,7 +411,9 @@ class Entry(Base):
         commit : boolean
             If True, the whole :class:`Entry <metacatalog.models.Entry>` will commit
             and persist itself to the database.
+            
             .. note::
+
                 This will also affect other uncommited edits to the Entry.
 
         """
@@ -433,7 +432,6 @@ class Entry(Base):
             except Exception as e:
                 session.rollback()
                 raise e
-
 
     @property
     def authors(self):
@@ -466,26 +464,43 @@ class Entry(Base):
     def location_shape(self, shape):
         self.location = from_shape(shape)
 
-    def plain_keywords_list(self):
-        """Metadata Keyword list
-
-        Returns list of controlled keywords associated with this
-        instance of meta data.
-        If there are any associated values or alias of the given
-        keywords, use the keywords_dict function
+    def keyword_list(self) -> List[str]:
+        """
+        List of tagged keywords associated to this instance. 
+        The keywords are related via the association table.
 
         """
-        return [kw.keyword.path() for kw in self.keywords]
+        # keywords
+        return [kw.path() for kw in self.keywords]
 
-    def plain_keywords_dict(self):
-        return [kw.keyword.to_dict() for kw in self.keywords]
+    def plain_keywords_list(self) -> List[str]:
+        """
+        Returns list of controlled keywords associated with this
+        instance of meta data.
+        The List only includes the full path
+
+        """
+        warnings.warn("Entry.plain_keyword_list is deprecated since 0.7.3, use Entry.keyword_list instead.", category=DeprecationWarning)
+
+        return self.keyword_list()
+
+    def plain_keywords_dict(self) -> List[Dict[str, str]]:
+        """
+        Get a list of dictionaries containing a dict representation
+        of each associated keyword to this Entry.
+
+        """
+        warnings.warn("plain_keywords_dict is deprecated. Use [k.to_dict() for k in Entry.keywords] instead.", category=DeprecationWarning)
+        return [kw.to_dict() for kw in self.keywords]
 
     def keywords_dict(self):
+        """
+        """
+        warnings.warn("keywords_dict is deprecated and will be removed with a future release", category=DeprecationWarning)
         return [
             dict(
-                path=kw.keyword.full_path,
-                alias=kw.alias,
-                value=kw.associated_value
+                path=kw.full_path,
+                value=kw.value
             ) for kw in self.keywords
         ]
 
@@ -516,21 +531,26 @@ class Entry(Base):
         fmt : string
             Can be one of:
 
-            * `html` to return a HTML table
-            * `latex` to return LaTeX table
-            * `markdown` to return Markdown table
+            * ``html`` to return a HTML table
+            * ``latex`` to return LaTeX table
+            * ``markdown`` to return Markdown table
 
         """
         # get the details
         details = dict()
         for key, detail in self.details_dict(full=True).items():
+            # nested details
             if isinstance(detail['value'], dict):
+                # include top-level detail of nested detail
+                details[key] = detail.copy()
+                details[key]['value'] = '-'
+                # go for nested details
                 for k, v in detail['value'].items():
                     expand = {
                         f'{key}.{k}': dict(
                             value=v,
                             id=detail['id'],
-                            key=detail['key'],
+                            key=f"{key}.{k}",
                             stem=detail['stem'],
                             entry_id=detail['entry_id'],
                             entry_uuid=detail['entry_uuid']
@@ -561,13 +581,17 @@ class Entry(Base):
         ----------
         details : list
             .. versionadded:: 0.1.8
+
             List of dict of structure:
-            .. code-block::
+            
+            .. code-block:: text
+
                 [{
                     'key': '',
                     'value': '',
                     'description': ''
                 }]
+        
             where the ``description`` is optional and can be omitted.
             If no descriptions are passed at all, you can also use `**kwargs`
             to pass ``key=value`` pairs.
@@ -764,11 +788,14 @@ class Entry(Base):
             The EPSG identification number of any projected cartesian coordinate
             reference system that uses meter as unit. This CRS will be used to
             apply the search distance (in meter).
+
             .. note::
+
                 The default system is the transversal Mercartor projection, which is
                 a global system. Thus, it can always be applied, but may introduce
                 large uncertainties in small areas. Replace this attribute by a
                 local CRS wherever possible.
+
         as_sql : bool
             If False (default) the SQL query for neighbors will be executed and
             the result is returned. Else, the SQL query itself will be returned.
@@ -800,6 +827,31 @@ class Entry(Base):
 
     def create_datasource(self, path: str, type, datatype, commit=False, **args):
         """
+        Create a :class:`DataCource <metacatalog.models.DataSource>` for this
+        Entry. The data-source holds specific metadata about the actual type 
+        of source, the data resides in.
+
+        Parameters
+        ----------
+        path : str
+            The path to the data. This depends on the type of datasource used.
+            This can be a URI, database table, local path etc.
+        type : metacatalog.models.DataSourceType
+            type of the datasource
+        datatype : metacatalog.models.DataType
+            Data Type of the referenced source
+        commit : bool, optional
+            If true, the created datasource will directly be commited to the
+            database. If false (default) the model will be created and linked
+            to this Entry, but you still need to add it to a database session
+            and commit the session.
+        
+        Returns
+        -------
+        datasource : metacatalog.models.DataSource
+            Returns the newly created Datasource, which is also available as
+            ``Entry.datasource``.
+
         """
         #
         if self.datasource is not None:
@@ -841,12 +893,12 @@ class Entry(Base):
 
     def get_data(self, **kwargs):
         """
-        .. versionchanged:: 0.1.12
-
         Read the data. This is only possible if a datasource is specified and
         any kind of IOExtension or IOInterface is activated. By default,
         the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>`
         is activated since version 0.1.12.
+
+        .. versionchanged:: 0.1.12
 
         """
         if self.datasource is None:
@@ -869,8 +921,6 @@ class Entry(Base):
 
     def import_data(self, data, **kwargs):
         """
-        .. versionchanged:: 0.1.12
-
         Import data. This is only possible if a datasource is specified and
         any kind of IOExtension or IOInterface is activated. By default,
         the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>`
@@ -883,6 +933,8 @@ class Entry(Base):
         customize read and write behaviour. If you import i.e. a timeseries to
         the same database as metacatalog, you will need to prepared data to
         to only hold an datetime index and the data to be stored.
+
+        .. versionchanged:: 0.1.12
 
         """
         if self.datasource is None:
@@ -905,8 +957,6 @@ class Entry(Base):
 
     def append_data(self, data, **kwargs):
         """
-        .. versionadded:: 0.1.12
-
         Append data. This is only possible if a datasource is specified and
         any kind of IOExtension or IOInterface is activated. By default,
         the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>`
@@ -919,6 +969,8 @@ class Entry(Base):
         customize read and write behaviour. If you import i.e. a timeseries to
         the same database as metacatalog, you will need to prepared data to
         to only hold an datetime index and the data to be stored.
+
+        .. versionadded:: 0.1.12
 
         """
         if self.datasource is None:
@@ -941,8 +993,6 @@ class Entry(Base):
 
     def delete_data(self, delete_source=False, **kwargs):
         """
-        .. versionadded:: 0.1.12
-
         Delete data. This is only possible if a datasource is specified and
         any kind of IOExtension or IOInterface is activated. By default,
         the builtin :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>`
@@ -953,6 +1003,8 @@ class Entry(Base):
         You can easily inherit from the
         :class:`IOExtension <metacatalog.ext.io.extension.IOExtension>` to
         customize read and write behaviour.
+
+        .. versionadded:: 0.1.12
 
         Parameters
         ----------

@@ -1,4 +1,4 @@
-sqlalchemy
+sqlalchemy<2
 geoalchemy2
 pandas
 xarray
@@ -10,6 +10,4 @@ shapely
 pyproj
 requests
 dicttoxml
-flask>=1.1
-flask-cors
 tqdm

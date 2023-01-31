@@ -17,18 +17,8 @@ from metacatalog.util.exceptions import MetadataMissingError
 
 
 class DataSourceType(Base):
-    r"""Data Source Type
-
+    r"""
     Model to represent a type of datasource.
-
-    Note
-    ----
-    While it is possible to add more records to the table,
-    this is the only Class that needs actual Python functions to
-    handle the database input. Usually, each type of datasource
-    relies on a specific :mod:`importer <metacatalog.util.importer>`
-    and reader :mod:`reader <metacatalog.util.reader>` that can use
-    the information saved in a :class:`DataSource` to perform I/O operations.
 
     Attributes
     ----------
@@ -40,6 +30,17 @@ class DataSourceType(Base):
         The full title of this Type.
     description : str
         Optional description about this type
+    
+    Note
+    ----
+    While it is possible to add more records to the table,
+    this is the only Class that needs actual Python functions to
+    handle the database input. Usually, each type of datasource
+    relies on a specific :mod:`importer <metacatalog.util.importer>`
+    and reader :mod:`reader <metacatalog.util.reader>` that can use
+    the information saved in a :class:`DataSource <metacatalog.models.DataSource>`
+    to perform I/O operations.
+
 
     """
     __tablename__ = 'datasource_types'
@@ -54,8 +55,7 @@ class DataSourceType(Base):
     sources = relationship("DataSource", back_populates='type')
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -127,8 +127,7 @@ class DataType(Base):
     children = relationship("DataType", backref=backref('parent', remote_side=[id]))
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -194,6 +193,7 @@ class DataType(Base):
         datatypes for the current datatype.
         Otherwise, the list contains all child datatypes that
         are inheriting the current datatype.
+
         """
         children = []
 
@@ -218,11 +218,17 @@ class TemporalScale(Base):
         Temporal resolution. The resolution has to be given as an ISO 8601
         Duration, or a fraction of it. You can substitute standalone minutes can
         be identified by non-ISO ``'min'``.
+
         .. code-block:: python
+
             resolution = '15min'
+        
         defines a temporal resolution of 15 Minutes. The ISO 8601 is built like:
-        .. code-block::
+
+        .. code-block:: text
+
             'P[n]Y[n]M[n]DT[n]H[n]M[n]S'
+            
     observation_start : datetime.datetime
         Point in time, when the first observation was made.
         Forms the temporal extent toghether with `observation_end`.
@@ -292,8 +298,7 @@ class TemporalScale(Base):
         self.observation_start, self.observation_end = extent
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -388,8 +393,7 @@ class SpatialScale(Base):
         return '%.1f m' % (self.support * self.resolution)
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -421,11 +425,11 @@ class SpatialScale(Base):
 
 
 class DataSource(Base):
-    r"""DataSource
-
+    r"""
     Model to represent a datasource of a specific
     :class:`Entry <metacatalog.models.Entry>`. The datasource further specifies
-    an :class:`DataSourceType` by setting a ``path`` and ``args``.
+    an :class:`DataSourceType <metacatalog.models.DataSourceType>` 
+    by setting a ``path`` and ``args``.
 
     Attributes
     ----------
@@ -440,16 +444,17 @@ class DataSource(Base):
     args : str
         Optional. If the I/O classes need further arguments, these can be stored
         as a JSON-serializable str. Will be parsed into a dict and passed to the
-        I/O functions as **kwargs.
+        I/O functions as ``**kwargs``.
     type_id : int
-        Foreign key referencing the :class:`DataSourceType`.
+        Foreign key referencing the ::class:`DataSourceType <metacatalog.models.DataSourceType>`.
     type : metacatalog.models.DataSourceType
-        The referenced :class:`DataSourceType`. Can be used instead of setting
-        ``type_id``.
+        The referenced :class:`DataSourceType <metacatalog.models.DataSourceType>`. 
+        Can be used instead of setting``type_id``.
     data_names : list
-          .. versionadded:: 0.3.0
-          List of column names that will be displayed when exporting the data.
-          The columns are named in the same order as they appear in the list.
+        .. versionadded:: 0.3.0
+
+        List of column names that will be displayed when exporting the data.
+        The columns are named in the same order as they appear in the list.
 
     Example
     -------
@@ -520,7 +525,7 @@ class DataSource(Base):
         if self.data_names is not None:
             d['data_names'] = self.data_names
         if self.args is not None:
-            d['args'] = self.parse_args()
+            d['args'] = self.load_args()
         if self.encoding is not None:
             d['encoding'] = self.encoding
         if self.temporal_scale is not None:
@@ -533,19 +538,16 @@ class DataSource(Base):
             d['entries'] = [e.to_dict() for e in self.entries]
 
 
-        return d
+        return d   
 
-    def parse_args(self):
-        r"""Load args
-        .. depreacted:: 0.1.11
-            use load_args instead
-
-        Note
-        ----
-        Load the contents of the args column as assumed JSON string.
-        This will be passed to the importer/adder function as **kwargs.
-        Therefore this is only useful for a DB admin and should not be
-        exposed to the end-user.
+    def load_args(self) -> dict:
+        """
+        Load the stored arguments from the ``'args'`` column.
+        It was filled by a JSON string and will be converted as dict before.
+        This dict is usually used for I/O operations and passed as keyword arguments.
+        Therefore this is only useful for a DB admin and should not be exposed to the end-user.
+        
+        .. versionadded:: 0.1.11
 
         """
         # return empty dict
@@ -556,26 +558,10 @@ class DataSource(Base):
         else:
             return json.loads(self.args)
 
-    def load_args(self) -> dict:
-        """
-        .. versionadded:: 0.1.11
-
-        Load the stored arguments from the ``'args'`` column.
-        It was filled by a JSON string and will be converted as
-        dict before.
-        This dict is usually used for I/O operations and passed
-        as keyword arguments.
-        Therefore this is only useful for a DB admin and should not be
-        exposed to the end-user.
-
-        """
-        return self.parse_args()
-
     def save_args_from_dict(self, args_dict, commit=False):
-        """Save to args
-
+        """
         Save all given keyword arguments to the database.
-        These are passed to the importer/adder functions as **kwargs.
+        These are passed to the importer/adder functions as ``**kwargs``.
 
         Parameters
         ----------
@@ -590,7 +576,7 @@ class DataSource(Base):
 
         See Also
         --------
-        parse_args
+        load_args
 
         """
         self.args = json.dumps(args_dict)

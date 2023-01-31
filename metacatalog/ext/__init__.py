@@ -1,10 +1,4 @@
 """
-.. note::
-
-    The extension management of metacatalog was completely rewritten in 
-    version 0.1.12. A detailed description will follow once the changes
-    get stable with version 0.2
-
 Since version 0.2 metacatalog uses an extension system to 
 load functionality, that is not part of the core metacatalog 
 features. The package itself uses it to add data I/O operations
@@ -85,6 +79,7 @@ def activate_extension(name: str, module_name: str, interface_class_name: str):
     It will be registered as :attr:`name` and can therefore be loaded by 
 
     .. code-block:: python
+        
         from metacatalog.ext import extension
         extension(name)
     
