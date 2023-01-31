@@ -1,9 +1,7 @@
 import pytest
 
-import pandas as pd
-import numpy as np
-from numpy.testing import assert_array_almost_equal
 from metacatalog import api
+from metacatalog.models import Entry
 from ._util import connect
 
 
@@ -26,6 +24,27 @@ def check_to_dict_persons(session):
     assert entry_dict['rightsHolder'][0]['last_name'] == 'Master'
 
     return True
+
+
+def check_from_dict(session):
+    """
+    Check Entry.from_dict().
+    This currently just checks that `Entry.from_dict(entry.to_dict())`
+    raises a NotImplementedError, as 'id' is in the input dict. 
+    """
+    # find entry
+    entry = api.find_entry(session, title="Entry with some extra Person roles")[0]
+
+    # Entry.to_dict()
+    entry_dict = entry.to_dict()
+
+    # currently, if 'id' is in entry_dict, a NotImplementedError is raised
+    with pytest.raises(NotImplementedError):
+        # run Entry.from_dict()
+        entry_fromdict = Entry.from_dict(session, entry_dict)
+
+    return True
+
 
 @pytest.mark.depends(on=['add_find'], name='dict_methods')
 def test_fromdict_todict():
@@ -55,3 +74,4 @@ def test_fromdict_todict():
 
     # run single tests
     assert check_to_dict_persons(session)
+    assert check_from_dict(session)
