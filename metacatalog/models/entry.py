@@ -7,7 +7,7 @@ If a supported data format is used, Entry can load the data.
 """
 from typing import List, Dict, TYPE_CHECKING
 if TYPE_CHECKING:
-    from metacatalog.models import License, PersonAssociation, Variable, EntryGroup, Keyword, Detail, DataSource
+    from metacatalog.models import License, PersonAssociation, Variable, EntryGroup, Keyword, Detail, DataSource, PersonRole
 from datetime import datetime as dt
 import hashlib
 import json
@@ -289,6 +289,10 @@ class Entry(Base):
 
         .. versionadded:: 0.4.8
 
+        .. versionchanged:: 0.7.4
+            PersonRoles other than 'author' and 'coAuthor' can be
+            imported as well.
+
         Parameters
         ----------
         data : dict
@@ -354,6 +358,22 @@ class Entry(Base):
             roles=['coAuthor'] * len(coauthors),
             order=[_ + 2 for _ in range(len(coauthors))]
         )
+
+        # load all available
+        available_roles: List['PersonRole'] = api.find_role(session)
+        for role in available_roles:
+            if not hasattr(data, role.name) or role.name in ['author', 'coAuthor']:
+                continue
+            else:
+                contributors = [models.Person.from_dict(a, session) for a in data[role.name]]
+            
+            # otherwise add
+            api.add_persons_to_entries(
+                session,
+                entries=[entry],
+                persons=[contributors],
+                roles=[role.name] * len(contributors)
+            )
 
         # add keywords
         keyword_uuids = data.get('keywords', [])
