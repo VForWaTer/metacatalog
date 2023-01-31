@@ -5,7 +5,9 @@ one type of environmental variable. It can hold a reference and interface to the
 If a supported data format is used, Entry can load the data.
 
 """
-from typing import List, Dict
+from typing import List, Dict, TYPE_CHECKING
+if TYPE_CHECKING:
+    from metacatalog.models import License, PersonAssociation, Variable, EntryGroup, Keyword, Detail, DataSource
 from datetime import datetime as dt
 import hashlib
 import json
@@ -188,14 +190,14 @@ class Entry(Base):
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
-    contributors: List[models.PersonAssociation] = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
-    keywords: List[models.Keyword] = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
-    license: models.License = relationship("License", back_populates='entries')
-    variable: models.Variable = relationship("Variable", back_populates='entries')
-    datasource: models.DataSource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
+    contributors: List[PersonAssociation] = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
+    keywords: List[Keyword] = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
+    license: License = relationship("License", back_populates='entries')
+    variable: Variable = relationship("Variable", back_populates='entries')
+    datasource: DataSource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
-    associated_groups: List[models.EntryGroup] = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
-    details: List[models.Detail] = relationship("Detail", back_populates='entry')
+    associated_groups: List[EntryGroup] = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
+    details: List[Detail] = relationship("Detail", back_populates='entry')
 
     # extensions
     io_extension = None
