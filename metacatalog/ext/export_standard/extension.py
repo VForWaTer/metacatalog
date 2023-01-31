@@ -323,11 +323,15 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             # save as list(dict)
             bbox_location = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
 
+            # spatial_resolution
+            spatial_resolution = [rs.get('datasource')['spatial_scale']['resolution']]
+
     # if there are more than one datasources in the ImmutableResultSet, use all values, repeat in ISO
     elif any(isinstance(val, dict) for val in rs.get('datasource').values()):
         encoding = []
         temporal_scale = []
         bbox_location = []
+        spatial_resolution = []
         for i ,(entry_uuid, ds_dict) in enumerate(rs.get('datasource').items()):
             # encoding
             encoding.append(ds_dict['encoding'])
@@ -346,7 +350,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
                     "temporal_extent_end": temporal_extent_end,
                     "temporal_resolution": temporal_resolution
                 })
-            # spatial_scale / bbox_location
+            # spatial_scale / bbox_location & spatial_resolution
             if ds_dict.get('spatial_scale'):
                 location = ds_dict['spatial_scale']['extent']
         
@@ -360,6 +364,10 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
                 # save as list(dict)
                 bbox_location.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
 
+                # spatial_resolution
+                spatial_resolution.append(ds_dict['spatial_scale']['resolution'])
+
+
 
 
 
@@ -367,10 +375,14 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         if len(set(encoding)) == 1:
             encoding = encoding[0]
         else:
-            NotImplementedError("I think we don't need that..")
+            raise NotImplementedError("I think we don't need that..")
 
+        # check spatial_resolution
+        if len(set(spatial_resolution)) == 1:
+            spatial_resolution = spatial_resolution[0]
+        else:
+            raise ValueError("Different spatial resolutions in datasource.spatial_scale, instance is not ISO exportable!")
 
-    # TODO: location
     # if bbox_location is not filled from datasource above, go for Entry.location
     if not bbox_location:
         if rs.get('location') and isinstance(rs.get('location'), WKBElement):
@@ -384,7 +396,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             min_lon = max_lon = P.coords[0][0]
             min_lat = max_lat = P.coords[0][1]
 
-            # append to entry_dict
+            # save as bbox_location
             bbox_location = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
         # more than one location -> uuid-indexed dict of locations
         if rs.get('location') and isinstance(rs.get('location'), dict):
@@ -399,7 +411,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
                 min_lon = max_lon = P.coords[0][0]
                 min_lat = max_lat = P.coords[0][1]
 
-                # append to entry_dict
+                # append to bbox_location
                 bbox_location.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
 
     # raise ValueError if location is neither specified in datasource.spatial_scale nor in Entry.location
