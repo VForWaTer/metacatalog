@@ -13,6 +13,8 @@ from sqlalchemy.orm.session import Session
 from lxml import etree
 import xmltodict
 import shapely
+from geoalchemy2.shape import to_shape
+from geoalchemy2.elements import WKBElement
 
 from datetime import datetime
 
@@ -289,6 +291,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
 
 
     # TODO: encoding auch bei IdentificationInfo immer utf-8?? denke schon
+    # TODO: spatial_scale.resolution -> nicht repeatable
     
 
     # if there is only one datasource in the ImmutableResultSet, use its values
@@ -320,16 +323,17 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             # save as list(dict)
             bbox_location = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
 
-    # if there is only one datasource in the ImmutableResultSet, use its values
+    # if there are more than one datasources in the ImmutableResultSet, use all values, repeat in ISO
     elif any(isinstance(val, dict) for val in rs.get('datasource').values()):
         encoding = []
         temporal_scale = []
+        bbox_location = []
         for i ,(entry_uuid, ds_dict) in enumerate(rs.get('datasource').items()):
             # encoding
             encoding.append(ds_dict['encoding'])
 
             # temporal_scale
-            if ds_dict['temporal_scale']:
+            if ds_dict.get('temporal_scale'):
                 # extent
                 temporal_extent_start = ds_dict['temporal_scale']['extent'][0].isoformat()
                 temporal_extent_end = ds_dict['temporal_scale']['extent'][1].isoformat()
@@ -342,6 +346,20 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
                     "temporal_extent_end": temporal_extent_end,
                     "temporal_resolution": temporal_resolution
                 })
+            # spatial_scale / bbox_location
+            if ds_dict.get('spatial_scale'):
+                location = ds_dict['spatial_scale']['extent']
+        
+                # convert wkt to shapely shape to infer coordinates
+                P = shapely.wkt.loads(location)
+        
+                # get support points of polygon
+                min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
+                max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
+                
+                # save as list(dict)
+                bbox_location.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
+
 
 
 
@@ -355,7 +373,34 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # TODO: location
     # if bbox_location is not filled from datasource above, go for Entry.location
     if not bbox_location:
-        rs.get('location')
+        if rs.get('location') and isinstance(rs.get('location'), WKBElement):
+            # Entry.location is always a POINT
+            location = rs.get('location')
+            
+            # convert wkt to shapely shape to infer coordinates
+            P = to_shape(location)
+            
+            # get coordinates of point
+            min_lon = max_lon = P.coords[0][0]
+            min_lat = max_lat = P.coords[0][1]
+
+            # append to entry_dict
+            bbox_location = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
+        # more than one location -> uuid-indexed dict of locations
+        if rs.get('location') and isinstance(rs.get('location'), dict):
+            for entry_uuid, loc in rs.get('location').items():
+                # Entry.location is always a POINT, save as bbox for ISO
+                location = loc
+            
+                # convert wkt to shapely shape to infer coordinates
+                P = to_shape(location)
+            
+                # get coordinates of point
+                min_lon = max_lon = P.coords[0][0]
+                min_lat = max_lat = P.coords[0][1]
+
+                # append to entry_dict
+                bbox_location.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
 
     # raise ValueError if location is neither specified in datasource.spatial_scale nor in Entry.location
     if not bbox_location:
