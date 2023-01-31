@@ -8,10 +8,11 @@ from metacatalog.db.base import Base
 
 class Thesaurus(Base):
     """
-    .. versionadded:: 0.1.10
     A thesaurus is a controlled dictionary, which is served at 
     a permanent URL. As of now, metacatalog implements NASA 
     Global Climate change Master Dictionary (GCMD) science keywords.
+    
+    .. versionadded:: 0.1.10
     
     Attributes
     ----------
@@ -67,8 +68,7 @@ class Thesaurus(Base):
     keywords = relationship("Keyword", back_populates="thesaurusName")
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters
@@ -107,7 +107,7 @@ class Thesaurus(Base):
 
 class Keyword(Base):
     """
-    the major purpose of a Keyword is to describe a Metadataset by 
+    The major purpose of a Keyword is to describe a Metadataset by 
     a common word. Ideally, these keywords are hosted in a controlled 
     dictionary. That means a third party distributes and describes 
     the scope of these keywords and makes them publicly available. 
@@ -132,26 +132,28 @@ class Keyword(Base):
     full_path : str
         The full keyword including all ancestors keyword values. Usually, 
         the term 'Keyword' refers to the full path of the keyword.
+        
         .. note::
+
             The `Keyword` does also have a method `Keyword.path` to 
             *contruct* the path by recursively querying the parents' 
             values. You can use this function to store the result in 
             `full_path` for convenience.
+        
     thesaurusName : metacatalog.models.Thesaurus
         .. versionadded:: 0.1.10 
+
         If the keyword is part of a controlled dictionary, this 
         *thesaurus* should be described here. Usually, metacatalog will 
         only implement onr or two, which are maintained by the admin.
     thesaurus_id : int
         .. versionadded:: 0.1.10
+
         Foreign key to the associated thesaurus.
     tagged_entries : list
         List of Associations between the current keyword and 
         :class:`Entries <metacatalog.models.Entry>` tagged by this keyword.
         This list is filled automatically.
-
-        .. see-also::
-            metacatalog.api.add_keywords_to_entries
 
     Note
     ----
@@ -164,10 +166,15 @@ class Keyword(Base):
     This makes it possible to filter by keywords themselves or 
     by groups of keywords. They have to follow the pattern:
 
-    .. code-block::
+    .. code-block:: text
+
         category > topic > term ...
     
     followed by any number of more granular groupings.
+
+    See Also
+    --------
+    metacatalog.api.add_keywords_to_entries
 
     """
     __tablename__ = 'keywords'
@@ -184,12 +191,11 @@ class Keyword(Base):
 
     # relationships
     children = relationship("Keyword", backref=backref('parent', remote_side=[id]))
-    tagged_entries = relationship("KeywordAssociation", back_populates='keyword')
+    tagged_entries = relationship("Entry", secondary="nm_keywords_entries", back_populates='keywords')
     thesaurusName = relationship("Thesaurus", back_populates="keywords")
 
     def path(self):
-        """Keyword path
-
+        """
         Returns the full keyword path for the given level. 
         The levels are separated by a '>' sign. The levels are:
 
@@ -197,9 +203,9 @@ class Keyword(Base):
 
         Returns
         -------
-
         path : str
             The full keyword path
+
         """
         path = [self.value]
         parent = self.parent
@@ -210,21 +216,11 @@ class Keyword(Base):
         
         return ' > '.join(reversed(path))
 
-    def as_dict(self):
-        """
-        .. deprecated:: 0.1.10
-            Use `Keyword.to_dict`. Will be removed in version 0.2
-        """
-        return {
-            'path': self.path(),
-            'uuid': self.uuid
-        }
-
     def to_dict(self, deep=False) -> dict:
-        """To dict
-        .. versionadded:: 0.1.10
-
+        """
         Return the model as a python dictionary.
+
+        .. versionadded:: 0.1.10
 
         Parameters
         ----------
@@ -280,8 +276,8 @@ class KeywordAssociation(Base):
     entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)
 
     # relationships
-    keyword = relationship("Keyword", back_populates='tagged_entries')
-    entry = relationship("Entry", back_populates='keywords')
+    #keyword = relationship("Keyword", viewonly=True)#, back_populates='tagged_entries')
+    #entry = relationship("Entry", viewonly=True)#, back_populates='keywords')
 
     def __str__(self):
         return "<Entry ID=%d> tagged %s" % (self.entry.id, self.keyword.value)

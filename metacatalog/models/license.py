@@ -49,9 +49,12 @@ class License(Base):
         terms of usage for the reference data set. Instead of 
         copying the full text to metacatalog, a ``link`` to a permanent
         version of the license can be given. One of either is mandatory
+        
         .. note::
+
             It is highly recommended to use existing licenses to 
             assure that they are legally correct.
+        
     link : str
         URI link to the full license text. If possible, make sure 
         that the URI links a page of type ``'text/plain'`` to 
@@ -86,8 +89,7 @@ class License(Base):
     entries = relationship("Entry", back_populates='license')
 
     def to_dict(self, deep=False) -> dict:
-        """To dict
-
+        """
         Return the model as a python dictionary.
 
         Parameters

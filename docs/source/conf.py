@@ -25,7 +25,7 @@ def get_version():
 # -- Project information -----------------------------------------------------
 
 project = 'Metacatalog'
-copyright = '2022, Mirko Mälicke'
+copyright = '2022, Mirko Mälicke, Alexander Dolich'
 author = 'Mirko Mälicke <mirko.maelicke@kit.edu>'
 
 # The full version, including alpha/beta/rc tags
@@ -41,6 +41,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
+    'sphinx.ext.todo',
     'nbsphinx',
     'sphinx_gallery.load_style'
 #    'sphinx.ext.inheritance_diagram',
@@ -76,7 +77,11 @@ html_theme_options = {
 #    'github_button': True,
 #    'fixed_sidebar': True,
 #    'body_text_align': 'justify'
-    'github_url': 'https://github.com/VForWaTer/metacatalog'
+    "github_url": "https://github.com/VForWaTer/metacatalog",
+    # "logo": {
+    #     "image_light": "_static/brand.png",
+    #     "image:dark": "_static/brand.png"
+    # }
 }
 
 html_context = {

@@ -105,6 +105,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         Interface like:
 
         .. code-block:: python
+
             class IOInterface(IOExtensionInterface):
                 def read(self, **kwargs):
                     return super(IOInterface, self).read(**kwargs)
@@ -133,6 +134,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         Interface like:
 
         .. code-block:: python
+
             class IOInterface(IOExtensionInterface):
                 def import_(self, data, **kwargs):
                     return super(IOInterface, self).import_(data, **kwargs)
@@ -161,6 +163,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         Interface like:
 
         .. code-block:: python
+
             class IOInterface(IOExtensionInterface):
                 def append(self, data, **kwargs):
                     return super(IOInterface, self).append(data, **kwargs)
@@ -189,6 +192,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         Interface like:
 
         .. code-block:: python
+
             class IOInterface(IOExtensionInterface):
                 def delete(self, **kwargs):
                     return super(IOInterface, self).delte(**kwargs)
@@ -306,6 +310,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         -------
         reader : callable
             The reader function for the requested datasource type
+
         """
         return cls.get_func_for_datasource('READER', datasource)
 
@@ -325,6 +330,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         -------
         importer : callable
             The importer function for the requested datasource type
+
         """
         return cls.get_func_for_datasource('IMPORTER', datasource)
 
@@ -344,6 +350,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         -------
         appender : callable
             The appender function for the requested datasource type
+
         """
         return cls.get_func_for_datasource('APPENDER', datasource)
 
@@ -363,5 +370,6 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
         -------
         deleter : callable
             The deleter function for the requested datasource type
+
         """
         return cls.get_func_for_datasource('DELETER', datasource)

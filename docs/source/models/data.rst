@@ -15,5 +15,3 @@ of metacatalog. For this, refer to the classes provided below.
 
 .. automodule:: metacatalog.models.generic_data
     :members:
-
-.. automodule:: metacatalog.models.eddy_data
