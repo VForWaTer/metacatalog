@@ -266,7 +266,35 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         details.append(df.to_markdown())
 
 
-    # TODO: keywords (full_path, thesaurusName.title)
+    ### keywords (full_path, thesaurusName.title)
+    keywords = []
+
+    # go for keyword linked to variable first
+    variable_dict = rs.get('variable')
+
+    if 'keyword' in variable_dict:
+        # get relevant information
+        full_path = variable_dict.get('keyword').get('path')
+        thesaurusName = variable_dict.get('keyword').get('thesaurusName').get('title')
+        
+        # append to keywords
+        keywords.append({
+            'full_path': full_path,
+            'thesaurusName': thesaurusName
+        })
+
+    # TODO: test multiple keywords!
+    # go for keywords linked directly to ImmutableResultSet next
+    for keyword_dict in rs.get('keywords'):
+        # get relevant information
+        full_path = keyword_dict.get('path')
+        thesaurusName = keyword_dict.get('thesaurusName').get('title')
+        
+        # append to keywords
+        keywords.append({
+            'full_path': full_path,
+            'thesaurusName': thesaurusName
+        })
 
 
     ### license (link, short_title)
