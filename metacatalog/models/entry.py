@@ -190,14 +190,14 @@ class Entry(Base):
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
-    contributors: List[PersonAssociation] = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
-    keywords: List[Keyword] = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
-    license: License = relationship("License", back_populates='entries')
-    variable: Variable = relationship("Variable", back_populates='entries')
-    datasource: DataSource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
+    contributors: List['PersonAssociation'] = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
+    keywords: List['Keyword'] = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
+    license: 'License' = relationship("License", back_populates='entries')
+    variable: 'Variable' = relationship("Variable", back_populates='entries')
+    datasource: 'DataSource' = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
-    associated_groups: List[EntryGroup] = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
-    details: List[Detail] = relationship("Detail", back_populates='entry')
+    associated_groups: List['EntryGroup'] = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
+    details: List['Detail'] = relationship("Detail", back_populates='entry')
 
     # extensions
     io_extension = None
@@ -206,6 +206,10 @@ class Entry(Base):
     def to_dict(self, deep=False, stringify=False) -> dict:
         """
         Return the model as a python dictionary.
+
+        .. versionchanged:: 0.7.4
+
+            The dictionary now contains all persons roles
 
         Parameters
         ----------
