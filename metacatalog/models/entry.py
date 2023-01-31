@@ -188,14 +188,14 @@ class Entry(Base):
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
-    contributors = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
-    keywords = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
-    license = relationship("License", back_populates='entries')
-    variable = relationship("Variable", back_populates='entries')
-    datasource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
+    contributors: List[models.PersonAssociation] = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
+    keywords: List[models.Keyword] = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
+    license: models.License = relationship("License", back_populates='entries')
+    variable: models.Variable = relationship("Variable", back_populates='entries')
+    datasource: models.DataSource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
-    associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
-    details = relationship("Detail", back_populates='entry')
+    associated_groups: List[models.EntryGroup] = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
+    details: List[models.Detail] = relationship("Detail", back_populates='entry')
 
     # extensions
     io_extension = None
@@ -253,6 +253,15 @@ class Entry(Base):
         for attr in ('abstract', 'external_id','comment', 'citation'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
                 d[attr] = getattr(self, attr)
+
+        # add contributors, that are not author or coAuthor
+        for pa in self.contributors:
+            role: str = pa.role.name
+            if role.lower() not in ['author', 'conauthor']:
+                if not hasattr(d, role):
+                    d[role] = [pa.person.to_dict(deep=False)]
+                else:
+                    d[role].append(pa.person.to_dict(deep=False))
 
         # lazy loading
         if deep:
