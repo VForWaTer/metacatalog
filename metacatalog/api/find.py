@@ -6,6 +6,9 @@ At the current stage, the following objects can be found by a FIND operation:
 * keywords
 
 """
+import os
+import warnings
+
 import numpy as np
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -1038,14 +1041,18 @@ def find_entry(session,
 
     # contributor
     if contributor is not None:
+
+        if not os.getenv('METACATALOG_SUPRESS_WARN', False):
+            warnings.warn("The contributor argument will change with a future release. Contributors will be kept, but filter for **any** associated person with a future release. If you want to keep the current behavior, use the authors argument. To supress this warning set the METACATALOG_SUPRESS_WARN environment variable.", FutureWarning)
+
         if isinstance(contributor, models.Person):
             contributor = contributor.id
         if isinstance(contributor, int):
             join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
-            query = join.filter(models.PersonRole.name.in_('author', 'coAuthor')).filter(models.Person.id==contributor)
+            query = join.filter(models.PersonRole.name.in_(['author', 'coAuthor'])).filter(models.Person.id==contributor)
         elif isinstance(contributor, str):
             join = query.join(models.PersonAssociation).join(models.PersonRole).join(models.Person)
-            query = join.filter(models.PersonRole.name.in_('author', 'coAuthor')).filter(
+            query = join.filter(models.PersonRole.name.in_(['author', 'coAuthor'])).filter(
                 (_match(models.Person.first_name, contributor)) | (_match(models.Person.last_name, contributor))
             )
         else:
