@@ -8,6 +8,7 @@ If a supported data format is used, Entry can load the data.
 from typing import List, Dict, TYPE_CHECKING
 if TYPE_CHECKING:
     from metacatalog.models import License, PersonAssociation, Variable, EntryGroup, Keyword, Detail, DataSource, PersonRole
+import os
 from datetime import datetime as dt
 import hashlib
 import json
@@ -312,6 +313,8 @@ class Entry(Base):
         Currently, uploading data sources and data records is not supported.
 
         """
+        if not os.getenv('METACATALOG_SUPRESS_WARN', False):
+            warnings.warn("With a future release, the Entry.from_dict method will not create Entries in the database automatically, but instatiate a model. To supress this warning set the METACATALOG_SUPRESS_WARN environment variable.", FutureWarning)
         if 'id' in data:
             raise NotImplementedError('Updating an Entry is not yet supported.')
         
