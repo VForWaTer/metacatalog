@@ -14,6 +14,7 @@ import json
 from dateutil.relativedelta import relativedelta as rd
 from uuid import uuid4
 import warnings
+from collections import defaultdict
 
 from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
@@ -227,7 +228,7 @@ class Entry(Base):
 
         """
         # base dictionary
-        d = dict(
+        out = dict(
             id=self.id,
             uuid=self.uuid,
             title=self.title,
@@ -247,40 +248,42 @@ class Entry(Base):
 
         # optional relations
         if self.license is not None:
-            d['license'] = self.license.to_dict(deep=False)
+            out['license'] = self.license.to_dict(deep=False)
 
         if self.details is not None:
-            d['details'] = self.details_dict(full=True)
+            out['details'] = self.details_dict(full=True)
 
         if self.datasource is not None:
-            d['datasource'] = self.datasource.to_dict(deep=False)
+            out['datasource'] = self.datasource.to_dict(deep=False)
 
         # set optional attributes
         for attr in ('abstract', 'external_id','comment', 'citation'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
-                d[attr] = getattr(self, attr)
+                out[attr] = getattr(self, attr)
 
         # add contributors, that are not author or coAuthor
+        updates = defaultdict(lambda: [])
         for pa in self.contributors:
             role: str = pa.role.name
             if role.lower() not in ['author', 'conauthor']:
-                if not hasattr(d, role):
-                    d[role] = [pa.person.to_dict(deep=False)]
-                else:
-                    d[role].append(pa.person.to_dict(deep=False))
+                updates[role].append(pa.person.to_dict(deep=False))
+
+        # update the return dict if there were any updates
+        if len(updates) > 0:
+            out.update(dict)
 
         # lazy loading
         if deep:
             projects = self.projects
             if len(projects) > 0:
-                d['projects'] = [p.to_dict(deep=False) for p in projects]
+                out['projects'] = [p.to_dict(deep=False) for p in projects]
             comp = self.composite_entries
             if len(comp) > 0:
-                d['composite_entries'] = [e.to_dict(deep=False) for e in comp]
+                out['composite_entries'] = [e.to_dict(deep=False) for e in comp]
 
         if stringify:
-            return serialize(d, stringify=True)
-        return d
+            return serialize(out, stringify=True)
+        return out
 
     @classmethod
     def from_dict(cls, data: dict, session: Session) -> 'Entry':
@@ -290,6 +293,7 @@ class Entry(Base):
         .. versionadded:: 0.4.8
 
         .. versionchanged:: 0.7.4
+
             PersonRoles other than 'author' and 'coAuthor' can be
             imported as well.
 
