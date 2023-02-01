@@ -270,7 +270,7 @@ class Entry(Base):
 
         # update the return dict if there were any updates
         if len(updates) > 0:
-            out.update(dict)
+            out.update(updates)
 
         # lazy loading
         if deep:
