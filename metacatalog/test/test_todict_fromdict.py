@@ -41,7 +41,7 @@ def check_from_dict(session):
     # currently, if 'id' is in entry_dict, a NotImplementedError is raised
     with pytest.raises(NotImplementedError):
         # run Entry.from_dict()
-        entry_fromdict = Entry.from_dict(session, entry_dict)
+        entry_fromdict = Entry.from_dict(session=session, data=entry_dict)
 
     return True
 

@@ -286,7 +286,7 @@ class Entry(Base):
         return out
 
     @classmethod
-    def from_dict(cls, data: dict, session: Session) -> 'Entry':
+    def from_dict(cls, session: Session, data: dict) -> 'Entry':
         """
         Create a *new* Entry in the database from the given dict.
 
