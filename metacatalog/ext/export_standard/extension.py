@@ -92,14 +92,49 @@ def _init_iso19115_jinja(rs_dict):
         return env, template
 
 
-def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> dict:
+def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet]):
     """
     Loads the ImmutableResultSet of the input Entry (if not already an ImmutableResultSet) 
-    and extracts the information necessary for ISO export from `ImmutableResultSet.to_dict()`.
+    and extracts the information necessary for ISO export.
 
-    Not all attributes / relations of an Entry are included in `ImmutableResultSet.to_dict()`.
-    The attributes required for ISO 19115 XML export are added to the dictionary with
-    the help of this function.
+    Parameters
+    ----------
+    entry_or_resultset : Union[Entry, ImmutableResultSet]
+        The entry instance to be exported
+    
+    Returns
+    ----------
+    uuid : str
+        Used for field <gmd:fileIdentifier> and field <gmd:identifier>, not repeatable.
+    lastUpdate : str
+        Used for field <gmd:dateStamp> and field <gmd:date> with <gmd:dateType> 'revision'
+        and field <gmd:editionDate>, str in ISO-date-format, not repeatable.
+    title : str
+        Used for field <gmd:title>, not repeatable.
+    publication : str
+        Used for field <gmd:date> with <gmd:dateType> 'creation' , 
+        str in ISO-datae-formate, not repeatable.
+    version: int
+        Used for field <egmd:dition>, not repeatable.
+    authors: list[dict]
+        Used for field <gmd:CI_ResponsibleParty>, list of dictionaries containing the 
+        information about authors: mandatory keys are `first_name`, `last_name` and
+        `organisation_name`, repeatable.
+    abstract: str
+        Used for field <gmd:abstract>, not repeatable.
+    details: list[str]
+        Details as a markdown table, currently also in field <gmd:abstract>, not repeatable.
+    keywords: list[dict]
+        Used for field <gmd:MD_Keywords>, list of dictionaries containing information about
+        associated keywords, mandatory keys are `full_path` and `thesaurusName`.
+    temporal_scales: list[dict]
+        Used for field <gmd:temporalElement>, list of dictionaries containing information
+        about the temporal scale(s), mandatory keys are `temporal_extent_start`, 
+        `temporal_extent_end` and `temporal_resolution`, repeatable.
+    bbox_locations: list[dict]
+        Used for field <gmd:geographicElement>, list of dictionaries containing the support
+        points of the bounding box(es), mandatory keys are `min_lon`, `min_lat`, `max_lon`
+        and `max_lat`, repeatable.
     """
     if not isinstance(entry_or_resultset, ImmutableResultSet):
         # get ImmutableResultSet
@@ -393,9 +428,6 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
                 spatial_resolution.append(ds_dict['spatial_scale']['resolution'])
 
 
-
-
-
         # check encoding -> TODO: ist das nicht eh immer utf-8?
         if len(set(encoding)) == 1:
             encoding = encoding[0]
@@ -490,40 +522,9 @@ class StandardExportExtension(MetacatalogExtensionInterface):
             - contact
         path : str
             If given, a file location for export.
-        uuid : str
-            Used for field <gmd:fileIdentifier> and field <gmd:identifier>, not repeatable.
-        lastUpdate : str
-            Used for field <gmd:dateStamp> and field <gmd:date> with <gmd:dateType> 'revision'
-            and field <gmd:editionDate>, str in ISO-date-format, not repeatable.
-        title : str
-            Used for field <gmd:title>, not repeatable.
-        publication : str
-            Used for field <gmd:date> with <gmd:dateType> 'creation' , 
-            str in ISO-datae-formate, not repeatable.
-        version: int
-            Used for field <egmd:dition>, not repeatable.
-        authors: list[dict]
-            Used for field <gmd:CI_ResponsibleParty>, list of dictionaries containing the 
-            information about authors: mandatory keys are `first_name`, `last_name` and
-            `organisation_name`, repeatable.
-        abstract: str
-            Used for field <gmd:abstract>, not repeatable.
-        details: list[str]
-            Details as a markdown table, currently also in field <gmd:abstract>, not repeatable.
-        keywords: list[dict]
-            Used for field <gmd:MD_Keywords>, list of dictionaries containing information about
-            associated keywords, mandatory keys are `full_path` and `thesaurusName`.
-        temporal_scales: list[dict]
-            Used for field <gmd:temporalElement>, list of dictionaries containing information
-            about the temporal scale(s), mandatory keys are `temporal_extent_start`, 
-            `temporal_extent_end` and `temporal_resolution`, repeatable.
-        bbox_locations: list[dict]
-            Used for field <gmd:geographicElement>, list of dictionaries containing the support
-            points of the bounding box(es), mandatory keys are `min_lon`, `min_lat`, `max_lon`
-            and `max_lat`, repeatable.
         
         Returns
-        -------
+        ----------
         out : str
             The XML str if path is None, else None
 
@@ -535,7 +536,7 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         a useful Metadata export.
         """
         # get ImmutableResultSet dictionary
-        rs_dict = _init_immutableResultSet_dict(entry_or_resultset)
+        rs_dict = _parse_iso_information(entry_or_resultset)
 
         # get initialized jinja environment and template
         env, template = _init_iso19115_jinja(rs_dict)
