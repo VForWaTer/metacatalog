@@ -5,13 +5,16 @@ one type of environmental variable. It can hold a reference and interface to the
 If a supported data format is used, Entry can load the data.
 
 """
-from typing import List, Dict
+from typing import List, Dict, TYPE_CHECKING
+if TYPE_CHECKING:
+    from metacatalog.models import License, PersonAssociation, Variable, EntryGroup, Keyword, Detail, DataSource, PersonRole
 from datetime import datetime as dt
 import hashlib
 import json
 from dateutil.relativedelta import relativedelta as rd
 from uuid import uuid4
 import warnings
+from collections import defaultdict
 
 from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
@@ -188,14 +191,14 @@ class Entry(Base):
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
-    contributors = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
-    keywords = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
-    license = relationship("License", back_populates='entries')
-    variable = relationship("Variable", back_populates='entries')
-    datasource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
+    contributors: List['PersonAssociation'] = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
+    keywords: List['Keyword'] = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
+    license: 'License' = relationship("License", back_populates='entries')
+    variable: 'Variable' = relationship("Variable", back_populates='entries')
+    datasource: 'DataSource' = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
-    associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
-    details = relationship("Detail", back_populates='entry')
+    associated_groups: List['EntryGroup'] = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
+    details: List['Detail'] = relationship("Detail", back_populates='entry')
 
     # extensions
     io_extension = None
@@ -204,6 +207,10 @@ class Entry(Base):
     def to_dict(self, deep=False, stringify=False) -> dict:
         """
         Return the model as a python dictionary.
+
+        .. versionchanged:: 0.7.4
+
+            The dictionary now contains all persons roles
 
         Parameters
         ----------
@@ -221,7 +228,7 @@ class Entry(Base):
 
         """
         # base dictionary
-        d = dict(
+        out = dict(
             id=self.id,
             uuid=self.uuid,
             title=self.title,
@@ -241,38 +248,54 @@ class Entry(Base):
 
         # optional relations
         if self.license is not None:
-            d['license'] = self.license.to_dict(deep=False)
+            out['license'] = self.license.to_dict(deep=False)
 
         if self.details is not None:
-            d['details'] = self.details_dict(full=True)
+            out['details'] = self.details_dict(full=True)
 
         if self.datasource is not None:
-            d['datasource'] = self.datasource.to_dict(deep=False)
+            out['datasource'] = self.datasource.to_dict(deep=False)
 
         # set optional attributes
         for attr in ('abstract', 'external_id','comment', 'citation'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
-                d[attr] = getattr(self, attr)
+                out[attr] = getattr(self, attr)
+
+        # add contributors, that are not author or coAuthor
+        updates = defaultdict(lambda: [])
+        for pa in self.contributors:
+            role: str = pa.role.name
+            if role.lower() not in ['author', 'conauthor']:
+                updates[role].append(pa.person.to_dict(deep=False))
+
+        # update the return dict if there were any updates
+        if len(updates) > 0:
+            out.update(updates)
 
         # lazy loading
         if deep:
             projects = self.projects
             if len(projects) > 0:
-                d['projects'] = [p.to_dict(deep=False) for p in projects]
+                out['projects'] = [p.to_dict(deep=False) for p in projects]
             comp = self.composite_entries
             if len(comp) > 0:
-                d['composite_entries'] = [e.to_dict(deep=False) for e in comp]
+                out['composite_entries'] = [e.to_dict(deep=False) for e in comp]
 
         if stringify:
-            return serialize(d, stringify=True)
-        return d
+            return serialize(out, stringify=True)
+        return out
 
     @classmethod
-    def from_dict(cls, data: dict, session: Session) -> 'Entry':
+    def from_dict(cls, session: Session, data: dict) -> 'Entry':
         """
         Create a *new* Entry in the database from the given dict.
 
         .. versionadded:: 0.4.8
+
+        .. versionchanged:: 0.7.4
+
+            PersonRoles other than 'author' and 'coAuthor' can be
+            imported as well.
 
         Parameters
         ----------
@@ -339,6 +362,22 @@ class Entry(Base):
             roles=['coAuthor'] * len(coauthors),
             order=[_ + 2 for _ in range(len(coauthors))]
         )
+
+        # load all available
+        available_roles: List['PersonRole'] = api.find_role(session)
+        for role in available_roles:
+            if not hasattr(data, role.name) or role.name in ['author', 'coAuthor']:
+                continue
+            else:
+                contributors = [models.Person.from_dict(a, session) for a in data[role.name]]
+            
+            # otherwise add
+            api.add_persons_to_entries(
+                session,
+                entries=[entry],
+                persons=[contributors],
+                roles=[role.name] * len(contributors)
+            )
 
         # add keywords
         keyword_uuids = data.get('keywords', [])
