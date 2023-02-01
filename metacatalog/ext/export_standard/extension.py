@@ -116,11 +116,12 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         uuid = rs.group.uuid
 
     # if there is only one entry in the ImmutableResultSet, use its uuid
-    elif isinstance(rs.get('uuid'), datetime):
+    elif isinstance(rs.get('uuid'), str):
         uuid = rs.get('uuid')
 
     # if there are more uuids in ImmutableResultSet, a list is returned, use latest
     elif isinstance(rs.get('uuid'), list):
+        uuid = ''
         for i, _uuid in enumerate(rs.get('uuid')):
             uuid += f"uuid {i+1}: {_uuid}\n"
 
@@ -180,22 +181,6 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         version = max(rs.get('version').values())
 
 
-    ### uuid (/fileIdentifier)
-    # if a base group exists, use the uuid of the base group
-    if rs.group:
-        uuid = rs.group.uuid
-
-    # if there is only one uuid / entry in the ImmutableResultSet, use its uuid
-    elif isinstance(rs.get('uuid'), str):
-        uuid = rs.get('uuid')
-
-    #  if there is more than one uuid in ImmutableResultSet, concatenate uuids
-    elif isinstance(rs.get('uuid'), list):
-        uuid = ''
-        for i, _uuid in enumerate(rs.get('uuid')):
-            uuid += f"UUID {i+1}: {_uuid}\n"
-
-
     ### authors (last_name, first_name, organisation_name, role), always as list of dicts
     # rs.get('authors') gives the first author and all coAuthors
     for entry_uuid, entry_authors in rs.get('authors').items():
@@ -244,12 +229,9 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
                     expand = {
                         f"{detail['key']}.{k}": dict(
                         value=v,
-                        #id=detail['id'],
                         key=detail['key'],
-                        #stem=detail['stem'],
-                        #entry_id=detail['entry_id'],
                         entry_uuid=detail['entry_uuid'],
-                        description=detail.get('description', 'nan') #TODO: description is never included in Entry.details_table()!
+                        description=detail.get('description', 'nan')
                         )
                     }
                     _details.update(expand)
@@ -259,7 +241,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
                 # remove unwanted key-value pairs
                 _details[detail['key']] = {key: val for key, val in _details[detail['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
 
-        # turn into a transposed datarame
+        # turn into a transposed dataframe
         df = pd.DataFrame(_details).T
 
         # append markdown table to details
@@ -298,18 +280,27 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
 
 
     ### license (link, short_title)
+    licenses = []
     # if there is only one license in the ImmutableResultSet, there are no nested dicts
     if not any(isinstance(val, dict) for val in rs.get('license').values()):
         link = rs.get('license')['link']
         short_title = rs.get('license')['short_title']
+        licenses.append({
+            'link': link,
+            'short_title': short_title
+            })
 
     #  if there is more than one license in ImmutableResultSet, a uuid-indexed dict of licenses is returned, concatenate license information
     elif any(isinstance(val, dict) for val in rs.get('license').values()):
         link = ''
         short_title = ''
-        for i, (entry_uuid, license_dict) in enumerate(rs.get('license').items()):
-            link += f"License {i+1}: {license_dict['link']}\n"
-            short_title += f"License {i+1}: {license_dict['short_title']}\n"
+        for entry_uuid, license_dict in rs.get('license').items():
+            link = license_dict['link']
+            short_title = license_dict['short_title']
+            licenses.append({
+                'link': link,
+                'short_title': short_title
+            })
 
 
     ### datasource (datasource.encoding, spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution, datasource.args)
@@ -325,7 +316,7 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
     # if there is only one datasource in the ImmutableResultSet, use its values
     elif not any(isinstance(val, dict) for val in rs.get('datasource').values()):
         # encoding
-        encoding = rs.get('datasource')['encoding']
+        encoding = [rs.get('datasource')['encoding']]
 
         # temporal_scale
         if 'temporal_scale' in rs.get('datasource').keys():
@@ -335,6 +326,12 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
             # resolution in seconds
             temporal_resolution = rs.get('datasource')['temporal_scale']['resolution']
             temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
+
+            temporal_scale = [{
+                "temporal_extent_start": temporal_extent_start,
+                "temporal_extent_end": temporal_extent_end,
+                "temporal_resolution": temporal_resolution
+                }]
 
         # spatial extent, always as a bounding box
         # go for spatial_scale in datasource first
@@ -447,74 +444,6 @@ def _init_immutableResultSet_dict(entry_or_resultset: Union[Entry, ImmutableResu
         raise ValueError("No location information associated with instance to be exported.")
 
 
-
-
-
-
-
-    # XML field <gmd:IdentificationInfo> is repeatable -> put information of all entries in ImmutableResultSet here
-    # list containing all dictionaries of entries in ImmutableResultSet
-    # entry_dicts = []
-    # for entry in rs._members:
-    #     entry_dict = entry.to_dict()
-    #     # include details table to put into abstract
-    #     entry_dict['details_table'] = entry.details_table(fmt='md')
-
-    #     # include associated groups
-    #     entry_dict['associated_groups'] = entry.associated_groups
-
-    #     # process location
-    #     if 'datasource' in entry_dict:
-    #         if 'spatial_scale' in entry_dict['datasource']:
-    #             # get location from spatial_extent, spatial_scale is always a POLYGON, also for point locations
-    #             location = entry_dict['datasource']['spatial_scale']['extent']
-                
-    #             # convert wkt to shapely shape to infer coordinates
-    #             P = shapely.wkt.loads(location)
-                
-    #             # get support points of polygon
-    #             min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
-    #             max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
-                
-    #             # append to entry_dict
-    #             entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
-    #     elif 'location' in entry_dict:
-    #         # Entry.location is always a POINT
-    #         location = entry_dict['location']
-            
-    #         # convert wkt to shapely shape to infer coordinates
-    #         P = shapely.wkt.loads(location)
-            
-    #         # get coordinates of point
-    #         min_lon = max_lon = P.coords[0][0]
-    #         min_lat = max_lat = P.coords[0][1]
-
-    #         # append to entry_dict
-    #         entry_dict['bbox_location'] = {'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}
-    #     else:
-    #         raise ValueError("No location associated with Entry.")
-
-    #     # append entry_dict to list of entry_dicts
-    #     entry_dicts.append(entry_dict)
-    
-    # # add entry_dicts to rs_dict
-    # rs_dict['entry_dicts'] = entry_dicts
-
-    # # ImmutableResultSet base group
-    # rs_dict['base_group'] = rs.group
-
-    # # ImmutableResultSet.to_dict() gives datetimes with milliseconds precision -> round to date, set
-    # if isinstance(rs_dict['lastUpdate'], dict):
-    #     rs_dict['lastUpdate_date'] = list(set([datetime.date() for datetime in rs_dict['lastUpdate'].values()]))
-    # else:
-    #     rs_dict['lastUpdate_date'] = [rs_dict['lastUpdate']]
-    # # if entries in ImmutableResultSet have differing lastUpdate values: raise NotImplementedError (future idea: use basegroup?)
-    # if len(rs_dict['lastUpdate_date']) == 1:
-    #     rs_dict['lastUpdate_date'] = rs_dict['lastUpdate_date'][0]
-    # else:
-    #     raise NotImplementedError("Entries in ImmutableResultSet have differing dates for lastUpdate, export not possible yet.")
-
-
     return rs_dict
 
 
@@ -540,12 +469,17 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         pass
 
     @classmethod
-    def iso_xml_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict:dict, path: str=None, no_data=False, **kwargs):
+    def iso_xml_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, path: str,
+                       uuid: str, lastUpdate: str, title: str, publication: str, version: int, authors: list[dict],
+                       abstract: str, details: list[str], keywords: list[dict], temporal_scales: list[dict],
+                       bbox_locations: list[dict]):
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
         :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet> to XML in ISO
         19115 standard.
-        If a path is given, a new file will be created.
+        Repeatable information input is always a list, as we can loop over the lists in the
+        jinja ISO19115 template.
+        If a path is given, a new XML file will be created.
 
         Parameters
         ----------
@@ -556,10 +490,38 @@ class StandardExportExtension(MetacatalogExtensionInterface):
             - contact
         path : str
             If given, a file location for export.
-        no_data : bool
-            If set to True, the actual data will not be loaded and included.
-            This can be helpful if the data is not serializable or very large.
-
+        uuid : str
+            Used for field <gmd:fileIdentifier> and field <gmd:identifier>, not repeatable.
+        lastUpdate : str
+            Used for field <gmd:dateStamp> and field <gmd:date> with <gmd:dateType> 'revision'
+            and field <gmd:editionDate>, str in ISO-date-format, not repeatable.
+        title : str
+            Used for field <gmd:title>, not repeatable.
+        publication : str
+            Used for field <gmd:date> with <gmd:dateType> 'creation' , 
+            str in ISO-datae-formate, not repeatable.
+        version: int
+            Used for field <egmd:dition>, not repeatable.
+        authors: list[dict]
+            Used for field <gmd:CI_ResponsibleParty>, list of dictionaries containing the 
+            information about authors: mandatory keys are `first_name`, `last_name` and
+            `organisation_name`, repeatable.
+        abstract: str
+            Used for field <gmd:abstract>, not repeatable.
+        details: list[str]
+            Details as a markdown table, currently also in field <gmd:abstract>, not repeatable.
+        keywords: list[dict]
+            Used for field <gmd:MD_Keywords>, list of dictionaries containing information about
+            associated keywords, mandatory keys are `full_path` and `thesaurusName`.
+        temporal_scales: list[dict]
+            Used for field <gmd:temporalElement>, list of dictionaries containing information
+            about the temporal scale(s), mandatory keys are `temporal_extent_start`, 
+            `temporal_extent_end` and `temporal_resolution`, repeatable.
+        bbox_locations: list[dict]
+            Used for field <gmd:geographicElement>, list of dictionaries containing the support
+            points of the bounding box(es), mandatory keys are `min_lon`, `min_lat`, `max_lon`
+            and `max_lat`, repeatable.
+        
         Returns
         -------
         out : str
@@ -567,7 +529,6 @@ class StandardExportExtension(MetacatalogExtensionInterface):
 
         Notes
         -----
-        TODO: ImmutableResultSet or Entry??
         The content of the file will be created using a 
         :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`.
         This will lazy-load sibling Entries and parent groups as needed for
