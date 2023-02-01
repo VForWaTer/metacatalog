@@ -786,8 +786,9 @@ def find_entry(session,
     external_id=None, 
     version='latest', 
     project=None, 
-    author=None, 
-    contributor=None, 
+    author=None,
+    coauthor=None,
+    contributor=None,
     keywords=None, 
     details=None,
     include_partial=False,
@@ -816,6 +817,16 @@ def find_entry(session,
         partial Entries. This does only make sense in combination
         with ``as_result=True``, to lazy-load the complete record.
 
+    .. versionchanged:: 0.7.4
+
+        New arugment :attr:`coauthor` introduced, which is a functional
+        replacement for the now deprecated 'contributor' argument.
+
+    .. deprecated:: 0.7.4
+
+        The contributor keyword is deprecated and will change its
+        behavior in a future release. Use the new :attr:`coauthor`
+        argument from now on. 
 
     Parameters
     ----------
@@ -869,7 +880,7 @@ def find_entry(session,
         If None, all version are integrated.
     project : int, str
         .. versionadded:: 0.2.2
-
+`
         The project can be a :class:`EntryGroup <metacatalog.models.EntryGroup>` of
         :class:`EntryGroupType.name=='Project' <metacatalog.models.EntryGroupType>`,
         its id (int) or title (str)
@@ -878,10 +889,22 @@ def find_entry(session,
 
         The author can be a :class:`Person <metacatalog.models.Person>`,
         his id (int) or name (str). A string argument will match first and last
-        names. The author is only the first author. For other contributors see
-        :attr:`contributor`.
+        names. The author is only the first author. For other coauthor see
+        :attr:`coauthor`.
+    coauthor : int ,str
+        .. versionadded:: 0.7.4
+
+        The coauthor can be a :class:`Person <metacatalog.models.Person>`,
+        his id (int) or name (str). A string argument will match first and last
+        names. A  co author is anyone associated as first or co-author. For
+        first author only, see :attr:`author`.
     contributor : int, str
         .. versionadded:: 0.2.2
+
+        .. deprecated:: 0.7.4
+
+            This argument will change its behavior with a future release.
+            Use :attr:`coauthor` as a repalcement.
 
         The contributor can be a :class:`Person <metacatalog.models.Person>`,
         his id (int) or name (str). A string argument will match first and last
@@ -1040,10 +1063,13 @@ def find_entry(session,
             raise AttributeError('author has to be int or str')
 
     # contributor
-    if contributor is not None:
+    if contributor is not None or coauthor is not None:
 
-        if not os.getenv('METACATALOG_SUPRESS_WARN', False):
+        # TODO clean this all up when the contributor behavior is changed
+        if not os.getenv('METACATALOG_SUPRESS_WARN', False) and contributor is not None:
             warnings.warn("The contributor argument will change with a future release. Contributors will be kept, but filter for **any** associated person with a future release. If you want to keep the current behavior, use the authors argument. To supress this warning set the METACATALOG_SUPRESS_WARN environment variable.", FutureWarning)
+        if coauthor is not None:
+            contributor = coauthor
 
         if isinstance(contributor, models.Person):
             contributor = contributor.id
