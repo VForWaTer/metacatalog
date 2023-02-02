@@ -67,10 +67,334 @@ def _init_iso19115_jinja():
         # get template
         template = env.get_template("iso19115-2.j2")
         
-        return env, template
+        return template
 
 
-def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet]):
+def get_uuid(rs: ImmutableResultSet) -> str:
+    # if a base group exists, use the uuid of the base group
+    if rs.group:
+        uuid = rs.group.uuid
+
+    # if there is only one entry in the ImmutableResultSet, use its uuid
+    elif isinstance(rs.get('uuid'), str):
+        uuid = rs.get('uuid')
+
+    # if there are more uuids in ImmutableResultSet, a list is returned, use latest
+    elif isinstance(rs.get('uuid'), list):
+        uuid = ''
+        for i, _uuid in enumerate(rs.get('uuid')):
+            uuid += f"uuid {i+1}: {_uuid}\n"
+
+    return uuid
+
+def get_lastUpdate(rs: ImmutableResultSet) -> str:
+    # if a base group exists, use the title of the base group
+    if rs.group:
+        lastUpdate = rs.group.lastUpdate.date().isoformat()
+
+    # if there is only one lastUpdate / entry in the ImmutableResultSet, use its lastUpdate
+    elif isinstance(rs.get('lastUpdate'), datetime):
+        lastUpdate = rs.get('lastUpdate').date().isoformat()
+
+    # if there are more lastUpdates in ImmutableResultSet, a dict is returned, use latest
+    elif isinstance(rs.get('lastUpdate'), dict):
+        lastUpdate = max(rs.get('lastUpdate').values()).date().isoformat()
+
+    return lastUpdate
+
+
+def get_title(rs: ImmutableResultSet) -> str:
+    # if a base group exists, use the title of the base group
+    if rs.group:
+        title = rs.group.title
+
+    # if there is only one title / entry in the ImmutableResultSet, use its title
+    elif isinstance(rs.get('title'), str):
+        title = rs.get('title')
+
+    # if there are more titles in ImmutableResultSet, a dict is returned, concatenate titles
+    elif isinstance(rs.get('title'), dict):
+        title = ''
+        for i, _title in enumerate(rs.get('title').values()):
+            title += f"Title {i+1}: {_title}\n"
+    # TODO: sort titles?? sort everything? (like uuid) -> uuid as 'index'?
+    return title
+
+
+def get_publication(rs: ImmutableResultSet) -> str:
+    # if a base group exists, use the publication date of the base group
+    if rs.group:
+        publication = rs.group.publication.date().isoformat()
+
+    # if there is only one publication / entry in the ImmutableResultSet, use its publication
+    elif isinstance(rs.get('publication'), datetime):
+        publication = rs.get('publication').date().isoformat()
+
+    # if there are more publications in ImmutableResultSet, a dict is returned, use latest
+    elif isinstance(rs.get('publication'), dict):
+        publication = max(rs.get('publication').values()).date().isoformat()
+
+    return publication
+
+
+def get_version(rs: ImmutableResultSet) -> int:
+    # if there is only one version in the ImmutableResultSet, use it
+    if isinstance(rs.get('version'), int):
+        version = rs.get('version')
+
+    # if there are more than one version in ImmutableResultSet, us latest
+    elif isinstance(rs.get('version'), int):
+        version = max(rs.get('version').values())
+
+    return version
+
+
+def get_authors(rs: ImmutableResultSet) -> list[dict]:
+    # rs.get('authors') gives the first author and all coAuthors
+    for entry_uuid, entry_authors in rs.get('authors').items():
+        authors = []
+        for entry_author in entry_authors:
+            authors.append(
+                {
+                'entry_uuid': entry_uuid, # use entry_uuid as 'index' to connect authors to entry
+                'first_name': entry_author['first_name'],
+                'last_name': entry_author['last_name'],
+                'organisation_name': entry_author['organisation_name']
+            })
+    
+    return authors
+
+
+def get_abstract(rs: ImmutableResultSet) -> str:
+    # if there is only one entry in the ImmutableResultSet, use its abstract
+    if isinstance(rs.get('abstract'), str):
+        abstract = rs.get('abstract')
+
+    #  if there is more than one abstract in ImmutableResultSet, concatenate abstracts
+    elif isinstance(rs.get('abstract'), dict):
+        abstract = ''
+        for i, _abstract in enumerate(rs.get('abstract').values()):
+            abstract += f"Abstract {i+1}: {_abstract}\n"
+
+    return abstract
+
+
+def get_details(rs: ImmutableResultSet) -> list[str]:
+    # create list with details_table for all entries in ImmutableResultSet
+    details = []
+
+    for entry_uuid, entry_details_list in rs.get('details').items():
+        _details = {}
+        for detail in entry_details_list:
+            # nested details
+            if isinstance(detail['value'], dict):
+                # include top-level detail of nested detail
+                _details[detail['key']] = detail.copy()
+                _details[detail['key']]['value'] = 'nested'
+                
+                # remove unwanted key-value pairs
+                _details[detail['key']] = {key: val for key, val in _details[detail['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+
+                # go for nested details
+                for k, v in detail['value'].items():
+                    expand = {
+                        f"{detail['key']}.{k}": dict(
+                        value=v,
+                        key=detail['key'],
+                        entry_uuid=detail['entry_uuid'],
+                        description=detail.get('description', 'nan')
+                        )
+                    }
+                    _details.update(expand)
+            # un-nested details
+            else:
+                _details[detail['key']] = detail
+                # remove unwanted key-value pairs
+                _details[detail['key']] = {key: val for key, val in _details[detail['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+
+        # turn into a transposed dataframe
+        df = pd.DataFrame(_details).T
+
+        # append markdown table to details
+        details.append(df.to_markdown())
+
+    return details
+
+
+def get_keywords(rs: ImmutableResultSet) -> list[dict]:
+    keywords = []
+    # go for keyword linked to variable first
+    variable_dict = rs.get('variable')
+
+    if 'keyword' in variable_dict:
+        # get relevant information
+        full_path = variable_dict.get('keyword').get('path')
+        thesaurusName = variable_dict.get('keyword').get('thesaurusName').get('title')
+        
+        # append to keywords
+        keywords.append({
+            'full_path': full_path,
+            'thesaurusName': thesaurusName
+        })
+
+    # TODO: test multiple keywords!
+    # go for keywords linked directly to ImmutableResultSet next
+    for keyword_dict in rs.get('keywords'):
+        # get relevant information
+        full_path = keyword_dict.get('path')
+        thesaurusName = keyword_dict.get('thesaurusName').get('title')
+        
+        # append to keywords
+        keywords.append({
+            'full_path': full_path,
+            'thesaurusName': thesaurusName
+        })
+
+    return keywords
+
+
+def get_licenses(rs: ImmutableResultSet) -> list[dict]:
+    licenses = []
+    # if there is only one license in the ImmutableResultSet, there are no nested dicts
+    if not any(isinstance(val, dict) for val in rs.get('license').values()):
+        link = rs.get('license')['link']
+        short_title = rs.get('license')['short_title']
+        licenses.append({
+            'link': link,
+            'short_title': short_title
+            })
+
+    #  if there is more than one license in ImmutableResultSet, a uuid-indexed dict of licenses is returned, concatenate license information
+    elif any(isinstance(val, dict) for val in rs.get('license').values()):
+        link = ''
+        short_title = ''
+        for entry_uuid, license_dict in rs.get('license').items():
+            link = license_dict['link']
+            short_title = license_dict['short_title']
+            licenses.append({
+                'link': link,
+                'short_title': short_title
+            })
+
+    return licenses
+
+
+def get_datasource_information(rs: ImmutableResultSet) -> tuple[list[dict], list[dict], list[int]]:
+    temporal_scales = []
+    bbox_locations = []
+    spatial_resolutions = []
+    # datasource can be empty / no datasource associated
+    if not rs.get('datasource'):
+        pass
+    
+    # if there is only one datasource in the ImmutableResultSet, use its values
+    elif not any(isinstance(val, dict) for val in rs.get('datasource').values()):
+        # temporal_scale
+        if 'temporal_scale' in rs.get('datasource').keys():
+            # extent
+            temporal_extent_start = rs.get('datasource')['temporal_scale']['extent'][0].isoformat()
+            temporal_extent_end = rs.get('datasource')['temporal_scale']['extent'][1].isoformat()
+            # resolution in seconds
+            temporal_resolution = rs.get('datasource')['temporal_scale']['resolution']
+            temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
+
+            temporal_scales = [{
+                "temporal_extent_start": temporal_extent_start,
+                "temporal_extent_end": temporal_extent_end,
+                "temporal_resolution": temporal_resolution
+                }]
+
+        # spatial extent, always as a bounding box
+        # go for spatial_scale in datasource first
+        if 'spatial_scale' in rs.get('datasource').keys():
+            location = rs.get('datasource')['spatial_scale']['extent']
+            
+            # convert wkt to shapely shape to infer coordinates
+            P = shapely.wkt.loads(location)
+            
+            # get support points of polygon
+            min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
+            max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
+            
+            # save as list(dict)
+            bbox_locations = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
+
+            # spatial_resolution
+            spatial_resolutions = [rs.get('datasource')['spatial_scale']['resolution']]
+
+    # if there are more than one datasources in the ImmutableResultSet, use all values, repeat in ISO
+    elif any(isinstance(val, dict) for val in rs.get('datasource').values()):
+        for i ,(entry_uuid, ds_dict) in enumerate(rs.get('datasource').items()):
+            # temporal_scale
+            if ds_dict.get('temporal_scale'):
+                # extent
+                temporal_extent_start = ds_dict['temporal_scale']['extent'][0].isoformat()
+                temporal_extent_end = ds_dict['temporal_scale']['extent'][1].isoformat()
+                # resolution in seconds
+                temporal_resolution = ds_dict['temporal_scale']['resolution']
+                temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
+
+                temporal_scales.append({
+                    "temporal_extent_start": temporal_extent_start,
+                    "temporal_extent_end": temporal_extent_end,
+                    "temporal_resolution": temporal_resolution
+                })
+            # spatial_scale / bbox_location & spatial_resolution
+            if ds_dict.get('spatial_scale'):
+                location = ds_dict['spatial_scale']['extent']
+        
+                # convert wkt to shapely shape to infer coordinates
+                P = shapely.wkt.loads(location)
+        
+                # get support points of polygon
+                min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
+                max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
+                
+                # save as list(dict)
+                bbox_locations.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
+
+                # spatial_resolution
+                spatial_resolutions.append(ds_dict['spatial_scale']['resolution'])
+
+    # if bbox_location is not filled from datasource above, go for Entry.location
+    if not bbox_locations:
+        if rs.get('location') and isinstance(rs.get('location'), WKBElement):
+            # Entry.location is always a POINT
+            location = rs.get('location')
+            
+            # convert wkt to shapely shape to infer coordinates
+            P = to_shape(location)
+            
+            # get coordinates of point
+            min_lon = max_lon = P.coords[0][0]
+            min_lat = max_lat = P.coords[0][1]
+
+            # save as bbox_location
+            bbox_locations = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
+        # more than one location -> uuid-indexed dict of locations
+        if rs.get('location') and isinstance(rs.get('location'), dict):
+            for entry_uuid, loc in rs.get('location').items():
+                # Entry.location is always a POINT, save as bbox for ISO
+                location = loc
+            
+                # convert wkt to shapely shape to infer coordinates
+                P = to_shape(location)
+            
+                # get coordinates of point
+                min_lon = max_lon = P.coords[0][0]
+                min_lat = max_lat = P.coords[0][1]
+
+                # append to bbox_location
+                bbox_locations.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
+
+    # raise ValueError if location is neither specified in datasource.spatial_scale nor in Entry.location
+    if not bbox_locations:
+        raise ValueError("No location information associated with instance to be exported.")
+
+    return temporal_scales, bbox_locations, spatial_resolutions
+
+
+def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> dict:
     """
     Loads the ImmutableResultSet of the input Entry (if not already an ImmutableResultSet) 
     and extracts the information necessary for ISO export.
@@ -115,6 +439,7 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
         and `max_lat`, repeatable.
     spatial_resolutions: list[int]
         Used for field <gmd:spatialResolution>, list of integers [m], repeatable.
+    
     """
     if not isinstance(entry_or_resultset, ImmutableResultSet):
         # get ImmutableResultSet
@@ -122,341 +447,47 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
     else:
         rs = entry_or_resultset
 
-    # get ImmutableResultSet dictionary
-    rs_dict = rs.to_dict()
+    # uuid / fileIdentifier
+    uuid = get_uuid(rs)
 
-    ### uuid / fileIdentifier
-    # if a base group exists, use the uuid of the base group
-    if rs.group:
-        uuid = rs.group.uuid
+    # lastUpdate, convert to date, convert to isoformat
+    lastUpdate = get_lastUpdate(rs)
 
-    # if there is only one entry in the ImmutableResultSet, use its uuid
-    elif isinstance(rs.get('uuid'), str):
-        uuid = rs.get('uuid')
+    # title
+    title = get_title(rs)
 
-    # if there are more uuids in ImmutableResultSet, a list is returned, use latest
-    elif isinstance(rs.get('uuid'), list):
-        uuid = ''
-        for i, _uuid in enumerate(rs.get('uuid')):
-            uuid += f"uuid {i+1}: {_uuid}\n"
+    # publication, convert to date, convert to isoformat
+    publication = get_publication(rs)
 
+    # version
+    version = get_version(rs)
 
-    ### lastUpdate, round to date, convert to isoformat
-    # if a base group exists, use the title of the base group
-    if rs.group:
-        lastUpdate = rs.group.lastUpdate.date().isoformat()
+    # authors (last_name, first_name, organisation_name, role), always as list of dicts
+    authors = get_authors(rs)
 
-    # if there is only one lastUpdate / entry in the ImmutableResultSet, use its lastUpdate
-    elif isinstance(rs.get('lastUpdate'), datetime):
-        lastUpdate = rs.get('lastUpdate').date().isoformat()
+    # abstract
+    abstract = get_abstract(rs)
 
-    # if there are more lastUpdates in ImmutableResultSet, a dict is returned, use latest
-    elif isinstance(rs.get('lastUpdate'), dict):
-        lastUpdate = max(rs.get('lastUpdate').values()).date().isoformat()
+    # details_table, put details into field <abstract> as markdown table for now
+    details = get_details(rs)
 
+    # keywords (full_path, thesaurusName.title)
+    keywords = get_keywords(rs)
 
-    ### title
-    # if a base group exists, use the title of the base group
-    if rs.group:
-        title = rs.group.title
+    ### licenses (link, short_title)
+    licenses = get_licenses(rs)
 
-    # if there is only one title / entry in the ImmutableResultSet, use its title
-    elif isinstance(rs.get('title'), str):
-        title = rs.get('title')
+    ### datasource (spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution)
+    temporal_scales, bbox_locations, spatial_resolutions = get_datasource_information(rs)
 
-    # if there are more titles in ImmutableResultSet, a dict is returned, concatenate titles
-    elif isinstance(rs.get('title'), dict):
-        title = ''
-        for i, _title in enumerate(rs.get('title').values()):
-            title += f"Title {i+1}: {_title}\n"
-    # TODO: sort titles?? sort everything? (like uuid) -> uuid as 'index'?
+    # save everything in dict
+    iso_input = {
+        'uuid': uuid, 'lastUpdate': lastUpdate, 'publication': publication, 'version': version, 'title': title, 
+        'authors': authors, 'abstract': abstract, 'details': details, 'keywords': keywords, 'licenses': licenses,
+        'temporal_scales': temporal_scales, 'bbox_locations': bbox_locations, 'spatials_resolutions': spatial_resolutions
+        }
 
-
-    ### publication, round to date, convert to isoformat
-    # if a base group exists, use the publication date of the base group
-    if rs.group:
-        publication = rs.group.publication.date().isoformat()
-
-    # if there is only one publication / entry in the ImmutableResultSet, use its publication
-    elif isinstance(rs.get('publication'), datetime):
-        publication = rs.get('publication').date().isoformat()
-
-    # if there are more publications in ImmutableResultSet, a dict is returned, use latest
-    elif isinstance(rs.get('publication'), dict):
-        publication = max(rs.get('publication').values()).date().isoformat()
-
-
-    ### version
-    # if there is only one version in the ImmutableResultSet, use it
-    if isinstance(rs.get('version'), int):
-        version = rs.get('version')
-
-    # if there are more than one version in ImmutableResultSet, us latest
-    elif isinstance(rs.get('version'), int):
-        version = max(rs.get('version').values())
-
-
-    ### authors (last_name, first_name, organisation_name, role), always as list of dicts
-    # rs.get('authors') gives the first author and all coAuthors
-    for entry_uuid, entry_authors in rs.get('authors').items():
-        authors = []
-        for entry_author in entry_authors:
-            authors.append(
-                {
-                'entry_uuid': entry_uuid, # use entry_uuid as 'index' to connect authors to entry
-                'first_name': entry_author['first_name'],
-                'last_name': entry_author['last_name'],
-                'organisation_name': entry_author['organisation_name']
-                #'role': 'XYZ' # TODO: connect role to persons?, for now always 'author' in ISO template
-            })
-
-
-    ### abstract
-    # if there is only one entry in the ImmutableResultSet, use its abstract
-    if isinstance(rs.get('abstract'), str):
-        abstract = rs.get('abstract')
-
-    #  if there is more than one abstract in ImmutableResultSet, concatenate abstracts
-    elif isinstance(rs.get('abstract'), dict):
-        abstract = ''
-        for i, _abstract in enumerate(rs.get('abstract').values()):
-            abstract += f"Abstract {i+1}: {_abstract}\n"
-
-    
-    ### details_table, put details into field <abstract> as markdown table for now
-    # create list with details_table for all entries in ImmutableResultSet
-    details = []
-
-    for entry_uuid, entry_details_list in rs.get('details').items():
-        _details = {}
-        for detail in entry_details_list:
-            # nested details
-            if isinstance(detail['value'], dict):
-                # include top-level detail of nested detail
-                _details[detail['key']] = detail.copy()
-                _details[detail['key']]['value'] = 'nested'
-                
-                # remove unwanted key-value pairs
-                _details[detail['key']] = {key: val for key, val in _details[detail['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
-
-                # go for nested details
-                for k, v in detail['value'].items():
-                    expand = {
-                        f"{detail['key']}.{k}": dict(
-                        value=v,
-                        key=detail['key'],
-                        entry_uuid=detail['entry_uuid'],
-                        description=detail.get('description', 'nan')
-                        )
-                    }
-                    _details.update(expand)
-            # un-nested details
-            else:
-                _details[detail['key']] = detail
-                # remove unwanted key-value pairs
-                _details[detail['key']] = {key: val for key, val in _details[detail['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
-
-        # turn into a transposed dataframe
-        df = pd.DataFrame(_details).T
-
-        # append markdown table to details
-        details.append(df.to_markdown())
-
-
-    ### keywords (full_path, thesaurusName.title)
-    keywords = []
-
-    # go for keyword linked to variable first
-    variable_dict = rs.get('variable')
-
-    if 'keyword' in variable_dict:
-        # get relevant information
-        full_path = variable_dict.get('keyword').get('path')
-        thesaurusName = variable_dict.get('keyword').get('thesaurusName').get('title')
-        
-        # append to keywords
-        keywords.append({
-            'full_path': full_path,
-            'thesaurusName': thesaurusName
-        })
-
-    # TODO: test multiple keywords!
-    # go for keywords linked directly to ImmutableResultSet next
-    for keyword_dict in rs.get('keywords'):
-        # get relevant information
-        full_path = keyword_dict.get('path')
-        thesaurusName = keyword_dict.get('thesaurusName').get('title')
-        
-        # append to keywords
-        keywords.append({
-            'full_path': full_path,
-            'thesaurusName': thesaurusName
-        })
-
-
-    ### license (link, short_title)
-    licenses = []
-    # if there is only one license in the ImmutableResultSet, there are no nested dicts
-    if not any(isinstance(val, dict) for val in rs.get('license').values()):
-        link = rs.get('license')['link']
-        short_title = rs.get('license')['short_title']
-        licenses.append({
-            'link': link,
-            'short_title': short_title
-            })
-
-    #  if there is more than one license in ImmutableResultSet, a uuid-indexed dict of licenses is returned, concatenate license information
-    elif any(isinstance(val, dict) for val in rs.get('license').values()):
-        link = ''
-        short_title = ''
-        for entry_uuid, license_dict in rs.get('license').items():
-            link = license_dict['link']
-            short_title = license_dict['short_title']
-            licenses.append({
-                'link': link,
-                'short_title': short_title
-            })
-
-
-    ### datasource (datasource.encoding, spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution, datasource.args)
-    encoding = []
-    temporal_scales = []
-    bbox_locations = []
-    spatial_resolutions = []
-    # datasource can be empty / no datasource associated
-    if not rs.get('datasource'):
-        pass
-
-
-    # TODO: encoding auch bei IdentificationInfo immer utf-8?? denke schon
-    # TODO: spatial_scale.resolution -> nicht repeatable
-
-    
-    # if there is only one datasource in the ImmutableResultSet, use its values
-    elif not any(isinstance(val, dict) for val in rs.get('datasource').values()):
-        # encoding
-        encoding = [rs.get('datasource')['encoding']]
-
-        # temporal_scale
-        if 'temporal_scale' in rs.get('datasource').keys():
-            # extent
-            temporal_extent_start = rs.get('datasource')['temporal_scale']['extent'][0].isoformat()
-            temporal_extent_end = rs.get('datasource')['temporal_scale']['extent'][1].isoformat()
-            # resolution in seconds
-            temporal_resolution = rs.get('datasource')['temporal_scale']['resolution']
-            temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
-
-            temporal_scales = [{
-                "temporal_extent_start": temporal_extent_start,
-                "temporal_extent_end": temporal_extent_end,
-                "temporal_resolution": temporal_resolution
-                }]
-
-        # spatial extent, always as a bounding box
-        # go for spatial_scale in datasource first
-        if 'spatial_scale' in rs.get('datasource').keys():
-            location = rs.get('datasource')['spatial_scale']['extent']
-            
-            # convert wkt to shapely shape to infer coordinates
-            P = shapely.wkt.loads(location)
-            
-            # get support points of polygon
-            min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
-            max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
-            
-            # save as list(dict)
-            bbox_locations = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
-
-            # spatial_resolution
-            spatial_resolutions = [rs.get('datasource')['spatial_scale']['resolution']]
-
-    # if there are more than one datasources in the ImmutableResultSet, use all values, repeat in ISO
-    elif any(isinstance(val, dict) for val in rs.get('datasource').values()):
-        for i ,(entry_uuid, ds_dict) in enumerate(rs.get('datasource').items()):
-            # encoding
-            encoding.append(ds_dict['encoding'])
-
-            # temporal_scale
-            if ds_dict.get('temporal_scale'):
-                # extent
-                temporal_extent_start = ds_dict['temporal_scale']['extent'][0].isoformat()
-                temporal_extent_end = ds_dict['temporal_scale']['extent'][1].isoformat()
-                # resolution in seconds
-                temporal_resolution = ds_dict['temporal_scale']['resolution']
-                temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
-
-                temporal_scales.append({
-                    "temporal_extent_start": temporal_extent_start,
-                    "temporal_extent_end": temporal_extent_end,
-                    "temporal_resolution": temporal_resolution
-                })
-            # spatial_scale / bbox_location & spatial_resolution
-            if ds_dict.get('spatial_scale'):
-                location = ds_dict['spatial_scale']['extent']
-        
-                # convert wkt to shapely shape to infer coordinates
-                P = shapely.wkt.loads(location)
-        
-                # get support points of polygon
-                min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
-                max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
-                
-                # save as list(dict)
-                bbox_locations.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
-
-                # spatial_resolution
-                spatial_resolutions.append(ds_dict['spatial_scale']['resolution'])
-
-
-        # check encoding -> TODO: ist das nicht eh immer utf-8?
-        if len(set(encoding)) == 1:
-            encoding = encoding[0]
-        else:
-            raise NotImplementedError("I think we don't need that..")
-
-        # check spatial_resolution
-        # if len(set(spatial_resolutions)) == 1:
-        #     spatial_resolutions = spatial_resolutions[0]
-        # else:
-        #     raise ValueError("Different spatial resolutions in datasource.spatial_scale, instance is not ISO exportable!") #TODO: doch, ist repeatable
-
-    # if bbox_location is not filled from datasource above, go for Entry.location
-    if not bbox_locations:
-        if rs.get('location') and isinstance(rs.get('location'), WKBElement):
-            # Entry.location is always a POINT
-            location = rs.get('location')
-            
-            # convert wkt to shapely shape to infer coordinates
-            P = to_shape(location)
-            
-            # get coordinates of point
-            min_lon = max_lon = P.coords[0][0]
-            min_lat = max_lat = P.coords[0][1]
-
-            # save as bbox_location
-            bbox_locations = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
-        # more than one location -> uuid-indexed dict of locations
-        if rs.get('location') and isinstance(rs.get('location'), dict):
-            for entry_uuid, loc in rs.get('location').items():
-                # Entry.location is always a POINT, save as bbox for ISO
-                location = loc
-            
-                # convert wkt to shapely shape to infer coordinates
-                P = to_shape(location)
-            
-                # get coordinates of point
-                min_lon = max_lon = P.coords[0][0]
-                min_lat = max_lat = P.coords[0][1]
-
-                # append to bbox_location
-                bbox_locations.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
-
-    # raise ValueError if location is neither specified in datasource.spatial_scale nor in Entry.location
-    if not bbox_locations:
-        raise ValueError("No location information associated with instance to be exported.")
-
-
-    return uuid, lastUpdate, publication, version, authors, abstract, details, keywords, temporal_scales, bbox_locations, spatial_resolutions, encoding
+    return iso_input
 
 
 def _validate_xml(xml: str) -> bool:
@@ -515,41 +546,27 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         This will lazy-load sibling Entries and parent groups as needed for
         a useful Metadata export.
         """
-        # get ImmutableResultSet dictionary
-        uuid, lastUpdate, publication, version, authors, abstract, details, keywords, temporal_scales, bbox_locations, spatial_resolutions, encoding = _parse_iso_information(entry_or_resultset)
+        # get necessary input parameters from ImmutableResultSet for ISO export
+        iso_input = _parse_iso_information(entry_or_resultset)
 
         # get initialized jinja environment and template
-        env, template = _init_iso19115_jinja()
+        template = _init_iso19115_jinja()
 
         # render template with entry_dict
-        xml = template.render(uuid=uuid, 
-                              lastUpdate=lastUpdate,
-                              publication=publication,
-                              version=version,
-                              authors=authors,
-                              abstract=abstract,
-                              details=details,
-                              keywords=keywords,
-                              temporal_scales=temporal_scales,
-                              bbox_locations=bbox_locations,
-                              spatial_resolutions=spatial_resolutions,
-                              encoding = encoding,
-                              **config_dict)
+        xml = template.render(**iso_input, **config_dict)
 
         # check whether xml is well-formed
         _validate_xml(xml)
 
         # check path settings
         if path is None:
-            #xml=etree.fromstring(xml)
-            #xml=etree.tostring(xml) # binary string
             return xml
             
         else:
             xml = etree.fromstring(xml) # this also checks whether xml is well-formed
             xml = etree.tostring(xml) # converts to binary string, necessary to write xml
-            with open(path, 'wb') as f:
-                f.write(xml)
+            with open(path, 'w') as f:
+                f.write(xml.decode(encoding='utf8'))
 
 
     @classmethod
