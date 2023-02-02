@@ -44,7 +44,7 @@ ENTRY_KEYS = (
 
 import os
 
-def _init_iso19115_jinja(rs_dict):
+def _init_iso19115_jinja():
         """
         Initialize jinja environment for ISO 19115 export.
 
@@ -319,6 +319,10 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
 
 
     ### datasource (datasource.encoding, spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution, datasource.args)
+    encoding = []
+    temporal_scales = []
+    bbox_locations = []
+    spatial_resolutions = []
     # datasource can be empty / no datasource associated
     if not rs.get('datasource'):
         pass
@@ -326,8 +330,8 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
 
     # TODO: encoding auch bei IdentificationInfo immer utf-8?? denke schon
     # TODO: spatial_scale.resolution -> nicht repeatable
-    
 
+    
     # if there is only one datasource in the ImmutableResultSet, use its values
     elif not any(isinstance(val, dict) for val in rs.get('datasource').values()):
         # encoding
@@ -368,10 +372,6 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
 
     # if there are more than one datasources in the ImmutableResultSet, use all values, repeat in ISO
     elif any(isinstance(val, dict) for val in rs.get('datasource').values()):
-        encoding = []
-        temporal_scales = []
-        bbox_locations = []
-        spatial_resolutions = []
         for i ,(entry_uuid, ds_dict) in enumerate(rs.get('datasource').items()):
             # encoding
             encoding.append(ds_dict['encoding'])
@@ -456,7 +456,7 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
         raise ValueError("No location information associated with instance to be exported.")
 
 
-    return uuid, lastUpdate, publication, version, authors, abstract, details, keywords, temporal_scales, bbox_locations, spatial_resolutions
+    return uuid, lastUpdate, publication, version, authors, abstract, details, keywords, temporal_scales, bbox_locations, spatial_resolutions, encoding
 
 
 def _validate_xml(xml: str) -> bool:
@@ -481,10 +481,10 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         pass
 
     @classmethod
-    def iso_xml_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, path: str,
-                       uuid: str, lastUpdate: str, title: str, publication: str, version: int, authors: list[dict],
-                       abstract: str, details: list[str], keywords: list[dict], temporal_scales: list[dict],
-                       bbox_locations: list[dict]):
+    def iso_xml_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, path: str = None):
+                    #    uuid: str, lastUpdate: str, title: str, publication: str, version: int, authors: list[dict],
+                    #    abstract: str, details: list[str], keywords: list[dict], temporal_scales: list[dict],
+                    #    bbox_locations: list[dict], spatial_resolutions: list[int], encoding: str):
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
         :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet> to XML in ISO
@@ -516,10 +516,10 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         a useful Metadata export.
         """
         # get ImmutableResultSet dictionary
-        uuid, lastUpdate, publication, version, authors, abstract, details, keywords, temporal_scales, bbox_locations, spatial_resolutions = _parse_iso_information(entry_or_resultset)
+        uuid, lastUpdate, publication, version, authors, abstract, details, keywords, temporal_scales, bbox_locations, spatial_resolutions, encoding = _parse_iso_information(entry_or_resultset)
 
         # get initialized jinja environment and template
-        env, template = _init_iso19115_jinja(rs_dict)
+        env, template = _init_iso19115_jinja()
 
         # render template with entry_dict
         xml = template.render(uuid=uuid, 
@@ -533,6 +533,7 @@ class StandardExportExtension(MetacatalogExtensionInterface):
                               temporal_scales=temporal_scales,
                               bbox_locations=bbox_locations,
                               spatial_resolutions=spatial_resolutions,
+                              encoding = encoding,
                               **config_dict)
 
         # check whether xml is well-formed
