@@ -193,41 +193,78 @@ def get_abstract(rs: ImmutableResultSet) -> str:
 def get_details(rs: ImmutableResultSet) -> list[str]:
     # create list with details_table for all entries in ImmutableResultSet
     details = []
+    _details = {}
 
-    for entry_uuid, entry_details_list in rs.get('details').items():
-        _details = {}
-        for detail in entry_details_list:
+    # if there is only one entry in the ImmutableResultSet, a list details is returned by rs.get('authors')
+    if isinstance(rs.get('details'), list):
+        for detail_dict in rs.get('details'):
             # nested details
-            if isinstance(detail['value'], dict):
-                # include top-level detail of nested detail
-                _details[detail['key']] = detail.copy()
-                _details[detail['key']]['value'] = 'nested'
-                
-                # remove unwanted key-value pairs
-                _details[detail['key']] = {key: val for key, val in _details[detail['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+                if isinstance(detail_dict['value'], dict):
+                    # include top-level detail of nested detail
+                    _details[detail_dict['key']] = detail_dict.copy()
+                    _details[detail_dict['key']]['value'] = 'nested'
+                    
+                    # remove unwanted key-value pairs
+                    _details[detail_dict['key']] = {key: val for key, val in _details[detail_dict['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
 
-                # go for nested details
-                for k, v in detail['value'].items():
-                    expand = {
-                        f"{detail['key']}.{k}": dict(
-                        value=v,
-                        key=detail['key'],
-                        entry_uuid=detail['entry_uuid'],
-                        description=detail.get('description', 'nan')
-                        )
-                    }
-                    _details.update(expand)
-            # un-nested details
-            else:
-                _details[detail['key']] = detail
-                # remove unwanted key-value pairs
-                _details[detail['key']] = {key: val for key, val in _details[detail['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+                    # go for nested details
+                    for k, v in detail_dict['value'].items():
+                        expand = {
+                            f"{detail_dict['key']}.{k}": dict(
+                            value=v,
+                            key=detail_dict['key'],
+                            entry_uuid=detail_dict['entry_uuid'],
+                            description=detail_dict.get('description', 'nan')
+                            )
+                        }
+                        _details.update(expand)
+                # un-nested details
+                else:
+                    _details[detail_dict['key']] = detail_dict
+                    # remove unwanted key-value pairs
+                    _details[detail_dict['key']] = {key: val for key, val in _details[detail_dict['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
 
         # turn into a transposed dataframe
         df = pd.DataFrame(_details).T
 
         # append markdown table to details
         details.append(df.to_markdown())
+
+    # if there are more than one entries in the ImmutableResultSet, a entry_uuid-indexed dictionary of details is returned
+    elif isinstance(rs.get('details'), dict):
+        for entry_uuid, entry_details_list in rs.get('details').items():
+            for detail_dict in entry_details_list:
+                # nested details
+                if isinstance(detail_dict['value'], dict):
+                    # include top-level detail of nested detail
+                    _details[detail_dict['key']] = detail_dict.copy()
+                    _details[detail_dict['key']]['value'] = 'nested'
+                    
+                    # remove unwanted key-value pairs
+                    _details[detail_dict['key']] = {key: val for key, val in _details[detail_dict['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+
+                    # go for nested details
+                    for k, v in detail_dict['value'].items():
+                        expand = {
+                            f"{detail_dict['key']}.{k}": dict(
+                            value=v,
+                            key=detail_dict['key'],
+                            entry_uuid=detail_dict['entry_uuid'],
+                            description=detail_dict.get('description', 'nan')
+                            )
+                        }
+                        _details.update(expand)
+                # un-nested details
+                else:
+                    _details[detail_dict['key']] = detail_dict
+                    # remove unwanted key-value pairs
+                    _details[detail_dict['key']] = {key: val for key, val in _details[detail_dict['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+
+            # turn into a transposed dataframe
+            df = pd.DataFrame(_details).T
+
+            # append markdown table to details
+            details.append(df.to_markdown())
 
     return details
 
