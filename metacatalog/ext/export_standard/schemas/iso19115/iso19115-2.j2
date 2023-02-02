@@ -176,7 +176,7 @@
             <gmd:abstract>
                 <gco:CharacterString>
                 Abstract: 
-                {{abstract}}
+                {{abstract | indent(16)}}
                 {% for details_table in details %}
                 Details:
                 {{details_table | indent(16)}}
@@ -258,13 +258,7 @@
                 <gco:CharacterString>eng</gco:CharacterString>
             </gmd:language>
             <gmd:characterSet>
-            {% if encodigng %}
-                {# if datasource exists: use datasource.encoding #}
-                <gmd:MD_CharacterSetCode codeListValue="{{encoding|replace("-", "")}}" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
-            {% else %}
-                {# no datasource: utf8 #}
                 <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
-            {% endif %}
             </gmd:characterSet>
 
 
