@@ -151,16 +151,27 @@ def get_version(rs: ImmutableResultSet) -> int:
 
 def get_authors(rs: ImmutableResultSet) -> list[dict]:
     # rs.get('authors') gives the first author and all coAuthors
-    for entry_uuid, entry_authors in rs.get('authors').items():
+    # if there is only one entry in the ImmutableResultSet, a list of authors is returned by rs.get('authors')
+    if isinstance(rs.get('authors'), list):
         authors = []
-        for entry_author in entry_authors:
+        for author_dict in rs.get('authors'):
             authors.append(
                 {
-                'entry_uuid': entry_uuid, # use entry_uuid as 'index' to connect authors to entry
-                'first_name': entry_author['first_name'],
-                'last_name': entry_author['last_name'],
-                'organisation_name': entry_author['organisation_name']
-            })
+                    'first_name': author_dict.get('first_name'),
+                    'last_name': author_dict.get('last_name'),
+                    'organisation_name': author_dict.get('organisation_name')
+                    })
+    # if there are more than one entries in the ImmutableResultSet, a entry_uuid-indexed dictionary of authors is returned
+    elif isinstance(rs.get('authors'), dict):
+        for entry_uuid, entry_authors in rs.get('authors').items():
+            authors = []
+            for author_dict in entry_authors:
+                authors.append(
+                    {
+                    'first_name': author_dict['first_name'],
+                    'last_name': author_dict['last_name'],
+                    'organisation_name': author_dict['organisation_name']
+                })
     
     return authors
 
