@@ -64,28 +64,6 @@ def _init_iso19115_jinja(rs_dict):
         env.trim_blocks = True
         env.lstrip_blocks = True
 
-        # custom jinja filter functions
-        def temporal_resolution_to_seconds(resolution: str):
-            """
-            As temporal resolution is stored as a string in metacatalog but ISO 19115
-            XML requires resolution as type float, this function is used to return
-            the temporal resolution in seconds.
-            """
-            resolution = pd.to_timedelta(resolution)
-            return resolution.total_seconds()
-        
-        def datetime_to_date(datetime):
-            """
-            DateTime fields in metacatalog contain microseconds.
-            For ISO export, we drop the time and just use the date.
-            Use this filter to convert datetime to date and return in isoformat.
-            """
-            return datetime.date().isoformat()
-
-        # register custom filter functions in jinja environment
-        env.filters['temporal_resolution_to_seconds'] = temporal_resolution_to_seconds
-        env.filters['datetime_to_date'] = datetime_to_date
-
         # get template
         template = env.get_template("iso19115-2.j2")
         
@@ -135,6 +113,8 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
         Used for field <gmd:geographicElement>, list of dictionaries containing the support
         points of the bounding box(es), mandatory keys are `min_lon`, `min_lat`, `max_lon`
         and `max_lat`, repeatable.
+    spatial_resolutions: list[int]
+        Used for field <gmd:spatialResolution>, list of integers [m], repeatable.
     """
     if not isinstance(entry_or_resultset, ImmutableResultSet):
         # get ImmutableResultSet
@@ -362,7 +342,7 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
             temporal_resolution = rs.get('datasource')['temporal_scale']['resolution']
             temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
 
-            temporal_scale = [{
+            temporal_scales = [{
                 "temporal_extent_start": temporal_extent_start,
                 "temporal_extent_end": temporal_extent_end,
                 "temporal_resolution": temporal_resolution
@@ -381,17 +361,17 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
             max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
             
             # save as list(dict)
-            bbox_location = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
+            bbox_locations = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
 
             # spatial_resolution
-            spatial_resolution = [rs.get('datasource')['spatial_scale']['resolution']]
+            spatial_resolutions = [rs.get('datasource')['spatial_scale']['resolution']]
 
     # if there are more than one datasources in the ImmutableResultSet, use all values, repeat in ISO
     elif any(isinstance(val, dict) for val in rs.get('datasource').values()):
         encoding = []
-        temporal_scale = []
-        bbox_location = []
-        spatial_resolution = []
+        temporal_scales = []
+        bbox_locations = []
+        spatial_resolutions = []
         for i ,(entry_uuid, ds_dict) in enumerate(rs.get('datasource').items()):
             # encoding
             encoding.append(ds_dict['encoding'])
@@ -405,7 +385,7 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
                 temporal_resolution = ds_dict['temporal_scale']['resolution']
                 temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
 
-                temporal_scale.append({
+                temporal_scales.append({
                     "temporal_extent_start": temporal_extent_start,
                     "temporal_extent_end": temporal_extent_end,
                     "temporal_resolution": temporal_resolution
@@ -422,10 +402,10 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
                 max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
                 
                 # save as list(dict)
-                bbox_location.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
+                bbox_locations.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
 
                 # spatial_resolution
-                spatial_resolution.append(ds_dict['spatial_scale']['resolution'])
+                spatial_resolutions.append(ds_dict['spatial_scale']['resolution'])
 
 
         # check encoding -> TODO: ist das nicht eh immer utf-8?
@@ -435,13 +415,13 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
             raise NotImplementedError("I think we don't need that..")
 
         # check spatial_resolution
-        if len(set(spatial_resolution)) == 1:
-            spatial_resolution = spatial_resolution[0]
-        else:
-            raise ValueError("Different spatial resolutions in datasource.spatial_scale, instance is not ISO exportable!")
+        # if len(set(spatial_resolutions)) == 1:
+        #     spatial_resolutions = spatial_resolutions[0]
+        # else:
+        #     raise ValueError("Different spatial resolutions in datasource.spatial_scale, instance is not ISO exportable!") #TODO: doch, ist repeatable
 
     # if bbox_location is not filled from datasource above, go for Entry.location
-    if not bbox_location:
+    if not bbox_locations:
         if rs.get('location') and isinstance(rs.get('location'), WKBElement):
             # Entry.location is always a POINT
             location = rs.get('location')
@@ -454,7 +434,7 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
             min_lat = max_lat = P.coords[0][1]
 
             # save as bbox_location
-            bbox_location = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
+            bbox_locations = [{'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat}]
         # more than one location -> uuid-indexed dict of locations
         if rs.get('location') and isinstance(rs.get('location'), dict):
             for entry_uuid, loc in rs.get('location').items():
@@ -469,14 +449,14 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
                 min_lat = max_lat = P.coords[0][1]
 
                 # append to bbox_location
-                bbox_location.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
+                bbox_locations.append({'min_lon': min_lon, 'min_lat': min_lat, 'max_lon': max_lon, 'max_lat': max_lat})
 
     # raise ValueError if location is neither specified in datasource.spatial_scale nor in Entry.location
-    if not bbox_location:
+    if not bbox_locations:
         raise ValueError("No location information associated with instance to be exported.")
 
 
-    return rs_dict
+    return uuid, lastUpdate, publication, version, authors, abstract, details, keywords, temporal_scales, bbox_locations, spatial_resolutions
 
 
 def _validate_xml(xml: str) -> bool:
@@ -536,13 +516,24 @@ class StandardExportExtension(MetacatalogExtensionInterface):
         a useful Metadata export.
         """
         # get ImmutableResultSet dictionary
-        rs_dict = _parse_iso_information(entry_or_resultset)
+        uuid, lastUpdate, publication, version, authors, abstract, details, keywords, temporal_scales, bbox_locations, spatial_resolutions = _parse_iso_information(entry_or_resultset)
 
         # get initialized jinja environment and template
         env, template = _init_iso19115_jinja(rs_dict)
 
         # render template with entry_dict
-        xml = template.render(**rs_dict, **config_dict)
+        xml = template.render(uuid=uuid, 
+                              lastUpdate=lastUpdate,
+                              publication=publication,
+                              version=version,
+                              authors=authors,
+                              abstract=abstract,
+                              details=details,
+                              keywords=keywords,
+                              temporal_scales=temporal_scales,
+                              bbox_locations=bbox_locations,
+                              spatial_resolutions=spatial_resolutions,
+                              **config_dict)
 
         # check whether xml is well-formed
         _validate_xml(xml)
