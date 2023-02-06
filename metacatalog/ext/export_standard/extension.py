@@ -336,7 +336,7 @@ def get_datasource_information(rs: ImmutableResultSet) -> tuple[list[dict], list
         pass
     
     # if there is only one datasource in the ImmutableResultSet, use its values
-    elif not any(isinstance(val, dict) for val in rs.get('datasource').values()):
+    elif not all(isinstance(val, dict) for val in rs.get('datasource').values()):
         # temporal_scale
         if 'temporal_scale' in rs.get('datasource').keys():
             # extent
@@ -370,8 +370,8 @@ def get_datasource_information(rs: ImmutableResultSet) -> tuple[list[dict], list
             # spatial_resolution
             spatial_resolutions = [rs.get('datasource')['spatial_scale']['resolution']]
 
-    # if there are more than one datasources in the ImmutableResultSet, use all values, repeat in ISO
-    elif any(isinstance(val, dict) for val in rs.get('datasource').values()):
+    # if there are more than one datasources in the ImmutableResultSet, all values in rs.get('datasource') are uuid-indexed dicts
+    elif all(isinstance(val, dict) for val in rs.get('datasource').values()):
         for i ,(entry_uuid, ds_dict) in enumerate(rs.get('datasource').items()):
             # temporal_scale
             if ds_dict.get('temporal_scale'):
