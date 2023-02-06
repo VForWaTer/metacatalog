@@ -1,12 +1,9 @@
 from typing import Union
+from datetime import datetime
+import os
+
+
 from numpy import fromstring, full
-from metacatalog.ext import MetacatalogExtensionInterface
-
-from metacatalog import api
-
-from metacatalog.models import Entry, Person
-from metacatalog.util.results import ImmutableResultSet
-
 from jinja2 import Environment, FileSystemLoader
 import pandas as pd
 from sqlalchemy.orm.session import Session
@@ -16,9 +13,13 @@ import shapely
 from geoalchemy2.shape import to_shape
 from geoalchemy2.elements import WKBElement
 
-from datetime import datetime
 
-import os
+from metacatalog.ext import MetacatalogExtensionInterface
+from metacatalog import api
+from metacatalog.models import Entry, Person
+from metacatalog.util.results import ImmutableResultSet
+
+
 
 def _init_iso19115_jinja():
         """
@@ -622,18 +623,28 @@ def _validate_xml(xml: str) -> bool:
     except etree.XMLSyntaxError as e:
         raise(e)
 
+
 # name "ExportExtension"? -> than we need another extension for imports!
-class StandardExportExtension(MetacatalogExtensionInterface):
+class StandardsExportExtension(MetacatalogExtensionInterface):
     r"""
     Extension to export Entries in standard format.
     Currently, ISO 19115 export is implemented.
     """
     @classmethod
     def init_extension(cls):
-        pass
+        # wrapper which calls StandardsExportExtension.iso19115_export
+        def wrapper(self: Entry, config_dict: dict, path: str = None):  
+            return StandardsExportExtension.iso19115_export(entry_or_resultset=self, config_dict=config_dict, path=path)
+        
+        # iso19115_export docstring and name for wrapper function
+        wrapper.__doc__ = StandardsExportExtension.iso19115_export.__doc__
+        wrapper.__name__ = StandardsExportExtension.iso19115_export.__name__
+        
+        Entry.export_iso19115 = wrapper
+
 
     @classmethod
-    def iso_xml_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, path: str = None):
+    def iso19115_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, path: str = None):
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
         :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet> to XML in 
