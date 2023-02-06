@@ -177,6 +177,7 @@ def get_authors(rs: ImmutableResultSet) -> list[dict]:
 
 
 def get_abstract(rs: ImmutableResultSet) -> str:
+    abstract = ''
     # if there is only one entry in the ImmutableResultSet, use its abstract
     if isinstance(rs.get('abstract'), str):
         abstract = rs.get('abstract')
