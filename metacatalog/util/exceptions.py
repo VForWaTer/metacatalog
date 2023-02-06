@@ -10,5 +10,5 @@ class IOOperationNotFoundError(RuntimeError, ValueError):
     pass
 
 
-class StandardExportExtentionNotFoundError(RuntimeError, ValueError):
+class StandardsExportExtentionNotFoundError(RuntimeError, ValueError):
     pass
