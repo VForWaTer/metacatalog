@@ -18,30 +18,6 @@ from geoalchemy2.elements import WKBElement
 
 from datetime import datetime
 
-# DEV not sure if this is a good place...
-ENTRY_KEYS = (
-    'uuid',
-    'external_id',
-    'title',
-    'authors',
-    'abstract',
-    'citation',
-    'location_shape',
-    'variable',
-    'license',
-    'datasource',
-    'details',
-    'embargo',
-    'embargo_end',
-    'version',
-    'latest_version',
-    'plain_keyword_dict',
-    'publication',
-    'lastUpdate',
-    'comment',
-    'associated_groups'
-)
-
 import os
 
 def _init_iso19115_jinja():
@@ -71,6 +47,17 @@ def _init_iso19115_jinja():
 
 
 def get_uuid(rs: ImmutableResultSet) -> str:
+    """
+    Returns uuid of ImmutableResultSet.  
+    Returns the uuid of the base group (if exists) or the concatenated uuids of all 
+    members.
+
+    Returns
+    ----------
+    uuid : str
+        Used for field <gmd:fileIdentifier> and field <gmd:identifier>, not repeatable.
+
+    """
     # if a base group exists, use the uuid of the base group
     if rs.group:
         uuid = rs.group.uuid
@@ -88,6 +75,18 @@ def get_uuid(rs: ImmutableResultSet) -> str:
     return uuid
 
 def get_lastUpdate(rs: ImmutableResultSet) -> str:
+    """
+    Returns lastUpdate of ImmutableResultSet.  
+    Returns the uuid of the base group (if exists) or the latest value of lastUpdate of 
+    all members.
+
+    Returns
+    ----------
+    lastUpdate : str
+        Used for field <gmd:dateStamp> and field <gmd:date> with <gmd:dateType> 'revision'
+        and field <gmd:editionDate>, str in ISO-date-format, not repeatable.
+
+    """
     # if a base group exists, use the title of the base group
     if rs.group:
         lastUpdate = rs.group.lastUpdate.date().isoformat()
@@ -104,6 +103,17 @@ def get_lastUpdate(rs: ImmutableResultSet) -> str:
 
 
 def get_title(rs: ImmutableResultSet) -> str:
+    """
+    Returns title of ImmutableResultSet.  
+    Returns the title of the base group (if exists) or the concatenated titles of all 
+    members.
+
+    Returns
+    ----------
+    title : str
+        Used for field <gmd:title>, not repeatable.
+
+    """
     # if a base group exists, use the title of the base group
     if rs.group:
         title = rs.group.title
@@ -122,6 +132,18 @@ def get_title(rs: ImmutableResultSet) -> str:
 
 
 def get_publication(rs: ImmutableResultSet) -> str:
+    """
+    Returns publication date of ImmutableResultSet.  
+    Returns the title of the base group (if exists) or the latest value of publication of 
+    all members.
+
+    Returns
+    ----------
+    publication : str
+        Used for field <gmd:date> with <gmd:dateType> 'creation', 
+        str in ISO-datae-formate, not repeatable.
+
+    """
     # if a base group exists, use the publication date of the base group
     if rs.group:
         publication = rs.group.publication.date().isoformat()
@@ -138,6 +160,16 @@ def get_publication(rs: ImmutableResultSet) -> str:
 
 
 def get_version(rs: ImmutableResultSet) -> int:
+    """
+    Returns version number of ImmutableResultSet.  
+    Returns the maximal version number of all members.
+
+    Returns
+    ----------
+    version: int
+        Used for field <gmd:edition>, not repeatable.
+
+    """
     # if there is only one version in the ImmutableResultSet, use it
     if isinstance(rs.get('version'), int):
         version = rs.get('version')
@@ -150,6 +182,17 @@ def get_version(rs: ImmutableResultSet) -> int:
 
 
 def get_authors(rs: ImmutableResultSet) -> list[dict]:
+    """
+    Returns all authors and coauthors of the ImmutableResultSet.
+
+    Returns
+    ----------
+    authors: list[dict]
+        Used for field <gmd:CI_ResponsibleParty>, list of dictionaries containing the 
+        information about authors: mandatory keys are `first_name`, `last_name` and
+        `organisation_name`, repeatable.
+
+    """
     # rs.get('authors') gives the first author and all coAuthors
     # if there is only one entry in the ImmutableResultSet, a list of authors is returned by rs.get('authors')
     if isinstance(rs.get('authors'), list):
@@ -161,7 +204,7 @@ def get_authors(rs: ImmutableResultSet) -> list[dict]:
                     'last_name': author_dict.get('last_name'),
                     'organisation_name': author_dict.get('organisation_name')
                     })
-    # if there are more than one entries in the ImmutableResultSet, a entry_uuid-indexed dictionary of authors is returned
+    # if there is more than one entry in the ImmutableResultSet, a entry_uuid-indexed dictionary of authors is returned
     elif isinstance(rs.get('authors'), dict):
         for entry_uuid, entry_authors in rs.get('authors').items():
             authors = []
@@ -177,6 +220,17 @@ def get_authors(rs: ImmutableResultSet) -> list[dict]:
 
 
 def get_abstract(rs: ImmutableResultSet) -> str:
+    """
+    Returns abstract of ImmutableResultSet.
+    If there is more than one abstract in the ImmutableResultSet, abstracts are
+    concatenated.
+
+    Returns
+    ----------
+    abstract: str
+        Used for field <gmd:abstract>, not repeatable.
+
+    """
     abstract = ''
     # if there is only one entry in the ImmutableResultSet, use its abstract
     if isinstance(rs.get('abstract'), str):
@@ -192,6 +246,17 @@ def get_abstract(rs: ImmutableResultSet) -> str:
 
 
 def get_details(rs: ImmutableResultSet) -> list[str]:
+    """
+    Returns the details of the ImmutableResultSet.
+    Details are currently written to XML as Markdown tables along the abstracts 
+    of ImmutableResultSet members.
+
+    Returns
+    ----------
+    details: list[str]
+        Details as a markdown table, currently also in field <gmd:abstract>, not repeatable.
+
+    """
     # create list with details_table for all entries in ImmutableResultSet
     details = []
     _details = {}
@@ -271,6 +336,19 @@ def get_details(rs: ImmutableResultSet) -> list[str]:
 
 
 def get_keywords(rs: ImmutableResultSet) -> list[dict]:
+    """
+    Returns the keywords of the ImmutableResultSet.
+    If the variables of the ImmutableResultSet are linked to a thesaurus, the thesaurus
+    keywords are also returned along the keywords that are linked to the ImmutableResultSet
+    members.
+
+    Returns
+    ----------
+    keywords: list[dict]
+        Used for field <gmd:MD_Keywords>, list of dictionaries containing information about
+        associated keywords, mandatory keys are `full_path` and `thesaurusName`.
+
+    """
     keywords = []
     # go for keyword linked to variable first
     variable_dict = rs.get('variable')
@@ -303,6 +381,16 @@ def get_keywords(rs: ImmutableResultSet) -> list[dict]:
 
 
 def get_licenses(rs: ImmutableResultSet) -> list[dict]:
+    """
+    Returns the licenses of the ImmutableResultSet.
+
+    Returns
+    ----------
+    licenses: list[dict]
+        Used for field <gmd:resourceConstraints>, list of dictionaries containing information about
+        associated licenses, mandatory keys are `link` and `short_title`.
+
+    """
     licenses = []
     # if there is only one license in the ImmutableResultSet, there are no nested dicts
     if not any(isinstance(val, dict) for val in rs.get('license').values()):
@@ -329,6 +417,24 @@ def get_licenses(rs: ImmutableResultSet) -> list[dict]:
 
 
 def get_datasource_information(rs: ImmutableResultSet) -> tuple[list[dict], list[dict], list[int]]:
+    """
+    Returns the temporal scales, the location as a bounding box and the spatial resolution 
+    of the data of the ImmutableResultSet.
+
+    Returns
+    ----------
+    temporal_scales: list[dict]
+        Used for field <gmd:temporalElement>, list of dictionaries containing information
+        about the temporal scale(s), mandatory keys are `temporal_extent_start`, 
+        `temporal_extent_end` and `temporal_resolution`, repeatable.
+    bbox_locations: list[dict]
+        Used for field <gmd:geographicElement>, list of dictionaries containing the support
+        points of the bounding box(es), mandatory keys are `min_lon`, `min_lat`, `max_lon`
+        and `max_lat`, repeatable.
+    spatial_resolutions: list[int]
+        Used for field <gmd:spatialResolution>, list of integers [m], repeatable.
+
+    """
     temporal_scales = []
     bbox_locations = []
     spatial_resolutions = []
@@ -455,40 +561,9 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
     
     Returns
     ----------
-    uuid : str
-        Used for field <gmd:fileIdentifier> and field <gmd:identifier>, not repeatable.
-    lastUpdate : str
-        Used for field <gmd:dateStamp> and field <gmd:date> with <gmd:dateType> 'revision'
-        and field <gmd:editionDate>, str in ISO-date-format, not repeatable.
-    title : str
-        Used for field <gmd:title>, not repeatable.
-    publication : str
-        Used for field <gmd:date> with <gmd:dateType> 'creation' , 
-        str in ISO-datae-formate, not repeatable.
-    version: int
-        Used for field <egmd:dition>, not repeatable.
-    authors: list[dict]
-        Used for field <gmd:CI_ResponsibleParty>, list of dictionaries containing the 
-        information about authors: mandatory keys are `first_name`, `last_name` and
-        `organisation_name`, repeatable.
-    abstract: str
-        Used for field <gmd:abstract>, not repeatable.
-    details: list[str]
-        Details as a markdown table, currently also in field <gmd:abstract>, not repeatable.
-    keywords: list[dict]
-        Used for field <gmd:MD_Keywords>, list of dictionaries containing information about
-        associated keywords, mandatory keys are `full_path` and `thesaurusName`.
-    temporal_scales: list[dict]
-        Used for field <gmd:temporalElement>, list of dictionaries containing information
-        about the temporal scale(s), mandatory keys are `temporal_extent_start`, 
-        `temporal_extent_end` and `temporal_resolution`, repeatable.
-    bbox_locations: list[dict]
-        Used for field <gmd:geographicElement>, list of dictionaries containing the support
-        points of the bounding box(es), mandatory keys are `min_lon`, `min_lat`, `max_lon`
-        and `max_lat`, repeatable.
-    spatial_resolutions: list[int]
-        Used for field <gmd:spatialResolution>, list of integers [m], repeatable.
-    
+    iso_input: dict
+        Dictionary of information 
+
     """
     if not isinstance(entry_or_resultset, ImmutableResultSet):
         # get ImmutableResultSet
