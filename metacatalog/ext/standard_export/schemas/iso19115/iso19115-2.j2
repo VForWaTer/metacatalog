@@ -12,14 +12,10 @@
         {# always utf8 #}
         <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
     </gmd:characterSet>
-    
-
     <gmd:hierarchyLevel>
         {# always dataset #}
         <gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" codeSpace="005">dataset</gmd:MD_ScopeCode>
     </gmd:hierarchyLevel>
-
-
     <gmd:contact>
         <gmd:CI_ResponsibleParty>
             <gmd:organisationName>
@@ -80,8 +76,6 @@
     <gmd:metadataStandardVersion>
         <gco:CharacterString>ISO 19115-2:2009(E)</gco:CharacterString>
     </gmd:metadataStandardVersion>
-
-
     <gmd:referenceSystemInfo>
         <gmd:MD_ReferenceSystem>
             <gmd:referenceSystemIdentifier>
@@ -93,7 +87,6 @@
             </gmd:referenceSystemIdentifier>
         </gmd:MD_ReferenceSystem>
     </gmd:referenceSystemInfo>
-
     <gmd:identificationInfo>
         <gmd:MD_DataIdentification>
             <gmd:citation>
@@ -135,36 +128,30 @@
                             </gmd:code>
                         </gmd:MD_Identifier>
                     </gmd:identifier>
-                    
-                    {# TODO: discuss series #}
-                    {# series? -> EntryGroup.uuid? -> CI_Series #}
-                    {# colletiveTitle? -> EntryGroup.title #}
-                    {# which EntryGroup if there are more than one in Entry.associatedGroups? -> all of them? #}
-                    
-                    {# TODO: do we need citedResponsibleParty here? -> 'Identification of the contact for the resource.' #}
                     {# GFZ lists all authors here, below (<gmd:pointOfContact>) only first author (again) #}
-
-
                     {# list all associated persons here #}
                     {% for author in authors %}
                     <gmd:CI_ResponsibleParty>
+                        {% if author.last_name and author.first_name %}
                         <gmd:individualName>
                             <gco:CharacterString>{{author.last_name}}, {{author.first_name}}</gco:CharacterString>
                         </gmd:individualName>
+                        {% endif %}
+                        {% if author.organisation_name %}
                         <gmd:organisationName>
                             <gco:CharacterString>{{author.organisation_name}}</gco:CharacterString>
                         </gmd:organisationName>
+                        {% endif %}
                         <gmd:role>
-                            {# TODO: connect person to person_role, fill automatically! Oder auch nicht, in ISO gibts nur 'authors' #}
                             <gmd:CI_RoleCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
                         </gmd:role>
                     </gmd:CI_ResponsibleParty>
                     {% endfor %}
-                    {# originator: from config_dict #}
+                    {# publisher: from config_dict #}
                     <gmd:citedResponsibleParty>
                         <gmd:CI_ResponsibleParty>
                             <gmd:organisationName>
-                                <gco:CharacterString>{{originator.organisation_name}}</gco:CharacterString> {# TODO: are we the publisher? -> KIT?? #}
+                                <gco:CharacterString>{{publisher.organisation_name}}</gco:CharacterString>
                             </gmd:organisationName>
                             <gmd:role>
                                 <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="publisher" codeSpace="006">publisher</gmd:CI_RoleCode>
@@ -177,38 +164,41 @@
                 <gco:CharacterString>
                 Abstract: 
                 {{abstract | indent(16)}}
+
                 {% for details_table in details %}
+                {% if details_table %}
                 Details:
                 {{details_table | indent(16)}}
+
+                {% endif %}
                 {% endfor %}
                 </gco:CharacterString>
             </gmd:abstract>
-
             {# first author again as pointOfContact (like GFZ) #}
             <gmd:pointOfContact>
                 <gmd:CI_ResponsibleParty>
+                    {% if authors[0].last_name and authors[0].first_name %}
                     <gmd:individualName>
                         <gco:CharacterString>{{authors[0].last_name}}, {{authors[0].first_name}}</gco:CharacterString>
                     </gmd:individualName>
+                    {% endif %}
+                    {% if authors[0].organisation_name %}
                     <gmd:organisationName>
                         <gco:CharacterString>{{authors[0].organisation_name}}</gco:CharacterString>
                     </gmd:organisationName>
+                    {% endif %}
                     <gmd:role>
                         <gmd:CI_RoleCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
                     </gmd:role>
                 </gmd:CI_ResponsibleParty>
             </gmd:pointOfContact>
             {% for keyword in keywords %}
+            {# <gmd:descriptiveKeywords would be repeatable -> group by thesaurus?? #}
             <gmd:descriptiveKeywords>
-            {# our details are key-value pairs -> just store them here? #}
-            {# we had the idea of tags -> would be stored here #}
                 <gmd:MD_Keywords>
-                    {# implementation of thesaurus keywords like GFZ #}
                     <gmd:keyword>
                         <gco:CharacterString>{{keyword.full_path}}</gco:CharacterString>
-                    </gmd:keyword>
-                    {# not sure if thesaurusName is repeatable (must be?), GFZ lists all keywords first, one thesaurusName afterwards #}
-                    {# <gmd:descriptiveKeywords would be repeatable -> group by thesaurus?? #}
+                    </gmd:keyword>                    
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>
                             <gmd:title>
@@ -231,50 +221,40 @@
             <gmd:resourceConstraints xlink:href="{{license.link}}">
                 <gmd:MD_Constraints>
                     <gmd:useLimitation>
-                        {# decided for short title (like GFZ) #}
                         <gco:CharacterString>{{license.short_title}}</gco:CharacterString>
                     </gmd:useLimitation>
                 </gmd:MD_Constraints>
             </gmd:resourceConstraints>
             {% endfor %}
-
-
             {% for spatial_resolution in spatial_resolutions %}
             <gmd:spatialRepresentationType>
                 <gmd:MD_SpatialRepresentationTypeCode codeList="https://data.noaa.gov/resources/iso19139/schema/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue='grid'>'grid</gmd:MD_SpatialRepresentationTypeCode>
             </gmd:spatialRepresentationType>
             <gmd:spatialResolution>
                 <gmd:MD_Resolution>
-                    {# is distance really resolution? 'Ground sample distance' #}
                     <gmd:distance>
                         <gco:Distance uom="meters">{{spatial_resolution}}</gco:Distance>
                     </gmd:distance>
                 </gmd:MD_Resolution>
             </gmd:spatialResolution>
             {% endfor %}
-
             <gmd:language>
                 {# always english #}
                 <gco:CharacterString>eng</gco:CharacterString>
             </gmd:language>
             <gmd:characterSet>
+                {# always utf8 #}
                 <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode"/>
             </gmd:characterSet>
-
-
             <gmd:topicCategory>
-                {# currently always 'environment', but other values are often better -> how do we map them? TODO #}
+                {# TODO: currently always 'environment', but other values are often better -> how do we map them? #}
                 <gmd:MD_TopicCategoryCode>environment</gmd:MD_TopicCategoryCode>
             </gmd:topicCategory>
-            
             <gmd:extent>
-                {# TODO: neue location implementation -> View kann hier nicht verwendet werden -> drüber nachdenken wie wir das machen #}
                 <gmd:EX_Extent id="boundingExtent">
-                    {# geographic extent only for datasources with spatial_scale #}
                     {% for bbox_location in bbox_locations %}
                     <gmd:geographicElement>
                         <gmd:EX_GeographicBoundingBox id="boundingGeographicBoundingBox">
-                            {# TODO: get bounding box parameters from column extent (atm no example present) #}
                             <gmd:westBoundLongitude>
                                 <gco:Decimal>{{bbox_location.min_lon}}</gco:Decimal>
                             </gmd:westBoundLongitude>
@@ -285,7 +265,7 @@
                                 <gco:Decimal>{{bbox_location.min_lat}}</gco:Decimal>
                             </gmd:southBoundLatitude>
                             <gmd:northBoundLatitude>
-                                <gco:Decimal>{{bbox_location.max_lon}}</gco:Decimal>
+                                <gco:Decimal>{{bbox_location.max_lat}}</gco:Decimal>
                             </gmd:northBoundLatitude>
                         </gmd:EX_GeographicBoundingBox>
                     </gmd:geographicElement>
@@ -303,23 +283,10 @@
                         </gmd:EX_TemporalExtent>
                     </gmd:temporalElement>
                     {% endfor %}
-                    {# TODO or else: <TimeInstant>: single datetime, e.g. land-use for one timestep? #}
                 </gmd:EX_Extent>
             </gmd:extent>
         </gmd:MD_DataIdentification>
     </gmd:identificationInfo>
-
-    {# TODO: contentInfo: variable and datasource?? how? -> what about featureCatalogue? #}
-    <gmd:contentInfo>
-        <gmd:MD_FeatureCatalogueDescription>
-            <gmd:includedWithDataset>
-                <gco:Boolean>0</gco:Boolean>
-            </gmd:includedWithDataset>
-            <gmd:featureCatalogueCitation gco:nilReason="unknown" />
-        </gmd:MD_FeatureCatalogueDescription>
-    </gmd:contentInfo>
-
-
     {# TODO: dataQualityInfo (not yet implemented) #}
     <gmd:dataQualityInfo>
         <gmd:DQ_DataQuality>
