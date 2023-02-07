@@ -60,7 +60,7 @@ def get_uuid(session: Session, uuid: str, not_found='raise'):
         return None
 
 
-def regenerate_iso19115(session: Session, config_dict: dict, path: str) -> None:
+def create_iso19115(session: Session, config_dict: dict, path: str) -> None:
     """
     Generate ISO 19115 XML files for all ImmutableResultSets in the
     database session. The XML files are saved in the folder given in
