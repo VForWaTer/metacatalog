@@ -8,7 +8,3 @@ class MetadataMissingError(RuntimeError):
 
 class IOOperationNotFoundError(RuntimeError, ValueError):
     pass
-
-
-class StandardsExportExtentionNotFoundError(RuntimeError, ValueError):
-    pass

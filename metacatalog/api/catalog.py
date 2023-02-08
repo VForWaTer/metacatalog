@@ -4,22 +4,15 @@ The catalog API offers application wide endpoints that are not bound to a
 specific API action or model
 
 """
-
 from typing import Union
-import os
-import glob
-
 
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 
-
 from metacatalog import api
-from metacatalog.util.results import ImmutableResultSet
 from metacatalog.util.logging import get_logger
 from metacatalog.util.results import ImmutableResultSet
 from metacatalog.models import Entry, EntryGroup, Keyword, Person
-
 
 def get_uuid(session: Session, uuid: str, as_result: bool=False, not_found: str='raise') -> Union[Entry, EntryGroup, Keyword, Person, ImmutableResultSet, None]:
     """
@@ -92,44 +85,3 @@ def get_uuid(session: Session, uuid: str, as_result: bool=False, not_found: str=
         raise NoResultFound("The UUID='%s' was not found." % uuid)
     else:
         return None
-
-
-def create_iso19115(session: Session, config_dict: dict, path: str) -> None:
-    """
-    Generate ISO 19115 XML files for all ImmutableResultSets in the
-    database session. The XML files are saved in the folder given in
-    ``path``, existing files in the folder are deleted, so use this 
-    function with caution.
-
-    .. versionadded:: 0.7.4
-
-    Parameters
-    ----------
-    session : sqlalchemy.Session
-        SQLAlchemy session connected to the database.
-    config_dict : dict
-        Configuration dictionary, containing information about the data provider
-    path : str
-        If given, a file location for export. 
-
-    """
-    irs_checksums = []
-
-    # use absolute path
-    path = os.path.abspath(path)
-
-    # remove everything in path
-    for file in glob.glob(f"{path}/*"):
-        os.remove(file)
-
-    for entry in api.find_entry(session):
-        # get the checksum of the ImmutableResultSet
-        irs_checksum = ImmutableResultSet(entry).checksum
-
-        # if irs_checksum in irs_checksums: ImmutableResultSet already exported -> continue
-        if irs_checksum in irs_checksums:
-            continue
-        else:
-            entry.export_iso19115(config_dict, path=f"{path}/iso19115_{irs_checksum}.xml")
-
-            irs_checksums.append(irs_checksum)
