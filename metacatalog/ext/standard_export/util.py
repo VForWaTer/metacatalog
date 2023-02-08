@@ -53,15 +53,9 @@ def _get_uuid(rs: ImmutableResultSet) -> str:
     if rs.group:
         uuid = rs.group.uuid
 
-    # if there is only one entry in the ImmutableResultSet, use its uuid
-    elif isinstance(rs.get('uuid'), str):
+    # if no group exists, there is only one member in the ImmutableResultSet -> use its uuid
+    else:
         uuid = rs.get('uuid')
-
-    # if there are more uuids in ImmutableResultSet, a list is returned, use latest
-    elif isinstance(rs.get('uuid'), list):
-        uuid = ''
-        for i, _uuid in enumerate(rs.get('uuid')):
-            uuid += f"uuid {i+1}: {_uuid}\n"
 
     return uuid
 
