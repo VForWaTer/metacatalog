@@ -9,5 +9,5 @@ nltk
 shapely
 pyproj
 requests
-dicttoxml>=1.7.5
+dicttoxml
 tqdm

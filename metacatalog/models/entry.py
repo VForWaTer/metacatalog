@@ -5,17 +5,13 @@ one type of environmental variable. It can hold a reference and interface to the
 If a supported data format is used, Entry can load the data.
 
 """
-from typing import List, Dict, TYPE_CHECKING
-if TYPE_CHECKING:
-    from metacatalog.models import License, PersonAssociation, Variable, EntryGroup, Keyword, Detail, DataSource, PersonRole
-import os
+from typing import List, Dict
 from datetime import datetime as dt
 import hashlib
 import json
 from dateutil.relativedelta import relativedelta as rd
 from uuid import uuid4
 import warnings
-from collections import defaultdict
 
 from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
@@ -192,14 +188,14 @@ class Entry(Base):
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
-    contributors: List['PersonAssociation'] = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
-    keywords: List['Keyword'] = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
-    license: 'License' = relationship("License", back_populates='entries')
-    variable: 'Variable' = relationship("Variable", back_populates='entries')
-    datasource: 'DataSource' = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
+    contributors = relationship("PersonAssociation", back_populates='entry', cascade='all, delete, delete-orphan')
+    keywords = relationship("Keyword", back_populates='tagged_entries', secondary="nm_keywords_entries")
+    license = relationship("License", back_populates='entries')
+    variable = relationship("Variable", back_populates='entries')
+    datasource = relationship("DataSource", back_populates='entries', cascade='all, delete, delete-orphan', single_parent=True)
     other_versions = relationship("Entry", backref=backref('latest_version', remote_side=[id]))
-    associated_groups: List['EntryGroup'] = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
-    details: List['Detail'] = relationship("Detail", back_populates='entry')
+    associated_groups = relationship("EntryGroup", secondary="nm_entrygroups", back_populates='entries')
+    details = relationship("Detail", back_populates='entry')
 
     # extensions
     io_extension = None
@@ -208,10 +204,6 @@ class Entry(Base):
     def to_dict(self, deep=False, stringify=False) -> dict:
         """
         Return the model as a python dictionary.
-
-        .. versionchanged:: 0.7.4
-
-            The dictionary now contains all persons roles
 
         Parameters
         ----------
@@ -229,7 +221,7 @@ class Entry(Base):
 
         """
         # base dictionary
-        out = dict(
+        d = dict(
             id=self.id,
             uuid=self.uuid,
             title=self.title,
@@ -249,54 +241,38 @@ class Entry(Base):
 
         # optional relations
         if self.license is not None:
-            out['license'] = self.license.to_dict(deep=False)
+            d['license'] = self.license.to_dict(deep=False)
 
         if self.details is not None:
-            out['details'] = self.details_dict(full=True)
+            d['details'] = self.details_dict(full=True)
 
         if self.datasource is not None:
-            out['datasource'] = self.datasource.to_dict(deep=False)
+            d['datasource'] = self.datasource.to_dict(deep=False)
 
         # set optional attributes
         for attr in ('abstract', 'external_id','comment', 'citation'):
             if hasattr(self, attr) and getattr(self, attr) is not None:
-                out[attr] = getattr(self, attr)
-
-        # add contributors, that are not author or coAuthor
-        updates = defaultdict(lambda: [])
-        for pa in self.contributors:
-            role: str = pa.role.name
-            if role.lower() not in ['author', 'conauthor']:
-                updates[role].append(pa.person.to_dict(deep=False))
-
-        # update the return dict if there were any updates
-        if len(updates) > 0:
-            out.update(updates)
+                d[attr] = getattr(self, attr)
 
         # lazy loading
         if deep:
             projects = self.projects
             if len(projects) > 0:
-                out['projects'] = [p.to_dict(deep=False) for p in projects]
+                d['projects'] = [p.to_dict(deep=False) for p in projects]
             comp = self.composite_entries
             if len(comp) > 0:
-                out['composite_entries'] = [e.to_dict(deep=False) for e in comp]
+                d['composite_entries'] = [e.to_dict(deep=False) for e in comp]
 
         if stringify:
-            return serialize(out, stringify=True)
-        return out
+            return serialize(d, stringify=True)
+        return d
 
     @classmethod
-    def from_dict(cls, session: Session, data: dict) -> 'Entry':
+    def from_dict(cls, data: dict, session: Session) -> 'Entry':
         """
         Create a *new* Entry in the database from the given dict.
 
         .. versionadded:: 0.4.8
-
-        .. versionchanged:: 0.7.4
-
-            PersonRoles other than 'author' and 'coAuthor' can be
-            imported as well.
 
         Parameters
         ----------
@@ -313,8 +289,6 @@ class Entry(Base):
         Currently, uploading data sources and data records is not supported.
 
         """
-        if not os.getenv('METACATALOG_SUPRESS_WARN', False):
-            warnings.warn("With a future release, the Entry.from_dict method will not create Entries in the database automatically, but instatiate a model. To supress this warning set the METACATALOG_SUPRESS_WARN environment variable.", FutureWarning)
         if 'id' in data:
             raise NotImplementedError('Updating an Entry is not yet supported.')
         
@@ -365,22 +339,6 @@ class Entry(Base):
             roles=['coAuthor'] * len(coauthors),
             order=[_ + 2 for _ in range(len(coauthors))]
         )
-
-        # load all available
-        available_roles: List['PersonRole'] = api.find_role(session)
-        for role in available_roles:
-            if not hasattr(data, role.name) or role.name in ['author', 'coAuthor']:
-                continue
-            else:
-                contributors = [models.Person.from_dict(a, session) for a in data[role.name]]
-            
-            # otherwise add
-            api.add_persons_to_entries(
-                session,
-                entries=[entry],
-                persons=[contributors],
-                roles=[role.name] * len(contributors)
-            )
 
         # add keywords
         keyword_uuids = data.get('keywords', [])

@@ -96,7 +96,7 @@ def test_data_crud_operations():
     timeseries.set_index('tstamp', inplace=True)
     new_chunk = pd.DataFrame({'tstamp': pd.date_range('201309280913', freq='15min', periods=50), 'value': np.random.normal(0, 1, size=50)})
     new_chunk.set_index('tstamp', inplace=True)
-    all_data = pd.concat([timeseries, new_chunk], axis='rows')
+    all_data = timeseries.append(new_chunk)
 
     # activate the IOExtension
     # TODO fix this in tests

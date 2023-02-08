@@ -127,11 +127,9 @@ class ImmutableResultSet:
         Expand this Entry to all siblings.
 
         .. versionchanged:: 0.3.8
-
             Split datasets are now nested
         
         .. versionchanged:: 0.6.11
-        
             the calling entry is now always part of the expansion set.
 
         """
@@ -150,7 +148,6 @@ class ImmutableResultSet:
         Return a set of entries to remove duplicates
 
         .. versionchanged:: 0.3.8
-
             Can now handle nested ResultSets
 
         """
@@ -177,7 +174,6 @@ class ImmutableResultSet:
         itself will be returned
 
         .. versionchanged:: 0.3.8
-
             get can now handle nested ImmutableResultSets
 
         Parameters
@@ -245,48 +241,29 @@ class ImmutableResultSet:
 
         Returns True if there is no :class:`Entry <metacatalog.models.Entry>`
         associated to this result.
-
         """
         return len(self._members) == 0 and self.group is None
-    
-    @property
-    def uuid(self) -> str:
-        """
-        .. versionadded 0.7.5
 
-        Returns the first uuid in the ImmutableResultSet.
-        This is the uuid of the base group, if it exists or the uuid
-        of the first member. As uuids of members are sorted in 
-        ``uuids(self)``, ``self.uuids[0]`` always returns the same
-        uuid for the same ImmutableResultSet.
-
-        """
-        return self.uuids[0]
-    
     @property
     def uuids(self):
         """
         Return all uuids that form this result set
 
         .. versionchanged:: 0.6.8
-
             If a member in in _members is an ImmutableResultSet, call this
             method recursively
-
-        .. versionchanged:: 0.7.5
-
-            Members of ImmutableResultSets cannot be ImmutableResultSets
-            again, reverted recursive method call from version 0.6.8
 
         """
         # get the group uuid
         uuids = [self.group.uuid] if self.group is not None else []
 
-        # sort all uuid to preserve the order
-        members_uuids = sorted([e.uuid for e in self._members if hasattr(e, 'uuid')])
-        
         # expand member uuids
-        uuids.extend(members_uuids)
+        uuids.extend([e.uuid for e in self._members if hasattr(e, 'uuid')])
+
+        # if member is a ImmutableResultSet again, call this method recursicely
+        for m in self._members:
+            if hasattr(m, 'uuids'):
+                uuids.extend(m.uuids)
 
         return uuids
 
@@ -296,7 +273,6 @@ class ImmutableResultSet:
         .. versionadded:: 0.3.8
         
         Return all checksums of all members
-
         """
         # get the group checksum
         checksums = [self.group.checksum] if self.group is not None else []
@@ -317,8 +293,7 @@ class ImmutableResultSet:
         The checksum is the md5 hash of all contained member checksums.
 
         .. versionchanged:: 0.3.8
-
-            now hashing md5 of members instead of uuids
+            now hasing md5 of members instead of uuids
 
         """
         return hashlib.md5(''.join(self.checksums).encode()).hexdigest()
@@ -327,7 +302,6 @@ class ImmutableResultSet:
         """
         Check if the given Entry or EntryGroup is 
         present in this result set
-
         """
         return uuid in self.uuids
 
@@ -336,7 +310,6 @@ class ImmutableResultSet:
         Get a short unified version of the results.
 
         .. todo:: 
-
             the list of used keys is hardcoded and should
             depend on the variable / group type or be completely
             dynamic
@@ -353,13 +326,11 @@ class ImmutableResultSet:
         Generate a full dictionary output of this result set.
 
         .. versionchanged:: 0.6.8
-
             Parameter `orient` added. The default value is `'dict'`, which returns
             a dictionary with unique keys.
             The value `'uuids'` will give the dictionary with uuids as keys, this
             should make it easier to i.e. loop over the uuids / entities of an
             ImmutableResultSet.
-
         """
         # first get a list of all available keys
         keys = []
@@ -382,7 +353,6 @@ class ImmutableResultSet:
     def get_data(self, verbose=False, merge=False, **kwargs) -> dict:
         """
         Return the data as a checksum indexed dict
-
         """
         # output container
         data = dict()
@@ -511,7 +481,6 @@ class ResultList:
     def _filter_set(self, members: List[ImmutableResultSet]) -> List[ImmutableResultSet]:
         """
         Uses the checksum of each member to create a set od ImmutableResultSet
-
         """
         # extract the checksums
         md5s = [m.checksum for m in members]
@@ -551,7 +520,6 @@ class ResultList:
         string in the metadata. The first occurence is passed.
 
         .. note::
-
             This method is quite slow, due to the type casting, lazy-loading from
             database and the recursive behavior. If you want to search by MD5 hash
             you can directly use the ResultSet.checksums property, which preserves
