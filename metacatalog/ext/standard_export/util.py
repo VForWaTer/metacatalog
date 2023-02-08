@@ -356,18 +356,32 @@ def _get_keywords(rs: ImmutableResultSet) -> list[dict]:
             'thesaurusName': thesaurusName
         })
 
-    # TODO: test multiple keywords!
     # go for keywords linked directly to ImmutableResultSet next
-    for keyword_dict in rs.get('keywords'):
-        # get relevant information
-        full_path = keyword_dict.get('path')
-        thesaurusName = keyword_dict.get('thesaurusName').get('title')
-        
-        # append to keywords
-        keywords.append({
-            'full_path': full_path,
-            'thesaurusName': thesaurusName
-        })
+    # only one member in ImmutableResultSet: rs.get('keywords') returns a list of keyword dictionaries
+    if isinstance(rs.get('keywords'), list):
+        for keyword_dict in rs.get('keywords'):
+            # get relevant information
+            full_path = keyword_dict.get('path')
+            thesaurusName = keyword_dict.get('thesaurusName').get('title')
+            
+            # append to keywords
+            keywords.append({
+                'full_path': full_path,
+                'thesaurusName': thesaurusName
+            })
+    # more than one member in ImmutableResultSet: uuid-indexed dictionary with list of keyword_dicts as values
+    elif isinstance(rs.get('keywords'), dict):
+        for entry_uuid, keywords_list in rs.get('keywords').items():
+            for keyword_dict in keywords_list:
+                # get relevant information
+                full_path = keyword_dict.get('path')
+                thesaurusName = keyword_dict.get('thesaurusName').get('title')
+                
+                # append to keywords
+                keywords.append({
+                    'full_path': full_path,
+                    'thesaurusName': thesaurusName
+                })
 
     return keywords
 
