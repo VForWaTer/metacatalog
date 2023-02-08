@@ -559,7 +559,7 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
         title=title,
         abstract=abstract,
         external_id=external_id,
-        embargo=embargo
+        embargo=embargo,
         is_partial=is_partial
     )
     attr.update(kwargs)
