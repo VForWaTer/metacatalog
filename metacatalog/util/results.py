@@ -243,7 +243,19 @@ class ImmutableResultSet:
         associated to this result.
         """
         return len(self._members) == 0 and self.group is None
-
+    
+    @property
+    def uuid(self) -> str:
+        """
+        .. versionadded 0.7.5
+        Returns the first uuid in the ImmutableResultSet.
+        This is the uuid of the base group, if it exists or the uuid
+        of the first member. As uuids of members are sorted in 
+        ``uuids(self)``, ``self.uuids[0]`` always returns the same
+        uuid for the same ImmutableResultSet.
+        """
+        return self.uuids[0]
+    
     @property
     def uuids(self):
         """
@@ -252,18 +264,19 @@ class ImmutableResultSet:
         .. versionchanged:: 0.6.8
             If a member in in _members is an ImmutableResultSet, call this
             method recursively
+        .. versionchanged:: 0.7.5
+            Members of ImmutableResultSets cannot be ImmutableResultSets
+            again, reverted recursive method call from version 0.6.8
 
         """
         # get the group uuid
         uuids = [self.group.uuid] if self.group is not None else []
 
+        # sort all uuid to preserve the order
+        members_uuids = sorted([e.uuid for e in self._members if hasattr(e, 'uuid')])
+        
         # expand member uuids
-        uuids.extend([e.uuid for e in self._members if hasattr(e, 'uuid')])
-
-        # if member is a ImmutableResultSet again, call this method recursicely
-        for m in self._members:
-            if hasattr(m, 'uuids'):
-                uuids.extend(m.uuids)
+        uuids.extend(members_uuids)
 
         return uuids
 
