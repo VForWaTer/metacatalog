@@ -732,7 +732,6 @@ def add_keywords_to_entries(session, entries, keywords, alias=None):
             raise AttributeError("Value '%s' not allowed for entries" % str(type(entry_id)))
 
         # add each keyword
-        assocs = []
         for keyword_id in keywords:
             # load the keyword
             if isinstance(keyword_id, models.Keyword):
@@ -744,12 +743,11 @@ def add_keywords_to_entries(session, entries, keywords, alias=None):
             else:
                 raise AttributeError("Value '%s' not allowed for keywords" % str(type(keyword_id)))
 
-            # create a new keyword association
-            assocs.append(models.KeywordAssociation(entry=entry, keyword=keyword))
+            # append keyword to entry
+            entry.keywords.append(keyword)
 
         # add keyword to current entry
         try:
-            entry.keywords.extend(assocs)
             session.add(entry)
             session.commit()
         except Exception as e:

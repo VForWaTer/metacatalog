@@ -1,3 +1,7 @@
+from typing import TYPE_CHECKING, List
+if TYPE_CHECKING:
+    from metacatalog.models import Entry
+
 from uuid import uuid4
 
 from sqlalchemy import Column, ForeignKey, CheckConstraint
@@ -16,6 +20,7 @@ class Person(Base):
     associated.
 
     .. note::
+
         In metatacatalog, an organisation_name is an optional, but
         recommended information. On export to ISO 19115 persons without
         affilated organisations can't be exported. Thus, they should
@@ -76,7 +81,7 @@ class Person(Base):
     attribution = Column(String(1024))
 
     # relationships
-    entries = relationship("PersonAssociation", back_populates='person')
+    entries: List['Entry'] = relationship("PersonAssociation", back_populates='person')
 
     def to_dict(self, deep=False) -> dict:
         """To dict
@@ -245,9 +250,9 @@ class PersonAssociation(Base):
     order = Column(Integer, nullable=False)
 
     # relationships
-    role = relationship("PersonRole", back_populates='persons_with_role')
-    person = relationship("Person", back_populates='entries')
-    entry = relationship("Entry", back_populates='contributors')
+    role: PersonRole = relationship("PersonRole", back_populates='persons_with_role')
+    person: Person = relationship("Person", back_populates='entries')
+    entry: 'Entry' = relationship("Entry", back_populates='contributors')
 
     def to_dict(self, deep=False) -> dict:
         """
