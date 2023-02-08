@@ -582,14 +582,11 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     if not isinstance(author, models.Person):
         raise AttributeError(f"No author or organisation found for author = {author}.")
 
-    # parse the location and geom
+    # parse the location
     if isinstance(location, str):
         attr['location'] = location
     elif isinstance(location, (tuple, list)):
         attr['location'] = 'SRID=4326;POINT (%f %f)' % (location[0], location[1])
-
-    if geom is not None and isinstance(geom, str):
-        attr['geom'] = geom
 
     # handle variable
     if isinstance(variable, int):
