@@ -89,7 +89,7 @@ def get_uuid(session: Session, uuid: str, as_result: bool=False, not_found: str=
         return None
 
 
-def create_iso19115(session: Session, config_dict: dict, path: str, if_exists: str = 'fail') -> None:
+def create_iso19115(session: Session, config_dict: dict, path: str, if_exists: str = 'fail', verbose: bool = False) -> None:
     """
     Generate ISO 19115 XML files for all ImmutableResultSets in the
     database session. The XML files are saved in the folder given in
@@ -111,9 +111,12 @@ def create_iso19115(session: Session, config_dict: dict, path: str, if_exists: s
 
         * fail: Raise a ValueError
         * replace: Overwrite the existing XML file.
+    verbose: bool, default False
+        Enable verbose output.        
 
     """
     from metacatalog.ext.standard_export.util import _get_uuid
+    from tqdm import tqdm
 
     if if_exists not in ("fail", "replace"):
         raise ValueError(f"'{if_exists}' is not valid for if_exists")
@@ -126,7 +129,13 @@ def create_iso19115(session: Session, config_dict: dict, path: str, if_exists: s
     # list files to check if a file already exists
     files = os.listdir(path)
 
-    for entry in api.find_entry(session):
+    # create the generator 
+    if verbose:
+        gen = tqdm(api.find_entry(session))
+    else:
+        gen = api.find_entry(session)
+
+    for entry in gen:
         # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
         irs_uuid = _get_uuid(ImmutableResultSet(entry))
 
