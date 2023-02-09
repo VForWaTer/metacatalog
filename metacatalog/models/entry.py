@@ -205,7 +205,7 @@ class Entry(Base):
     io_extension = None
     io_interface = None
 
-    def to_dict(self, deep=False, stringify=False) -> dict:
+    def to_dict(self, deep: bool = False, stringify: bool = False) -> dict:
         """
         Return the model as a python dictionary.
 
