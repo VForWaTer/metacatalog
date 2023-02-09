@@ -489,8 +489,7 @@ def add_project(session, entry_ids, title=None, description=None):
     return add_group(session=session, group_type=type_, entry_ids=entry_ids, title=title, description=description)
 
 
-
-def add_entry(session, title, author, location, variable, abstract=None, external_id=None, geom=None, license=None, embargo=False, **kwargs):
+def add_entry(session, title, author, location, variable, abstract=None, external_id=None, license=None, embargo=False, is_partial: bool = False, **kwargs):
     r"""Add new Entry
 
     Adds a new metadata Entry to the database. This method will create the core
@@ -535,13 +534,19 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     comment : str
         General purpose comment that should not contain any vital information to
         understand the entry. If it's vital, it should go into the abstract.
-    geom : str
-        WKT of any additional geoinformation in EPSG:4326
     license : str, int
         Either the id or **full** name of the license to be linked to this Entry.
     embargo : bool
         If True, this Entry will **not** be publicly available until the embargo ends
         The embargo period is usually 2 years but can be modified using the kwargs.
+    is_partial : bool
+        .. versionadded:: 0.7.6
+
+        Flag for marking a :class:`Entry <metacatalog.models.Entry>` as *partial*.
+        Partial entries **have to** be embedded into a Composite
+        :class:`EntryGroup(type='Composite') <metacatalog.models.EntryGroup>`.
+        This means, that an entry is not self-contained and needs another entry
+        to be complete.
 
     Returns
     -------
@@ -554,7 +559,8 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
         title=title,
         abstract=abstract,
         external_id=external_id,
-        embargo=embargo
+        embargo=embargo,
+        is_partial=is_partial
     )
     attr.update(kwargs)
 
@@ -576,14 +582,11 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     if not isinstance(author, models.Person):
         raise AttributeError(f"No author or organisation found for author = {author}.")
 
-    # parse the location and geom
+    # parse the location
     if isinstance(location, str):
         attr['location'] = location
     elif isinstance(location, (tuple, list)):
         attr['location'] = 'SRID=4326;POINT (%f %f)' % (location[0], location[1])
-
-    if geom is not None and isinstance(geom, str):
-        attr['geom'] = geom
 
     # handle variable
     if isinstance(variable, int):
