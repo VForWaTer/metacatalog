@@ -4,7 +4,7 @@ The catalog API offers application wide endpoints that are not bound to a
 specific API action or model
 
 """
-from typing import Unio
+from typing import Union
 import os
 
 from sqlalchemy.orm import Session
@@ -124,4 +124,3 @@ def create_iso19115(session: Session, config_dict: dict, path: str) -> None:
             entry.export_iso19115(config_dict, path=f"{path}/iso19115_{irs_checksum}.xml")
 
             irs_checksums.append(irs_checksum)
-            
