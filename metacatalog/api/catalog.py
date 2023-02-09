@@ -89,13 +89,15 @@ def get_uuid(session: Session, uuid: str, as_result: bool=False, not_found: str=
         return None
 
 
-def create_iso19115(session: Session, config_dict: dict, path: str) -> None:
+def create_iso19115(session: Session, config_dict: dict, path: str, if_exists: str = 'fail') -> None:
     """
     Generate ISO 19115 XML files for all ImmutableResultSets in the
     database session. The XML files are saved in the folder given in
     ``path``, existing files in the folder are deleted, so use this 
     function with caution.
+
     .. versionadded:: 0.7.4
+
     Parameters
     ----------
     session : sqlalchemy.Session
@@ -103,25 +105,40 @@ def create_iso19115(session: Session, config_dict: dict, path: str) -> None:
     config_dict : dict
         Configuration dictionary, containing information about the data provider
     path : str
-        If given, a file location for export. 
+        Folder location where all ISO19115 XML files are saved to.
+    if_exists: {'fail', 'replace'}, default 'fail'
+        How to behave if the XML file for the ImmutableResultSet already exists in path.
+
+        * fail: Raise a ValueError
+        * replace: Overwrite the existing XML file.
+
     """
-    irs_checksums = []
+    from metacatalog.ext.standard_export.util import _get_uuid
+
+    if if_exists not in ("fail", "replace"):
+        raise ValueError(f"'{if_exists}' is not valid for if_exists")
+
+    irs_uuids = []
 
     # use absolute path
     path = os.path.abspath(path)
 
-    # remove everything in path
-    for file in glob.glob(f"{path}/*"):
-        os.remove(file)
+    # list files to check if a file already exists
+    files = os.listdir(path)
 
     for entry in api.find_entry(session):
-        # get the checksum of the ImmutableResultSet
-        irs_checksum = ImmutableResultSet(entry).checksum
+        # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
+        irs_uuid = _get_uuid(ImmutableResultSet(entry))
 
-        # if irs_checksum in irs_checksums: ImmutableResultSet already exported -> continue
-        if irs_checksum in irs_checksums:
+        # if irs_uuid in irs_uuids: ImmutableResultSet already exported -> continue
+        if irs_uuid in irs_uuids:
             continue
         else:
-            entry.export_iso19115(config_dict, path=f"{path}/iso19115_{irs_checksum}.xml")
+            # check if_exists policy first
+            if any(irs_uuid in file for file in files):
+                if if_exists == 'fail':
+                    raise ValueError(f"ISO19115 XML file for uuid '{irs_uuid}' already exists under {path}.")
+            
+            entry.export_iso19115(config_dict, path=f"{path}/iso19115_{irs_uuid}.xml")
 
-            irs_checksums.append(irs_checksum)
+            irs_uuids.append(irs_uuid)
