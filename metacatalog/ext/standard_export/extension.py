@@ -80,11 +80,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             return xml
             
         else:
-            xml = etree.fromstring(xml) # this also checks whether xml is well-formed
-            xml = etree.tostring(xml) # converts to binary string, necessary to write xml
-
             with open(path, 'w') as f:
-                f.write(xml.decode(encoding='utf8'))
+                f.write(xml)
 
 
     @classmethod

@@ -25,7 +25,8 @@ def _init_iso19115_jinja():
         relative_path = "schemas/iso19115"
         full_path = os.path.join(absolute_path, relative_path)
         
-        env = Environment(loader=FileSystemLoader(searchpath=full_path))
+        # autoescape=False: fixes problems with symbol ">" (keyword.path)
+        env = Environment(loader=FileSystemLoader(searchpath=full_path), autoescape=False)
         
         # prevent whitespaces / newlines from jinja blocks in template
         env.trim_blocks = True
