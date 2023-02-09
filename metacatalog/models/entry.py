@@ -315,8 +315,6 @@ class Entry(Base):
         """
         if not os.getenv('METACATALOG_SUPRESS_WARN', False):
             warnings.warn("With a future release, the Entry.from_dict method will not create Entries in the database automatically, but instatiate a model. To supress this warning set the METACATALOG_SUPRESS_WARN environment variable.", FutureWarning)
-        if 'id' in data:
-            raise NotImplementedError('Updating an Entry is not yet supported.')
         
         # create or load variable
         variable_data = data.get('variable', {})
