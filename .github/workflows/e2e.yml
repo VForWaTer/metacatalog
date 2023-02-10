@@ -62,4 +62,5 @@ jobs:
       with:
         file: ./coverage.xml
         flags: e2e
+        override_branch: main
         env_vars: OS,PYTHON
