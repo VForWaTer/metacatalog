@@ -65,19 +65,26 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         config_dict : dict
             Configuration dictionary, containing information about the data provider.
             Mandatory (nested) keys and type of values:
-            * contact
-                * organisationName: str
-                * deliveryPoint: str
-                * city: str
-                * administrativeArea: str
-                * postalCode: str
-                * country: str
-                * electronicMailAddress: list(str)
-                * linkage: str
-                * linkage_name: str
-                * linkage_description: str
-            * publisher
-                * organisation_name: str
+
+            .. code-block:: Python
+
+            dict(
+                contact: dict(
+                    organisationName: str = '',
+                    deliveryPoint: str = '',
+                    city: str = '',
+                    administrativeArea: str = '',
+                    postalCode: str = '',
+                    country: str = '',
+                    electronicMailAddress: list(str) = ['', ''],
+                    linkage: str = '',
+                    linkage_name: str = '',
+                    linkage_description: str = ''
+                ),
+                publisher: dict(
+                    organisation_name: str = ''
+                )
+            )
         
         Returns
         ----------
