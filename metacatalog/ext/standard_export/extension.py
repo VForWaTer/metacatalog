@@ -1,9 +1,10 @@
 from typing import Union
-
-
 import os
+
+
 from tqdm import tqdm
 from sqlalchemy.orm import Session
+import xml.etree.ElementTree as ET
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
@@ -31,8 +32,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_extension(cls):
         # wrapper which calls StandardsExportExtension.iso19115_export
-        def wrapper_entry(self: Entry, config_dict: dict, path: str = None):  
-            return StandardsExportExtension.iso19115_export(entry_or_resultset=self, config_dict=config_dict, path=path)
+        def wrapper_entry(self: Entry, config_dict: dict):  
+            return StandardsExportExtension.iso19115_export(entry_or_resultset=self, config_dict=config_dict)
         
         # iso19115_export docstring and name for wrapper function
         wrapper_entry.__doc__ = StandardsExportExtension.iso19115_export.__doc__
@@ -51,31 +52,46 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # add wrapper to api.catalog
         api.catalog.create_iso19115 = wrapper_api
 
+        # add wrapper to cli
+        cmd.iso19115 = wrapper_api
+
 
     @classmethod
-    def iso19115_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, path: str = None):
+    def iso19115_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict):
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
-        :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet> to XML in 
+        :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>` to XML in 
         ISO 19115 standard.
         Repeatable information input is always a list, as we can loop over the lists in the
         jinja ISO 19115 template.
-        If a path is given, a new XML file will be created.
+        Always returns 
 
         Parameters
         ----------
         entry_or_resultset : Union[Entry, ImmutableResultSet]
             The entry instance to be exported
         config_dict : dict
-            Configuration dictionary, containing information about the data provider
-            - contact
-        path : str
-            If given, a file location for export.
+            Configuration dictionary, containing information about the data provider.
+            Mandatory (nested) keys and type of values:
+            * contact
+                * organisationName: str
+                * deliveryPoint: str
+                * city: str
+                * administrativeArea: str
+                * postalCode: str
+                * country: str
+                * electronicMailAddress: list(str)
+                * linkage: str
+                * linkage_name: str
+                * linkage_description: str
+            * publisher
+                * organisation_name: str
         
         Returns
         ----------
-        out : str
-            The XML str if path is None, else None
+        xml : xml.etree.ElementTree.ElementTree
+            The :class:`ElementTree <xml.etree.ElementTree.ElementTree>` object
+            representing the XML ElementTree in Python.
 
         Notes
         -----
@@ -97,13 +113,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # check whether xml is well-formed
         _validate_xml(xml)
 
-        # check path settings
-        if path is None:
-            return xml
-            
-        else:
-            with open(path, 'w') as f:
-                f.write(xml)
+        # convert to ElementTree and return
+        return ET.ElementTree(ET.fromstring(xml))
 
 
     def create_iso19115(session: Session, config_dict: dict, path: str, if_exists: str = 'fail', verbose: bool = False) -> None:
@@ -132,9 +143,6 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             Enable verbose output.        
 
         """
-        from metacatalog.ext.standard_export.util import _get_uuid
-        from tqdm import tqdm
-
         if if_exists not in ("fail", "replace"):
             raise ValueError(f"'{if_exists}' is not valid for if_exists")
 
@@ -168,4 +176,3 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                 entry.export_iso19115(config_dict, path=f"{path}/iso19115_{irs_uuid}.xml")
 
                 irs_uuids.append(irs_uuid)
-
