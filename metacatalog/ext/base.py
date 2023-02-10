@@ -75,3 +75,7 @@ class MetacatalogExtensionInterface(abc.ABC):
     @abc.abstractclassmethod
     def init_extension(cls):
         pass
+
+    @classmethod
+    def init_cli(cls):
+        return None
