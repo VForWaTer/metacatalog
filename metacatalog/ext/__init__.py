@@ -9,9 +9,10 @@ imported, you can add it using the :func:`extension` function, or add
 it permanently using the :func:`activate_extension`
 
 """
+from typing import Dict
 from .base import MetacatalogExtensionInterface
 
-EXTENSIONS: dict[str, MetacatalogExtensionInterface] = dict()
+EXTENSIONS: Dict[str, MetacatalogExtensionInterface] = dict()
 
 
 def extension(name: str, interface: MetacatalogExtensionInterface =None):
