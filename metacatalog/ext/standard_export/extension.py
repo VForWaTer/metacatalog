@@ -42,16 +42,6 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # add wrapper to Entry model
         Entry.export_iso19115 = wrapper_entry
 
-        # add function create_iso19115 to api.catalog
-        def wrapper_api(session: Session, config_dict: dict, path: str, if_exists: str = 'fail', verbose: bool = False):
-            StandardsExportExtension.create_iso19115(session, config_dict, path, if_exists, verbose)
-
-        wrapper_api.__doc__ = StandardsExportExtension.create_iso19115.__doc__
-        wrapper_api.__name__ = StandardsExportExtension.create_iso19115.__name__
-
-        # add wrapper to api.catalog
-        api.catalog.create_iso19115 = wrapper_api
-
 
     @classmethod
     def iso19115_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict):
