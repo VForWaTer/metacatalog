@@ -41,8 +41,9 @@ def _init_iso19115_jinja():
 def _get_uuid(rs: ImmutableResultSet) -> str:
     """
     Returns uuid of ImmutableResultSet.  
-    Returns the uuid of the base group (if exists) or the concatenated uuids of all 
-    members.
+    Returns the uuid of the base group (if exists). If no base group
+    exists in the ImmutableResultSet, the uuid of the (single) member 
+    is returned.
 
     Returns
     ----------
@@ -50,15 +51,7 @@ def _get_uuid(rs: ImmutableResultSet) -> str:
         Used for field <gmd:fileIdentifier> and field <gmd:identifier>, not repeatable.
 
     """
-    # if a base group exists, use the uuid of the base group
-    if rs.group:
-        uuid = rs.group.uuid
-
-    # if no group exists, there is only one member in the ImmutableResultSet -> use its uuid
-    else:
-        uuid = rs.get('uuid')
-
-    return uuid
+    return rs.uuid
 
 
 def _get_lastUpdate(rs: ImmutableResultSet) -> str:
