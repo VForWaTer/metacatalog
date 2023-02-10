@@ -63,6 +63,9 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         jinja ISO 19115 template.
         Always returns an :class:`ElementTree <xml.etree.ElementTree.ElementTree>` object.
 
+        This function is added as a method to :class:`Entry <metacatalog.models.Entry>`
+        when the extension is activated. 
+
         Parameters
         ----------
         entry_or_resultset : Union[Entry, ImmutableResultSet]
