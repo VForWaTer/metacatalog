@@ -97,7 +97,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             representing the XML ElementTree in Python.
 
         Notes
-        -----
+        ----------
         The content of the file will be created using a 
         :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`.
         This will lazy-load sibling Entries and parent groups as needed for
@@ -120,7 +120,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         return ET.ElementTree(ET.fromstring(xml))
 
 
-    def create_iso19115(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str, if_exists: str = 'fail', verbose: bool = False) -> None:
+    def create_iso19115(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str, if_exists: str = 'fail') -> None:
         """
         Generate ISO 19115 XML files for all ImmutableResultSets in the
         database session. The XML files are saved in the folder given in
@@ -142,19 +142,18 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             If path ends with the name of the XML file (i.e. ends with '.xml'), the file is
             named as given.
             If path is a folder location, the name of the XML file is auto-generated with
-            the uuid of the ImmutableResultSet of the entry: ``f"iso19115_{uuid}.xml"
+            the uuid of the ImmutableResultSet of the entry: ``f"iso19115_{uuid}.xml".
+            If no path is given, the class:`ElementTree <xml.etree.ElementTree.ElementTree>` object
+            representing the XML ElementTree is returned.
         if_exists: {'fail', 'replace'}, default 'fail'
             How to behave if the XML file for the ImmutableResultSet already exists in path.
 
             * fail: Raise a ValueError
 
             * replace: Overwrite the existing XML file.
-        verbose : bool, default False
-            Enable verbose output.
-            TODO: verbose does not really make sense for the export of only one entry, BUT it makes sense for CLI export of ALL entries
-
+        
         Notes
-        -----
+        ----------
         The content of the file will be created using a 
         :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`.
         This will lazy-load sibling Entries and parent groups as needed for
@@ -177,34 +176,23 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             # raise error if no entry was found
             if not entry:
                 raise NoResultFound(f"No entry with uuid={id_or_uuid} was found.")
-
-        irs_uuids = []
+        
+        # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
+        irs_uuid = ImmutableResultSet(entry).uuid
 
         # use absolute path
-        path = os.path.abspath(path)
+        if path:
+            path = os.path.abspath(path)
+            # if path does not end with .xml: auto-generate XML filename
+            if not path.endswith('.xml'):
+                path += f"/iso19115_{irs_uuid}.xml"
 
-        # list files to check if a file already exists
-        files = os.listdir(path)
+            # list files to check if the file already exists
+            files = os.listdir(path)
 
-        # create the generator 
-        if verbose:
-            gen = tqdm(api.find_entry(session))
-        else:
-            gen = api.find_entry(session)
+        # check if_exists policy first
+        if any(irs_uuid in file for file in files):
+            if if_exists == 'fail':
+                raise ValueError(f"ISO19115 XML file for uuid '{irs_uuid}' already exists under {path}.")
 
-        for entry in gen:
-            # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
-            irs_uuid = ImmutableResultSet(entry).uuid
-
-            # if irs_uuid in irs_uuids: ImmutableResultSet already exported -> continue
-            if irs_uuid in irs_uuids:
-                continue
-            else:
-                # check if_exists policy first
-                if any(irs_uuid in file for file in files):
-                    if if_exists == 'fail':
-                        raise ValueError(f"ISO19115 XML file for uuid '{irs_uuid}' already exists under {path}.")
-                
-                entry.export_iso19115(config_dict, path=f"{path}/iso19115_{irs_uuid}.xml")
-
-                irs_uuids.append(irs_uuid)
+        entry.export_iso19115(config_dict, path=path)
