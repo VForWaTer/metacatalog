@@ -6,6 +6,7 @@ from tqdm import tqdm
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import ElementTree
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
@@ -120,7 +121,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         return ET.ElementTree(ET.fromstring(xml))
 
 
-    def create_iso19115(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str, if_exists: str = 'fail') -> None:
+    def create_iso19115(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str) -> Union[None, ElementTree]:
         """
         Generate ISO 19115 XML files for all ImmutableResultSets in the
         database session. The XML files are saved in the folder given in
@@ -145,12 +146,13 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             the uuid of the ImmutableResultSet of the entry: ``f"iso19115_{uuid}.xml".
             If no path is given, the class:`ElementTree <xml.etree.ElementTree.ElementTree>` object
             representing the XML ElementTree is returned.
-        if_exists: {'fail', 'replace'}, default 'fail'
-            How to behave if the XML file for the ImmutableResultSet already exists in path.
 
-            * fail: Raise a ValueError
-
-            * replace: Overwrite the existing XML file.
+        Returns
+        ----------
+        xml : Union[ElementTree, None]
+            If no path is given, the :class:`ElementTree <xml.etree.ElementTree.ElementTree>` object
+            representing the XML ElementTree in Python is returned.
+            If a path is given, None is returned.
         
         Notes
         ----------
@@ -160,9 +162,6 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         a useful Metadata export.        
 
         """
-        if if_exists not in ("fail", "replace"):
-            raise ValueError(f"'{if_exists}' is not valid for if_exists")
-
         # find the entry by id
         if isinstance(id_or_uuid, int):
             entry = api.find_entry(session, id=id, return_iterator=True).first()
@@ -177,22 +176,21 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             if not entry:
                 raise NoResultFound(f"No entry with uuid={id_or_uuid} was found.")
         
-        # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
-        irs_uuid = ImmutableResultSet(entry).uuid
+        # export entry to ISO 19115
+        xml = entry.export_iso19115(config_dict, path=path)
 
-        # use absolute path
         if path:
+            # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
+            irs_uuid = ImmutableResultSet(entry).uuid
+
+            # use absolute path
             path = os.path.abspath(path)
+
             # if path does not end with .xml: auto-generate XML filename
             if not path.endswith('.xml'):
                 path += f"/iso19115_{irs_uuid}.xml"
 
-            # list files to check if the file already exists
-            files = os.listdir(path)
-
-        # check if_exists policy first
-        if any(irs_uuid in file for file in files):
-            if if_exists == 'fail':
-                raise ValueError(f"ISO19115 XML file for uuid '{irs_uuid}' already exists under {path}.")
-
-        entry.export_iso19115(config_dict, path=path)
+            with open(path, 'wb') as f:
+                xml.write(f, encoding='utf-8')
+        else:
+            return xml
