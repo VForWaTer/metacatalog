@@ -52,9 +52,6 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # add wrapper to api.catalog
         api.catalog.create_iso19115 = wrapper_api
 
-        # add wrapper to cli
-        cmd.iso19115 = wrapper_api
-
 
     @classmethod
     def iso19115_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict):
@@ -64,7 +61,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         ISO 19115 standard.
         Repeatable information input is always a list, as we can loop over the lists in the
         jinja ISO 19115 template.
-        Always returns 
+        Always returns an :class:`ElementTree <xml.etree.ElementTree.ElementTree>` object.
 
         Parameters
         ----------
