@@ -58,6 +58,9 @@ the old ``__init__`` functions is copied and executed inside the new
 
 """
 import abc
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from argparse import _SubParsersAction, ArgumentParser
 
 
 class MetacatalogExtensionInterface(abc.ABC):
@@ -77,5 +80,36 @@ class MetacatalogExtensionInterface(abc.ABC):
         pass
 
     @classmethod
-    def init_cli(cls):
+    def init_cli(cls, subparsers: _SubParsersAction[ArgumentParser], defaults: ArgumentParser) -> None:
+        """
+        Add a new :class:`ArgumentParser <argparse.ArgumentParser>` to the metacatalog CLI.
+        The main CLI argument parser will call the ``init_cli`` class method of all active
+        extensions and pass the main subparser to the init function. The second argument
+        is the :class:`ArgumentParser <argparse.ArgumentParser>`, which holds the default
+        arguments, that should affect all CLI functions.
+
+        Example
+        -------
+
+        .. code-block:: Python
+
+            from metacatalog.ext import MetacatalogExtensionInterface
+
+            class MyExt(MetacatalogExtensionInterface):
+                @classmethod
+                def init_extension(cls):
+                    pass
+                
+                @classmethod
+                def cli(cls, args):
+                    if not args.quiet:
+                        print(args.foo.upper())
+                    
+                @classmethod
+                def init_cli(subparsers, defaults):
+                    myparser = subparsers.add_parser('foobar', parents=[defaults], help="Just a foobar parser")
+                    myparser.add_argument('foo', type="str", help="A nonsense argument")
+                    myparser.set_defaults(func=MyExt.cli)
+
+        """
         return None
