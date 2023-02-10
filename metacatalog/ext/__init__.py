@@ -11,7 +11,7 @@ it permanently using the :func:`activate_extension`
 """
 from .base import MetacatalogExtensionInterface
 
-EXTENSIONS = dict()
+EXTENSIONS: dict[str, MetacatalogExtensionInterface] = dict()
 
 
 def extension(name: str, interface: MetacatalogExtensionInterface =None):
