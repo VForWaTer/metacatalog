@@ -80,7 +80,7 @@ class MetacatalogExtensionInterface(abc.ABC):
         pass
 
     @classmethod
-    def init_cli(cls, subparsers: _SubParsersAction[ArgumentParser], defaults: ArgumentParser) -> None:
+    def init_cli(cls, subparsers: '_SubParsersAction[ArgumentParser]', defaults: 'ArgumentParser') -> None:
         """
         Add a new :class:`ArgumentParser <argparse.ArgumentParser>` to the metacatalog CLI.
         The main CLI argument parser will call the ``init_cli`` class method of all active
