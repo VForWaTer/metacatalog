@@ -611,10 +611,13 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
 def _validate_xml(xml: str) -> bool:
     """
     Checks whether the input XML is well-formed (correct syntax).
-    Currently, it is not checked whether the input XML is also valid (We could e.g.
-    check with schematron for the 20 mandatory fields).
+    Currently, it is not checked whether the input XML is also a 
+    valid ISO19115 XML.
+    If the XML is well-formed, this function returns True.
+
     """
     try: 
         etree.fromstring(xml)
+        return True
     except etree.XMLSyntaxError as e:
         raise(e)

@@ -110,7 +110,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         xml = template.render(**iso_input, **config_dict)
 
         # check whether xml is well-formed
-        _validate_xml(xml)
+        assert _validate_xml(xml)
 
         # convert to ElementTree and return
         return ET.ElementTree(ET.fromstring(xml))
