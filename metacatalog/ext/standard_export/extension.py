@@ -56,6 +56,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         This function is added as a method to :class:`Entry <metacatalog.models.Entry>`
         when the extension is activated. 
 
+        .. versionadded:: 0.7.7
+
         Parameters
         ----------
         entry_or_resultset : Union[Entry, ImmutableResultSet]
