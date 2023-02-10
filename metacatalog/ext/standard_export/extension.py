@@ -4,6 +4,7 @@ import os
 
 from tqdm import tqdm
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.exc import NoResultFound
 import xml.etree.ElementTree as ET
 
 
@@ -119,7 +120,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         return ET.ElementTree(ET.fromstring(xml))
 
 
-    def create_iso19115(session: Session, config_dict: dict, path: str, if_exists: str = 'fail', verbose: bool = False) -> None:
+    def create_iso19115(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str, if_exists: str = 'fail', verbose: bool = False) -> None:
         """
         Generate ISO 19115 XML files for all ImmutableResultSets in the
         database session. The XML files are saved in the folder given in
@@ -132,21 +133,50 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         ----------
         session : sqlalchemy.Session
             SQLAlchemy session connected to the database.
+        id_or_uuid : Union[int, str]
+            id or uuid of the Entry to be exported.
         config_dict : dict
             Configuration dictionary, containing information about the data provider
         path : str
-            Folder location where all ISO19115 XML files are saved to.
+            Location where the ISO19115 XML file is saved to.
+            If path ends with the name of the XML file (i.e. ends with '.xml'), the file is
+            named as given.
+            If path is a folder location, the name of the XML file is auto-generated with
+            the uuid of the ImmutableResultSet of the entry: ``f"iso19115_{uuid}.xml"
         if_exists: {'fail', 'replace'}, default 'fail'
             How to behave if the XML file for the ImmutableResultSet already exists in path.
 
             * fail: Raise a ValueError
+
             * replace: Overwrite the existing XML file.
-        verbose: bool, default False
-            Enable verbose output.        
+        verbose : bool, default False
+            Enable verbose output.
+            TODO: verbose does not really make sense for the export of only one entry, BUT it makes sense for CLI export of ALL entries
+
+        Notes
+        -----
+        The content of the file will be created using a 
+        :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`.
+        This will lazy-load sibling Entries and parent groups as needed for
+        a useful Metadata export.        
 
         """
         if if_exists not in ("fail", "replace"):
             raise ValueError(f"'{if_exists}' is not valid for if_exists")
+
+        # find the entry by id
+        if isinstance(id_or_uuid, int):
+            entry = api.find_entry(session, id=id, return_iterator=True).first()
+            # raise error if no entry was found
+            if not entry:
+                raise NoResultFound(f"No entry with id={id_or_uuid} was found.")
+        
+        # find the entry by uuid
+        elif isinstance(id_or_uuid, str):
+            entry = api.find_entry(session, uuid=id_or_uuid)
+            # raise error if no entry was found
+            if not entry:
+                raise NoResultFound(f"No entry with uuid={id_or_uuid} was found.")
 
         irs_uuids = []
 
@@ -164,7 +194,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         for entry in gen:
             # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
-            irs_uuid = _get_uuid(ImmutableResultSet(entry))
+            irs_uuid = ImmutableResultSet(entry).uuid
 
             # if irs_uuid in irs_uuids: ImmutableResultSet already exported -> continue
             if irs_uuid in irs_uuids:
