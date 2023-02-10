@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from metacatalog.ext import MetacatalogExtensionInterface
 from metacatalog.ext.standard_export.util import _parse_iso_information, _init_iso19115_jinja, _validate_xml, _get_uuid
-from metacatalog import api
+from metacatalog import api, cmd
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
 
@@ -17,6 +17,16 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     r"""
     Extension to export Entries in standard format.
     Currently, ISO 19115 export is implemented.
+
+    Adds the method export_iso19115 to :class:`Entry <metacatalog.models.Entry>`
+    which creates the ISO 19115 XML for the :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`
+    of the Entry.
+    The method create_iso19115 is added to the API
+    (metacatalog.api.catalog). This method can be
+    used to export all Entries / ImmutableResultSets
+    in the database session and write the XML files
+    to the folder location specified in ``path``.
+
     """
     @classmethod
     def init_extension(cls):
