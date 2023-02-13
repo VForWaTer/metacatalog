@@ -1,3 +1,6 @@
+from typing import List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from metacatalog.models import Entry
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, backref
@@ -65,9 +68,9 @@ class Thesaurus(Base):
     url = Column(String, nullable=False)
 
     # relationships
-    keywords = relationship("Keyword", back_populates="thesaurusName")
+    keywords: List['Keyword'] = relationship("Keyword", back_populates="thesaurusName")
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep: bool = False) -> dict:
         """
         Return the model as a python dictionary.
 
@@ -101,7 +104,7 @@ class Thesaurus(Base):
 
         return d
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '%s Thesaurus <ID=%d>' % (self.name, self.id)
 
 
@@ -190,11 +193,11 @@ class Keyword(Base):
     thesaurus_id = Column(Integer, ForeignKey('thesaurus.id'))
 
     # relationships
-    children = relationship("Keyword", backref=backref('parent', remote_side=[id]))
-    tagged_entries = relationship("Entry", secondary="nm_keywords_entries", back_populates='keywords')
-    thesaurusName = relationship("Thesaurus", back_populates="keywords")
+    children: List['Keyword'] = relationship("Keyword", backref=backref('parent', remote_side=[id]))
+    tagged_entries: List['Entry'] = relationship("Entry", secondary="nm_keywords_entries", back_populates='keywords')
+    thesaurusName: 'Thesaurus' = relationship("Thesaurus", back_populates="keywords")
 
-    def path(self):
+    def path(self) -> str:
         """
         Returns the full keyword path for the given level. 
         The levels are separated by a '>' sign. The levels are:
@@ -216,7 +219,7 @@ class Keyword(Base):
         
         return ' > '.join(reversed(path))
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep: bool = False) -> dict:
         """
         Return the model as a python dictionary.
 
@@ -252,7 +255,7 @@ class Keyword(Base):
         
         return d
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s <ID=%d>" % (self.full_path, self.id)
 
 
@@ -279,6 +282,6 @@ class KeywordAssociation(Base):
     #keyword = relationship("Keyword", viewonly=True)#, back_populates='tagged_entries')
     #entry = relationship("Entry", viewonly=True)#, back_populates='keywords')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "<Entry ID=%d> tagged %s" % (self.entry.id, self.keyword.value)
 
