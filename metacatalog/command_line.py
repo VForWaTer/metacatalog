@@ -98,6 +98,12 @@ def main():
     migration_parser.add_argument('--message', '-m', type=str, help="Optional revision message. Only used for revision command")
     migration_parser.set_defaults(func=migrate)
 
+    # check extensions for CLI registers
+    from metacatalog.ext import EXTENSIONS
+    for extension in EXTENSIONS.values():
+        if hasattr(extension, 'init_cli'):
+            extension.init_cli(subparsers=subparsers, defaults=default_options)
+            
     # parse the arguments
     args = parser.parse_args()
 

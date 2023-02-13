@@ -42,6 +42,17 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # add wrapper to Entry model
         Entry.export_iso19115 = wrapper_entry
 
+    @classmethod
+    def cli(cls, args):
+        if not args.quiet:
+            print(args.foo.upper())
+
+    @classmethod
+    def init_cli(subparsers, defaults):
+        myparser = subparsers.add_parser('foobar', parents=[defaults], help="Just a foobar parser")
+        myparser.add_argument('foo', type="str", help="A nonsense argument")
+        myparser.set_defaults(func=StandardsExportExtension.cli)
+
 
     @classmethod
     def iso19115_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict):
