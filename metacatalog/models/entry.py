@@ -5,9 +5,10 @@ one type of environmental variable. It can hold a reference and interface to the
 If a supported data format is used, Entry can load the data.
 
 """
-from typing import List, Dict, TYPE_CHECKING
+from typing import List, Dict, Union, TYPE_CHECKING
 if TYPE_CHECKING:
-    from metacatalog.models import License, PersonAssociation, Variable, EntryGroup, Keyword, Detail, DataSource, PersonRole
+    from metacatalog.models import License, PersonAssociation, Person, Variable, EntryGroup, Keyword, Detail, DataSource, PersonRole
+    from shapely.geometry import Point
 import os
 from datetime import datetime as dt
 import hashlib
@@ -396,11 +397,11 @@ class Entry(Base):
         return entry
 
     @classmethod
-    def is_valid(cls, entry):
+    def is_valid(cls, entry: 'Entry') -> bool:
         return isinstance(entry, Entry) and entry.id is not None
 
     @property
-    def checksum(self):
+    def checksum(self) -> str:
         """
         MD5 checksum of this entry. The checksum will change if any of the linked
         Metadata changes. This can be used in application built on metacatalog to
@@ -418,11 +419,11 @@ class Entry(Base):
         return md5
 
     @property
-    def is_latest_version(self):
+    def is_latest_version(self) -> bool:
         self.latest_version_id == self.id or self.latest_version_id is None
 
     @property
-    def latest_version(self):
+    def latest_version(self) -> 'Entry':
         versions = [e.version for e in self.other_versions]
 
         # no other versions, then self is the only
@@ -434,14 +435,14 @@ class Entry(Base):
         return self.other_versions[latest_index]
 
     @property
-    def author(self):
+    def author(self) -> 'Person':
         return [c.person for c in self.contributors if c.role.name == 'author'][0]
 
     @author.setter
-    def author(self, new_author):
+    def author(self, new_author: 'Person'):
         self.set_new_author(new_author)
 
-    def set_new_author(self, new_author, commit=False):
+    def set_new_author(self, new_author: 'Person', commit: bool = False):
         """
         Set a new first Author for this entry.
 
@@ -476,7 +477,7 @@ class Entry(Base):
                 raise e
 
     @property
-    def authors(self):
+    def authors(self) -> List['Person']:
         # get all
         coAuthors = [c for c in self.contributors if c.role.name == 'coAuthor']
 
@@ -491,7 +492,7 @@ class Entry(Base):
         return authors
 
     @property
-    def projects(self):
+    def projects(self) -> List['EntryGroup']:
         return [group for group in self.associated_groups if group.type.name.lower() == 'project']
 
     @property
@@ -499,7 +500,7 @@ class Entry(Base):
         return [group for group in self.associated_groups if group.type.name.lower() == 'composite']
 
     @property
-    def location_shape(self):
+    def location_shape(self) -> 'Point':
         return to_shape(self.location)
 
     @location_shape.setter
@@ -546,7 +547,7 @@ class Entry(Base):
             ) for kw in self.keywords
         ]
 
-    def details_dict(self, full=True):
+    def details_dict(self, full: bool = True) -> dict:
         """
         Returns the associated details as dictionary.
 
@@ -564,7 +565,7 @@ class Entry(Base):
         else:
             return {d.stem:d.value for d in self.details}
 
-    def details_table(self, fmt='html'):
+    def details_table(self, fmt: str = 'html') -> str:
         """
         Return the associated details as table
 
@@ -615,7 +616,7 @@ class Entry(Base):
         else:
             raise ValueError("fmt has to be in ['html', 'latex', 'markdown']")
 
-    def add_details(self, details=None, commit=False, **kwargs):
+    def add_details(self, details=None, commit: bool = False, **kwargs):
         """
         Adds arbitrary key-value pairs to this entry.
 
@@ -683,7 +684,7 @@ class Entry(Base):
                 session.rollback()
                 raise e
 
-    def export(self, path=None, fmt='JSON', **kwargs):
+    def export(self, path: str = None, fmt: str = 'JSON', **kwargs):
         r"""
         Export the Entry. Exports the data using a metacatalog extension.
         Refer to the note below to learn more about export extensions.
@@ -762,7 +763,7 @@ class Entry(Base):
         # return
         return exp_function(self, path=path, **kwargs)
 
-    def make_composite(self, others=[], title=None, description=None, commit=False):
+    def make_composite(self, others: List['Entry'] = [], title: str = None, description: str = None, commit: bool = False) -> 'EntryGroup':
         """
         Create a composite EntryGroup from this Entry. A composite marks
         stand-alone (:attr:`is_partial` ``= False``) entries as inseparable.
@@ -812,7 +813,7 @@ class Entry(Base):
         # return
         return composite
 
-    def neighbors(self, distance, unit='meter', buffer_epsg=3857, as_sql=False, **kwargs):
+    def neighbors(self, distance: Union[int, float], unit: str = 'meter', buffer_epsg: int = 3857, as_sql: bool = False, **kwargs) -> List['Entry']:
         """
         Find neighboring :class:`Entries <metacatalog.models.Entry>` around the
         location of this instance. You can return the result, or the sqlalchemy
@@ -867,7 +868,7 @@ class Entry(Base):
         else:
             return filter_query.all()
 
-    def create_datasource(self, path: str, type, datatype, commit=False, **args):
+    def create_datasource(self, path: str, type: Union[int, str], datatype: Union[int, str], commit: bool = False, **args) -> 'DataSource':
         """
         Create a :class:`DataCource <metacatalog.models.DataSource>` for this
         Entry. The data-source holds specific metadata about the actual type 
@@ -1074,7 +1075,7 @@ class Entry(Base):
             print('[ERROR]: Operation not possible.\n%s' % str(e))
             return None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "<ID=%d %s [%s] >" % (
             self.id,
             self.title[:20],
