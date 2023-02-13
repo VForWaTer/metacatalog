@@ -298,7 +298,7 @@ class TemporalScale(Base):
         return [self.observation_start, self.observation_end]
 
     @extent.setter
-    def extent(self, extent: List[dt, dt]):
+    def extent(self, extent: List[dt]):
         self.observation_start, self.observation_end = extent
 
     def to_dict(self, deep: bool = False) -> dict:
