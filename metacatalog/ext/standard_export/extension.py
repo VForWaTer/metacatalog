@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
-from metacatalog.ext.standard_export.util import _parse_iso_information, _init_iso19115_jinja, _validate_xml, _get_uuid
+from metacatalog.ext.standard_export.util import _parse_iso_information, _init_iso19115_jinja, _validate_xml
 from metacatalog import api, cmd
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
@@ -111,6 +111,13 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         # check whether xml is well-formed
         assert _validate_xml(xml)
+
+        # register namespaces for ElementTree representation of XML
+        ET.register_namespace('gmi', 'http://www.isotc211.org/2005/gmi')
+        ET.register_namespace('gco', 'http://www.isotc211.org/2005/gco')
+        ET.register_namespace('gmd', 'http://www.isotc211.org/2005/gmd')
+        ET.register_namespace('gml', 'http://www.opengis.net/gml/3.2')
+        ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
 
         # convert to ElementTree and return
         return ET.ElementTree(ET.fromstring(xml))
