@@ -1,4 +1,4 @@
-from typing import Union, TYPE_CHECKING
+from typing import Union, List, TYPE_CHECKING
 if TYPE_CHECKING:
     from metacatalog.models import Entry
 import json
@@ -56,7 +56,7 @@ class DataSourceType(Base):
     description = Column(String)
 
     # relationships
-    sources: list['DataSource'] = relationship("DataSource", back_populates='type')
+    sources: List['DataSource'] = relationship("DataSource", back_populates='type')
 
     def to_dict(self, deep: bool = False) -> dict:
         """
@@ -127,8 +127,8 @@ class DataType(Base):
     description = Column(String, nullable=True)
 
     # relationships
-    sources: list['DataSource'] = relationship("DataSource", back_populates='datatype')
-    children: list['DataType'] = relationship("DataType", backref=backref('parent', remote_side=[id]))
+    sources: List['DataSource'] = relationship("DataSource", back_populates='datatype')
+    children: List['DataType'] = relationship("DataType", backref=backref('parent', remote_side=[id]))
 
     def to_dict(self, deep: bool = False) -> dict:
         """
@@ -173,7 +173,7 @@ class DataType(Base):
 
         return d
 
-    def parent_list(self) -> list['DataType']:
+    def parent_list(self) -> List['DataType']:
         """
         Returns an inheritance tree for the current datatype.
         If the list is empty, the current datatype is a
@@ -190,7 +190,7 @@ class DataType(Base):
 
         return parents
 
-    def children_list(self) -> list['DataType']:
+    def children_list(self) -> List['DataType']:
         """
         Returns an dependency tree for the current datatype.
         If the list is empty, there are no child (inheriting)
@@ -262,7 +262,7 @@ class TemporalScale(Base):
     support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
 
     # relationships
-    sources: list['DataSource'] = relationship("DataSource", back_populates='temporal_scale')
+    sources: List['DataSource'] = relationship("DataSource", back_populates='temporal_scale')
 
     def __init__(self, *args, **kwargs):
         # handle resoultion
@@ -298,7 +298,7 @@ class TemporalScale(Base):
         return [self.observation_start, self.observation_end]
 
     @extent.setter
-    def extent(self, extent: list[dt, dt]):
+    def extent(self, extent: List[dt, dt]):
         self.observation_start, self.observation_end = extent
 
     def to_dict(self, deep: bool = False) -> dict:
@@ -374,7 +374,7 @@ class SpatialScale(Base):
     support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
 
     # relationships
-    sources: list['DataSource'] = relationship("DataSource", back_populates='spatial_scale')
+    sources: List['DataSource'] = relationship("DataSource", back_populates='spatial_scale')
 
     @property
     def extent_shape(self):
@@ -489,7 +489,7 @@ class DataSource(Base):
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
     # relationships
-    entries: list['Entry'] = relationship("Entry", back_populates='datasource')
+    entries: List['Entry'] = relationship("Entry", back_populates='datasource')
     type: 'DataSourceType' = relationship("DataSourceType", back_populates='sources')
     datatype: 'DataType' = relationship("DataType", back_populates='sources')
     temporal_scale: 'TemporalScale' = relationship("TemporalScale", back_populates='sources')
