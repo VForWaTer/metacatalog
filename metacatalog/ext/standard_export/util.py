@@ -9,6 +9,7 @@ from lxml import etree
 import shapely
 from geoalchemy2.shape import to_shape
 from geoalchemy2.elements import WKBElement
+import xml.etree.ElementTree as ET
 
 
 from metacatalog.models import Entry
@@ -25,8 +26,7 @@ def _init_iso19115_jinja():
         relative_path = "schemas/iso19115"
         full_path = os.path.join(absolute_path, relative_path)
         
-        # autoescape=False: fixes problems with symbol ">" (keyword.path)
-        env = Environment(loader=FileSystemLoader(searchpath=full_path), autoescape=False)
+        env = Environment(loader=FileSystemLoader(searchpath=full_path))
         
         # prevent whitespaces / newlines from jinja blocks in template
         env.trim_blocks = True
@@ -330,19 +330,36 @@ def _get_keywords(rs: ImmutableResultSet) -> list[dict]:
 
     """
     keywords = []
+
     # go for keyword linked to variable first
     variable_dict = rs.get('variable')
 
-    if 'keyword' in variable_dict:
-        # get relevant information
-        full_path = variable_dict.get('keyword').get('path')
-        thesaurusName = variable_dict.get('keyword').get('thesaurusName').get('title')
-        
-        # append to keywords
-        keywords.append({
-            'full_path': full_path,
-            'thesaurusName': thesaurusName
-        })
+    # one variable in ImmutableResultSet -> variable_dict is returned directly
+    if not all(isinstance(val, dict) for val in variable_dict.values()):
+        if 'keyword' in variable_dict:
+            # get relevant information
+            full_path = variable_dict.get('keyword').get('path')
+            thesaurusName = variable_dict.get('keyword').get('thesaurusName').get('title')
+            
+            # append to keywords
+            keywords.append({
+                'full_path': full_path,
+                'thesaurusName': thesaurusName
+            })
+
+    # more than one variable in ImmutableResultSet -> uuid-indexed dictionaries -> all values are dicts
+    elif all(isinstance(val, dict) for val in variable_dict.values()):
+        for entry_uuid, variable_dict in variable_dict.items():
+            if 'keyword' in variable_dict:
+                # get relevant information
+                full_path = variable_dict.get('keyword').get('path')
+                thesaurusName = variable_dict.get('keyword').get('thesaurusName').get('title')
+                
+                # append to keywords
+                keywords.append({
+                    'full_path': full_path,
+                    'thesaurusName': thesaurusName
+                })
 
     # go for keywords linked directly to ImmutableResultSet next
     # only one member in ImmutableResultSet: rs.get('keywords') returns a list of keyword dictionaries
@@ -395,7 +412,7 @@ def _get_licenses(rs: ImmutableResultSet) -> list[dict]:
             'short_title': short_title
             })
 
-    #  if there is more than one license in ImmutableResultSet, a uuid-indexed dict of licenses is returned, concatenate license information
+    #  if there is more than one license in ImmutableResultSet, a uuid-indexed dict of licenses is returned
     elif any(isinstance(val, dict) for val in rs.get('license').values()):
         link = ''
         short_title = ''
