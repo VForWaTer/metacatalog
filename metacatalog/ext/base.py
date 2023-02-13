@@ -106,9 +106,9 @@ class MetacatalogExtensionInterface(abc.ABC):
                         print(args.foo.upper())
                     
                 @classmethod
-                def init_cli(subparsers, defaults):
+                def init_cli(cls, subparsers, defaults):
                     myparser = subparsers.add_parser('foobar', parents=[defaults], help="Just a foobar parser")
-                    myparser.add_argument('foo', type="str", help="A nonsense argument")
+                    myparser.add_argument('foo', type=str, help="A nonsense argument")
                     myparser.set_defaults(func=MyExt.cli)
 
         """
