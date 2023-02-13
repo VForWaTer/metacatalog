@@ -117,7 +117,7 @@ class EntryGroup(Base):
 
 
     # relationships
-    type: 'EntryGroupType' = relationship("EntryGroupType", back_populates='entries')
+    type: 'EntryGroupType' = relationship("EntryGroupType", back_populates='groups')
     entries: List['Entry'] = relationship("Entry", secondary="nm_entrygroups", back_populates="associated_groups")
 
     @property
