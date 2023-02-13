@@ -1,3 +1,7 @@
+from typing import List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from metacatalog.models import Entry, Keyword
+
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, Session
@@ -35,9 +39,9 @@ class Unit(Base):
     si = Column(String(), nullable=True)
 
     # relationships
-    variables = relationship("Variable", back_populates='unit')
+    variables: List['Variable'] = relationship("Variable", back_populates='unit')
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep: bool = False) -> dict:
         """To dict
 
         Return the model as a python dictionary.
@@ -124,11 +128,11 @@ class Variable(Base):
     keyword_id = Column(Integer, ForeignKey('keywords.id'))
 
     # relationships
-    entries = relationship("Entry", back_populates='variable')
-    unit = relationship("Unit", back_populates='variables')
-    keyword = relationship("Keyword")
+    entries: List['Entry'] = relationship("Entry", back_populates='variable')
+    unit: Unit = relationship("Unit", back_populates='variables')
+    keyword: 'Keyword' = relationship("Keyword")
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep: bool = False) -> dict:
         """To dict
 
         Return the model as a python dictionary.
