@@ -118,10 +118,10 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         _validate_xml(xml)
 
         # convert to ElementTree and return
-        return ET.ElementTree(ET.fromstring(xml))
+        return xml#ET.ElementTree(ET.fromstring(xml))
 
 
-    def create_iso19115(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str) -> Union[None, ElementTree]:
+    def create_iso19115(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None) -> Union[None, ElementTree]:
         """
         Generate ISO 19115 XML files for all ImmutableResultSets in the
         database session. The XML files are saved in the folder given in
@@ -164,7 +164,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         """
         # find the entry by id
         if isinstance(id_or_uuid, int):
-            entry = api.find_entry(session, id=id, return_iterator=True).first()
+            entry = api.find_entry(session, id=id_or_uuid, return_iterator=True).first()
             # raise error if no entry was found
             if not entry:
                 raise NoResultFound(f"No entry with id={id_or_uuid} was found.")
@@ -177,7 +177,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                 raise NoResultFound(f"No entry with uuid={id_or_uuid} was found.")
         
         # export entry to ISO 19115
-        xml = entry.export_iso19115(config_dict, path=path)
+        xml = entry.export_iso19115(config_dict)
 
         if path:
             # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
