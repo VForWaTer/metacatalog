@@ -9,7 +9,6 @@ from lxml import etree
 import shapely
 from geoalchemy2.shape import to_shape
 from geoalchemy2.elements import WKBElement
-import xml.etree.ElementTree as ET
 
 
 from metacatalog.models import Entry
