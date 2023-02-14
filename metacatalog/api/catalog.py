@@ -14,6 +14,7 @@ from metacatalog.util.logging import get_logger
 from metacatalog.util.results import ImmutableResultSet
 from metacatalog.models import Entry, EntryGroup, Keyword, Person
 
+
 def get_uuid(session: Session, uuid: str, as_result: bool=False, not_found: str='raise') -> Union[Entry, EntryGroup, Keyword, Person, ImmutableResultSet, None]:
     """
     Return the Metacatalog object of given
