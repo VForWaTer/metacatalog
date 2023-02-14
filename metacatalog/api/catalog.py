@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 from sqlalchemy.orm.exc import NoResultFound
 
 from metacatalog import api
+from metacatalog.util.logging import get_logger
 
 
 def get_uuid(session: 'Session', uuid: str, not_found: str = 'raise') -> Union['Entry', 'EntryGroup', 'Person', 'Keyword']:
