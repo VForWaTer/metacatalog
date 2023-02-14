@@ -1,4 +1,4 @@
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Tuple
 import os
 from datetime import datetime
 
@@ -443,7 +443,7 @@ def _get_licenses(rs: ImmutableResultSet) -> List[Dict]:
     return licenses
 
 
-def _get_datasource_information(rs: ImmutableResultSet) -> tuple[list[dict], list[dict], list[int]]:
+def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], List[Dict], List[int]]:
     """
     Returns the temporal scales, the location as a bounding box and the spatial resolution 
     of the data of the ImmutableResultSet.
@@ -576,7 +576,7 @@ def _get_datasource_information(rs: ImmutableResultSet) -> tuple[list[dict], lis
     return temporal_scales, bbox_locations, spatial_resolutions
 
 
-def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> dict:
+def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> Dict:
     """
     Loads the ImmutableResultSet of the input Entry (if not already an ImmutableResultSet) 
     and extracts the information necessary for ISO export.
