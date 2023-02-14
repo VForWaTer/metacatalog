@@ -83,7 +83,7 @@ class Person(Base):
     # relationships
     entries: List['Entry'] = relationship("PersonAssociation", back_populates='person')
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep: bool = False) -> dict:
         """To dict
 
         Return the model as a python dictionary.
@@ -165,7 +165,7 @@ class Person(Base):
         return person
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         if not self.is_organisation:
             if self.first_name is not None:
                 return '%s %s' % (self.first_name, self.last_name)
@@ -175,7 +175,7 @@ class Person(Base):
             return '%s (Org.)' % self.organisation_name
 
     @full_name.setter
-    def full_name(self, name):
+    def full_name(self, name: str):
         if not self.is_organisation:
             # split the name and use the last name
             chunks = name.split(' ')
@@ -189,7 +189,7 @@ class Person(Base):
             part = name.replace(' (Org.)', '')
             self.organisation_name = part
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s <ID=%d>" % (self.full_name, self.id)
 
 
@@ -201,9 +201,9 @@ class PersonRole(Base):
     description = Column(String, nullable=True)
 
     # relationships
-    persons_with_role = relationship("PersonAssociation", back_populates='role')
+    persons_with_role: List['PersonAssociation'] = relationship("PersonAssociation", back_populates='role')
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep: bool = False) -> dict:
         """
         Return the model as a python dictionary.
 
@@ -236,7 +236,7 @@ class PersonRole(Base):
 
         return d
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s <ID=%d>" % (self.name, self.id)
 
 
@@ -254,7 +254,7 @@ class PersonAssociation(Base):
     person: Person = relationship("Person", back_populates='entries')
     entry: 'Entry' = relationship("Entry", back_populates='contributors')
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep: bool = False) -> dict:
         """
         Return the model as a python dictionary.
 
@@ -280,5 +280,5 @@ class PersonAssociation(Base):
 
         return d
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '%s <ID=%d> as %s for Entry <ID=%d>' % (self.person.full_name, self.person.id, self.role.name, self.entry.id)

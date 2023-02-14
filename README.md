@@ -3,9 +3,15 @@
 [![GitHub version](https://badge.fury.io/gh/VForWaTer%2Fmetacatalog.svg)](https://badge.fury.io/gh/VForWaTer%2Fmetacatalog)
 [![PyPI version](https://badge.fury.io/py/metacatalog.svg)](https://pypi.org/project/metacatalog/)
 [![Dev status](https://img.shields.io/badge/development%20status-2%20--%20Alpha-yellow)](https://pypi.org/classifiers/)
-![e2e Test](https://github.com/VForWaTer/metacatalog/workflows/e2e%20Test/badge.svg)
-![Documentation](https://github.com/VForWaTer/metacatalog/workflows/Documentation/badge.svg)
+[![codecov](https://codecov.io/gh/VForWaTer/metacatalog/branch/main/graph/badge.svg?token=BN0K15LD38)](https://codecov.io/gh/VForWaTer/metacatalog)
 [![DOI](https://zenodo.org/badge/203124792.svg)](https://zenodo.org/badge/latestdoi/203124792)
+
+| CI | Status | 
+|:---|-------:|
+| Unit tests | ![e2e Test](https://github.com/VForWaTer/metacatalog/workflows/e2e%20Test/badge.svg) |
+| Documentation  | ![Documentation](https://github.com/VForWaTer/metacatalog/workflows/Documentation/badge.svg) |
+| Deployment | [![Upload Python Package](https://github.com/VForWaTer/metacatalog/actions/workflows/publish.yml/badge.svg)](https://github.com/VForWaTer/metacatalog/actions/workflows/publish.yml) |
+ 
 
 Management tool for the V-FOR-WaTer metadata database application. Although developed in and for the [V-FOR-WaTer project](https://vforwater.de), metacatalog is a standalone database application, that can be used on its own.
 
