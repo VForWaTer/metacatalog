@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 import pandas as pd
 from lxml import etree
 import shapely
@@ -16,24 +16,40 @@ from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
 
 
-def _init_iso19115_jinja():
+def _init_jinja(template_path: str) -> Template:
         """
-        Initialize jinja environment for ISO 19115 export.
+        Initialize jinja environment for metadata export.
+
+        Parameters
+        ----------
+        template_path : str
+            Location of the jinja2 template for metadata export.  
+            Currently defaults to the ISO 19115 template.
+
+        Returns
+        ----------
+        template : jinja2.environment.Template
+            The jinja2 template object which will be rendered.
 
         """
-        # folder containing ISO 19115 templates
-        absolute_path = os.path.dirname(__file__)
-        relative_path = "schemas/iso19115"
-        full_path = os.path.join(absolute_path, relative_path)
+        # get absolute path of template
+        template_path = os.path.abspath(template_path)
         
-        env = Environment(loader=FileSystemLoader(searchpath=full_path))
+        # get the template name
+        template_name = os.path.basename(template_path)
+
+        # get the template directory
+        template_dir = os.path.dirname(template_path)
+
+        # initialite environment
+        env = Environment(loader=FileSystemLoader(searchpath=template_dir))
         
         # prevent whitespaces / newlines from jinja blocks in template
         env.trim_blocks = True
         env.lstrip_blocks = True
 
         # get template
-        template = env.get_template("iso19115-2.j2")
+        template = env.get_template(template_name)
         
         return template
 

@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
-from metacatalog.ext.standards_export.util import _parse_iso_information, _init_iso19115_jinja, _validate_xml
+from metacatalog.ext.standards_export.util import _parse_iso_information, _init_jinja, _validate_xml
 from metacatalog import api, cmd
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
@@ -44,7 +44,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
 
     @classmethod
-    def iso19115_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict):
+    def iso19115_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree:
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
         :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>` to XML in 
@@ -85,6 +85,10 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                     organisation_name: str = ''
                 )
             )
+        template_path : str
+            Full path (including the template name) to the jinja2 template for 
+            metadata export.  
+            Currently defaults to the ISO 19115 template.
         
         Returns
         ----------
@@ -104,7 +108,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         iso_input = _parse_iso_information(entry_or_resultset)
 
         # get initialized jinja template
-        template = _init_iso19115_jinja()
+        template = _init_jinja(template_path)
 
         # render template with entry_dict
         xml = template.render(**iso_input, **config_dict)
