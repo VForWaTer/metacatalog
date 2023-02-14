@@ -1,11 +1,9 @@
 import xml.etree.ElementTree as ET
-import os
 
 import pytest
 
 
-from metacatalog import api
-from metacatalog.models import Entry
+from metacatalog import api, ext
 from ._util import connect
 
 
@@ -29,9 +27,16 @@ def test_standards_export():
     Currently tests ISO 19115 export of Entry objects.
 
     """
-    print(os.getcwd())
     # get a session
     session = connect(mode='session')
+
+    # activate standards_export extension, as long as it is not activated by default
+    try:
+        ext.extension('standards_export')
+    except AttributeError:
+        ext.activate_extension('standards_export', 'metacatalog.ext.standards_export', 'StandardsExportExtension')
+        from metacatalog.ext.standards_export import StandardsExportExtension
+        ext.extension('standards_export', StandardsExportExtension)
 
     # config_dict for V-For-WaTer as contact
     CONFIG_DICT = {
