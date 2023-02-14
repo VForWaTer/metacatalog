@@ -12,3 +12,4 @@ requests
 dicttoxml>=1.7.5
 tqdm
 jinja2
+lxml
