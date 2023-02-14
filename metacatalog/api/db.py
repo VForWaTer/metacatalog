@@ -137,7 +137,7 @@ def import_table_data(fname: str, InstanceClass: Base, array_col_name: str = Non
     return [InstanceClass(**_remove_nan_from_dict(d)) for d in df.to_dict('records')]
 
 
-def import_direct(session: Session, table_name: str, file_name: str) -> None:
+def import_direct(session: 'Session', table_name: str, file_name: str) -> None:
     # load the data
     df = pd.read_csv(file_name)
 
