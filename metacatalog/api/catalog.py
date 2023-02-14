@@ -5,11 +5,11 @@ specific API action or model
 
 """
 from __future__ import annotations
-from typing import Union, TYPE_CHECKING
+from typing import Union, overload, TYPE_CHECKING
 if TYPE_CHECKING:
         from sqlalchemy.orm import Session
         from metacatalog.models import Entry, EntryGroup, Person, Keyword
-
+from typing_extensions import Literal
 from sqlalchemy.orm.exc import NoResultFound
 
 from metacatalog import api
@@ -17,8 +17,11 @@ from metacatalog.util.logging import get_logger
 from metacatalog.util.results import ImmutableResultSet
 from metacatalog.models import Entry, EntryGroup, Keyword, Person
 
-
-def get_uuid(session: 'Session', uuid: str, not_found: str = 'raise') -> ImmutableResultSet | 'Entry' | 'EntryGroup' | 'Person' | 'Keyword' | None:
+@overload
+def get_uuid(as_result: Literal[False] = ...) -> 'Entry' | 'EntryGroup' | 'Person' | 'Keyword' | None: ...
+@overload
+def get_uuid(as_result: Literal[True] = ...) -> ImmutableResultSet: ...
+def get_uuid(session: 'Session', uuid: str, as_result: bool = False, not_found: str = 'raise') -> ImmutableResultSet | 'Entry' | 'EntryGroup' | 'Person' | 'Keyword' | None:
     """
     Return the Metacatalog object of given
     version 4 UUID. The supported objects are:
