@@ -36,8 +36,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict)
         
         # standards_export docstring and name for wrapper function
-        wrapper_entry.__doc__ = StandardsExportExtension.iso19115_export.__doc__
-        wrapper_entry.__name__ = StandardsExportExtension.iso19115_export.__name__
+        wrapper_entry.__doc__ = StandardsExportExtension.standards_export.__doc__
+        wrapper_entry.__name__ = StandardsExportExtension.standards_export.__name__
         
         # add wrapper to Entry model
         Entry.standards_export = wrapper_entry
