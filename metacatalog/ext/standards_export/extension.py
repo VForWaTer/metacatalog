@@ -19,38 +19,39 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     Extension to export Entries in standard format.
     Currently, ISO 19115 export is implemented.
 
-    Adds the method export_iso19115 to :class:`Entry <metacatalog.models.Entry>`
-    which creates the ISO 19115 XML for the :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`
+    Adds the method standards_export to :class:`Entry <metacatalog.models.Entry>`
+    which creates the metadata standard XML for the :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`
     of the Entry.
-    The method create_iso19115 is added to the API
+    The method standards_export is added to the API
     (metacatalog.api.catalog). This method can be
-    used to export all Entries / ImmutableResultSets
+    used to export Entries / ImmutableResultSets
     in the database session and write the XML files
     to the folder location specified in ``path``.
 
     """
     @classmethod
     def init_extension(cls):
-        # wrapper which calls StandardsExportExtension.iso19115_export
+        # wrapper which calls StandardsExportExtension.standards_export
         def wrapper_entry(self: Entry, config_dict: dict):  
-            return StandardsExportExtension.iso19115_export(entry_or_resultset=self, config_dict=config_dict)
+            return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict)
         
-        # iso19115_export docstring and name for wrapper function
+        # standards_export docstring and name for wrapper function
         wrapper_entry.__doc__ = StandardsExportExtension.iso19115_export.__doc__
         wrapper_entry.__name__ = StandardsExportExtension.iso19115_export.__name__
         
         # add wrapper to Entry model
-        Entry.export_iso19115 = wrapper_entry
+        Entry.standards_export = wrapper_entry
 
 
     @classmethod
-    def iso19115_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree:
+    def standards_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree:
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
-        :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>` to XML in 
-        ISO 19115 standard.
+        :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>` to XML.
+        The metadata standard is dependent on the jinja2 template passed to this function
+        in template_path.
         Repeatable information input is always a list, as we can loop over the lists in the
-        jinja ISO 19115 template.
+        jinja2 template.
         Always returns an :class:`ElementTree <xml.etree.ElementTree.ElementTree>` object.
 
         This function is added as a method to :class:`Entry <metacatalog.models.Entry>`
