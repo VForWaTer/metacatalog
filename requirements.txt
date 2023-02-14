@@ -11,4 +11,4 @@ pyproj
 requests
 dicttoxml>=1.7.5
 tqdm
-typing_extenstions
+typing_extensions
