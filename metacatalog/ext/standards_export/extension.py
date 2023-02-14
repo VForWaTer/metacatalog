@@ -1,15 +1,11 @@
 from typing import Union
-import os
 
 
-from tqdm import tqdm
-from sqlalchemy.orm import Session
 import xml.etree.ElementTree as ET
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
 from metacatalog.ext.standards_export.util import _parse_iso_information, _init_jinja, _validate_xml
-from metacatalog import api, cmd
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
 
@@ -32,8 +28,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_extension(cls):
         # wrapper which calls StandardsExportExtension.standards_export
-        def wrapper_entry(self: Entry, config_dict: dict):  
-            return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict)
+        def wrapper_entry(self: Entry, config_dict: dict, template_path: str) -> ET.ElementTree:  
+            return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict, template_path=template_path)
         
         # standards_export docstring and name for wrapper function
         wrapper_entry.__doc__ = StandardsExportExtension.standards_export.__doc__
