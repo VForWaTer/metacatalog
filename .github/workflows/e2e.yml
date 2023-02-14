@@ -45,6 +45,11 @@ jobs:
     # activate the IO extension
     - name: Activate builtin IOExtension
       run: python -c "from metacatalog import ext; ext.activate_extension('io', 'metacatalog.ext.io', 'IOExtension')"
+    
+    - name: Activate builtin StandardsExportExtension, install additional dependencies
+      run: |
+        pip install jinja2 lxml
+        python -c "from metacatalog import ext; ext.activate_extension('standards_export', 'metacatalog.ext.standards_export', 'StandardsExportExtension')"
 
     # run the actual tests
     # they need the arbitrary port number which is mapped to 5432
