@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List, Dict
 import os
 from datetime import datetime
 
@@ -177,7 +177,7 @@ def _get_version(rs: ImmutableResultSet) -> int:
     return version
 
 
-def _get_authors(rs: ImmutableResultSet) -> list[dict]:
+def _get_authors(rs: ImmutableResultSet) -> List[Dict]:
     """
     Returns all authors and coauthors of the ImmutableResultSet.
 
@@ -241,7 +241,7 @@ def _get_abstract(rs: ImmutableResultSet) -> str:
     return abstract
 
 
-def _get_details(rs: ImmutableResultSet) -> list[str]:
+def _get_details(rs: ImmutableResultSet) -> List[str]:
     """
     Returns the details of the ImmutableResultSet.
     Details are currently written to XML as Markdown tables along the abstracts 
@@ -331,7 +331,7 @@ def _get_details(rs: ImmutableResultSet) -> list[str]:
     return details
 
 
-def _get_keywords(rs: ImmutableResultSet) -> list[dict]:
+def _get_keywords(rs: ImmutableResultSet) -> List[Dict]:
     """
     Returns the keywords of the ImmutableResultSet.
     If the variables of the ImmutableResultSet are linked to a thesaurus, the thesaurus
@@ -407,7 +407,7 @@ def _get_keywords(rs: ImmutableResultSet) -> list[dict]:
     return keywords
 
 
-def _get_licenses(rs: ImmutableResultSet) -> list[dict]:
+def _get_licenses(rs: ImmutableResultSet) -> List[Dict]:
     """
     Returns the licenses of the ImmutableResultSet.
 
