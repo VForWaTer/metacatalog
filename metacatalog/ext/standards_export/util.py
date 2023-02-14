@@ -18,7 +18,8 @@ from metacatalog.util.results import ImmutableResultSet
 
 def _init_jinja(template_path: str) -> Template:
         """
-        Initialize jinja environment for metadata export.
+        Initialize jinja environment for metadata export
+        and return the template.
 
         Parameters
         ----------
