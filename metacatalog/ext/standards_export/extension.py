@@ -144,6 +144,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 def create_standard_metadata(path: str) -> None: ...
 @overload
 def create_standard_metadata(path: Literal[None]) -> ElementTree: ...
+@classmethod
 def create_standard_metadata(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ElementTree | None:
         """
         This function can be imported from metacatalog.api.catalog
