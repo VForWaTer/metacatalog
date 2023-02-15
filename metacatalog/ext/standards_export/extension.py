@@ -35,7 +35,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_extension(cls):
         # wrapper which calls StandardsExportExtension.standards_export
-        def wrapper_entry(self: Entry, config_dict: dict, template_path: str) -> ET.ElementTree:  
+        def wrapper_entry(self: Entry, config_dict: dict, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree:  
             return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict, template_path=template_path)
         
         # standards_export docstring and name for wrapper function
