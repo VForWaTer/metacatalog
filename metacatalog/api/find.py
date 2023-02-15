@@ -869,7 +869,7 @@ def find_entry(
     return_iterator: bool = False,
     as_result: bool = False,
     by_geometry: Optional[str | List[float]] = None,
-) -> 'Query' | List['Entry']:
+) -> 'Query' | List['Entry'] | List['ImmutableResultSet']:
     """
     Find an meta data Entry on exact matches. Entries can be
     identified by id, title, external_id and version. The
