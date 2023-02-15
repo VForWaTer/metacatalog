@@ -234,7 +234,12 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # export entry to ISO 19115
         xml = entry.standards_export(config_dict=config_dict, template_path=template_path)
 
-        if path:
+        if not path:
+            print(f"Why is this not returned?? {xml}")
+            return xml
+
+        # if path is given: write XML file
+        else:
             # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
             irs_uuid = ImmutableResultSet(entry).uuid
 
@@ -248,6 +253,4 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             # write XML file
             with open(path, 'wb') as f:
                 xml.write(f, encoding='utf-8')
-        else:
-            return xml
         
