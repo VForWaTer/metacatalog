@@ -5,7 +5,7 @@ specific API action or model
 
 """
 from __future__ import annotations
-from typing import Union, overload, TYPE_CHECKING
+from typing import overload, TYPE_CHECKING
 if TYPE_CHECKING:
         from sqlalchemy.orm import Session
         from metacatalog.models import Entry, EntryGroup, Person, Keyword
@@ -35,7 +35,7 @@ def get_uuid(session: 'Session', uuid: str, as_result: bool = False, not_found: 
 
     .. versionchanged:: 0.2.7
 
-        Now, also :class:`Persons <metacatalog.model.Person>` can be
+        Now, also :class:`Persons <metacatalog.models.Person>` can be
         found by UUID
     
     .. versionchanged:: 0.7.5
