@@ -562,7 +562,7 @@ class DataSource(Base):
         else:
             return json.loads(self.args)
 
-    def save_args_from_dict(self, args_dict: dict, commit: bool = False):
+    def save_args_from_dict(self, args_dict: dict, commit: bool = False) -> None:
         """
         Save all given keyword arguments to the database.
         These are passed to the importer/adder functions as ``**kwargs``.
@@ -594,7 +594,7 @@ class DataSource(Base):
                 session.rollback()
                 raise e
 
-    def create_scale(self, resolution, extent, support, scale_dimension, commit: bool = False):
+    def create_scale(self, resolution, extent, support, scale_dimension, commit: bool = False) -> None:
         """
         Create a new scale for the dataset
         """
@@ -623,5 +623,5 @@ class DataSource(Base):
                 session.rollback()
                 raise e
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s data source at %s <ID=%d>" % (self.type.name, self.path, self.id)

@@ -616,7 +616,7 @@ class Entry(Base):
         else:
             raise ValueError("fmt has to be in ['html', 'latex', 'markdown']")
 
-    def add_details(self, details=None, commit: bool = False, **kwargs):
+    def add_details(self, details=None, commit: bool = False, **kwargs) -> None:
         """
         Adds arbitrary key-value pairs to this entry.
 
