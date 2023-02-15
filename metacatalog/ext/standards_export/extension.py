@@ -47,7 +47,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         # add function create_iso19115 to api.catalog
         def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2'):
-            StandardsExportExtension.create_standard_metadata(session, id_or_uuid, config_dict, path, template_path)
+            return StandardsExportExtension.create_standard_metadata(session, id_or_uuid, config_dict, path, template_path)
 
         wrapper_api.__doc__ = StandardsExportExtension.create_standard_metadata.__doc__
         wrapper_api.__name__ = StandardsExportExtension.create_standard_metadata.__name__
