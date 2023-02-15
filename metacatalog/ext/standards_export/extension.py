@@ -1,4 +1,6 @@
-from typing import Union
+from __future__ import annotations
+from typing import Union, overload
+from typing_extensions import Literal
 import os
 
 
@@ -138,8 +140,11 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # convert to ElementTree and return
         return ET.ElementTree(ET.fromstring(xml))
 
-
-def create_standard_metadata(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> Union[None, ElementTree]:
+@overload 
+def create_standard_metadata(path: str) -> None: ...
+@overload
+def create_standard_metadata(path: Literal[None]) -> ElementTree: ...
+def create_standard_metadata(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ElementTree | None:
         """
         This function can be imported from metacatalog.api.catalog
 
