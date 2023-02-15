@@ -1,9 +1,9 @@
-from typing import Union
+from typing import Union, List, Dict, Tuple
 import os
 from datetime import datetime
 
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 import pandas as pd
 from lxml import etree
 import shapely
@@ -15,25 +15,41 @@ from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
 
 
-def _init_iso19115_jinja():
+def _init_jinja(template_path: str) -> Template:
         """
-        Initialize jinja environment for ISO 19115 export.
+        Initialize jinja environment for metadata export
+        and return the template.
+
+        Parameters
+        ----------
+        template_path : str
+            Location of the jinja2 template for metadata export.  
+            Currently defaults to the ISO 19115 template.
+
+        Returns
+        ----------
+        template : jinja2.environment.Template
+            The jinja2 template object which will be rendered.
 
         """
-        # folder containing ISO 19115 templates
-        absolute_path = os.path.dirname(__file__)
-        relative_path = "schemas/iso19115"
-        full_path = os.path.join(absolute_path, relative_path)
+        # get absolute path of template
+        template_path = os.path.abspath(template_path)
         
-        # get environment
-        env = Environment(loader=FileSystemLoader(searchpath=full_path))
+        # get the template name
+        template_name = os.path.basename(template_path)
+
+        # get the template directory
+        template_dir = os.path.dirname(template_path)
+
+        # initialite environment
+        env = Environment(loader=FileSystemLoader(searchpath=template_dir))
         
         # prevent whitespaces / newlines from jinja blocks in template
         env.trim_blocks = True
         env.lstrip_blocks = True
 
         # get template
-        template = env.get_template("iso19115-2.j2")
+        template = env.get_template(template_name)
         
         return template
 
@@ -41,8 +57,9 @@ def _init_iso19115_jinja():
 def _get_uuid(rs: ImmutableResultSet) -> str:
     """
     Returns uuid of ImmutableResultSet.  
-    Returns the uuid of the base group (if exists) or the concatenated uuids of all 
-    members.
+    Returns the uuid of the base group (if exists). If no base group
+    exists in the ImmutableResultSet, the uuid of the (single) member 
+    is returned.
 
     Returns
     ----------
@@ -50,15 +67,7 @@ def _get_uuid(rs: ImmutableResultSet) -> str:
         Used for field <gmd:fileIdentifier> and field <gmd:identifier>, not repeatable.
 
     """
-    # if a base group exists, use the uuid of the base group
-    if rs.group:
-        uuid = rs.group.uuid
-
-    # if no group exists, there is only one member in the ImmutableResultSet -> use its uuid
-    else:
-        uuid = rs.get('uuid')
-
-    return uuid
+    return rs.uuid
 
 
 def _get_lastUpdate(rs: ImmutableResultSet) -> str:
@@ -168,7 +177,7 @@ def _get_version(rs: ImmutableResultSet) -> int:
     return version
 
 
-def _get_authors(rs: ImmutableResultSet) -> list[dict]:
+def _get_authors(rs: ImmutableResultSet) -> List[Dict]:
     """
     Returns all authors and coauthors of the ImmutableResultSet.
 
@@ -232,7 +241,7 @@ def _get_abstract(rs: ImmutableResultSet) -> str:
     return abstract
 
 
-def _get_details(rs: ImmutableResultSet) -> list[str]:
+def _get_details(rs: ImmutableResultSet) -> List[str]:
     """
     Returns the details of the ImmutableResultSet.
     Details are currently written to XML as Markdown tables along the abstracts 
@@ -322,7 +331,7 @@ def _get_details(rs: ImmutableResultSet) -> list[str]:
     return details
 
 
-def _get_keywords(rs: ImmutableResultSet) -> list[dict]:
+def _get_keywords(rs: ImmutableResultSet) -> List[Dict]:
     """
     Returns the keywords of the ImmutableResultSet.
     If the variables of the ImmutableResultSet are linked to a thesaurus, the thesaurus
@@ -337,19 +346,36 @@ def _get_keywords(rs: ImmutableResultSet) -> list[dict]:
 
     """
     keywords = []
+
     # go for keyword linked to variable first
     variable_dict = rs.get('variable')
 
-    if 'keyword' in variable_dict:
-        # get relevant information
-        full_path = variable_dict.get('keyword').get('path')
-        thesaurusName = variable_dict.get('keyword').get('thesaurusName').get('title')
-        
-        # append to keywords
-        keywords.append({
-            'full_path': full_path,
-            'thesaurusName': thesaurusName
-        })
+    # one variable in ImmutableResultSet -> variable_dict is returned directly
+    if not all(isinstance(val, dict) for val in variable_dict.values()):
+        if 'keyword' in variable_dict:
+            # get relevant information
+            full_path = variable_dict.get('keyword').get('path')
+            thesaurusName = variable_dict.get('keyword').get('thesaurusName').get('title')
+            
+            # append to keywords
+            keywords.append({
+                'full_path': full_path,
+                'thesaurusName': thesaurusName
+            })
+
+    # more than one variable in ImmutableResultSet -> uuid-indexed dictionaries -> all values are dicts
+    elif all(isinstance(val, dict) for val in variable_dict.values()):
+        for entry_uuid, variable_dict in variable_dict.items():
+            if 'keyword' in variable_dict:
+                # get relevant information
+                full_path = variable_dict.get('keyword').get('path')
+                thesaurusName = variable_dict.get('keyword').get('thesaurusName').get('title')
+                
+                # append to keywords
+                keywords.append({
+                    'full_path': full_path,
+                    'thesaurusName': thesaurusName
+                })
 
     # go for keywords linked directly to ImmutableResultSet next
     # only one member in ImmutableResultSet: rs.get('keywords') returns a list of keyword dictionaries
@@ -381,7 +407,7 @@ def _get_keywords(rs: ImmutableResultSet) -> list[dict]:
     return keywords
 
 
-def _get_licenses(rs: ImmutableResultSet) -> list[dict]:
+def _get_licenses(rs: ImmutableResultSet) -> List[Dict]:
     """
     Returns the licenses of the ImmutableResultSet.
 
@@ -402,7 +428,7 @@ def _get_licenses(rs: ImmutableResultSet) -> list[dict]:
             'short_title': short_title
             })
 
-    #  if there is more than one license in ImmutableResultSet, a uuid-indexed dict of licenses is returned, concatenate license information
+    #  if there is more than one license in ImmutableResultSet, a uuid-indexed dict of licenses is returned
     elif any(isinstance(val, dict) for val in rs.get('license').values()):
         link = ''
         short_title = ''
@@ -417,7 +443,7 @@ def _get_licenses(rs: ImmutableResultSet) -> list[dict]:
     return licenses
 
 
-def _get_datasource_information(rs: ImmutableResultSet) -> tuple[list[dict], list[dict], list[int]]:
+def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], List[Dict], List[int]]:
     """
     Returns the temporal scales, the location as a bounding box and the spatial resolution 
     of the data of the ImmutableResultSet.
@@ -550,7 +576,7 @@ def _get_datasource_information(rs: ImmutableResultSet) -> tuple[list[dict], lis
     return temporal_scales, bbox_locations, spatial_resolutions
 
 
-def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> dict:
+def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> Dict:
     """
     Loads the ImmutableResultSet of the input Entry (if not already an ImmutableResultSet) 
     and extracts the information necessary for ISO export.
@@ -618,10 +644,13 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
 def _validate_xml(xml: str) -> bool:
     """
     Checks whether the input XML is well-formed (correct syntax).
-    Currently, it is not checked whether the input XML is also valid (We could e.g.
-    check with schematron for the 20 mandatory fields).
+    Currently, it is not checked whether the input XML is also a 
+    valid ISO19115 XML.
+    If the XML is well-formed, this function returns True.
+
     """
     try: 
         etree.fromstring(xml)
+        return True
     except etree.XMLSyntaxError as e:
         raise(e)

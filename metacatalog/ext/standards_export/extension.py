@@ -10,7 +10,7 @@ from xml.etree.ElementTree import ElementTree
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
-from metacatalog.ext.standard_export.util import _parse_iso_information, _init_iso19115_jinja, _validate_xml, _get_uuid
+from metacatalog.ext.standards_export.util import _parse_iso_information, _init_iso19115_jinja, _validate_xml, _get_uuid
 from metacatalog import api, cmd
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
