@@ -2,13 +2,20 @@
 
 The ADD API endpoint can be used to add records to the database.
 """
+from typing import List, Union, Tuple, TYPE_CHECKING
+if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
+    from metacatalog.db.base import Base
+    from metacatalog.models import Entry, Keyword, Person, PersonRole
+
 from uuid import uuid4
+import warnings
 
 from ._mapping import TABLE_MAPPING
 from metacatalog import api
 from metacatalog import models
 
-def _add(session, InstanceModel, **kwargs):
+def _add(session: 'Session', InstanceModel: 'Base', **kwargs):
     """
     Common method for inserting a new record.
     Should not be used directly.
@@ -26,7 +33,7 @@ def _add(session, InstanceModel, **kwargs):
     return entity
 
 
-def add_record(session, tablename, **kwargs):
+def add_record(session: 'Session', tablename: str, **kwargs):
     """
     Method to map tablenames to InstanceModels.
     Should not be used directly.
@@ -37,9 +44,8 @@ def add_record(session, tablename, **kwargs):
         return _add(session=session, InstanceModel=TABLE_MAPPING.get(tablename), **kwargs)
 
 
-def add_license(session, short_title, title, **kwargs):
-    """Add license record
-
+def add_license(session: 'Session', short_title: str, title: str, **kwargs) -> models.License:
+    """
     Add a new License record to the database.
 
     Parameters
@@ -84,9 +90,8 @@ def add_license(session, short_title, title, **kwargs):
     return add_record(session=session, tablename='licenses', **kwargs)
 
 
-def add_unit(session, name, symbol, si=None):
-    """Add unit record
-
+def add_unit(session: 'Session', name: str, symbol: str, si: str = None) -> models.Unit:
+    """
     Add a new unit to the database
 
     Parameters
@@ -116,7 +121,7 @@ def add_unit(session, name, symbol, si=None):
     return add_record(session=session, tablename='units', **attrs)
 
 
-def add_variable(session, name, symbol, column_names, unit):
+def add_variable(session: 'Session', name: str, symbol: str, column_names: List[str], unit: Union[int, str]) -> models.Variable:
     r"""
     Add a new variable to the database.
 
@@ -140,7 +145,7 @@ def add_variable(session, name, symbol, column_names, unit):
 
     Returns
     -------
-    variable : metacatalog.Variables
+    variable : metacatalog.models.Variable
         Variable instance of the added variable entity
 
     """
@@ -161,7 +166,7 @@ def add_variable(session, name, symbol, column_names, unit):
     return add_record(session=session, tablename='variables', **attrs)
 
 
-def add_keyword(session, path, thesaurus):
+def add_keyword(session: 'Session', path: str, thesaurus: Union[int, dict]) -> List[models.Keyword]:
     r"""
     Add a new keyword to the database. The keyword is
     added by the full path.
@@ -225,7 +230,7 @@ def add_keyword(session, path, thesaurus):
     return keywords
 
 
-def add_thesaurus(session, name, title, organisation, url, description=None, uuid=None):
+def add_thesaurus(session: 'Session', name: str, title: str, organisation: str, url: str, description: str = None, uuid: str = None) -> models.Thesaurus:
     """
     .. versionadded:: 0.1.10
 
@@ -285,7 +290,7 @@ def add_thesaurus(session, name, title, organisation, url, description=None, uui
     return add_record(session, tablename='thesaurus', **attr)
 
 
-def add_person(session, first_name, last_name, organisation_name=None, organisation_abbrev=None, affiliation=None, attribution=None, uuid=None):
+def add_person(session: 'Session', first_name: str, last_name: str, organisation_name: str = None, organisation_abbrev: str = None, affiliation: str = None, attribution: str = None, uuid: str = None) -> models.Person:
     r"""
     Add a new Person to the database. A person can be a real Person
     or an institution. Then, the institution name goes into the
@@ -352,10 +357,8 @@ def add_person(session, first_name, last_name, organisation_name=None, organisat
     return add_record(session=session, tablename='persons', **attr)
 
 
-def add_organisation(session, organisation_name, organisation_abbrev=None, affiliation=None, attribution=None):
+def add_organisation(session: 'Session', organisation_name: str, organisation_abbrev: str = None, affiliation: str = None, attribution: str = None) -> models.Person:
     r"""
-    Add new Organisation
-
     Add a new Organisation to the database. This is internally handled as a
     Person, but with ``is_organisation==True``.
 
@@ -400,7 +403,7 @@ def add_organisation(session, organisation_name, organisation_abbrev=None, affil
     return add_record(session=session, tablename='persons', **attr)
 
 
-def add_group(session, group_type, entry_ids, title=None, description=None):
+def add_group(session: 'Session', group_type: Union[int, str], entry_ids: List[int], title: str = None, description: str = None) -> models.EntryGroup:
     """
     Adds a new EntryGroup to the database. The Entry(s) have to exist in the
     database to be associated correctly.
@@ -460,7 +463,7 @@ def add_group(session, group_type, entry_ids, title=None, description=None):
     return add_record(session, 'entry_groups', **attr)
 
 
-def add_project(session, entry_ids, title=None, description=None):
+def add_project(session: 'Session', entry_ids: List[int], title: str = None, description: str = None) -> models.EntryGroup:
     """
     Adds a new Project EntryGroup to the database.
     The Entry(s) have to exist in the database to be associated correctly.
@@ -489,7 +492,19 @@ def add_project(session, entry_ids, title=None, description=None):
     return add_group(session=session, group_type=type_, entry_ids=entry_ids, title=title, description=description)
 
 
-def add_entry(session, title, author, location, variable, abstract=None, external_id=None, license=None, embargo=False, is_partial: bool = False, **kwargs):
+def add_entry(
+    session: 'Session',
+    title: str,
+    author: Union[int, str],
+    location: Union[str, Tuple[int], Tuple[float]], 
+    variable: Union[int, str],
+    abstract: str = None,
+    external_id: str = None,
+    license: Union[str, int] = None,
+    embargo: bool = False,
+    is_partial: bool = False,
+    **kwargs
+) -> models.Entry:
     r"""Add new Entry
 
     Adds a new metadata Entry to the database. This method will create the core
@@ -614,7 +629,7 @@ def add_entry(session, title, author, location, variable, abstract=None, externa
     return entry
 
 
-def add_details_to_entries(session, entries, details=None, **kwargs):
+def add_details_to_entries(session: 'Session', entries: List[Union[int, str, 'Entry']], details: List[dict] = None, **kwargs) -> None:
     """
     Associate detail(s) to entrie(s).
     Add key-value pair details to one, or many Entry(s).
@@ -673,7 +688,7 @@ def add_details_to_entries(session, entries, details=None, **kwargs):
         entry.add_details(details=details, commit=True, **kwargs)
 
 
-def add_keywords_to_entries(session, entries, keywords, alias=None):
+def add_keywords_to_entries(session: 'Session', entries: List[Union[int, str, 'Entry']], keywords: List[Union[int, str, 'Keyword']], alias=None) -> None:
     r"""Associate keyword(s) to entrie(s)
 
     Adds associations between entries and keywords. The Entry and Keyword
@@ -712,13 +727,14 @@ def add_keywords_to_entries(session, entries, keywords, alias=None):
     metacatalog.Keyword
 
     """
+    if alias is not None:
+        warnings.warn("The alias argument is not supported anymore and will be removed.", DeprecationWarning)
+
     # check the input shapes
     if not isinstance(entries, list):
         entries = [entries]
     if not isinstance(keywords, list):
         keywords = [keywords]
-#    if not isinstance(alias, list):
-#        alias = [alias] * len(keywords)
 
     # add for each entry
     for entry_id in entries:
@@ -758,7 +774,13 @@ def add_keywords_to_entries(session, entries, keywords, alias=None):
             raise e
 
 
-def add_persons_to_entries(session, entries, persons, roles, order):
+def add_persons_to_entries(
+    session: 'Session',
+    entries: List[Union[int, str, 'Entry']],
+    persons: List[Union[int, str, 'Person']],
+    roles: List[Union[int, str, 'PersonRole']],
+    order: List[int]
+) -> None:
     r"""Add person(s) to entrie(s)
 
     Adds associations between entries and persons. The Entry and Person

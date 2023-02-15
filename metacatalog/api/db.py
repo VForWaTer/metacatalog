@@ -1,11 +1,12 @@
+from typing import List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
 import os
-from os.path import join as pjoin
 
 import pandas as pd
 from pandas.errors import ParserError
 import numpy as np
 
-#from metacatalog import Base
 from metacatalog import BASEPATH, __version__
 from metacatalog.db.base import Base
 from metacatalog.db.session import get_session
@@ -25,7 +26,7 @@ IMPORTABLE_TABLES = dict(
     entrygroup_types=models.EntryGroupType
 )
 
-def connect_database(*args, **kwargs):
+def connect_database(*args, **kwargs) -> 'Session':
     """
     Connect to database and returns a :class:`Session <sqlalchemy.orm.Session>`
     to the database. 
@@ -57,7 +58,7 @@ def connect_database(*args, **kwargs):
     return session
 
 
-def _set_migration_head(session):
+def _set_migration_head(session: 'Session') -> None:
     """
     Set the migration log to the current release.
     This has to be set on new database instances to make the logs 
@@ -79,7 +80,7 @@ def _set_migration_head(session):
         session.commit()
 
 # TODO turn this into an actual logging module
-def _log(session, message, code=models.LogCodes.info):
+def _log(session: 'Session', message: str, code=models.LogCodes.info) -> None:
     try:
         log = models.Log(code=code, description=message, migration_head=migration.get_remote_head_id(session))
         session.add(log)
@@ -88,10 +89,8 @@ def _log(session, message, code=models.LogCodes.info):
         session.rollback()
 
 
-
-def create_tables(session):
-    """Create tables
-
+def create_tables(session: 'Session') -> None:
+    """
     Create all tables in the database using the given 
     `Session <sqlalchemy.Session>` instance.
 
@@ -120,7 +119,7 @@ def _remove_nan_from_dict(d):
     return out_d
 
 
-def import_table_data(fname, InstanceClass, array_col_name=None):
+def import_table_data(fname: str, InstanceClass: Base, array_col_name: str = None) -> List[Base]:
     try:
         df = pd.read_csv(os.path.join(DATAPATH, fname))
     except ParserError as e:
@@ -138,7 +137,7 @@ def import_table_data(fname, InstanceClass, array_col_name=None):
     return [InstanceClass(**_remove_nan_from_dict(d)) for d in df.to_dict('records')]
 
 
-def import_direct(session, table_name, file_name):
+def import_direct(session: 'Session', table_name: str, file_name: str) -> None:
     # load the data
     df = pd.read_csv(file_name)
 
@@ -149,11 +148,24 @@ def import_direct(session, table_name, file_name):
     df.to_sql(table_name, session.bind, index=False, if_exists='append')
 
 
-def update_sequence(session, table_name, sequence_name=None, to_value=None):
+def update_sequence(session: 'Session', table_name: str, sequence_name: str = None, to_value: int = None) -> None:
     """
     On insert with given id, PostgreSQL does not update the sequence 
     for autoincrement. Thus tables with defaults cannot use autoincremented
-    PK anymore. Thus, the sequence is set to the current value
+    PK anymore. Thus, the sequence is set to the current value.
+
+    Parameter
+    ---------
+    session : sqlalchemy.Session
+        Session to the database.
+    table_name : str
+        The name of the table, the sequence is bound to.
+    sequence_name : str
+        Optional. The default sequence name is {table_nane}_id_seq. If
+        another sequence_name is given, that will be used.
+    to_value : int
+        The new value of the sequence
+
     """
     if sequence_name is None:
         sequence_name = '%s_id_seq' % table_name
@@ -167,10 +179,8 @@ def update_sequence(session, table_name, sequence_name=None, to_value=None):
     return res.scalar()
     
 
-
-def populate_defaults(session, ignore_tables=[], bump_sequences=10000):
-    """Import default data
-
+def populate_defaults(session: 'Session', ignore_tables: List[str] = [], bump_sequences: int = 10000) -> None:
+    """
     Populates many lookup and auxiliary tables with useful default 
     information. The actual data is read from a data subdirectory 
     inside this module and can therefore easily be adapted. 
@@ -195,7 +205,6 @@ def populate_defaults(session, ignore_tables=[], bump_sequences=10000):
 
     Parameters
     ----------
-
     session : sqlalchemy.Session
         Session instance connected to the database.
     ignore_tables : list

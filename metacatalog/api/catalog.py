@@ -4,9 +4,12 @@ The catalog API offers application wide endpoints that are not bound to a
 specific API action or model
 
 """
-from typing import Union
-
-from sqlalchemy.orm import Session
+from __future__ import annotations
+from typing import overload, TYPE_CHECKING
+if TYPE_CHECKING:
+        from sqlalchemy.orm import Session
+        from metacatalog.models import Entry, EntryGroup, Person, Keyword
+from typing_extensions import Literal
 from sqlalchemy.orm.exc import NoResultFound
 
 from metacatalog import api
@@ -14,8 +17,11 @@ from metacatalog.util.logging import get_logger
 from metacatalog.util.results import ImmutableResultSet
 from metacatalog.models import Entry, EntryGroup, Keyword, Person
 
-
-def get_uuid(session: Session, uuid: str, as_result: bool=False, not_found: str='raise') -> Union[Entry, EntryGroup, Keyword, Person, ImmutableResultSet, None]:
+@overload
+def get_uuid(as_result: Literal[False] = ...) -> 'Entry' | 'EntryGroup' | 'Person' | 'Keyword' | None: ...
+@overload
+def get_uuid(as_result: Literal[True] = ...) -> ImmutableResultSet: ...
+def get_uuid(session: 'Session', uuid: str, as_result: bool = False, not_found: str = 'raise') -> ImmutableResultSet | 'Entry' | 'EntryGroup' | 'Person' | 'Keyword' | None:
     """
     Return the Metacatalog object of given
     version 4 UUID. The supported objects are:
@@ -28,7 +34,8 @@ def get_uuid(session: Session, uuid: str, as_result: bool=False, not_found: str=
     .. versionadded:: 0.1.13
 
     .. versionchanged:: 0.2.7
-        Now, also :class:`Persons <metacatalog.model.Person` can be
+
+        Now, also :class:`Persons <metacatalog.models.Person>` can be
         found by UUID
     
     .. versionchanged:: 0.7.5

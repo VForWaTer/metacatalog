@@ -1,3 +1,6 @@
+from typing import List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from metacatalog.models import Entry
 import hashlib
 from metacatalog.util.dict_functions import serialize
 from uuid import uuid4
@@ -13,22 +16,22 @@ from metacatalog.db.base import Base
 class EntryGroupAssociation(Base):
     __tablename__ = 'nm_entrygroups'
 
-    entry_id = Column(Integer, ForeignKey('entries.id'), primary_key=True)
-    group_id = Column(Integer, ForeignKey('entrygroups.id'), primary_key=True)
+    entry_id: int = Column(Integer, ForeignKey('entries.id'), primary_key=True)
+    group_id: int = Column(Integer, ForeignKey('entrygroups.id'), primary_key=True)
 
 
 class EntryGroupType(Base):
     __tablename__ = 'entrygroup_types'
 
     # columns
-    id = Column(Integer, primary_key=True)
-    name = Column(String(40), nullable=False)
-    description = Column(String, nullable=False)
+    id: int = Column(Integer, primary_key=True)
+    name: str = Column(String(40), nullable=False)
+    description: str = Column(String, nullable=False)
 
     # relationships
-    entries = relationship("EntryGroup", back_populates='type')
+    groups: List['EntryGroup'] = relationship("EntryGroup", back_populates='type')
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep: bool = False) -> dict:
         """To dict
 
         Return the model as a python dictionary.
@@ -58,7 +61,7 @@ class EntryGroupType(Base):
 
         return d
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s <ID=%d>" % (self.name, self.id)
 
 
@@ -103,22 +106,22 @@ class EntryGroup(Base):
     __tablename__ = 'entrygroups'
 
     # columns
-    id = Column(Integer, primary_key=True)
-    uuid = Column(String(36), nullable=False, default=lambda: str(uuid4()))
-    type_id = Column(Integer, ForeignKey('entrygroup_types.id'), nullable=False)
-    title = Column(String(250))
-    description = Column(String)
+    id: int = Column(Integer, primary_key=True)
+    uuid: str = Column(String(36), nullable=False, default=lambda: str(uuid4()))
+    type_id: int = Column(Integer, ForeignKey('entrygroup_types.id'), nullable=False)
+    title: str = Column(String(250))
+    description: str = Column(String)
 
     publication = Column(DateTime, default=dt.utcnow)
     lastUpdate = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow)
 
 
     # relationships
-    type = relationship("EntryGroupType", back_populates='entries')
-    entries = relationship("Entry", secondary="nm_entrygroups", back_populates="associated_groups")
+    type: 'EntryGroupType' = relationship("EntryGroupType", back_populates='groups')
+    entries: List['Entry'] = relationship("Entry", secondary="nm_entrygroups", back_populates="associated_groups")
 
     @property
-    def checksum(self):
+    def checksum(self) -> str:
         """
         .. versionadded:: 0.3.9
 
@@ -134,7 +137,7 @@ class EntryGroup(Base):
 
         return md5
 
-    def to_dict(self, deep=False, stringify=False) -> dict:
+    def to_dict(self, deep: bool = False, stringify: bool = False) -> dict:
         """To dict
 
         Return the model as a python dictionary.
@@ -183,7 +186,7 @@ class EntryGroup(Base):
 
         return d
 
-    def export(self, path=None, fmt='JSON', **kwargs):
+    def export(self, path: str = None, fmt: str = 'JSON', **kwargs):
         r"""
         Export the EntryGroup. Exports the data using a metacatalog extension.
         Refer to the note below to learn more about export extensions.
@@ -263,7 +266,7 @@ class EntryGroup(Base):
         return exp_function(self, path=path, **kwargs)
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s%s <ID=%d>" % (
             self.type.name,
             " %s" % self.title[:20] if self.title is not None else '',

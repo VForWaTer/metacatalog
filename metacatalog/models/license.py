@@ -1,5 +1,8 @@
-import requests
+from typing import List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from metacatalog.models import Entry
 
+import requests
 from sqlalchemy import Column, CheckConstraint
 from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import relationship
@@ -86,9 +89,9 @@ class License(Base):
     commercial_use = Column(Boolean, default=True, nullable=False)
 
     # relationships
-    entries = relationship("Entry", back_populates='license')
+    entries: List['Entry'] = relationship("Entry", back_populates='license')
 
-    def to_dict(self, deep=False) -> dict:
+    def to_dict(self, deep: bool = False) -> dict:
         """
         Return the model as a python dictionary.
 
@@ -156,5 +159,5 @@ class License(Base):
         
         return response.text
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s <ID=%d>" % (self.title, self.id)

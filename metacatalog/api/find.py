@@ -6,6 +6,13 @@ At the current stage, the following objects can be found by a FIND operation:
 * keywords
 
 """
+from __future__ import annotations
+from typing import List, Union, overload, Optional, TYPE_CHECKING
+from typing_extensions import Literal
+if TYPE_CHECKING:
+        from sqlalchemy.orm import Session, Query
+        from metacatalog.db.base import Base
+        from metacatalog.models import Keyword, Thesaurus, License, Unit, Variable, DataSourceType, PersonRole, Person, EntryGroupType, EntryGroup, Entry
 import os
 import warnings
 
@@ -20,7 +27,8 @@ from metacatalog.util.results import ImmutableResultSet
 
 import nltk
 
-def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=False) -> BinaryExpression:
+
+def _match(column_instance: InstrumentedAttribute, compare_value: str, invert: bool = False) -> BinaryExpression:
     """
     For building filters, the Column should be filtered for
     records that match the given value. If the compare value
@@ -71,7 +79,11 @@ def _match(column_instance: InstrumentedAttribute, compare_value: str, invert=Fa
             return column_instance==compare_value
 
 
-def find_keyword(session, id=None, uuid=None, value=None, thesaurus_name=None, return_iterator=False):
+@overload
+def find_keyword(return_iterator: Literal[False] = False) -> List['Keyword']: ...
+@overload
+def find_keyword(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_keyword(session: 'Session', id: Optional[int] = None, uuid: Optional[str] = None, value: Optional[str] = None, thesaurus_name: Optional[str] = None, return_iterator: bool = False) -> List['Keyword'] | 'Query':
     """
     Return one or many keyword entries from the database on
     exact matches.
@@ -133,7 +145,11 @@ def find_keyword(session, id=None, uuid=None, value=None, thesaurus_name=None, r
         return query.all()
 
 
-def find_thesaurus(session, id=None, uuid=None, name=None, title=None, organisation=None, description=None, return_iterator=False):
+@overload
+def find_thesaurus(return_iterator: Literal[False] = False) -> List['Thesaurus']: ...
+@overload
+def find_thesaurus(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_thesaurus(session: 'Session', id: Optional[int] = None, uuid: Optional[str] = None, name: Optional[str] = None, title: Optional[str] = None, organisation: Optional[str] = None, description: Optional[str] = None, return_iterator: bool = False) -> 'Query' | List['Thesaurus']:
     """
     Retun one or many thesaurii references from the database
     on exact matches. You can  use `'%'` and `'*'` as wildcards
@@ -205,9 +221,12 @@ def find_thesaurus(session, id=None, uuid=None, name=None, title=None, organisat
         return query.all()
 
 
-def find_license(session, id=None, title=None, short_title=None, by_attribution=None, share_alike=None, commercial_use=None, return_iterator=False):
-    """Find license
-
+@overload
+def find_license(return_iterator: Literal[False] = False) -> List['License']: ...
+@overload
+def find_license(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_license(session: 'Session', id: Optional[int] = None, title: Optional[str] = None, short_title: Optional[str] = None, by_attribution: bool = None, share_alike: bool = None, commercial_use: bool = None, return_iterator: bool = False) -> 'Query' | List['License']:
+    """
     Return one or many license entries from the database on
     exact matches. You can  use `'%'` and `'*'` as wildcards
     and prepend a str with `!` to invert the filter.
@@ -273,14 +292,18 @@ def find_license(session, id=None, title=None, short_title=None, by_attribution=
         return query.all()
 
 
-def find_unit(session, id=None, name=None, symbol=None, return_iterator=False):
-    """Find Unit
-
+@overload
+def find_unit(return_iterator: Literal[False] = False) -> List['Unit']: ...
+@overload
+def find_unit(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_unit(session: 'Session', id: Optional[int] = None, name: Optional[str] = None, symbol: Optional[str] = None, return_iterator: bool = False) -> 'Query' | List['Unit']:
+    """
     Return one unit entry from the database on
     exact matches. It makes only sense to set one of the
     attributes (id, name, symbol).
 
     .. versionchanged:: 0.1.8
+
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
 
@@ -322,14 +345,18 @@ def find_unit(session, id=None, name=None, symbol=None, return_iterator=False):
         return query.all()
 
 
-def find_variable(session, id=None, name=None, symbol=None, return_iterator=False):
-    """Find Variable
-
+@overload
+def find_variable(return_iterator: Literal[False] = False) -> List['Variable']: ...
+@overload
+def find_variable(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_variable(session: 'Session', id: Optional[int] = None, name: Optional[str] = None, symbol: Optional[str] = None, return_iterator: bool = False) -> 'Query' | List['Variable']:
+    """
     Return one vriable entry from the database on
     exact matches. It makes only sense to set one of the
     attributes (id, name, symbol).
 
     .. versionchanged:: 0.1.8
+
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
 
@@ -371,13 +398,17 @@ def find_variable(session, id=None, name=None, symbol=None, return_iterator=Fals
         return query.all()
 
 
-def find_datasource_type(session, id=None, name=None, return_iterator=False):
-    """Find Datasource Type
-
+@overload
+def find_datasource_type(return_iterator: Literal[False] = False) -> List['DataSourceType']: ...
+@overload
+def find_datasource_tyoe(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_datasource_type(session: 'Session', id: Optional[int] = None, name: Optional[str] = None, return_iterator: bool = False) -> 'Query' | List['DataSourceType']:
+    """
     Return one datasource type record on exact matches.
     Types can be identified by id or name.
 
     .. versionchanged:: 0.1.8
+
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
 
@@ -415,13 +446,17 @@ def find_datasource_type(session, id=None, name=None, return_iterator=False):
         return query.all()
 
 
-def find_role(session, id=None, name=None, return_iterator=False):
-    """Find Person Role
-
+@overload
+def find_role(return_iterator: Literal[False] = False) -> List['PersonRole']: ...
+@overload
+def find_role(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_role(session: 'Session', id: Optional[int] = None, name: Optional[str] = None, return_iterator: bool = False) -> 'Query' | List['PersonRole']:
+    """
     Return one person role record on exact matches.
     Roles can be identified by id or name.
 
     .. versionchanged:: 0.1.8
+
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
 
@@ -459,7 +494,22 @@ def find_role(session, id=None, name=None, return_iterator=False):
         return query.all()
 
 
-def find_person(session, id=None, uuid=None, first_name=None, last_name=None, role=None, organisation_name=None, organisation_abbrev=None, attribution=None, return_iterator=False):
+@overload
+def find_person(return_iterator: Literal[False] = False) -> List['Person']: ...
+@overload
+def find_person(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_person(
+    session: 'Session',
+    id: Optional[int] = None,
+    uuid: Optional[str] = None,
+    first_name: Optional[str] = None,
+    last_name: Optional[str] = None,
+    role: Optional[int | str] = None, 
+    organisation_name: Optional[str] = None,
+    organisation_abbrev: Optional[str] = None,
+    attribution: Optional[str] = None, 
+    return_iterator: bool = False
+) -> 'Query' | List['Person']:
     """
     Return person record on exact matches. Persons can be
     identified by id, first_name, last_name, organisation details or associated roles.
@@ -584,8 +634,12 @@ def find_person(session, id=None, uuid=None, first_name=None, last_name=None, ro
         return query.all()
 
 
-def find_organisation(session, id=None, organisation_name=None, organisation_abbrev=None, role=None,  return_iterator=False):
-    """Find Organisation
+@overload
+def find_organisation(return_iterator: Literal[False] = False) -> List['Person']: ...
+@overload
+def find_organisation(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_organisation(session: 'Session', id: Optional[int] = None, organisation_name: Optional[str] = None, organisation_abbrev: Optional[str] = None, role: Union[int, str] = None,  return_iterator: bool = False) -> 'Query' | List['Person']:
+    """
     .. versionadded:: 0.2.6
 
     Return Person record on exact matches. This function will only return records
@@ -653,13 +707,17 @@ def find_organisation(session, id=None, organisation_name=None, organisation_abb
         return query.all()
 
 
-def find_group_type(session, id=None, uuid=None, name=None, return_iterator=False):
-    """Find entry group types
-
+@overload
+def find_group_type(return_iterator: Literal[False] = False) -> List['EntryGroupType']: ...
+@overload
+def find_group_type(return_iterator: Literal[True] = False) -> 'Query': ...
+def find_group_type(session: 'Session', id: Optional[int] = None, uuid: Optional[str] = None, name: Optional[str] = None, return_iterator: bool = False) -> 'Query' | List['EntryGroupType']:
+    """
     Find a group type on exact matches. The group types
     describes a collection of entries.
 
     .. versionchanged:: 0.1.8
+
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
 
@@ -697,17 +755,25 @@ def find_group_type(session, id=None, uuid=None, name=None, return_iterator=Fals
         return query.all()
 
 
-def find_group(session, id=None, uuid=None, title=None, type=None, return_iterator=False, as_result=False):
-    """Find group
+@overload
+def find_group(return_iterator: Literal[False] = False, as_result: Literal[False] = False) -> List['EntryGroup']: ...
+@overload
+def find_group(return_iterator: Literal[True] = False, as_result: bool = ...) -> 'Query': ...
+@overload
+def find_group(return_iterator: Literal[False] = False, as_result: Literal[True] = False) -> List['ImmutableResultSet']: ...
 
+def find_group(session: 'Session', id: Optional[int] = None, uuid: Optional[str] = None, title: Optional[str] = None, type: Union[int, str] = None, return_iterator: bool = False, as_result: bool = False) -> 'Query' | List['EntryGroup'] | List['ImmutableResultSet']:
+    """
     Find a group of entries on exact matches. Groups can be
     identified by id, title or its type.
 
     .. versionchanged:: 0.1.8
+
         string matches now allow `'%'` and `'*'` wildcards and can
         be inverted by prepending `!`
 
     .. versionchanged:: 0.2.14
+
         Can be returned as ImmutableResultSet now.
 
     Parameters
@@ -776,26 +842,34 @@ def find_group(session, id=None, uuid=None, title=None, type=None, return_iterat
         return query.all()
 
 
-def find_entry(session, 
-    id=None, 
-    uuid=None, 
-    title=None, 
-    abstract=None, 
-    license=None, 
-    variable=None, 
-    external_id=None, 
-    version='latest', 
-    project=None, 
-    author=None,
-    coauthor=None,
-    contributor=None,
-    keywords=None, 
-    details=None,
-    include_partial=False,
-    return_iterator=False,
-    as_result=False,
-    by_geometry=None,
-):
+@overload
+def find_entry(return_iterator: Literal[False] = False, as_result: Literal[False] = False) -> List['Entry']: ...
+@overload
+def find_entry(return_iterator: Literal[True] = False, as_result: bool = ...) -> 'Query': ...
+@overload
+def find_entry(return_iterator: Literal[False] = False, as_result: Literal[True] = False) -> List['ImmutableResultSet']: ...
+
+def find_entry(
+    session: 'Session', 
+    id: Optional[int] = None, 
+    uuid: Optional[str] = None, 
+    title: Optional[str] = None, 
+    abstract: Optional[str] = None, 
+    license: Optional[int | str] = None, 
+    variable: Optional[int | str] = None, 
+    external_id: Optional[str] = None, 
+    version: Literal['latest'] | int ='latest', 
+    project: Optional[int | str] = None, 
+    author: Optional[int | str] = None,
+    coauthor: Optional[int | str] = None,
+    contributor: Optional[int | str]  =None,
+    keywords: Optional[List[int | str]] = None, 
+    details: Optional[List[int | str]] =None,
+    include_partial: bool = False,
+    return_iterator: bool = False,
+    as_result: bool = False,
+    by_geometry: Optional[str | List[float]] = None,
+) -> 'Query' | List['Entry'] | List['ImmutableResultSet']:
     """
     Find an meta data Entry on exact matches. Entries can be
     identified by id, title, external_id and version. The
@@ -854,7 +928,7 @@ def find_entry(session,
 
         .. code-block:: Python
 
-            api.find_entry(session, abstract='*phrase to find*')
+            api.find_entry(session: 'Session', abstract='*phrase to find*')
 
     license : str, int
         .. versionadded:: 0.2.2
