@@ -8,7 +8,6 @@ import json
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 import xml.etree.ElementTree as ET
-from xml.etree.ElementTree import ElementTree
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
@@ -180,8 +179,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @overload
     def create_standard_metadata(path: str) -> None: ...
     @overload
-    def create_standard_metadata(path: Literal[None]) -> ElementTree: ...
-    def create_standard_metadata(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ElementTree | None:
+    def create_standard_metadata(path: Literal[None]) -> ET.ElementTree: ...
+    def create_standard_metadata(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree | None:
         """
         This function can be imported from metacatalog.api.catalog
 
@@ -273,7 +272,6 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         xml = entry.standards_export(config_dict=config_dict, template_path=template_path)
 
         if not path:
-            print(f"Why is this not returned?? {xml}")
             return xml
 
         # if path is given: write XML file
