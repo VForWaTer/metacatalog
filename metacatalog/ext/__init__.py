@@ -10,6 +10,7 @@ it permanently using the :func:`activate_extension`
 
 """
 from typing import Dict
+import warnings
 
 from .base import MetacatalogExtensionInterface
 
@@ -68,8 +69,10 @@ def __load_extensions():
             mod = importlib.import_module(ex['module'])
             interfaceCls = getattr(mod, ex['interface'])
             extension(name, interfaceCls)
+        except ImportError as e:
+            warnings.warn(f"Could not load Extension '{name}', because dependencies are missing. Please install.\n{str(e)}")
         except Exception as e:
-            print("Error on loading Extension '%s'\n%s" % (name, str(e)))
+            warnings.warn(f"Error on loading Extension '{name}'\n{str(e)}")
 
 
 def activate_extension(name: str, module_name: str, interface_class_name: str):
