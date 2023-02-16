@@ -14,10 +14,11 @@ def check_entry_iso19115_export(session, config_dict, template_path):
     XML ElementTree object for all Entries in the test database.
 
     """
-    for entry in api.find_entry(session):
+    for i, entry in enumerate(api.find_entry(session)):
+        # get the ISO 19115 ElementTree of the Entry
         xml_etree = entry.standards_export(config_dict, template_path)
 
-        assert isinstance(xml_etree, ET.ElementTree)
+        assert isinstance(xml_etree, ET.ElementTree), f"[{i+1}] entry_id = {entry.id}: Entry did not return an ElementTree object."
 
     return True
 
@@ -30,7 +31,7 @@ def check_api_iso19115_export(session, config_dict, path):
     no path is given to ``create_iso19115_xml``.
     
     """    
-    for entry in api.find_entry(session):
+    for i, entry in enumerate(api.find_entry(session)):
         # create xml
         api.catalog.create_iso19115_xml(session, id_or_uuid=entry.id, config_dict=config_dict, path=path)
 
@@ -42,12 +43,15 @@ def check_api_iso19115_export(session, config_dict, path):
             xml_str = f.read()
             
             # check expected start of the xml string
-            assert xml_str.startswith("<gmi:MI_Metadata")
+            assert xml_str.startswith("<gmi:MI_Metadata"), f"[{i+1}] entry_id = {entry.id}: XML file does not start with '<gmi:MI_Metadata'\nCheck file {path}/iso19115_{irs_uuid}.xml"
+
+            # check if ImmurableResultSet.uuid is in xml_str
+            assert irs_uuid in xml_str, f"[{i+1}] entry_id = {entry.id}: uuid is not contained in XML."
 
         # additionally check that create_iso19115 returns an ElementTree object if no path is given
         xml_etree = api.catalog.create_iso19115_xml(session, id_or_uuid=entry.uuid, config_dict=config_dict)
 
-        assert isinstance(xml_etree, ET.ElementTree)
+        assert isinstance(xml_etree, ET.ElementTree), f"[{i+1}] entry_id = {entry.id}: Entry did not return an ElementTree object."
     
     return True
 
