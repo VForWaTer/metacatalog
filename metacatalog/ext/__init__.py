@@ -11,6 +11,8 @@ it permanently using the :func:`activate_extension`
 """
 from typing import Dict
 import warnings
+import json
+import importlib
 
 from .base import MetacatalogExtensionInterface
 
@@ -55,8 +57,6 @@ def __load_extensions():
     It is possible to configure to load 
     """
     from metacatalog import CONFIGFILE
-    import json
-    import importlib
 
     with open(CONFIGFILE, 'r') as f:
         config = json.load(f)
@@ -91,8 +91,13 @@ def activate_extension(name: str, module_name: str, interface_class_name: str):
 
     """
     from metacatalog import CONFIGFILE
-    import json
 
+    # first import extension to make sure everything works
+    mod = importlib.import_module(module_name)
+    interfaceCls = getattr(mod, interface_class_name)
+    extension(name, interfaceCls)
+
+    # persist for later startups
     with open(CONFIGFILE, 'r') as f:
         config = json.load(f)
     
@@ -105,9 +110,6 @@ def activate_extension(name: str, module_name: str, interface_class_name: str):
     # save
     with open(CONFIGFILE, 'w') as f:
         json.dump(config, f, indent=4)
-    
-    # now load
-    print('Extension is activated, you need to reload metacatalog be be effective.')
 
 
 def deactivate_extension(name: str):
@@ -126,7 +128,6 @@ def deactivate_extension(name: str):
     extension : load or activate extension for this session
     """
     from metacatalog import CONFIGFILE
-    import json
 
     # open
     with open(CONFIGFILE, 'r') as f:
