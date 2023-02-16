@@ -129,7 +129,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         
         Returns
         ----------
-        xml : xml.etree.ElementTree.ElementTree
+        xml_etree : xml.etree.ElementTree.ElementTree
             The :class:`ElementTree <xml.etree.ElementTree.ElementTree>` object
             representing the XML ElementTree in Python.
 
@@ -165,10 +165,10 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         template = _init_jinja(template_path)
 
         # render template with entry_dict
-        xml = template.render(**iso_input, **contact_config)
+        xml_str = template.render(**iso_input, **contact_config)
 
         # check whether xml is well-formed
-        assert _validate_xml(xml)
+        assert _validate_xml(xml_str)
 
         # register namespaces for ElementTree representation of XML
         ET.register_namespace('gmi', 'http://www.isotc211.org/2005/gmi')
@@ -178,7 +178,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
 
         # convert to ElementTree and return
-        return ET.ElementTree(ET.fromstring(xml))
+        return ET.ElementTree(ET.fromstring(xml_str))
 
     @overload
     def create_iso19115_xml(path: str) -> None: ...
@@ -244,7 +244,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         Returns
         ----------
-        xml : Union[ElementTree, None]
+        xml_etree : Union[ElementTree, None]
             If no path is given, the :class:`ElementTree <xml.etree.ElementTree.ElementTree>` object
             representing the XML ElementTree in Python is returned.
             If a path is given, None is returned.
@@ -272,10 +272,10 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                 raise NoResultFound(f"No entry with uuid={id_or_uuid} was found.")
 
         # export entry to ISO 19115
-        xml = entry.standards_export(config_dict=config_dict, template_path=template_path)
+        xml_etree = entry.standards_export(config_dict=config_dict, template_path=template_path)
 
         if not path:
-            return xml
+            return xml_etree
 
         # if path is given: write XML file
         else:
@@ -291,4 +291,4 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
             # write XML file
             with open(path, 'wb') as f:
-                xml.write(f, encoding='utf-8')
+                xml_etree.write(f, encoding='utf-8')
