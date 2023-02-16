@@ -17,6 +17,7 @@ from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
 
 
+# default dictionary with the expected structure and keys and dummy values
 DEFAULT_CONTACT = dict(
     contact = dict(
         organisationName = 'METACATALOG',
@@ -33,6 +34,9 @@ DEFAULT_CONTACT = dict(
     publisher = dict(
         organisation_name = 'METACATALOG'
         ))
+
+# default template_path to the iso19115 jinja template, can be overwritten in functions with parameter template_path
+TEMPLATE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'schemas', 'iso19115', 'iso19115-2.j2'))
 
 
 class StandardsExportExtension(MetacatalogExtensionInterface):
@@ -53,7 +57,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_extension(cls):
         # wrapper which calls StandardsExportExtension.standards_export
-        def wrapper_entry(self: Entry, config_dict: dict, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree:  
+        def wrapper_entry(self: Entry, config_dict: dict, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:  
             return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict, template_path=template_path)
         
         # standards_export docstring and name for wrapper function
@@ -64,7 +68,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         Entry.standards_export = wrapper_entry
 
         # add function create_iso19115 to api.catalog
-        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2'):
+        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = TEMPLATE_PATH):
             return StandardsExportExtension.create_iso19115_xml(session, id_or_uuid, config_dict, path, template_path)
 
         wrapper_api.__doc__ = StandardsExportExtension.create_iso19115_xml.__doc__
@@ -75,7 +79,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
 
     @classmethod
-    def standards_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict = {}, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree:
+    def standards_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict = {}, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
         :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>` to XML.
@@ -180,7 +184,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     def create_iso19115_xml(path: str) -> None: ...
     @overload
     def create_iso19115_xml(path: Literal[None]) -> ET.ElementTree: ...
-    def create_iso19115_xml(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree | None:
+    def create_iso19115_xml(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = TEMPLATE_PATH) -> ET.ElementTree | None:
         """
         This function can be imported from metacatalog.api.catalog
 
@@ -193,7 +197,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         If no ``path`` is given, the ``ElementTree`` XML representation
         is returned instead. 
 
-        .. versionadded:: 0.7.8
+        .. versionadded:: 0.8.1
 
         Parameters
         ----------
