@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Union, overload
 from typing_extensions import Literal
 import os
+import json
 
 
 from sqlalchemy.orm import Session
@@ -15,6 +16,24 @@ from metacatalog.ext.standards_export.util import _parse_iso_information, _init_
 from metacatalog import api
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
+
+
+DEFAULT_CONTACT = dict(
+    contact = dict(
+        organisationName = 'METACATALOG',
+        deliveryPoint = 'YOUR ADRESS',
+        city = 'YOUR CITY',
+        administrativeArea = 'YOUR STATE',
+        postalCode = '12345',
+        country = 'YOUR COUNTRY',
+        electronicMailAddress = ['JANE.DOE@EMAIL.COM', 'JOHN.DOE@EMAIL.COM'],
+        linkage = 'HTTPS://YOUR.URL.COM/',
+        linkage_name = 'YOUR WEBSITE NAME',
+        linkage_description = 'YOUR WEBSITE DESCRIPTION'
+        ),
+    publisher = dict(
+        organisation_name = 'METACATALOG'
+        ))
 
 
 class StandardsExportExtension(MetacatalogExtensionInterface):
@@ -46,7 +65,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         Entry.standards_export = wrapper_entry
 
         # add function create_iso19115 to api.catalog
-        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2'):
+        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2'):
             StandardsExportExtension.create_standard_metadata(session, id_or_uuid, config_dict, path, template_path)
 
         wrapper_api.__doc__ = StandardsExportExtension.create_standard_metadata.__doc__
@@ -57,7 +76,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
 
     @classmethod
-    def standards_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree:
+    def standards_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict = {}, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree:
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
         :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>` to XML.
@@ -78,27 +97,28 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             The entry instance to be exported
         config_dict : dict
             Configuration dictionary, containing information about the data provider.
-            Mandatory (nested) keys and type of values:
+            The following keys and their values are expected when rendering the 
+            jinja template:
 
             .. code-block:: Python
 
             dict(
-                contact: dict(
-                    organisationName: str = '',
-                    deliveryPoint: str = '',
-                    city: str = '',
-                    administrativeArea: str = '',
-                    postalCode: str = '',
-                    country: str = '',
-                    electronicMailAddress: list(str) = ['', ''],
-                    linkage: str = '',
-                    linkage_name: str = '',
-                    linkage_description: str = ''
+                contact = dict(
+                    organisationName = '',
+                    deliveryPoint = '',
+                    city = '',
+                    administrativeArea = '',
+                    postalCode = '',
+                    country = '',
+                    electronicMailAddress = ['', ''],
+                    linkage = '',
+                    linkage_name = '',
+                    linkage_description = ''
                 ),
-                publisher: dict(
-                    organisation_name: str = ''
-                )
-            )
+                publisher = dict(
+                    organisation_name = ''
+                ))
+
         template_path : str
             Full path (including the template name) to the jinja2 template for 
             metadata export.  
@@ -118,6 +138,23 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         a useful Metadata export.
 
         """
+        from metacatalog import CONFIGFILE
+
+        # use dummy values for contact as default
+        contact_config = DEFAULT_CONTACT.copy()
+
+        # get contact config from metacatalog CONFIGFILE if available
+        with open(CONFIGFILE, 'r') as f:
+            config = json.load(f)
+
+            base_config = config.get('extra', {}).get('iso19115_contact', {})
+
+        # update default config with contact info from CONFIGFILE
+        contact_config.update(base_config)
+
+        # update config with config passed to this function in config_dict
+        contact_config.update(config_dict)
+
         # get necessary input parameters from ImmutableResultSet for ISO export
         iso_input = _parse_iso_information(entry_or_resultset)
 
@@ -125,7 +162,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         template = _init_jinja(template_path)
 
         # render template with entry_dict
-        xml = template.render(**iso_input, **config_dict)
+        xml = template.render(**iso_input, **contact_config)
 
         # check whether xml is well-formed
         assert _validate_xml(xml)
@@ -144,7 +181,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     def create_standard_metadata(path: str) -> None: ...
     @overload
     def create_standard_metadata(path: Literal[None]) -> ElementTree: ...
-    def create_standard_metadata(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ElementTree | None:
+    def create_standard_metadata(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ElementTree | None:
         """
         This function can be imported from metacatalog.api.catalog
 
@@ -168,27 +205,28 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             id or uuid of the Entry to be exported.
         config_dict : dict
             Configuration dictionary, containing information about the data provider.
-            Mandatory (nested) keys and type of values:
+            The following keys and their values are expected when rendering the 
+            jinja template:
 
             .. code-block:: Python
 
             dict(
-                contact: dict(
-                    organisationName: str = '',
-                    deliveryPoint: str = '',
-                    city: str = '',
-                    administrativeArea: str = '',
-                    postalCode: str = '',
-                    country: str = '',
-                    electronicMailAddress: list(str) = ['', ''],
-                    linkage: str = '',
-                    linkage_name: str = '',
-                    linkage_description: str = ''
+                contact = dict(
+                    organisationName = '',
+                    deliveryPoint = '',
+                    city = '',
+                    administrativeArea = '',
+                    postalCode = '',
+                    country = '',
+                    electronicMailAddress = ['', ''],
+                    linkage = '',
+                    linkage_name = '',
+                    linkage_description = ''
                 ),
-                publisher: dict(
-                    organisation_name: str = ''
-                )
-            )
+                publisher = dict(
+                    organisation_name = ''
+                ))
+
         path : str
             Location where the ISO19115 XML file is saved to.
             If path ends with the name of the XML file (i.e. ends with '.xml'), the file is
@@ -253,4 +291,3 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             # write XML file
             with open(path, 'wb') as f:
                 xml.write(f, encoding='utf-8')
-        
