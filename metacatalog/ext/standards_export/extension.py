@@ -65,13 +65,13 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         # add function create_iso19115 to api.catalog
         def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2'):
-            return StandardsExportExtension.create_standard_metadata(session, id_or_uuid, config_dict, path, template_path)
+            return StandardsExportExtension.create_iso19115_xml(session, id_or_uuid, config_dict, path, template_path)
 
-        wrapper_api.__doc__ = StandardsExportExtension.create_standard_metadata.__doc__
-        wrapper_api.__name__ = StandardsExportExtension.create_standard_metadata.__name__
+        wrapper_api.__doc__ = StandardsExportExtension.create_iso19115_xml.__doc__
+        wrapper_api.__name__ = StandardsExportExtension.create_iso19115_xml.__name__
 
         # add wrapper to api.catalog
-        api.catalog.create_standard_metadata = wrapper_api
+        api.catalog.create_iso19115_xml = wrapper_api
 
 
     @classmethod
@@ -177,22 +177,21 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         return ET.ElementTree(ET.fromstring(xml))
 
     @overload
-    def create_standard_metadata(path: str) -> None: ...
+    def create_iso19115_xml(path: str) -> None: ...
     @overload
-    def create_standard_metadata(path: Literal[None]) -> ET.ElementTree: ...
-    def create_standard_metadata(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree | None:
+    def create_iso19115_xml(path: Literal[None]) -> ET.ElementTree: ...
+    def create_iso19115_xml(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = './schemas/iso19115/iso19115-2.j2') -> ET.ElementTree | None:
         """
         This function can be imported from metacatalog.api.catalog
 
-        Create standard metadata XML file for an entry, which is found 
-        by its id or uuid. The metadata standard is determined by the
-        jinja2 template passed in ``template_path``. Currently defaults
-        to the ISO 19115 template.
+        Create ISO 19115 standard metadata XML file for an entry, which is 
+        found by its id or uuid.
         The XML file is saved to the folder given in ``path``. If ``path``
         does not end with '.xml', the name of the XML file is generated 
         with the uuid of the used ImmutableResultSet: 
-        f"iso19115_{irs_uuid}.xml" 
-        TODO: naming for other standards in the future.
+        f"iso19115_{irs_uuid}.xml".
+        If no ``path`` is given, the ``ElementTree`` XML representation
+        is returned instead. 
 
         .. versionadded:: 0.7.8
 
