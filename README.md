@@ -1,6 +1,5 @@
 # metacatalog
 
-[![GitHub version](https://badge.fury.io/gh/VForWaTer%2Fmetacatalog.svg)](https://badge.fury.io/gh/VForWaTer%2Fmetacatalog)
 [![PyPI version](https://badge.fury.io/py/metacatalog.svg)](https://pypi.org/project/metacatalog/)
 [![Dev status](https://img.shields.io/badge/development%20status-2%20--%20Alpha-yellow)](https://pypi.org/classifiers/)
 [![codecov](https://codecov.io/gh/VForWaTer/metacatalog/branch/main/graph/badge.svg?token=BN0K15LD38)](https://codecov.io/gh/VForWaTer/metacatalog)
