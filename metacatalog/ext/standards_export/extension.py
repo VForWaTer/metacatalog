@@ -8,6 +8,7 @@ import json
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 import xml.etree.ElementTree as ET
+from tqdm import tqdm
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
@@ -15,6 +16,7 @@ from metacatalog.ext.standards_export.util import _parse_iso_information, _init_
 from metacatalog import api
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
+from metacatalog.cmd._util import connect, cprint
 
 
 # default dictionary with the expected structure and keys and dummy values
@@ -34,6 +36,26 @@ DEFAULT_CONTACT = dict(
     publisher = dict(
         organisation_name = 'METACATALOG'
         ))
+
+# default v-for-water contact, TODO: store somewhere else (needed for cli)
+V4W_CONTACT_DICT = {
+    "contact": {
+        "organisationName": "Karlsruhe Institute of Technology (KIT) - Institute of Water and River Basin Management - Chair of Hydrology",
+        "deliveryPoint": "Otto-Ammann-Platz 1, Building 10.81",
+        "city": "Karlsruhe",
+        "administrativeArea": "Baden-Wuerttemberg",
+        "postalCode": "76131",
+        "country": "Germany",
+        "electronicMailAddress": ["alexander.dolich@kit.edu", "mirko.maelicke@kit.edu"],
+        "linkage": "https://portal.vforwater.de/",
+        "linkage_name": "V-FOR-WaTer",
+        "linkage_description": "Virtual research environment for water and terrestrial environmental research"
+    },
+    "publisher": {
+        "organisation_name": "KIT, V-For-WaTer online platform"
+    }
+}
+
 
 # default template_path to the iso19115 jinja template, can be overwritten in functions with parameter template_path
 TEMPLATE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'schemas', 'iso19115', 'iso19115-2.j2'))
@@ -76,6 +98,16 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         # add wrapper to api.catalog
         api.catalog.create_iso19115_xml = wrapper_api
+
+
+    @classmethod
+    def init_cli(cls, subparsers, defaults):
+        myparser = subparsers.add_parser('iso19115', parents=[defaults], help="Create ISO 19115 xml files")
+        myparser.add_argument('--uuid', type=str, help="uuid of the entry to export, must be specified if --id is not specified.")
+        myparser.add_argument('--id', type=int, help="id of the entry to export, must be specified if --uuid is not specified.")
+        myparser.add_argument('--path', type=str, help="Directory to save XML file(s) to, if not specified, the current folder is used.")
+        myparser.add_argument('--all', action='store_true', help="Export all entries in the session to ISO 19115, cannot be used together with --id or --uuid.")
+        myparser.set_defaults(func=StandardsExportExtension.cli_create_iso19115_xml)
 
 
     @classmethod
@@ -292,3 +324,53 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             # write XML file
             with open(path, 'wb') as f:
                 xml_etree.write(f, encoding='utf-8')
+
+
+    @classmethod
+    def cli_create_iso19115_xml(cls, args):
+        """
+        
+        """
+        from metacatalog.api.catalog import create_iso19115_xml
+
+        # get the session
+        session = connect(args)
+
+        # check path (mandatory)
+        if args.path:
+            path = args.path
+        else:
+            path = os.getcwd()
+
+        # check not allowed combination of args
+        if not args.id and not args.uuid and not args.all:
+            cprint(args, "Please provide the ID or UUID of the Entry or EntryGroup to be exported or use the flag --all to export everything.")
+            exit(0)
+
+        if args.id and args.uuid:
+            cprint(args, "Please provide the ID or UUID of the Entry or EntryGroup to be exported.")
+            exit(0)
+
+        if args.id or args.uuid and args.all:
+            cprint(args, "Flag --all cannot be used together with an ID or an UUID.")
+            exit(0)
+
+        # get id
+        if args.id:
+            id_or_uuids = [args.id]        
+
+        # get uuid
+        if args.uuid:
+            id_or_uuids = [args.uuid]
+
+        # flag --all: all entry ids
+        if args.all:
+            id_or_uuids = [entry.id for entry in api.find_entry(session)]
+
+        # run API ISO 19115 export function
+        if args.verbose:
+            for id_or_uuid in tqdm(id_or_uuids):
+                create_iso19115_xml(session=session, id_or_uuid=id_or_uuid, config_dict=V4W_CONTACT_DICT, path=path)
+        else:
+            for id_or_uuid in id_or_uuids:
+                create_iso19115_xml(session=session, id_or_uuid=id_or_uuid, config_dict=V4W_CONTACT_DICT, path=path)
