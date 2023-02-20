@@ -369,11 +369,11 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             id_or_uuids = [args.id]        
 
         # get uuid
-        if args.uuid:
+        elif args.uuid:
             id_or_uuids = [args.uuid]
 
         # flag --all: all entry ids
-        if args.all:
+        elif args.all:
             id_or_uuids = [entry.id for entry in api.find_entry(session)]
 
         # run API ISO 19115 export function
