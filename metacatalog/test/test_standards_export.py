@@ -1,6 +1,8 @@
-import xml.etree.ElementTree as ET
+import subprocess
+import os
 
 import pytest
+import xml.etree.ElementTree as ET
 
 
 from metacatalog import api, ext
@@ -56,6 +58,50 @@ def check_api_iso19115_export(session, config_dict, path):
     return True
 
 
+def check_cli_iso19115_export(session, dburi, path):
+    """
+    Check if an individual entry is correctly exported by the 
+    CLI and check if the flag ``--all`` leads to the export
+    of all Entries / ImmuableResultSets in the test database.
+    
+    """
+    # find test entry with title 3-dimensional windspeed data
+    entry = api.find_entry(session, title='3-dimensional windspeed data')[0]
+
+    # use entry id in CLI command
+    cmd = ['python', '-m', 'metacatalog', 'iso19115', '--id', str(entry.id), '--path', path, '--connection', dburi]
+    
+    # run command
+    subprocess.run(cmd)
+
+    # there must be exactly one file in the cli xml test directory
+    assert len(os.listdir(path)) == 1
+
+    # get xml filename
+    xml_file = os.listdir(path)[0]
+
+    # read xml file
+    with open(f"{path}/{xml_file}") as f:
+        xml_str = f.read()
+            
+        # check if the expected title is in xml string
+        assert '3-dimensional windspeed data' in xml_str
+
+    # test --all flag, which exports all entries (ImmutableResultSets) in the test database
+    path_all = f"{path}/export_all"
+    os.mkdir(path_all)
+
+    cmd = ['python', '-m', 'metacatalog', 'iso19115', '--all', '--path', path_all, '--connection', dburi]
+
+    # run command
+    subprocess.run(cmd)
+
+    # time of development: 15 xml files expected for 15 ImmutableResultSets in the test database
+    assert len(os.listdir(path_all)) == len(api.find_entry(session, as_result=True))
+
+    return True
+
+
 @pytest.mark.depends(on=['add_find'], name='standards_export')
 def test_standards_export(tmp_path):
     """
@@ -64,6 +110,9 @@ def test_standards_export(tmp_path):
     """
     # get a session
     session = connect(mode='session')
+
+    # session string to test CLI
+    dburi = connect(mode='string')
 
     # activate standards_export extension, as long as it is not activated by default
     try:
@@ -93,9 +142,13 @@ def test_standards_export(tmp_path):
     }
 
     # create temporary directory from pytest fixture tmp_path to store .xml files
-    iso_xml_dir = tmp_path / 'iso_xml_dir'
-    iso_xml_dir.mkdir()
+    iso_xml_dir_api = tmp_path / 'iso_xml_dir_api'
+    iso_xml_dir_api.mkdir()
+
+    iso_xml_dir_cli = tmp_path / 'iso_xml_dir_cli'
+    iso_xml_dir_cli.mkdir()
 
     # run single tests
     assert check_entry_iso19115_export(session, config_dict=CONFIG_DICT, template_path='metacatalog/ext/standards_export/schemas/iso19115/iso19115-2.j2')
-    assert check_api_iso19115_export(session, config_dict=CONFIG_DICT, path=iso_xml_dir)
+    assert check_api_iso19115_export(session, config_dict=CONFIG_DICT, path=iso_xml_dir_api)
+    assert check_cli_iso19115_export(session, dburi, path=iso_xml_dir_cli)
