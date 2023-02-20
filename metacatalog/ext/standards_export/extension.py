@@ -329,7 +329,16 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def cli_create_iso19115_xml(cls, args):
         """
-        
+        Adds functionality to the metacatalog CLI to enable ISO 19115
+        XML export.
+        Export an Entry, which is identified by --id or --uuid, in
+        ISO 19115 format. The produced .xml file is saved to the
+        location specified with argument --path.
+        If no path is given, the .xml file is saved to the current
+        working directory.
+        Use the flag --all to export all entries in the given metacatalog
+        connection.
+
         """
         from metacatalog.api.catalog import create_iso19115_xml
 
@@ -344,14 +353,14 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         # check not allowed combination of args
         if not args.id and not args.uuid and not args.all:
-            cprint(args, "Please provide the ID or UUID of the Entry or EntryGroup to be exported or use the flag --all to export everything.")
+            cprint(args, "Please provide the ID or UUID of the Entry to be exported or use the flag --all to export everything.")
             exit(0)
 
         if args.id and args.uuid:
-            cprint(args, "Please provide the ID or UUID of the Entry or EntryGroup to be exported.")
+            cprint(args, "Please provide the ID or UUID of the Entry to be exported.")
             exit(0)
 
-        if args.id or args.uuid and args.all:
+        if (args.id or args.uuid) and args.all:
             cprint(args, "Flag --all cannot be used together with an ID or an UUID.")
             exit(0)
 
