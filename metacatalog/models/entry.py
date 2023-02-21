@@ -237,8 +237,6 @@ class Entry(Base):
             title=self.title,
             author=self.author.to_dict(deep=False),
             authors=[a.to_dict(deep=False) for a in self.authors],
-            locationShape=self.location_shape.wkt,
-            location=self.location_shape.wkt,
             variable=self.variable.to_dict(deep=False),
             embargo=self.embargo,
             embargo_end=self.embargo_end,
@@ -250,6 +248,10 @@ class Entry(Base):
         )
 
         # optional relations
+        if self.location:
+            out['locationShape'] = self.location_shape.wkt
+            out['location'] = self.location_shape.wkt
+
         if self.license is not None:
             out['license'] = self.license.to_dict(deep=False)
 
