@@ -5,6 +5,7 @@ one type of environmental variable. It can hold a reference and interface to the
 If a supported data format is used, Entry can load the data.
 
 """
+from __future__ import annotations
 from typing import List, Dict, Union, TYPE_CHECKING
 if TYPE_CHECKING:
     from metacatalog.models import License, PersonAssociation, Person, Variable, EntryGroup, Keyword, Detail, DataSource, PersonRole
@@ -500,8 +501,11 @@ class Entry(Base):
         return [group for group in self.associated_groups if group.type.name.lower() == 'composite']
 
     @property
-    def location_shape(self) -> 'Point':
-        return to_shape(self.location)
+    def location_shape(self) -> 'Point' | None:
+        if self.location:
+            return to_shape(self.location)
+        else:
+            return None
 
     @location_shape.setter
     def location_shape(self, shape):
