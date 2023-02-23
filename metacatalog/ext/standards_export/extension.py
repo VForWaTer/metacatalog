@@ -83,12 +83,14 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
     @classmethod
     def init_cli(cls, subparsers, defaults):
-        myparser = subparsers.add_parser('iso19115', parents=[defaults], help="Create ISO 19115 xml files")
-        myparser.add_argument('--uuid', type=str, help="uuid of the entry to export, must be specified if --id is not specified.")
-        myparser.add_argument('--id', type=int, help="id of the entry to export, must be specified if --uuid is not specified.")
-        myparser.add_argument('--path', type=str, help="Directory to save XML file(s) to, if not specified, the current folder is used.")
+        myparser = subparsers.add_parser('standards-export', parents=[defaults], help="Export metadata in standard format as .xml files.")
+        myparser.add_argument('--format', choices=['iso19115'], type=str, required=True, help="Metadata standard format.")
+        myparser.add_argument('--uuid', type=str, help="uuid of the entry to export, must be specified if --id or --all is not specified.")
+        myparser.add_argument('--id', type=int, help="id of the entry to export, must be specified if --uuid or --all is not specified.")
+        myparser.add_argument('--path', type=str, help="Directory to save XML file(s) to, `if not specified, the current folder is used.")
         myparser.add_argument('--all', action='store_true', help="Export all entries in the session to ISO 19115, cannot be used together with --id or --uuid.")
-        myparser.set_defaults(func=StandardsExportExtension.cli_create_iso19115_xml)
+        #myparser.set_defaults(func=StandardsExportExtension.cli_create_iso19115_xml)
+        myparser.set_defaults(func=StandardsExportExtension.cli_create_standards_xml)
 
 
     @classmethod
@@ -327,6 +329,18 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
 
     @classmethod
+    def cli_create_standards_xml(cls, args):
+        """
+        Function that determines which metadata standard to use and which 
+        executes the appropriate cli_create_*_xml() function based on the 
+        ``--format`` argument.
+        
+        """
+        if args.format == 'iso19115':
+            StandardsExportExtension.cli_create_iso19115_xml(args)
+
+
+    @classmethod
     def cli_create_iso19115_xml(cls, args):
         """
         Adds functionality to the metacatalog CLI to enable ISO 19115
@@ -353,7 +367,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         # check not allowed combination of args
         if not args.id and not args.uuid and not args.all:
-            cprint(args, "Please provide the ID or UUID of the Entry to be exported or use the flag --all to export everything.")
+            cprint(args, "Please provide the ID or UUID of the Entry to be exported or use the flag --all to export all entries.")
             exit(0)
 
         if args.id and args.uuid:
