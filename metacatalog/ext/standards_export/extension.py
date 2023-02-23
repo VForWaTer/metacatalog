@@ -60,7 +60,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_extension(cls):
         # wrapper which calls StandardsExportExtension.standards_export
-        def wrapper_entry(self: Entry, config_dict: dict, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:  
+        def wrapper_entry(self: Entry, config_dict: dict = {}, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:  
             return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict, template_path=template_path)
         
         # standards_export docstring and name for wrapper function
@@ -71,7 +71,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         Entry.standards_export = wrapper_entry
 
         # add function create_iso19115 to api.catalog
-        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = TEMPLATE_PATH):
+        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = TEMPLATE_PATH):
             return StandardsExportExtension.create_iso19115_xml(session, id_or_uuid, config_dict, path, template_path)
 
         wrapper_api.__doc__ = StandardsExportExtension.create_iso19115_xml.__doc__
