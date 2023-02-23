@@ -37,25 +37,6 @@ DEFAULT_CONTACT = dict(
         organisation_name = 'METACATALOG'
         ))
 
-# default v-for-water contact, TODO: store somewhere else (needed for cli)
-V4W_CONTACT_DICT = {
-    "contact": {
-        "organisationName": "Karlsruhe Institute of Technology (KIT) - Institute of Water and River Basin Management - Chair of Hydrology",
-        "deliveryPoint": "Otto-Ammann-Platz 1, Building 10.81",
-        "city": "Karlsruhe",
-        "administrativeArea": "Baden-Wuerttemberg",
-        "postalCode": "76131",
-        "country": "Germany",
-        "electronicMailAddress": ["alexander.dolich@kit.edu", "mirko.maelicke@kit.edu"],
-        "linkage": "https://portal.vforwater.de/",
-        "linkage_name": "V-FOR-WaTer",
-        "linkage_description": "Virtual research environment for water and terrestrial environmental research"
-    },
-    "publisher": {
-        "organisation_name": "KIT, V-For-WaTer online platform"
-    }
-}
-
 
 # default template_path to the iso19115 jinja template, can be overwritten in functions with parameter template_path
 TEMPLATE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'schemas', 'iso19115', 'iso19115-2.j2'))
@@ -153,7 +134,19 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                 publisher = dict(
                     organisation_name = ''
                 ))
+            
+            It is also possible to create a .json file ``iso19115_contact.json`` containing the
+            contact information and add the path to this file to the metacatalog CONFIGFILE under 
+            the top level key ``extra``:
 
+            .. code-block:: json
+
+            "extra":{
+    	        "iso19115_contact": "/path/to/iso19115_contact.json"
+                }
+
+            This is the only way to add the contact information if you use the metacatalog CLI
+            for the export of metadata standards.
         template_path : str
             Full path (including the template name) to the jinja2 template for 
             metadata export.  
@@ -178,11 +171,18 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # use dummy values for contact as default
         contact_config = DEFAULT_CONTACT.copy()
 
-        # get contact config from metacatalog CONFIGFILE if available
+        # get contact config from metacatalog CONFIGFILE if specified
         with open(CONFIGFILE, 'r') as f:
             config = json.load(f)
 
-            base_config = config.get('extra', {}).get('iso19115_contact', {})
+            # get base_config path from CONFIGFILE: path to user generated .json with contact info
+            base_config_path = config.get('extra', {}).get('iso19115_contact', '')
+
+            if base_config_path:
+                with open(base_config_path, 'r') as f:
+                    base_config = json.load(f)
+            else:
+                base_config = {}
 
         # update default config with contact info from CONFIGFILE
         contact_config.update(base_config)
@@ -379,7 +379,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # run API ISO 19115 export function
         if args.verbose:
             for id_or_uuid in tqdm(id_or_uuids):
-                create_iso19115_xml(session=session, id_or_uuid=id_or_uuid, config_dict=V4W_CONTACT_DICT, path=path)
+                create_iso19115_xml(session=session, id_or_uuid=id_or_uuid, config_dict={}, path=path)
         else:
             for id_or_uuid in id_or_uuids:
-                create_iso19115_xml(session=session, id_or_uuid=id_or_uuid, config_dict=V4W_CONTACT_DICT, path=path)
+                create_iso19115_xml(session=session, id_or_uuid=id_or_uuid, config_dict={}, path=path)
