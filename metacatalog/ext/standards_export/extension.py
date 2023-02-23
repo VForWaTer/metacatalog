@@ -89,7 +89,6 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         myparser.add_argument('--id', type=int, help="id of the entry to export, must be specified if --uuid or --all is not specified.")
         myparser.add_argument('--path', type=str, help="Directory to save XML file(s) to, `if not specified, the current folder is used.")
         myparser.add_argument('--all', action='store_true', help="Export all entries in the session to ISO 19115, cannot be used together with --id or --uuid.")
-        #myparser.set_defaults(func=StandardsExportExtension.cli_create_iso19115_xml)
         myparser.set_defaults(func=StandardsExportExtension.cli_create_standards_xml)
 
 
@@ -372,7 +371,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         if args.id and args.uuid:
             cprint(args, "Please provide the ID or UUID of the Entry to be exported.")
-            exit(0)
+            exit(0)        #myparser.set_defaults(func=StandardsExportExtension.cli_create_iso19115_xml)
+
 
         if (args.id or args.uuid) and args.all:
             cprint(args, "Flag --all cannot be used together with an ID or an UUID.")
