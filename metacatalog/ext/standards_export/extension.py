@@ -57,7 +57,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_extension(cls):
         # wrapper which calls StandardsExportExtension.standards_export
-        def wrapper_entry(self: Entry, config_dict: dict, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:  
+        def wrapper_entry(self: Entry, config_dict: dict = {}, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:  
             return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict, template_path=template_path)
         
         # standards_export docstring and name for wrapper function
@@ -68,7 +68,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         Entry.standards_export = wrapper_entry
 
         # add function create_iso19115 to api.catalog
-        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = TEMPLATE_PATH):
+        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = TEMPLATE_PATH):
             return StandardsExportExtension.create_iso19115_xml(session, id_or_uuid, config_dict, path, template_path)
 
         wrapper_api.__doc__ = StandardsExportExtension.create_iso19115_xml.__doc__
@@ -121,7 +121,19 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                 publisher = dict(
                     organisation_name = ''
                 ))
+            
+            It is also possible to create a .json file ``iso19115_contact.json`` containing the
+            contact information and add the path to this file to the metacatalog CONFIGFILE under 
+            the top level key ``extra``:
 
+            .. code-block:: json
+
+            "extra":{
+    	        "iso19115_contact": "/path/to/iso19115_contact.json"
+                }
+
+            This is the only way to add the contact information if you use the metacatalog CLI
+            for the export of metadata standards.
         template_path : str
             Full path (including the template name) to the jinja2 template for 
             metadata export.  
@@ -146,11 +158,18 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # use dummy values for contact as default
         contact_config = DEFAULT_CONTACT.copy()
 
-        # get contact config from metacatalog CONFIGFILE if available
+        # get contact config from metacatalog CONFIGFILE if specified
         with open(CONFIGFILE, 'r') as f:
             config = json.load(f)
 
-            base_config = config.get('extra', {}).get('iso19115_contact', {})
+            # get base_config path from CONFIGFILE: path to user generated .json with contact info
+            base_config_path = config.get('extra', {}).get('iso19115_contact', '')
+
+            if base_config_path:
+                with open(base_config_path, 'r') as f:
+                    base_config = json.load(f)
+            else:
+                base_config = {}
 
         # update default config with contact info from CONFIGFILE
         contact_config.update(base_config)
