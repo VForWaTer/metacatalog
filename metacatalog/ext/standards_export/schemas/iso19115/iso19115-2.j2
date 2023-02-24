@@ -160,16 +160,7 @@
             </gmd:citation>
             <gmd:abstract>
                 <gco:CharacterString>
-                Abstract: 
                 {{abstract | indent(16)}}
-
-                {% for details_table in details %}
-                {% if details_table %}
-                Details:
-                {{details_table | indent(16)}}
-
-                {% endif %}
-                {% endfor %}
                 </gco:CharacterString>
             </gmd:abstract>
             {# first author again as pointOfContact (like GFZ) #}
@@ -283,6 +274,11 @@
                     {% endfor %}
                 </gmd:EX_Extent>
             </gmd:extent>
+            {% for detail in details %}
+            <gmd:supplementalInformation>
+                <gco:CharacterString>detail</gco:CharacterString>
+            </gmd:supplementalInformation>
+            {% endfor %}
         </gmd:MD_DataIdentification>
     </gmd:identificationInfo>
     {# TODO: dataQualityInfo (not yet implemented) #}
