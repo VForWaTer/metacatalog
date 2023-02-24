@@ -84,7 +84,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_cli(cls, subparsers, defaults):
         myparser = subparsers.add_parser('standards-export', parents=[defaults], help="Export metadata in standard format as .xml files.")
-        myparser.add_argument('--format', choices=['iso19115'], type=str, required=True, help="Metadata standard format.")
+        myparser.add_argument('--format', choices=['iso19115'], type=str, nargs='?', const='iso19115', default='iso19115', help="Metadata standard format.")
         myparser.add_argument('--uuid', type=str, help="uuid of the entry to export, must be specified if --id or --all is not specified.")
         myparser.add_argument('--id', type=int, help="id of the entry to export, must be specified if --uuid or --all is not specified.")
         myparser.add_argument('--path', type=str, help="Directory to save XML file(s) to, `if not specified, the current folder is used.")
