@@ -285,8 +285,8 @@ def _get_details(rs: ImmutableResultSet) -> List[str]:
                 else:
                     details_list.append(f"{detail_dict['key']}: {detail_dict['value']}")
 
-    # remove duplicate details
-    details_list = list(set(details_list))
+    # remove duplicate details, without changing the order (keep top level keys of nested details on top)
+    details_list = list(dict.fromkeys(details_list).keys())
 
     return details_list
 
