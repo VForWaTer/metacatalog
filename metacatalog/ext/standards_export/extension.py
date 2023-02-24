@@ -85,8 +85,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     def init_cli(cls, subparsers, defaults):
         myparser = subparsers.add_parser('standards-export', parents=[defaults], help="Export metadata in standard format as .xml files.")
         myparser.add_argument('--format', choices=['iso19115'], type=str, nargs='?', const='iso19115', default='iso19115', help="Metadata standard format.")
-        myparser.add_argument('--uuid', type=str, help="uuid of the entry to export, must be specified if --id or --all is not specified.")
-        myparser.add_argument('--id', type=int, help="id of the entry to export, must be specified if --uuid or --all is not specified.")
+        myparser.add_argument('--uuid', nargs='+', type=str, help="uuid or uuids of entries to export, must be specified if --id or --all is not specified.")
+        myparser.add_argument('--id', nargs='+', type=int, help="id or ids of entries to export, must be specified if --uuid or --all is not specified.")
         myparser.add_argument('--path', type=str, help="Directory to save XML file(s) to, `if not specified, the current folder is used.")
         myparser.add_argument('--all', action='store_true', help="Export all entries in the session to ISO 19115, cannot be used together with --id or --uuid.")
         myparser.set_defaults(func=StandardsExportExtension.cli_create_standards_xml)
@@ -344,13 +344,20 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         """
         Adds functionality to the metacatalog CLI to enable ISO 19115
         XML export.
-        Export an Entry, which is identified by --id or --uuid, in
-        ISO 19115 format. The produced .xml file is saved to the
-        location specified with argument --path.
+        Export one or more Entries, which are identified by --id or 
+        --uuid, in ISO 19115 format. The produced .xml file is saved 
+        to the location specified with argument --path.
         If no path is given, the .xml file is saved to the current
         working directory.
         Use the flag --all to export all entries in the given metacatalog
         connection.
+
+        Notes
+        ----------
+        The content of the xml files will be created using a 
+        :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`.
+        This will lazy-load sibling Entries and parent groups as needed for
+        a useful Metadata export.  
 
         """
         from metacatalog.api.catalog import create_iso19115_xml
@@ -380,11 +387,11 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         # get id
         if args.id:
-            id_or_uuids = [args.id]        
+            id_or_uuids = args.id       
 
         # get uuid
         elif args.uuid:
-            id_or_uuids = [args.uuid]
+            id_or_uuids = args.uuid
 
         # flag --all: all entry ids
         elif args.all:
