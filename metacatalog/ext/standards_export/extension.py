@@ -8,6 +8,7 @@ import json
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 import xml.etree.ElementTree as ET
+from tqdm import tqdm
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
@@ -15,6 +16,7 @@ from metacatalog.ext.standards_export.util import _parse_iso_information, _init_
 from metacatalog import api
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
+from metacatalog.cmd._util import connect, cprint
 
 
 # default dictionary with the expected structure and keys and dummy values
@@ -34,6 +36,7 @@ DEFAULT_CONTACT = dict(
     publisher = dict(
         organisation_name = 'METACATALOG'
         ))
+
 
 # default template_path to the iso19115 jinja template, can be overwritten in functions with parameter template_path
 TEMPLATE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'schemas', 'iso19115', 'iso19115-2.j2'))
@@ -57,7 +60,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_extension(cls):
         # wrapper which calls StandardsExportExtension.standards_export
-        def wrapper_entry(self: Entry, config_dict: dict, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:  
+        def wrapper_entry(self: Entry, config_dict: dict = {}, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:  
             return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict, template_path=template_path)
         
         # standards_export docstring and name for wrapper function
@@ -68,7 +71,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         Entry.standards_export = wrapper_entry
 
         # add function create_iso19115 to api.catalog
-        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict, path: str = None, template_path: str = TEMPLATE_PATH):
+        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = TEMPLATE_PATH):
             return StandardsExportExtension.create_iso19115_xml(session, id_or_uuid, config_dict, path, template_path)
 
         wrapper_api.__doc__ = StandardsExportExtension.create_iso19115_xml.__doc__
@@ -76,6 +79,16 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         # add wrapper to api.catalog
         api.catalog.create_iso19115_xml = wrapper_api
+
+
+    @classmethod
+    def init_cli(cls, subparsers, defaults):
+        myparser = subparsers.add_parser('standards-export', parents=[defaults], help="Export metadata in standard format as .xml files.")
+        myparser.add_argument('entries', nargs='*', help='ID(s) or UUID(s) of Entries to export.')
+        myparser.add_argument('--format', choices=['iso19115'], type=str, nargs='?', const='iso19115', default='iso19115', help="Metadata standard format.")
+        myparser.add_argument('--path', type=str, help="Directory to save XML file(s) to, `if not specified, the current folder is used.")
+        myparser.add_argument('--all', action='store_true', help="Export all entries in the session to ISO 19115, cannot be used together with --id or --uuid.")
+        myparser.set_defaults(func=StandardsExportExtension.cli_create_standards_xml)
 
 
     @classmethod
@@ -121,7 +134,19 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                 publisher = dict(
                     organisation_name = ''
                 ))
+            
+            It is also possible to create a .json file ``iso19115_contact.json`` containing the
+            contact information and add the path to this file to the metacatalog CONFIGFILE under 
+            the top level key ``extra``:
 
+            .. code-block:: json
+
+            "extra":{
+    	        "iso19115_contact": "/path/to/iso19115_contact.json"
+                }
+
+            This is the only way to add the contact information if you use the metacatalog CLI
+            for the export of metadata standards.
         template_path : str
             Full path (including the template name) to the jinja2 template for 
             metadata export.  
@@ -146,11 +171,18 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # use dummy values for contact as default
         contact_config = DEFAULT_CONTACT.copy()
 
-        # get contact config from metacatalog CONFIGFILE if available
+        # get contact config from metacatalog CONFIGFILE if specified
         with open(CONFIGFILE, 'r') as f:
             config = json.load(f)
 
-            base_config = config.get('extra', {}).get('iso19115_contact', {})
+            # get base_config path from CONFIGFILE: path to user generated .json with contact info
+            base_config_path = config.get('extra', {}).get('iso19115_contact', '')
+
+            if base_config_path:
+                with open(base_config_path, 'r') as f:
+                    base_config = json.load(f)
+            else:
+                base_config = {}
 
         # update default config with contact info from CONFIGFILE
         contact_config.update(base_config)
@@ -292,3 +324,75 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             # write XML file
             with open(path, 'wb') as f:
                 xml_etree.write(f, encoding='utf-8')
+
+
+    @classmethod
+    def cli_create_standards_xml(cls, args):
+        """
+        Function that determines which metadata standard to use and which 
+        executes the appropriate cli_create_*_xml() function based on the 
+        ``--format`` argument.
+        
+        """
+        if args.format == 'iso19115':
+            StandardsExportExtension.cli_create_iso19115_xml(args)
+
+
+    @classmethod
+    def cli_create_iso19115_xml(cls, args):
+        """
+        Adds functionality to the metacatalog CLI to enable ISO 19115
+        XML export.
+        Export one or more Entries, which are identified by positional
+        argument entries. Entries can be identified by ID or UUID and  
+        are exported in ISO 19115 format. The produced .xml file is saved 
+        to the location specified with argument --path.
+        If no path is given, the .xml file is saved to the current
+        working directory.
+        Use the flag --all to export all entries in the given metacatalog
+        connection.
+
+        Notes
+        ----------
+        The content of the xml files will be created using a 
+        :class:`ImmutableResultSet <metacatalog.utils.results.ImmutableResultSet>`.
+        This will lazy-load sibling Entries and parent groups as needed for
+        a useful Metadata export.  
+
+        """
+        from metacatalog.api.catalog import create_iso19115_xml
+
+        # get the session
+        session = connect(args)
+
+        # check path (mandatory)
+        if args.path:
+            path = args.path
+        else:
+            path = os.getcwd()
+
+        # check not allowed combination of args
+        if not args.entries and not args.all:
+            cprint(args, "Please provide the ID(s) or UUID(s) of Entries to be exported or use flag --all to export all Entries in the database session.")
+            exit(0)
+
+        if args.entries and args.all:
+            cprint(args, "Flag --all cannot be used together with an ID or UUID.")
+            exit(0)
+
+        # get entries to be exported
+        if args.entries:
+            # if '-' in x -> uuid, else id
+            id_or_uuids = [str(x) if '-' in x else int(x) for x in args.entries]
+
+        # flag --all: all entry ids
+        elif args.all:
+            id_or_uuids = [entry.id for entry in api.find_entry(session)]
+
+        # run API ISO 19115 export function
+        if args.verbose:
+            for id_or_uuid in tqdm(id_or_uuids):
+                create_iso19115_xml(session=session, id_or_uuid=id_or_uuid, config_dict={}, path=path)
+        else:
+            for id_or_uuid in id_or_uuids:
+                create_iso19115_xml(session=session, id_or_uuid=id_or_uuid, config_dict={}, path=path)

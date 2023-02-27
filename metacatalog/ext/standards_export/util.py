@@ -635,7 +635,7 @@ def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet])
     iso_input = {
         'uuid': uuid, 'lastUpdate': lastUpdate, 'publication': publication, 'version': version, 'title': title, 
         'authors': authors, 'abstract': abstract, 'details': details, 'keywords': keywords, 'licenses': licenses,
-        'temporal_scales': temporal_scales, 'bbox_locations': bbox_locations, 'spatials_resolutions': spatial_resolutions
+        'temporal_scales': temporal_scales, 'bbox_locations': bbox_locations, 'spatial_resolutions': spatial_resolutions
         }
 
     return iso_input
