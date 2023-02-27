@@ -69,7 +69,7 @@ def check_cli_iso19115_export(session, dburi, path):
     entry = api.find_entry(session, title='3-dimensional windspeed data')[0]
 
     # use entry id in CLI command
-    cmd = ['python', '-m', 'metacatalog', 'standards-export', '--format', 'iso19115', '--id', str(entry.id), '--path', path, '--connection', dburi]
+    cmd = ['python', '-m', 'metacatalog', 'standards-export', str(entry.id), '--format', 'iso19115', '--path', path, '--connection', dburi]
     
     # run command
     subprocess.run(cmd)
