@@ -207,9 +207,9 @@ def _get_authors(rs: ImmutableResultSet) -> List[Dict]:
             for author_dict in entry_authors:
                 authors.append(
                     {
-                    'first_name': author_dict['first_name'],
-                    'last_name': author_dict['last_name'],
-                    'organisation_name': author_dict['organisation_name']
+                    'first_name': author_dict.get('first_name'),
+                    'last_name': author_dict.get('last_name'),
+                    'organisation_name': author_dict.get('organisation_name')
                 })
     
     return authors
@@ -576,7 +576,7 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
     return temporal_scales, bbox_locations, spatial_resolutions
 
 
-def _parse_iso_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> Dict:
+def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> Dict:
     """
     Loads the ImmutableResultSet of the input Entry (if not already an ImmutableResultSet) 
     and extracts the information necessary for ISO export.
