@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 
 from metacatalog.ext import MetacatalogExtensionInterface
-from metacatalog.ext.standards_export.util import _parse_iso_information, _init_jinja, _validate_xml
+from metacatalog.ext.standards_export.util import _parse_export_information, _init_jinja, _validate_xml
 from metacatalog import api
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
@@ -191,7 +191,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         contact_config.update(config_dict)
 
         # get necessary input parameters from ImmutableResultSet for ISO export
-        iso_input = _parse_iso_information(entry_or_resultset)
+        iso_input = _parse_export_information(entry_or_resultset)
 
         # get initialized jinja template
         template = _init_jinja(template_path)
