@@ -1,0 +1,70 @@
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://datacite.org/schema/kernel-4"
+    xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">
+    <identifier identifierType="UUID">{{uuid}}</identifier>
+    {% for author in authors %}
+    <creators>
+        <creator>
+            {% if author.is_organisation %}
+            <creatorName nameType="Organizational">{{author.organization_name}}</creatorName>
+            {% else %}
+            <creatorName nameType="Personal">{{author.last_name}}, {{author.first_name}}</creatorName>
+            <givenName>{{author.first_name}}</givenName>
+            <familyName>{{author.last_name}}</familyName>
+            {% endif %}
+            {% if author.affiliation %}
+            <affiliation>{{author.affiliation}}</affiliation>
+            {% endif %}
+        </creator>
+    </creators>
+    {% endfor %}
+    <titles>
+        <title>{{title}}</title>
+    </titles>
+    <publisher>{{contact.organisationName}}</publisher>
+    <publicationYear>{{publication.strftime('%Y')}}</publicationYear>
+    {% if keywords or details%}
+    <subjects>
+        {% for detail in details %}
+        <subject>{{detail}}</subject>
+        {% endfor %}
+        {% for keyword in keywords %}
+        <subject subjectScheme="{{keyword.thesaurusName}}">{{keyword.full_path}}</subject>
+        {% endfor %}
+    </subjects>
+    {% endif %}
+    <contributors>
+        <contributor contributorType="ContactPerson">
+            <contributorName nameType="Organizational">{{contact.organisationName}}</contributorName>
+        </contributor>
+    </contributors>
+    <dates>
+        <date dateType="Created">{{publication}}</date>
+        <date dateType="Updated">{{lastUpdate}}</date>
+    </dates>
+    <language>en</language>
+    <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
+    <sizes />
+    <formats />
+    <version>{{version}}</version>
+    {% for license in licenses %}
+    <rightsList>
+        <rights rightsURI="{{license.link}}">{{license.short_title}}</rights>
+    </rightsList>
+    {% endfor %}
+    <descriptions>
+        <description descriptionType="Abstract"> 
+        {{abstract}}
+        </description>
+    </descriptions>
+    <geoLocations>
+        <geoLocation>
+            <geoLocationBox>
+                <westBoundLongitude>{{bbox_location.min_lon}}</westBoundLongitude>
+                <eastBoundLongitude>{{bbox_location.max_lon}}</eastBoundLongitude>
+                <southBoundLatitude>{{bbox_location.min_lat}}</southBoundLatitude>
+                <northBoundLatitude>{{bbox_location.max_lat}}</northBoundLatitude>
+            </geoLocationBox>
+            </geoLocation>
+        </geoLocations>
+</resource>
