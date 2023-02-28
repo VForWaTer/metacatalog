@@ -5,12 +5,12 @@
     {% for author in authors %}
     <creators>
         <creator>
-            {% if author.is_organisation %}
-            <creatorName nameType="Organizational">{{author.organization_name}}</creatorName>
-            {% else %}
+            {% if author.last_name %}
             <creatorName nameType="Personal">{{author.last_name}}, {{author.first_name}}</creatorName>
             <givenName>{{author.first_name}}</givenName>
-            <familyName>{{author.last_name}}</familyName>
+            <familyName>{{author.last_name}}</familyName>            
+            {% else %}
+            <creatorName nameType="Organizational">{{author.organisation_name}}</creatorName>
             {% endif %}
             {% if author.affiliation %}
             <affiliation>{{author.affiliation}}</affiliation>
@@ -22,7 +22,7 @@
         <title>{{title}}</title>
     </titles>
     <publisher>{{contact.organisationName}}</publisher>
-    <publicationYear>{{publication.strftime('%Y')}}</publicationYear>
+    <publicationYear>{{publication[0:4]}}</publicationYear>
     {% if keywords or details%}
     <subjects>
         {% for detail in details %}
@@ -41,6 +41,10 @@
     <dates>
         <date dateType="Created">{{publication}}</date>
         <date dateType="Updated">{{lastUpdate}}</date>
+        {% for temporal_scale in temporal_scales %}
+        <date dateType="Collected">{{temporal_scale.temporal_extent_start}}</date>
+        <date dateType="Collected">{{temporal_scale.temporal_extent_end}}</date>
+        {% endfor %}
     </dates>
     <language>en</language>
     <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
@@ -59,12 +63,21 @@
     </descriptions>
     <geoLocations>
         <geoLocation>
+            {% for bbox_location in bbox_locations %}
+            {% if bbox_location.min_lon == bbox_location.max_lon and bbox_location.min_lat == bbox_location.max_lat %}
+            <geoLocationPoint>
+                <pointLongitude>{{bbox_location.min_lon}}</pointLongitude>
+                <pointLatitude>{{bbox_location.min_lat}}</pointLatitude>
+            </geoLocationPoint>
+            {% else %}
             <geoLocationBox>
                 <westBoundLongitude>{{bbox_location.min_lon}}</westBoundLongitude>
                 <eastBoundLongitude>{{bbox_location.max_lon}}</eastBoundLongitude>
                 <southBoundLatitude>{{bbox_location.min_lat}}</southBoundLatitude>
                 <northBoundLatitude>{{bbox_location.max_lat}}</northBoundLatitude>
             </geoLocationBox>
-            </geoLocation>
-        </geoLocations>
+            {% endif %}
+            {% endfor %}
+        </geoLocation>
+    </geoLocations>
 </resource>
