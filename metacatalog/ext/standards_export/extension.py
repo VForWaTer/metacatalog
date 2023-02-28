@@ -332,6 +332,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         Function that determines which metadata standard to use and which 
         executes the appropriate cli_create_*_xml() function based on the 
         ``--format`` argument.
+
+        .. versionadded:: 0.8.2
         
         """
         if args.format == 'iso19115':
@@ -351,6 +353,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         working directory.
         Use the flag --all to export all entries in the given metacatalog
         connection.
+
+        .. versionadded:: 0.8.2
 
         Notes
         ----------
