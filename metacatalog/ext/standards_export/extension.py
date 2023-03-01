@@ -60,7 +60,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_extension(cls):
         # wrapper which calls StandardsExportExtension.standards_export
-        def wrapper_entry(self: Entry, config_dict: dict = {}, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:  
+        def wrapper_entry(self: Entry, config_dict: dict = {}, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:
             return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict, template_path=template_path)
         
         # standards_export docstring and name for wrapper function
@@ -303,15 +303,15 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             if not entry:
                 raise NoResultFound(f"No entry with uuid={id_or_uuid} was found.")
 
-        # export entry to ISO 19115
+        # create xml etree entry, standard
         xml_etree = entry.standards_export(config_dict=config_dict, template_path=template_path)
 
         if not path:
             return xml_etree
 
-        # if path is given: write XML file
+        # if path is given: create XML file
         else:
-            # get the uuid of the ImmutableResultSet that is written to ISO19115 XML (rs.group.uuid or rs.get('uuid'))
+            # get the uuid of the ImmutableResultSet that is written to XML (rs.group.uuid or rs.get('uuid'))
             irs_uuid = ImmutableResultSet(entry).uuid
 
             # use absolute path
@@ -319,7 +319,10 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
             # if path does not end with .xml: auto-generate XML filename
             if not path.endswith('.xml'):
-                path += f"/iso19115_{irs_uuid}.xml"
+                if 'iso19115' in template_path.lower():
+                    path += f"/iso19115_{irs_uuid}.xml"
+                elif 'datacite' in template_path.lower():
+                    path += f"/datacite_{irs_uuid}.xml"
 
             # write XML file
             with open(path, 'wb') as f:
