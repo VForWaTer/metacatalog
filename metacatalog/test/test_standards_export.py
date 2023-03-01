@@ -35,7 +35,7 @@ def check_api_iso19115_export(session, path):
     """    
     for i, entry in enumerate(api.find_entry(session)):
         # create xml
-        api.catalog.create_iso19115_xml(session, id_or_uuid=entry.id, path=path)
+        api.catalog.create_standards_xml(session, id_or_uuid=entry.id, path=path)
 
         # get ImmutableResultSet uuid to open file
         irs_uuid = ImmutableResultSet(entry).uuid
@@ -51,7 +51,7 @@ def check_api_iso19115_export(session, path):
             assert irs_uuid in xml_str, f"[{i+1}] entry_id = {entry.id}: uuid is not contained in XML."
 
         # additionally check that create_iso19115 returns an ElementTree object if no path is given
-        xml_etree = api.catalog.create_iso19115_xml(session, id_or_uuid=entry.uuid)
+        xml_etree = api.catalog.create_standards_xml(session, id_or_uuid=entry.uuid)
 
         assert isinstance(xml_etree, ET.ElementTree), f"[{i+1}] entry_id = {entry.id}: Entry did not return an ElementTree object."
     
