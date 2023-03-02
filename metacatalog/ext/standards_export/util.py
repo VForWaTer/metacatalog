@@ -110,16 +110,20 @@ def _get_title(rs: ImmutableResultSet) -> str:
         Used for field <gmd:title>, not repeatable.
 
     """
+    title = ''
+
     # if a base group exists, use the title of the base group
     if rs.group:
         title = rs.group.title
 
     # if there is only one title / entry in the ImmutableResultSet, use its title
-    elif isinstance(rs.get('title'), str):
+    # also do this if title is None, as rs.group.title can be None
+    if isinstance(rs.get('title'), str) and not title:
         title = rs.get('title')
 
     # if there are more titles in ImmutableResultSet, a dict is returned, concatenate titles
-    elif isinstance(rs.get('title'), dict):
+    # also do this if title is None, as rs.group.title can be None
+    elif isinstance(rs.get('title'), dict) and not title:
         title = ''
         for i, _title in enumerate(rs.get('title').values()):
             title += f"Title {i+1}: {_title}\n"
