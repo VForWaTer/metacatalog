@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 
 
 from metacatalog import api, ext
+from metacatalog.ext.standards_export.util import _get_title
 from metacatalog.util.results import ImmutableResultSet
 from ._util import connect
 
@@ -40,7 +41,8 @@ def check_api_standards_export(session, path, template_path):
         api.catalog.create_standards_xml(session, id_or_uuid=entry.id, path=path, template_path=template_path)
 
         # get ImmutableResultSet uuid to open file
-        irs_uuid = ImmutableResultSet(entry).uuid
+        rs = ImmutableResultSet(entry)
+        irs_uuid = rs.uuid
 
         # .xml filenames are generated from ImmutableResultSet.uuid
         if 'iso19115' in template_path:
@@ -51,8 +53,8 @@ def check_api_standards_export(session, path, template_path):
             with open(f"{path}/datacite_{irs_uuid}.xml") as f:
                 xml_str = f.read()
                 
-        # check if ImmurableResultSet.uuid is in xml_str
-        assert irs_uuid in xml_str, f"[{i+1}] entry_id = {entry.id}: uuid is not contained in XML."
+        # check if ImmurableResultSet title is in xml_str
+        assert _get_title(rs) in xml_str, f"[{i+1}] entry_id = {entry.id}: title is not contained in XML."
 
         # additionally check that create_iso19115 returns an ElementTree object if no path is given
         xml_etree = api.catalog.create_standards_xml(session, id_or_uuid=entry.uuid, template_path=template_path)
