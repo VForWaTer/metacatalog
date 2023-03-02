@@ -208,11 +208,22 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         assert _validate_xml(xml_str)
 
         # register namespaces for ElementTree representation of XML
-        ET.register_namespace('gmi', 'http://www.isotc211.org/2005/gmi')
-        ET.register_namespace('gco', 'http://www.isotc211.org/2005/gco')
-        ET.register_namespace('gmd', 'http://www.isotc211.org/2005/gmd')
-        ET.register_namespace('gml', 'http://www.opengis.net/gml/3.2')
-        ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
+        if 'iso19115' in template_path:
+            ET.register_namespace('gmi', 'http://www.isotc211.org/2005/gmi')
+            ET.register_namespace('', 'http://www.isotc211.org/2005/gmi')
+            ET.register_namespace('gco', 'http://www.isotc211.org/2005/gco')
+            ET.register_namespace('gmd', 'http://www.isotc211.org/2005/gmd')
+            ET.register_namespace('gml', 'http://www.opengis.net/gml/3.2')
+            ET.register_namespace('gmx', 'http://www.isotc211.org/2005/gmx')
+            ET.register_namespace('gsr', 'http://www.isotc211.org/2005/gsr')
+            ET.register_namespace('gss', 'http://www.isotc211.org/2005/gss')
+            ET.register_namespace('gts', 'http://www.isotc211.org/2005/gts')
+            ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
+            ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+
+        elif 'datacite' in template_path:
+            ET.register_namespace('', 'http://datacite.org/schema/kernel-4')
+            ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
 
         # convert to ElementTree and return
         return ET.ElementTree(ET.fromstring(xml_str))
