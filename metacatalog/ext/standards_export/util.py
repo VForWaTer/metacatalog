@@ -107,7 +107,7 @@ def _get_title(rs: ImmutableResultSet) -> str:
     Returns
     ----------
     title : str
-        Used for field <gmd:title>, not repeatable.
+        <gmd:title>, not repeatable.
 
     """
     title = ''
@@ -294,6 +294,98 @@ def _get_details(rs: ImmutableResultSet) -> List[str]:
     details_list = list(dict.fromkeys(details_list).keys())
 
     return details_list
+
+
+def _get_details_table(rs: ImmutableResultSet) -> List[str]:
+    """
+    Returns the details of the ImmutableResultSet as markdown tables.
+    Details are written to XML as Markdown tables along the abstracts 
+    of ImmutableResultSet members.
+
+    Returns
+    ----------
+    details_tables: list[str]
+        Details as a markdown table 
+        
+        * DataCite: <description descriptionType="Abstract">, not repeatable.
+
+    """
+    # create list with details_table for all entries in ImmutableResultSet
+    details_tables = []
+    _details = {}
+
+    # if there is only one entry in the ImmutableResultSet, a list details is returned by rs.get('authors')
+    if isinstance(rs.get('details'), list):
+        for detail_dict in rs.get('details'):
+            # nested details
+                if isinstance(detail_dict['value'], dict):
+                    # include top-level detail of nested detail
+                    _details[detail_dict['key']] = detail_dict.copy()
+                    _details[detail_dict['key']]['value'] = 'nested'
+
+                    # remove unwanted key-value pairs
+                    _details[detail_dict['key']] = {key: val for key, val in _details[detail_dict['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+
+                    # go for nested details
+                    for k, v in detail_dict['value'].items():
+                        expand = {
+                            f"{detail_dict['key']}.{k}": dict(
+                            value=v,
+                            key=detail_dict['key'],
+                            entry_uuid=detail_dict['entry_uuid'],
+                            description=detail_dict.get('description', 'nan')
+                            )
+                        }
+                        _details.update(expand)
+                # un-nested details
+                else:
+                    _details[detail_dict['key']] = detail_dict
+                    # remove unwanted key-value pairs
+                    _details[detail_dict['key']] = {key: val for key, val in _details[detail_dict['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+
+        # turn into a transposed dataframe
+        df = pd.DataFrame(_details).T
+
+        # append markdown table to details
+        details_tables.append(df.to_markdown())
+
+    # if there are more than one entries in the ImmutableResultSet, a entry_uuid-indexed dictionary of details is returned
+    elif isinstance(rs.get('details'), dict):
+        for entry_uuid, entry_details_list in rs.get('details').items():
+            for detail_dict in entry_details_list:
+                # nested details
+                if isinstance(detail_dict['value'], dict):
+                    # include top-level detail of nested detail
+                    _details[detail_dict['key']] = detail_dict.copy()
+                    _details[detail_dict['key']]['value'] = 'nested'
+
+                    # remove unwanted key-value pairs
+                    _details[detail_dict['key']] = {key: val for key, val in _details[detail_dict['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+
+                    # go for nested details
+                    for k, v in detail_dict['value'].items():
+                        expand = {
+                            f"{detail_dict['key']}.{k}": dict(
+                            value=v,
+                            key=detail_dict['key'],
+                            entry_uuid=detail_dict['entry_uuid'],
+                            description=detail_dict.get('description', 'nan')
+                            )
+                        }
+                        _details.update(expand)
+                # un-nested details
+                else:
+                    _details[detail_dict['key']] = detail_dict
+                    # remove unwanted key-value pairs
+                    _details[detail_dict['key']] = {key: val for key, val in _details[detail_dict['key']].items() if key in ['value', 'key', 'entry_uuid', 'description']}
+
+            # turn into a transposed dataframe
+            df = pd.DataFrame(_details).T
+
+            # append markdown table to details
+            details_tables.append(df.to_markdown())
+
+    return details_tables
 
 
 def _get_keywords(rs: ImmutableResultSet) -> List[Dict]:
@@ -584,8 +676,11 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
     # abstract
     abstract = _get_abstract(rs)
 
-    # details_table, put details into field <abstract> as markdown table for now
+    # details
     details = _get_details(rs)
+
+    # details_tables
+    details_tables = _get_details_table(rs)
 
     # keywords (full_path, thesaurusName.title)
     keywords = _get_keywords(rs)
@@ -596,11 +691,12 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
     ### datasource (spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution)
     temporal_scales, bbox_locations, spatial_resolutions = _get_datasource_information(rs)
 
-    # save everything in dict
+    # save everything to dict
     iso_input = {
         'uuid': uuid, 'lastUpdate': lastUpdate, 'publication': publication, 'version': version, 'title': title, 
-        'authors': authors, 'abstract': abstract, 'details': details, 'keywords': keywords, 'licenses': licenses,
-        'temporal_scales': temporal_scales, 'bbox_locations': bbox_locations, 'spatial_resolutions': spatial_resolutions
+        'authors': authors, 'abstract': abstract, 'details': details, 'details_tables': details_tables,
+        'keywords': keywords, 'licenses': licenses, 'temporal_scales': temporal_scales, 
+        'bbox_locations': bbox_locations, 'spatial_resolutions': spatial_resolutions
         }
 
     return iso_input

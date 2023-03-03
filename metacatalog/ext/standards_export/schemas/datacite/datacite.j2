@@ -64,7 +64,12 @@
     {% endfor %}
     <descriptions>
         <description descriptionType="Abstract"> 
-        {{abstract}}
+        {{abstract | indent(8)}}
+
+        {%for details_table in details_tables %}
+        {{details_table | indent(8)}}
+
+        {% endfor %}
         </description>
     </descriptions>
     <geoLocations>
