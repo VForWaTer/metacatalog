@@ -64,7 +64,8 @@ def _get_uuid(rs: ImmutableResultSet) -> str:
     Returns
     ----------
     uuid : str
-        Used for field <gmd:fileIdentifier> and field <gmd:identifier>, not repeatable.
+
+        * ISO19115: ``<gmd:fileIdentifier>`` and field ``<gmd:identifier>``, not repeatable.
 
     """
     return rs.uuid
@@ -79,8 +80,12 @@ def _get_lastUpdate(rs: ImmutableResultSet) -> str:
     Returns
     ----------
     lastUpdate : str
-        Used for field <gmd:dateStamp> and field <gmd:date> with <gmd:dateType> 'revision'
-        and field <gmd:editionDate>, str in ISO-date-format, not repeatable.
+        Character string in ISO-date-format.
+
+        * ISO 19115: ``<gmd:dateStamp>`` and field ``<gmd:date>`` with ``<gmd:dateType>`` 'revision'
+        and field ``<gmd:editionDate>``, not repeatable.
+
+        * DataCite: ``<date dateType="Updated">``
 
     """
     # if a base group exists, use the title of the base group
@@ -107,7 +112,10 @@ def _get_title(rs: ImmutableResultSet) -> str:
     Returns
     ----------
     title : str
-        <gmd:title>, not repeatable.
+
+        * ISO 19115: ``<gmd:title>``, not repeatable
+
+        * DataCite: ``<title>``
 
     """
     title = ''
@@ -140,8 +148,11 @@ def _get_publication(rs: ImmutableResultSet) -> str:
     Returns
     ----------
     publication : str
-        Used for field <gmd:date> with <gmd:dateType> 'creation', 
-        str in ISO-datae-formate, not repeatable.
+        Character string in ISO-date-format, not repeatable.
+
+        * ISO 19115: ``<gmd:date>`` with ``<gmd:dateType>`` 'creation', 
+
+        * DataCite: ``<publicationYear>`` & ``<date dateType="Created">``
 
     """
     # if a base group exists, use the publication date of the base group
@@ -167,7 +178,10 @@ def _get_version(rs: ImmutableResultSet) -> int:
     Returns
     ----------
     version: int
-        Used for field <gmd:edition>, not repeatable.
+
+        * ISO 19115: ``<gmd:edition>``, not repeatable.
+
+        * DataCite: ``<version>``
 
     """
     # if there is only one version in the ImmutableResultSet, use it
@@ -188,9 +202,13 @@ def _get_authors(rs: ImmutableResultSet) -> List[Dict]:
     Returns
     ----------
     authors: list[dict]
-        Used for field <gmd:CI_ResponsibleParty>, list of dictionaries containing the 
-        information about authors: mandatory keys are `first_name`, `last_name` and
-        `organisation_name`, repeatable.
+        List of dictionaries containing information about authors: 
+        mandatory keys are ``first_name``, ``last_name`` and ``organisation_name``.
+
+        * ISO 19115: ``<gmd:CI_ResponsibleParty>``, repeatable.
+
+        * DataCite: ``<creators>`` & ``<contributor contributorType="ContactPerson">``, only 
+        first author in ``<contributors>``
 
     """
     # rs.get('authors') gives the first author and all coAuthors
@@ -228,7 +246,10 @@ def _get_abstract(rs: ImmutableResultSet) -> str:
     Returns
     ----------
     abstract: str
-        Used for field <gmd:abstract>, not repeatable.
+
+        * ISO 19115: ``<gmd:abstract>``, not repeatable.
+
+        * DataCite: ``<description descriptionType="Abstract">``
 
     """
     abstract = ''
@@ -254,7 +275,9 @@ def _get_details(rs: ImmutableResultSet) -> List[str]:
     Returns
     ----------
     details: list[str]
-        Used for field <gmd:supplementalInformation>, repeatable.
+
+        * ISO 19115: ``<gmd:supplementalInformation>``, repeatable.
+
     """
     # create list with details_table for all entries in ImmutableResultSet
     details_list = []
@@ -305,9 +328,9 @@ def _get_details_table(rs: ImmutableResultSet) -> List[str]:
     Returns
     ----------
     details_tables: list[str]
-        Details as a markdown table 
-        
-        * DataCite: <description descriptionType="Abstract">, not repeatable.
+        Details as a markdown table.
+
+        * DataCite: ``<description descriptionType="Abstract">``
 
     """
     # create list with details_table for all entries in ImmutableResultSet
@@ -398,8 +421,12 @@ def _get_keywords(rs: ImmutableResultSet) -> List[Dict]:
     Returns
     ----------
     keywords: list[dict]
-        Used for field <gmd:MD_Keywords>, list of dictionaries containing information about
-        associated keywords, mandatory keys are `full_path` and `thesaurusName`.
+        List of dictionaries containing information about associated keywords, mandatory 
+        keys are ``full_path`` and ``thesaurusName``.
+
+        * ISO 19115: ``<gmd:MD_Keywords>``
+
+        * DataCite: ``<subjects>``
 
     """
     keywords = []
@@ -471,8 +498,12 @@ def _get_licenses(rs: ImmutableResultSet) -> List[Dict]:
     Returns
     ----------
     licenses: list[dict]
-        Used for field <gmd:resourceConstraints>, list of dictionaries containing information about
-        associated licenses, mandatory keys are `link` and `short_title`.
+        List of dictionaries containing information about associated licenses, 
+        mandatory keys are ``link`` and ``short_title``.
+
+        * ISO 19115: ``<gmd:resourceConstraints>``
+
+        * DataCite: ``<rightsList>``
 
     """
     licenses = []
@@ -500,7 +531,7 @@ def _get_licenses(rs: ImmutableResultSet) -> List[Dict]:
     return licenses
 
 
-def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], List[Dict], List[int]]:
+def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], List[Dict], List[List[Tuple]], List[int]]:
     """
     Returns the temporal scales, the location as a bounding box and the spatial resolution 
     of the data of the ImmutableResultSet.
@@ -508,15 +539,28 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
     Returns
     ----------
     temporal_scales: list[dict]
-        Used for field <gmd:temporalElement>, list of dictionaries containing information
-        about the temporal scale(s), mandatory keys are `temporal_extent_start`, 
-        `temporal_extent_end` and `temporal_resolution`, repeatable.
+        List of dictionaries containing information about the temporal scale(s), mandatory 
+        keys are ``temporal_extent_start``, 
+        ``temporal_extent_end`` and ``temporal_resolution``
+
+        * ISO 19115: ``<gmd:temporalElement>``,  repeatable.
+
     bbox_locations: list[dict]
-        Used for field <gmd:geographicElement>, list of dictionaries containing the support
-        points of the bounding box(es), mandatory keys are `min_lon`, `min_lat`, `max_lon`
-        and `max_lat`, repeatable.
+        List of dictionaries containing the support points of the bounding box(es), mandatory 
+        keys are ``min_lon``, ``min_lat``, ``max_lon`` and ``max_lat``.
+
+        * ISO 19115: ``<gmd:geographicElement>``, repeatable.
+
+        * DataCite: ``<geoLocationPoint>``, only used if not polygon_locations.
+
+    polygon_locations: list[list[tuple]]
+        List of tuples of Polygon coordinates.
+
+        * DataCite: ``<geoLocationPolygon>``
+
     spatial_resolutions: list[int]
-        Used for field <gmd:spatialResolution>, list of integers [m], repeatable.
+
+        * ISO 19115: ``<gmd:spatialResolution>``, list of integers [m], repeatable.
 
     """
     temporal_scales = []
@@ -643,7 +687,7 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
 def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> Dict:
     """
     Loads the ImmutableResultSet of the input Entry (if not already an ImmutableResultSet) 
-    and extracts the information necessary for ISO export.
+    and extracts the information necessary for ISO 19115 and DataCite export.
 
     Parameters
     ----------
