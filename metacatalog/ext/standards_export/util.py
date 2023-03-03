@@ -521,6 +521,7 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
     """
     temporal_scales = []
     bbox_locations = []
+    polygon_locations = []
     spatial_resolutions = []
     # datasource can be empty / no datasource associated
     if not rs.get('datasource'):
@@ -543,15 +544,18 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
                 "temporal_resolution": temporal_resolution
                 }]
 
-        # spatial extent, always as a bounding box
+        # spatial extent, bounding box for ISO export, polygon for datacite export
         # go for spatial_scale in datasource first
         if 'spatial_scale' in rs.get('datasource').keys():
             location = rs.get('datasource')['spatial_scale']['extent']
             
             # convert wkt to shapely shape to infer coordinates
             P = shapely.wkt.loads(location)
+
+            # save polygon points for datacite export
+            polygon_locations.append(list(P.exterior.coords))
             
-            # get support points of polygon
+            # get bounding box points of polygon
             min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
             max_lon, max_lat = P.exterior.coords[2][0], P.exterior.coords[2][1]
             
@@ -578,12 +582,15 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
                     "temporal_extent_end": temporal_extent_end,
                     "temporal_resolution": temporal_resolution
                 })
-            # spatial_scale / bbox_location & spatial_resolution
+            # spatial_scale / bbox_location, polygon_location & spatial_resolution
             if ds_dict.get('spatial_scale'):
                 location = ds_dict['spatial_scale']['extent']
         
                 # convert wkt to shapely shape to infer coordinates
                 P = shapely.wkt.loads(location)
+
+                # save polygon points for datacite export
+                polygon_locations.append(list(P.exterior.coords))
         
                 # get support points of polygon
                 min_lon, min_lat = P.exterior.coords[0][0], P.exterior.coords[0][1]
@@ -630,7 +637,7 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
     if not bbox_locations:
         raise ValueError("No location information associated with instance to be exported.")
 
-    return temporal_scales, bbox_locations, spatial_resolutions
+    return temporal_scales, bbox_locations, polygon_locations, spatial_resolutions
 
 
 def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> Dict:
@@ -689,14 +696,14 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
     licenses = _get_licenses(rs)
 
     ### datasource (spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution)
-    temporal_scales, bbox_locations, spatial_resolutions = _get_datasource_information(rs)
+    temporal_scales, bbox_locations, polygon_locations, spatial_resolutions = _get_datasource_information(rs)
 
     # save everything to dict
     iso_input = {
         'uuid': uuid, 'lastUpdate': lastUpdate, 'publication': publication, 'version': version, 'title': title, 
         'authors': authors, 'abstract': abstract, 'details': details, 'details_tables': details_tables,
         'keywords': keywords, 'licenses': licenses, 'temporal_scales': temporal_scales, 
-        'bbox_locations': bbox_locations, 'spatial_resolutions': spatial_resolutions
+        'bbox_locations': bbox_locations, 'polygon_locations': polygon_locations, 'spatial_resolutions': spatial_resolutions
         }
 
     return iso_input
