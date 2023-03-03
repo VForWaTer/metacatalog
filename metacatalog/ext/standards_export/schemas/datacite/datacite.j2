@@ -25,9 +25,6 @@
     <publicationYear>{{publication[0:4]}}</publicationYear>
     {% if keywords or details%}
     <subjects>
-        {% for detail in details %}
-        <subject>{{detail}}</subject>
-        {% endfor %}
         {% for keyword in keywords %}
         <subject subjectScheme="{{keyword.thesaurusName}}">{{keyword.full_path}}</subject>
         {% endfor %}
@@ -35,7 +32,16 @@
     {% endif %}
     <contributors>
         <contributor contributorType="ContactPerson">
-            <contributorName nameType="Organizational">{{contact.organisationName}}</contributorName>
+                {% if authors[0].last_name %}
+                <creatorName nameType="Personal">{{authors[0].last_name}}, {{authors[0].first_name}}</creatorName>
+                <givenName>{{authors[0].first_name}}</givenName>
+                <familyName>{{authors[0].last_name}}</familyName>            
+                {% else %}
+                <creatorName nameType="Organizational">{{authors[0].organisation_name}}</creatorName>
+                {% endif %}
+                {% if authors[0].affiliation %}
+                <affiliation>{{authors[0].affiliation}}</affiliation>
+                {% endif %}
         </contributor>
     </contributors>
     <dates>
