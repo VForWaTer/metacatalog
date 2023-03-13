@@ -40,7 +40,7 @@ jobs:
           touch .nojekyll
       
       - name: Deploy
-          if: success()
+          if: ${{ success() }}
           uses: crazy-max/ghaction-github-pages@v1
           with:
             target_branch: gh-pages
