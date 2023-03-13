@@ -39,7 +39,7 @@ jobs:
           cd build/html
           touch .nojekyll
       
-      -  name: Deploy
+      - name: Deploy
          if: success()
          uses: crazy-max/ghaction-github-pages@v1
          with:
