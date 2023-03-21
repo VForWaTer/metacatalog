@@ -47,7 +47,3 @@ jobs:
           build_dir: docs/build/html
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-
-
