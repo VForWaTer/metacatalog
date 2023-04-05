@@ -23,7 +23,7 @@ jobs:
       - name: Install package
         run: pip install -e .
 
-      - name: Activate Extensions
+      - name: Activate Extensions, install additional dependencies
         run: |
           pip install metacatalog-corr metacatalog-search
           pip install jinja2 lxml
