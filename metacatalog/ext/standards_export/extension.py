@@ -125,24 +125,25 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             The following keys and their values are expected when rendering the 
             jinja template:
 
-            .. code-block:: Python
+            .. code-block:: python
 
-            dict(
-                contact = dict(
-                    organisationName = '',
-                    deliveryPoint = '',
-                    city = '',
-                    administrativeArea = '',
-                    postalCode = '',
-                    country = '',
-                    electronicMailAddress = ['', ''],
-                    linkage = '',
-                    linkage_name = '',
-                    linkage_description = ''
-                ),
-                publisher = dict(
-                    organisation_name = ''
-                ))
+                dict(
+                    contact = dict(
+                        organisationName = '',
+                        deliveryPoint = '',
+                        city = '',
+                        administrativeArea = '',
+                        postalCode = '',
+                        country = '',
+                        electronicMailAddress = ['', ''],
+                        linkage = '',
+                        linkage_name = '',
+                        linkage_description = ''
+                    ),
+                    publisher = dict(
+                        organisation_name = ''
+                    )
+                    )
             
             It is also possible to create a .json file ``standards_export_contact.json`` 
             containing the contact information and add the path to this file to the 
@@ -150,9 +151,10 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
             .. code-block:: json
 
-            "extra":{
-    	        "standards_export_contact": "/path/to/standards_export_contact.json"
-                }
+                "extra":{
+                    "standards_export_contact": "/path/to/standards_export_contact.json"
+                    }
+
         template_path : str
             Full path (including the template name) to the jinja2 template for 
             metadata export. This determines the metadata standard for export.
@@ -260,24 +262,25 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             The following keys and their values are expected when rendering the 
             jinja template:
 
-            .. code-block:: Python
+            .. code-block:: python
 
-            dict(
-                contact = dict(
-                    organisationName = '',
-                    deliveryPoint = '',
-                    city = '',
-                    administrativeArea = '',
-                    postalCode = '',
-                    country = '',
-                    electronicMailAddress = ['', ''],
-                    linkage = '',
-                    linkage_name = '',
-                    linkage_description = ''
-                ),
-                publisher = dict(
-                    organisation_name = ''
-                ))
+                dict(
+                    contact = dict(
+                        organisationName = '',
+                        deliveryPoint = '',
+                        city = '',
+                        administrativeArea = '',
+                        postalCode = '',
+                        country = '',
+                        electronicMailAddress = ['', ''],
+                        linkage = '',
+                        linkage_name = '',
+                        linkage_description = ''
+                    ),
+                    publisher = dict(
+                        organisation_name = ''
+                    )
+                    )
 
         path : str
             Location where the .xml file is saved to.
