@@ -71,8 +71,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     @classmethod
     def init_extension(cls):
         # wrapper which calls StandardsExportExtension.standards_export
-        def wrapper_entry(self: Entry, config_dict: dict = {}, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:
-            return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict, template_path=template_path)
+        def wrapper_entry(self: Entry, config_dict: dict = {}, template_path: str = TEMPLATE_PATH, strict:bool = False) -> ET.ElementTree:
+            return StandardsExportExtension.standards_export(entry_or_resultset=self, config_dict=config_dict, template_path=template_path, strict=strict)
         
         # standards_export docstring and name for wrapper function
         wrapper_entry.__doc__ = StandardsExportExtension.standards_export.__doc__
@@ -82,8 +82,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         Entry.standards_export = wrapper_entry
 
         # add function create_iso19115 to api.catalog
-        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = TEMPLATE_PATH):
-            return StandardsExportExtension.create_standards_xml(session, id_or_uuid, config_dict, path, template_path)
+        def wrapper_api(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = TEMPLATE_PATH, strict: bool = False):
+            return StandardsExportExtension.create_standards_xml(session=session, id_or_uuid=id_or_uuid, config_dict=config_dict, path=path, template_path=template_path, strict=strict)
 
         wrapper_api.__doc__ = StandardsExportExtension.create_standards_xml.__doc__
         wrapper_api.__name__ = StandardsExportExtension.create_standards_xml.__name__
@@ -99,11 +99,12 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         myparser.add_argument('--format', choices=['iso19115', 'datacite'], type=str, nargs='?', const='iso19115', default='iso19115', help="Metadata standard format.")
         myparser.add_argument('--path', type=str, help="Directory to save XML file(s) to, `if not specified, the current folder is used.")
         myparser.add_argument('--all', action='store_true', help="Export all entries in the session to ISO 19115, cannot be used together with --id or --uuid.")
+        myparser.add_argument('--strict', action='store_true', help="Only generate syntactically (well-formed) and content validated XML files.")
         myparser.set_defaults(func=StandardsExportExtension.cli_create_standards_xml)
 
 
     @classmethod
-    def standards_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict = {}, template_path: str = TEMPLATE_PATH) -> ET.ElementTree:
+    def standards_export(cls, entry_or_resultset: Union[Entry, ImmutableResultSet], config_dict: dict = {}, template_path: str = TEMPLATE_PATH, strict:bool = False) -> ET.ElementTree:
         """
         Export a :class:`Entry <metacatalog.models.Entry>` or 
         :class:`ImmutableResultSet <metacatalog.util.results.ImmutableResultSet>` to XML.
@@ -159,6 +160,16 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             Full path (including the template name) to the jinja2 template for 
             metadata export. This determines the metadata standard for export.
             Defaults to ISO 19115 template.
+        strict:
+            .. versionadded:: 0.8.3
+            
+            If strict is True, only syntactically (well-formed) and content validated 
+            XML files are generated.  
+            Note that in this version, DataCite XML files are never valid in terms of
+            content, as metacatalog does currently not provice DOIs for its datasets.  
+            In the case of ISO 19115, content is currently not validated and a 
+            ``NotImplementedError`` is raised.
+            Defaults to False.
         
         Returns
         ----------
@@ -206,9 +217,16 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         # render template with entry_dict
         xml_str = template.render(**export_information, **contact_config)
 
-        # check whether xml is well-formed
-        assert _validate_xml(xml_str)
+        # strict mode
+        if strict:
+            # check whether xml is well-formed
+            assert _validate_xml(xml_str)
 
+            if 'iso19115' in template_path.lower():
+                raise NotImplementedError("You want to use strict mode for the generation of ISO 19115 metadata, the generated XML structure is well-formed but its content currently cannot be validated.")
+            elif 'datacite' in template_path.lower():
+                raise ValueError("You want to use strict mode for the generation of DataCite metadata, as metacatalog currently does not provide DOIs, the content of the generated XML file is not valid, as the DOI field is empty. Set strict=False to generate the XML nevertheless.")
+            
         # register namespaces for ElementTree representation of XML
         if 'iso19115' in template_path.lower():
             ET.register_namespace('gmi', 'http://www.isotc211.org/2005/gmi')
@@ -234,7 +252,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
     def create_standards_xml(path: str) -> None: ...
     @overload
     def create_standards_xml(path: Literal[None]) -> ET.ElementTree: ...
-    def create_standards_xml(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = TEMPLATE_PATH) -> ET.ElementTree | None:
+    def create_standards_xml(session: Session, id_or_uuid: Union[int, str], config_dict: dict = {}, path: str = None, template_path: str = TEMPLATE_PATH, strict: bool = False) -> ET.ElementTree | None:
         """
         This function can be imported from metacatalog.api.catalog
 
@@ -294,6 +312,16 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             Full path (including the template name) to the jinja2 template for 
             metadata export. This determines the metadata standard for export.
             Defaults to ISO 19115 template.
+        strict:
+            .. versionadded:: 0.8.3
+            
+            If strict is True, only syntactically (well-formed) and content validated 
+            XML files are generated.  
+            Note that in this version, DataCite XML files are never valid in terms of
+            content, as metacatalog does currently not provice DOIs for its datasets.  
+            In the case of ISO 19115, content is currently not validated and a 
+            ``NotImplementedError`` is raised.  
+            Defaults to False.
 
         Returns
         ----------
@@ -325,7 +353,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                 raise NoResultFound(f"No entry with uuid={id_or_uuid} was found.")
 
         # create xml etree entry, standard
-        xml_etree = entry.standards_export(config_dict=config_dict, template_path=template_path)
+        xml_etree = entry.standards_export(config_dict=config_dict, template_path=template_path, strict=strict)
 
         if not path:
             return xml_etree
@@ -365,6 +393,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         working directory.
         Use the flag --all to export all entries in the given metacatalog
         connection.
+        Use the flag --strict to only export well-formed and content
+        validated XML files (defaults to False).
 
         .. versionadded:: 0.8.2
 
@@ -411,10 +441,13 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         elif args.all:
             id_or_uuids = [entry.id for entry in api.find_entry(session)]
 
+        # switch strict mode
+        strict = True if args.strict else False
+
         # run API ISO 19115 export function
         if args.verbose:
             for id_or_uuid in tqdm(id_or_uuids):
-                create_standards_xml(session=session, id_or_uuid=id_or_uuid, config_dict={}, path=path, template_path=template_path)
+                create_standards_xml(session=session, id_or_uuid=id_or_uuid, config_dict={}, path=path, template_path=template_path, strict=strict)
         else:
             for id_or_uuid in id_or_uuids:
-                create_standards_xml(session=session, id_or_uuid=id_or_uuid, config_dict={}, path=path, template_path=template_path)
+                create_standards_xml(session=session, id_or_uuid=id_or_uuid, config_dict={}, path=path, template_path=template_path, strict=strict)
