@@ -696,8 +696,8 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
     
     Returns
     ----------
-    iso_input: dict
-        Dictionary of information 
+    export_information: dict
+        Dictionary of metadata information necessary to export metadata standards. 
 
     """
     if not isinstance(entry_or_resultset, ImmutableResultSet):
@@ -743,14 +743,14 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
     temporal_scales, bbox_locations, polygon_locations, spatial_resolutions = _get_datasource_information(rs)
 
     # save everything to dict
-    iso_input = {
+    export_information = {
         'uuid': uuid, 'lastUpdate': lastUpdate, 'publication': publication, 'version': version, 'title': title, 
         'authors': authors, 'abstract': abstract, 'details': details, 'details_tables': details_tables,
         'keywords': keywords, 'licenses': licenses, 'temporal_scales': temporal_scales, 
         'bbox_locations': bbox_locations, 'polygon_locations': polygon_locations, 'spatial_resolutions': spatial_resolutions
         }
 
-    return iso_input
+    return export_information
 
 
 def _validate_xml(xml: str) -> bool:

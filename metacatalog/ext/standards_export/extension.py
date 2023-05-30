@@ -210,7 +210,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         assert _validate_xml(xml_str)
 
         # register namespaces for ElementTree representation of XML
-        if 'iso19115' in template_path:
+        if 'iso19115' in template_path.lower():
             ET.register_namespace('gmi', 'http://www.isotc211.org/2005/gmi')
             ET.register_namespace('', 'http://www.isotc211.org/2005/gmi')
             ET.register_namespace('gco', 'http://www.isotc211.org/2005/gco')
@@ -223,7 +223,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
             ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
 
-        elif 'datacite' in template_path:
+        elif 'datacite' in template_path.lower():
             ET.register_namespace('', 'http://datacite.org/schema/kernel-4')
             ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
 
@@ -244,8 +244,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         does not end with '.xml', the name of the XML file is generated 
         with the uuid of the used ImmutableResultSet, depending on the 
         exported standard: 
-        * f"iso19115_{irs_uuid}.xml".
-        * f"datacite_{irs_uuid}.xml"
+        * ``f"iso19115_{irs_uuid}.xml"``.
+        * ``f"datacite_{irs_uuid}.xml``"
         If no ``path`` is given, the ``ElementTree`` XML representation
         is returned. 
 
