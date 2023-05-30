@@ -1,0 +1,100 @@
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://datacite.org/schema/kernel-4"
+    xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">
+    <identifier identifierType="DOI"><!--V-FOR-WaTer does not currently offer DOIs, this feature will be added in a future release--></identifier>
+    {% for author in authors %}
+    <creators>
+        <creator>
+            {% if author.last_name %}
+            <creatorName nameType="Personal">{{author.last_name}}, {{author.first_name}}</creatorName>
+            <givenName>{{author.first_name}}</givenName>
+            <familyName>{{author.last_name}}</familyName>            
+            {% else %}
+            <creatorName nameType="Organizational">{{author.organisation_name}}</creatorName>
+            {% endif %}
+            {% if author.affiliation %}
+            <affiliation>{{author.affiliation}}</affiliation>
+            {% endif %}
+        </creator>
+    </creators>
+    {% endfor %}
+    <titles>
+        <title>{{title}}</title>
+    </titles>
+    <publisher>{{contact.organisationName}}</publisher>
+    <publicationYear>{{publication[0:4]}}</publicationYear>
+    {% if keywords or details%}
+    <subjects>
+        {% for keyword in keywords %}
+        <subject subjectScheme="{{keyword.thesaurusName}}">{{keyword.full_path}}</subject>
+        {% endfor %}
+    </subjects>
+    {% endif %}
+    <contributors>
+        <contributor contributorType="ContactPerson">
+                {% if authors[0].last_name %}
+                <creatorName nameType="Personal">{{authors[0].last_name}}, {{authors[0].first_name}}</creatorName>
+                <givenName>{{authors[0].first_name}}</givenName>
+                <familyName>{{authors[0].last_name}}</familyName>            
+                {% else %}
+                <creatorName nameType="Organizational">{{authors[0].organisation_name}}</creatorName>
+                {% endif %}
+                {% if authors[0].affiliation %}
+                <affiliation>{{authors[0].affiliation}}</affiliation>
+                {% endif %}
+        </contributor>
+    </contributors>
+    <dates>
+        <date dateType="Created">{{publication}}</date>
+        <date dateType="Updated">{{lastUpdate}}</date>
+        {% for temporal_scale in temporal_scales %}
+        <date dateType="Collected">{{temporal_scale.temporal_extent_start}}</date>
+        <date dateType="Collected">{{temporal_scale.temporal_extent_end}}</date>
+        {% endfor %}
+    </dates>
+    <language>en</language>
+    <resourceType resourceTypeGeneral="Dataset">Dataset</resourceType>
+    <sizes />
+    <formats />
+    <version>{{version}}</version>
+    {% for license in licenses %}
+    <rightsList>
+        <rights rightsURI="{{license.link}}">{{license.short_title}}</rights>
+    </rightsList>
+    {% endfor %}
+    <descriptions>
+        <description descriptionType="Abstract"> 
+        {{abstract | indent(8)}}
+
+        {%for details_table in details_tables %}
+        {{details_table | indent(8)}}
+
+        {% endfor %}
+        </description>
+    </descriptions>
+    <geoLocations>
+        <geoLocation>
+            {% if polygon_locations %}
+            <geoLocationPolygon>
+                {% for polygon_location in polygon_locations%}
+                {% for polygon_point in polygon_location %}
+                <polygonPoint>
+                    <pointLatitude>{{polygon_point[1]}}</pointLatitude>
+                    <pointLongitude>{{polygon_point[0]}}</pointLongitude>
+                </polygonPoint>
+                {% endfor %}
+                {% endfor %}
+            </geoLocationPolygon>
+            {% elif bbox_locations %}
+            {% for bbox_location in bbox_locations %}
+            {% if bbox_location.min_lon == bbox_location.max_lon and bbox_location.min_lat == bbox_location.max_lat %}
+            <geoLocationPoint>
+                <pointLongitude>{{bbox_location.min_lon}}</pointLongitude>
+                <pointLatitude>{{bbox_location.min_lat}}</pointLatitude>
+            </geoLocationPoint>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </geoLocation>
+    </geoLocations>
+</resource>
