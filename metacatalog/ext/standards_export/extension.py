@@ -398,6 +398,17 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
         .. versionadded:: 0.8.2
 
+
+        Example
+        ----------
+        With the following command, ISO 19115 XML files for the entries with
+        ID 10 and ID 20 in the default database session are created under the
+        specified path:
+
+        .. code-block:: bash
+            
+            $ python -m metacatalog standards-export 10 20 --format' iso19115 --path /path/to/store/xmls --connection default
+
         Notes
         ----------
         The content of the xml files will be created using a 
