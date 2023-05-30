@@ -94,6 +94,11 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
 
     @classmethod
     def init_cli(cls, subparsers, defaults):
+        """
+        Add the parser ``standards-export`` to the metacatalog CLI and register
+        arguments.
+        
+        """
         myparser = subparsers.add_parser('standards-export', parents=[defaults], help="Export metadata in standard format as .xml files.")
         myparser.add_argument('entries', nargs='*', help='ID(s) or UUID(s) of Entries to export.')
         myparser.add_argument('--format', choices=['iso19115', 'datacite'], type=str, nargs='?', const='iso19115', default='iso19115', help="Metadata standard format.")
@@ -160,15 +165,15 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             Full path (including the template name) to the jinja2 template for 
             metadata export. This determines the metadata standard for export.
             Defaults to ISO 19115 template.
-        strict:
+        strict : bool
             .. versionadded:: 0.8.3
             
             If strict is True, only syntactically (well-formed) and content validated 
             XML files are generated.  
-            Note that in this version, DataCite XML files are never valid in terms of
+            Note that in version ``v0.8.3``, DataCite XML files are never valid in terms of
             content, as metacatalog does currently not provice DOIs for its datasets.  
             In the case of ISO 19115, content is currently not validated and a 
-            ``NotImplementedError`` is raised.
+            ``NotImplementedError`` is raised.  
             Defaults to False.
         
         Returns
@@ -297,8 +302,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                     ),
                     publisher = dict(
                         organisation_name = ''
-                    )
-                    )
+                    ))
 
         path : str
             Location where the .xml file is saved to.
@@ -402,12 +406,12 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         Example
         ----------
         With the following command, ISO 19115 XML files for the entries with
-        ID 10 and ID 20 in the default database session are created under the
+        id=10 and id=20 in the default database session are created under the
         specified path:
 
         .. code-block:: bash
             
-            $ python -m metacatalog standards-export 10 20 --format' iso19115 --path /path/to/store/xmls --connection default
+            $ python -m metacatalog standards-export 10 20 --format iso19115 --path /path/to/store/xmls --connection default
 
         Notes
         ----------
