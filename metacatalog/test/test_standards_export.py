@@ -64,6 +64,27 @@ def check_api_standards_export(session, path, template_path):
     return True
 
 
+def check_api_strict_mode(session, path, template_path):
+    """
+    Check if the correct exception is raised for the different 
+    metadata standards if using strict mode.  
+    When strict mode is properly implemented with the validation
+    of XML contents, this test needs to be adapted.
+
+    """
+    # ISO 19115 should raise a NotImplementedError (v0.8.2)
+    if 'iso19115' in template_path:
+        with pytest.raises(NotImplementedError, match="You want to use strict mode for the generation of ISO 19115 metadata, the generated XML structure is well-formed but its content currently cannot be validated."):
+            # attempt to create xml
+            api.catalog.create_standards_xml(session, id_or_uuid=10, path=path, template_path=template_path, strict=True)
+    # DataCite should raise a ValueError (v0.8.2)
+    elif 'datacite' in template_path:
+        with pytest.raises(ValueError, match="You want to use strict mode for the generation of DataCite metadata, as metacatalog currently does not provide DOIs, the content of the generated XML file is not valid, as the DOI field is empty. Set strict=False to generate the XML nevertheless."):
+            # attempt to create xml
+            api.catalog.create_standards_xml(session, id_or_uuid=10, path=path, template_path=template_path, strict=True)
+
+    return True
+
 def check_cli_standards_export(session, dburi, format, path):
     """
     Check if an individual entry is correctly exported by the 
@@ -147,5 +168,7 @@ def test_standards_export(tmp_path):
     assert check_entry_standards_export(session, template_path='metacatalog/ext/standards_export/schemas/datacite/datacite.j2')
     assert check_api_standards_export(session, path=export_xml_dir_api, template_path='metacatalog/ext/standards_export/schemas/iso19115/iso19115-2.j2')
     assert check_api_standards_export(session, path=export_xml_dir_api, template_path='metacatalog/ext/standards_export/schemas/datacite/datacite.j2')
+    assert check_api_strict_mode(session, path=export_xml_dir_api, template_path='metacatalog/ext/standards_export/schemas/iso19115/iso19115-2.j2')
+    assert check_api_strict_mode(session, path=export_xml_dir_api, template_path='metacatalog/ext/standards_export/schemas/datacite/datacite.j2')
     assert check_cli_standards_export(session, dburi, format='iso19115', path=iso_xml_dir_cli)
     assert check_cli_standards_export(session, dburi, format='datacite', path=iso_xml_dir_cli)
