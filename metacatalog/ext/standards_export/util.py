@@ -47,18 +47,40 @@ def _init_jinja(template_path: str) -> Template:
         env.trim_blocks = True
         env.lstrip_blocks = True
 
-        # define a custom function for current datetime in ISO 8601 format with timezone
-        def current_datetime():
-            now = datetime.now(timezone.utc)
-            return now.strftime('%Y-%m-%dT%H:%M:%S%z')
+        # add custom functions and filters to the environment
+        env = _add_custom_functions_and_filters(env)
         
-        # add the custom function to the environment
-        env.globals['now'] = current_datetime
-
         # get template
         template = env.get_template(template_name)
         
         return template
+
+
+def _add_custom_functions_and_filters(env: Environment) -> Environment:
+    """
+    This function adds custom functions and filters to the jinja 
+    environment which are needed to render at least one of the 
+    implemented metadata templates.
+
+    """
+    # custom function for current datetime in ISO 8601 format with timezone
+    def current_datetime():
+        now = datetime.now(timezone.utc)
+        return now.strftime('%Y-%m-%dT%H:%M:%S%z')
+    
+    # custom filter to extract temporal_extent_start and temporal_extent_end values from temporal_scales
+    def get_temporal_extent_values(temporal_scales):
+        temporal_extent_start_values = [temporal_scale['temporal_extent_start'] for temporal_scale in temporal_scales]
+        temporal_extent_end_values = [temporal_scale['temporal_extent_end'] for temporal_scale in temporal_scales]
+        return (min(temporal_extent_start_values), max(temporal_extent_end_values))
+    
+    # add the custom functions to the environment
+    env.globals['now'] = current_datetime
+
+    # add custom filters to the environment
+    env.filters['get_temporal_extent_values'] = get_temporal_extent_values
+
+    return env
 
 
 def _get_uuid(rs: ImmutableResultSet) -> str:
