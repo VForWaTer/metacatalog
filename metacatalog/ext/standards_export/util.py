@@ -1,6 +1,6 @@
 from typing import Union, List, Dict, Tuple
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 from jinja2 import Environment, FileSystemLoader, Template
@@ -23,8 +23,7 @@ def _init_jinja(template_path: str) -> Template:
         Parameters
         ----------
         template_path : str
-            Location of the jinja2 template for metadata export.  
-            Currently defaults to the ISO 19115 template.
+            Location of the jinja2 template for metadata export.
 
         Returns
         ----------
@@ -47,6 +46,14 @@ def _init_jinja(template_path: str) -> Template:
         # prevent whitespaces / newlines from jinja blocks in template
         env.trim_blocks = True
         env.lstrip_blocks = True
+
+        # define a custom function for current datetime in ISO 8601 format with timezone
+        def current_datetime():
+            now = datetime.now(timezone.utc)
+            return now.strftime('%Y-%m-%dT%H:%M:%S%z')
+        
+        # add the custom function to the environment
+        env.globals['now'] = current_datetime
 
         # get template
         template = env.get_template(template_name)
