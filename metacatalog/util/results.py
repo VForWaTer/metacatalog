@@ -356,26 +356,28 @@ class ImmutableResultSet:
 
             Parameter `orient` added. The default value is `'dict'`, which returns
             a dictionary with unique keys.
-            The value `'uuids'` will give the dictionary with uuids as keys, this
+            The value `'uuids'` gives the dictionary with uuids as keys, this
             should make it easier to i.e. loop over the uuids / entities of an
             ImmutableResultSet.
 
         """
-        # first get a list of all available keys
-        keys = []
-        for member in [self.group, *self._members]:
-            if not hasattr(member, 'to_dict'):
-                continue
-            keys.extend(member.to_dict().keys())
-        
-        # get unique keys
-        keys = set(keys)
-
-        # build the output dictionary
         if orient.lower() == 'dict':
+            # get a list of all available keys
+            keys = []
+            for member in [self.group, *self._members]:
+                if not hasattr(member, 'to_dict'):
+                    continue
+                keys.extend(member.to_dict().keys())
+            
+            # get unique keys
+            keys = set(keys)
+
+            # return dictionary with unique keys for entire ImmutableResultSet
             return {key: self.get(key) for key in keys}
+        
         elif orient.lower() == 'uuids':
-            raise NotImplementedError
+            # return dictionary of ImmutableResultSet members indexed by their uuid
+            return {member.uuid: member.to_dict() for member in [self.group, *self._members]}
         else:
             raise AttributeError(f"orient = '{orient}' is not supported. Use one of ['dict', 'uuids']")
 
