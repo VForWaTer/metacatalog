@@ -239,7 +239,7 @@ class ImmutableResultSet:
             return {uuid: occur for uuid, occur in zip(uuid_list, occur_set)}
 
     @property
-    def empty(self):
+    def empty(self) -> bool:
         """
         .. versionadded:: 0.4.1
 
@@ -264,7 +264,7 @@ class ImmutableResultSet:
         return self.uuids[0]
     
     @property
-    def uuids(self):
+    def uuids(self) -> List[str]:
         """
         Return all uuids that form this result set
 
@@ -291,7 +291,7 @@ class ImmutableResultSet:
         return uuids
 
     @property
-    def checksums(self):
+    def checksums(self) -> List[str]:
         """
         .. versionadded:: 0.3.8
         
@@ -310,7 +310,7 @@ class ImmutableResultSet:
         return checksums
 
     @property
-    def checksum(self):
+    def checksum(self) -> str:
         """
         Return the md5 checksum for this result set to easily
         tell it appart from others.
@@ -323,7 +323,7 @@ class ImmutableResultSet:
         """
         return hashlib.md5(''.join(self.checksums).encode()).hexdigest()
 
-    def contains_uuid(self, uuid: str):
+    def contains_uuid(self, uuid: str) -> bool:
         """
         Check if the given Entry or EntryGroup is 
         present in this result set
@@ -331,7 +331,7 @@ class ImmutableResultSet:
         """
         return uuid in self.uuids
 
-    def to_short_info(self):
+    def to_short_info(self) -> dict:
         """
         Get a short unified version of the results.
 
@@ -348,7 +348,7 @@ class ImmutableResultSet:
         # build the output dictionary
         return {key: self.get(key) for key in keys}
 
-    def to_dict(self, orient: str = 'dict'):
+    def to_dict(self, orient: str = 'dict') -> dict:
         """
         Generate a full dictionary output of this result set.
 
@@ -356,26 +356,28 @@ class ImmutableResultSet:
 
             Parameter `orient` added. The default value is `'dict'`, which returns
             a dictionary with unique keys.
-            The value `'uuids'` will give the dictionary with uuids as keys, this
+            The value `'uuids'` gives the dictionary with uuids as keys, this
             should make it easier to i.e. loop over the uuids / entities of an
             ImmutableResultSet.
 
         """
-        # first get a list of all available keys
-        keys = []
-        for member in [self.group, *self._members]:
-            if not hasattr(member, 'to_dict'):
-                continue
-            keys.extend(member.to_dict().keys())
-        
-        # get unique keys
-        keys = set(keys)
-
-        # build the output dictionary
         if orient.lower() == 'dict':
+            # get a list of all available keys
+            keys = []
+            for member in [self.group, *self._members]:
+                if not hasattr(member, 'to_dict'):
+                    continue
+                keys.extend(member.to_dict().keys())
+            
+            # get unique keys
+            keys = set(keys)
+
+            # return dictionary with unique keys for entire ImmutableResultSet
             return {key: self.get(key) for key in keys}
+        
         elif orient.lower() == 'uuids':
-            raise NotImplementedError
+            # return dictionary of ImmutableResultSet members indexed by their uuid
+            return {member.uuid: member.to_dict() for member in [self.group, *self._members]}
         else:
             raise AttributeError(f"orient = '{orient}' is not supported. Use one of ['dict', 'uuids']")
 
