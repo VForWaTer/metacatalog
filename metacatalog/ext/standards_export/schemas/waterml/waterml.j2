@@ -1,5 +1,5 @@
 <wml2:Collection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:om="http://www.opengis.net/om/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wml2="http://www.opengis.net/waterml/2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:sam="http://www.opengis.net/sampling/2.0" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xsi:schemaLocation="http://www.opengis.net/waterml/2.0 ../../../WaterML2.0/trunk/Schema_RFC/waterml2.xsd" gml:id="xsd-collection.example">
-    <gml:description>This WaterML document contains time series data for this dataset: "{{title}}"</gml:description>
+    <gml:description>This WaterML document contains time series data for the dataset "{{title}}"</gml:description>
     <wml2:metadata>
         <wml2:DocumentMetadata gml:id="document-metadata.1">
             <wml2:generationDate>{{ now() }}</wml2:generationDate>
@@ -16,6 +16,9 @@
     </wml2:temporalExtent>
     <!--  no local dictionary  -->
     <!--  no sampling feature. inline  -->
+
+    {# loop over all members of ImmutableResultSet here, as we put timeseries here, we can loop over temporal_scales -> all timeseries data will be included #}
+    {% for temporal_scale in temporal_scales %}
     <wml2:observationMember>
         <om:OM_Observation gml:id="observation.1">
             <gml:identifier codeSpace="http://www.example.com/observations">EX.OB.B.1</gml:identifier>
@@ -109,4 +112,5 @@
             </om:result>
         </om:OM_Observation>
     </wml2:observationMember>
+    {% endfor %}
 </wml2:Collection>
