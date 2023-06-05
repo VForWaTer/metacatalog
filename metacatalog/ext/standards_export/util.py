@@ -773,7 +773,7 @@ def _get_member_export_information(rs: ImmutableResultSet, include_groups: bool 
     return rs_dict 
 
 
-def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> Dict:
+def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSet], **kwargs) -> Dict:
     """
     Loads the ImmutableResultSet of the input Entry (if not already an ImmutableResultSet) 
     and extracts the information necessary for ISO 19115 and DataCite export.
@@ -838,6 +838,16 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
         'keywords': keywords, 'licenses': licenses, 'temporal_scales': temporal_scales, 
         'bbox_locations': bbox_locations, 'polygon_locations': polygon_locations, 'spatial_resolutions': spatial_resolutions
         }
+    
+    # check for data arguments in kwargs -> get ImmutableResultSet member metadata and timeseries data for waterml export
+    if 'include_groups' in kwargs and 'include_timeseries_data' in kwargs:
+        include_groups, include_timeseries_data = kwargs['include_groups'], kwargs['include_timeseries_data']
+
+        # get metadata by ImmutableResultSet member
+        member_export_information = _get_member_export_information(rs, include_groups, include_timeseries_data)
+
+        # add to export_information dictionary
+        export_information['by_uuid'] = member_export_information
 
     return export_information
 

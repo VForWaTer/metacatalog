@@ -214,7 +214,11 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         contact_config.update(config_dict)
 
         # get necessary input parameters from ImmutableResultSet for export
-        export_information = _parse_export_information(entry_or_resultset)
+        if 'waterml' in template_path.lower():
+            # include data of Entries for waterml timeseries export
+            export_information = _parse_export_information(entry_or_resultset, include_groups=False, include_timeseries_data=True)
+        else:
+            export_information = _parse_export_information(entry_or_resultset)
 
         # get initialized jinja template
         template = _init_jinja(template_path)
