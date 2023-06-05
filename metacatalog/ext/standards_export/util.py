@@ -13,6 +13,7 @@ from geoalchemy2.elements import WKBElement
 
 from metacatalog.models import Entry
 from metacatalog.util.results import ImmutableResultSet
+from metacatalog.api.catalog import get_uuid
 
 
 def _init_jinja(template_path: str) -> Template:
@@ -713,6 +714,65 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
     return temporal_scales, bbox_locations, polygon_locations, spatial_resolutions
 
 
+def _get_member_export_information(rs: ImmutableResultSet, include_groups: bool = True, include_timeseries_data: bool = False) -> dict:
+    """
+    Return uuid-indexed dictionary of ImmutableResultSet members
+
+    Parameters
+    ----------
+    entry_or_resultset : Union[Entry, ImmutableResultSet]
+        The entry instance to be exported.
+    include_groups : bool
+        If set True, metadata of EntryGroups in the ImmutableResultSet is also returned.  
+        If set False, only metadata of Entry instances is returned.  
+        Defaults to True. 
+    include_timeseries_data: bool
+        If set True, if a datasource of type ``timeseries`` is associated with Entry 
+        members of the ImmutableResultSet, the timeseries data of the member is included 
+        in the returned dictionary under the key ``timeseries``.   
+        Defaults to False.  
+    
+    Returns
+    ----------
+    member_export_information: dict
+        Dictionary of metadata information necessary to export metadata standards. Metadata
+        information is returned as an uuid-indexed dictionary of the members of the 
+        ImmutableResultSet. 
+
+    """
+    # get uuid-indexed metadata information, including EntryGroups
+    rs_dict = rs.to_dict(orient='uuids')
+
+    # exclude EntryGroups
+    if not include_groups:
+        # make copy to filter ImmutableResultSet dictionary
+        rs_dict_no_groups = rs_dict.copy()
+
+        # loop over members in rs_dict, remove 
+        for member_uuid, member_dict in rs_dict.items():
+            # EntryGroups have the keys 'type' and 'entries' -> pop
+            if 'type' and 'entries' in member_dict.keys():
+                rs_dict_no_groups.pop(member_uuid)
+
+        rs_dict = rs_dict_no_groups
+
+    # include timeseries data
+    if include_timeseries_data:
+        for member in rs._members:
+            # check if datasource path is timeseries
+            if getattr(member, 'datasource', None) is not None and getattr(member.datasource, 'path', None) == 'timeseries':
+                # get member data
+                data = member.get_data()
+
+                # convert DatetimeIndex to ISO format
+                data.index = data.index.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                
+                # append data dictionary to rs_dict
+                rs_dict[member.uuid]['timeseries'] = data.to_dict()
+
+    return rs_dict 
+
+
 def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSet]) -> Dict:
     """
     Loads the ImmutableResultSet of the input Entry (if not already an ImmutableResultSet) 
@@ -721,7 +781,7 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
     Parameters
     ----------
     entry_or_resultset : Union[Entry, ImmutableResultSet]
-        The entry instance to be exported
+        The entry instance to be exported.
     
     Returns
     ----------
