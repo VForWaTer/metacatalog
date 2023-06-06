@@ -377,7 +377,7 @@ class ImmutableResultSet:
         
         elif orient.lower() == 'uuids':
             # return dictionary of ImmutableResultSet members indexed by their uuid
-            return {member.uuid: member.to_dict() for member in [self.group, *self._members]}
+            return {member.uuid: member.to_dict() for member in [self.group, *self._members] if hasattr(member, 'to_dict')}
         else:
             raise AttributeError(f"orient = '{orient}' is not supported. Use one of ['dict', 'uuids']")
 
