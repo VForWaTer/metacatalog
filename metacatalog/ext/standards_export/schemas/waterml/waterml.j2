@@ -7,6 +7,7 @@
             <wml2:generationSystem>V-FOR-WaTer</wml2:generationSystem>
         </wml2:DocumentMetadata>
     </wml2:metadata>
+    {% if temporal_scales %}
     <wml2:temporalExtent> {# this element contains the start and end of all included timeseries #}
         <gml:TimePeriod gml:id="time-period.1">
             {% set temporal_extent_values = temporal_scales | get_temporal_extent_values %}
@@ -14,6 +15,7 @@
             <gml:endPosition>{{ temporal_extent_values[1] }}</gml:endPosition>
         </gml:TimePeriod>
     </wml2:temporalExtent>
+    {% endif %}
     <!--  no local dictionary  -->
     <!--  no sampling feature. inline  -->
 
