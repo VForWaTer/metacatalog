@@ -256,16 +256,16 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             ET.register_namespace('', 'http://datacite.org/schema/kernel-4')
             ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
 
-        # elif 'waterml' in template_path.lower():
-        #     ET.register_namespace('wml2', 'http://www.opengis.net/waterml/2.0')
-        #     ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        #     ET.register_namespace('gml', 'http://www.opengis.net/gml/3.2')
-        #     ET.register_namespace('om', 'http://www.opengis.net/om/2.0')
-        #     ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
-        #     ET.register_namespace('gmd', 'http://www.isotc211.org/2005/gmd')
-        #     ET.register_namespace('gco', 'http://www.isotc211.org/2005/gco')
-        #     ET.register_namespace('sam', 'http://www.opengis.net/sampling/2.0')
-        #     ET.register_namespace('sams', 'http://www.opengis.net/samplingSpatial/2.0')
+        elif 'waterml' in template_path.lower():
+            ET.register_namespace('wml2', 'http://www.opengis.net/waterml/2.0')
+            ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+            ET.register_namespace('gml', 'http://www.opengis.net/gml/3.2')
+            ET.register_namespace('om', 'http://www.opengis.net/om/2.0')
+            ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
+            ET.register_namespace('gmd', 'http://www.isotc211.org/2005/gmd')
+            ET.register_namespace('gco', 'http://www.isotc211.org/2005/gco')
+            ET.register_namespace('sam', 'http://www.opengis.net/sampling/2.0')
+            ET.register_namespace('sams', 'http://www.opengis.net/samplingSpatial/2.0')
 
         # convert to ElementTree and return
         return ET.ElementTree(ET.fromstring(xml_str))
