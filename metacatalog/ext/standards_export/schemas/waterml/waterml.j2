@@ -7,7 +7,8 @@
             <wml2:generationSystem>V-FOR-WaTer</wml2:generationSystem>
         </wml2:DocumentMetadata>
     </wml2:metadata>
-    {% if temporal_scales %}
+    
+    {% if temporal_scales | length > 0 %}
     <wml2:temporalExtent> {# this element contains the start and end of all included timeseries #}
         <gml:TimePeriod gml:id="time-period.1">
             {% set temporal_extent_values = temporal_scales | get_temporal_extent_values %}
@@ -59,7 +60,8 @@
                 <wml2:processReference xlink:href="http://www.example.com/sensor/1.0" xlink:title="Sensor Sampling Regime 1.0"/>
             </wml2:ObservationProcess>
             </om:procedure>
-            <om:observedProperty xlink:href="http://nwis.waterdata.usgs.gov/usa/nwis/pmcodes?radio_pm_search=pm_search&pm_search=00010&format=rdb&show=parameter_group_nm&show=parameter_nm&show=parameter_units" xlink:title="Temperature, water, degrees Celsius"/>
+            {# the following produced an error: The reference to entity "pm_search" must end with the ';' delimiter. #}
+            {# <om:observedProperty xlink:href="http://nwis.waterdata.usgs.gov/usa/nwis/pmcodes?radio_pm_search=pm_search&pm_search=00010&format=rdb&show=parameter_group_nm&show=parameter_nm&show=parameter_units" xlink:title="Temperature, water, degrees Celsius"/> #}
             <om:featureOfInterest>
                 <wml2:MonitoringPoint gml:id="monitoring-point.1">
                     <gml:name codeSpace="http://www.csiro.au/">Deddington</gml:name>
