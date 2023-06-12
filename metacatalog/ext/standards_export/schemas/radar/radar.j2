@@ -30,7 +30,9 @@
 		</re:subjectAreas>
 		<re:resource resourceType="Dataset"/>
 		<re:rights>
-			<re:controlledRights>CC BY-NC 4.0 Attribution-NonCommercial</re:controlledRights>
+            {% for license in licenses %}
+			<re:controlledRights>{{ license.short_title }}</re:controlledRights>
+            {% endfor %}
 		</re:rights>
 		<re:rightsHolders>
 			<re:rightsHolder>Lastname, firstname or name of the institution</re:rightsHolder>
