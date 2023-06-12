@@ -6,9 +6,9 @@
 		<re:creators>
 			<re:creator>
 				<re:creatorName>{{ author.last_name }}, {{ author.first_name }}</re:creatorName>
-                {{% if author.organisation_name %}}
+                {% if author.organisation_name %}
                 <creatorAffiliation>{{ author.organisation_name }}</creatorAffiliation>
-                {{% endif %}}
+                {% endif %}
 			</re:creator>
 		</re:creators>
         {% endfor %}
