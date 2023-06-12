@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<your-root-element xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema-with-radar-schema.xsd" xmlns:radar="http://radar-service.eu/schemas/descriptive/radar/v09/radar-dataset" xmlns:re="http://radar-service.eu/schemas/descriptive/radar/v09/radar-elements">
+	<radar:radarDataset>
+		<re:identifier identifierType="DOI"></re:identifier>
+        {% for author in authors %}
+		<re:creators>
+			<re:creator>
+				<re:creatorName>{{ author.last_name }}, {{ author.first_name }}</re:creatorName>
+                {{% if author.organisation_name %}}
+                <creatorAffiliation>{{ author.organisation_name }}</creatorAffiliation>
+                {{% endif %}}
+			</re:creator>
+		</re:creators>
+        {% endfor %}
+		<re:title>Disziplinspezifische Metadaten</re:title>
+		<re:publishers>
+			<re:publisher>publisher</re:publisher>
+		</re:publishers>
+		<re:productionYear>2020</re:productionYear>
+		<re:subjectAreas>
+			<re:subjectArea>
+				<re:controlledSubjectAreaName>Agriculture</re:controlledSubjectAreaName>
+			</re:subjectArea>
+		</re:subjectAreas>
+		<re:resource resourceType="Other"/>
+		<re:rights>
+			<re:controlledRights>CC BY-NC 4.0 Attribution-NonCommercial</re:controlledRights>
+		</re:rights>
+		<re:rightsHolders>
+			<re:rightsHolder>Lastname, firstname or name of the institution</re:rightsHolder>
+		</re:rightsHolders>
+	</radar:radarDataset>
+</your-root-element>
