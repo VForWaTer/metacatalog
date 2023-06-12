@@ -16,7 +16,12 @@
 		<re:publishers>
 			<re:publisher>{{ publisher.organisation_name }}</re:publisher>
 		</re:publishers>
-		<re:productionYear>{{ lastUpdate[0:4] }}</re:productionYear>
+        {% if temporal_scales %}
+        {% set temporal_extent_values = temporal_scales | get_temporal_extent_values %}
+		<re:productionYear>{{ temporal_extent_values[0][0:4] }} - {{ temporal_extent_values[1][0:4] }}</re:productionYear>
+        {% else %}
+        <re:productionYear>"unknown"</re:productionYear>
+        {% endif %}
         <re:publicationYear>{{ publication[0:4] }}</re:publicationYear>
 		<re:subjectAreas>
 			<re:subjectArea>
