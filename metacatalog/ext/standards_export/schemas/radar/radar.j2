@@ -54,4 +54,27 @@
         {% endfor %}
     </re:keywords>
     {% endif %}
+    <geoLocations>
+        {% for bbox_location in bbox_locations %}
+        <geoLocation>
+            {% if bbox_location.min_lon == bbox_location.max_lon and bbox_location.min_lat == bbox_location.max_lat %}
+            <geoLocationPoint>
+                <latitude>{{ bbox_location.min_lat }}</latitude>
+                <longitude>{{ bbox_location.min_lon }}</longitude>
+            </geoLocationPoint>
+            {% else %}
+            <geoLocationBox>
+                <southWestPoint>
+                    <latitude>{{ bbox_location.min_lat }}</latitude>
+                    <longitude>{{ bbox_location.min_lon }}</longitude>
+                </southWestPoint>
+                <northEastPoint>
+                    <latitude>{{ bbox_location.max_lat }}</latitude>
+                    <longitude>{{ bbox_location.max_lon }}</longitude>
+                </northEastPoint>
+            </geoLocationBox>
+            {% endif %}        
+        </geoLocation>
+        {% endfor %}
+  </geoLocations>
 </radarDataset>
