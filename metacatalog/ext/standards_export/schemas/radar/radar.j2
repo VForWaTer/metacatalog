@@ -16,7 +16,11 @@
     </re:publishers>
     {% if temporal_scales %}
     {% set temporal_extent_values = temporal_scales | get_temporal_extent_values %}
+    {% if temporal_extent_values[0][0:4] == temporal_extent_values[1][0:4] %}
+    <re:productionYear>{{ temporal_extent_values[0][0:4] }}</re:productionYear>
+    {% elif temporal_extent_values[0][0:4] != temporal_extent_values[1][0:4] %}
     <re:productionYear>{{ temporal_extent_values[0][0:4] }} - {{ temporal_extent_values[1][0:4] }}</re:productionYear>
+    {% endif %}
     {% else %}
     <re:productionYear>"unknown"</re:productionYear>
     {% endif %}
@@ -61,8 +65,7 @@
             <geoLocationPoint>
                 <latitude>{{ bbox_location.min_lat }}</latitude>
                 <longitude>{{ bbox_location.min_lon }}</longitude>
-            </geoLocationPoint>
-            {% else %}
+            </geoLocationPoint> {% else %}
             <geoLocationBox>
                 <southWestPoint>
                     <latitude>{{ bbox_location.min_lat }}</latitude>
@@ -76,5 +79,5 @@
             {% endif %}        
         </geoLocation>
         {% endfor %}
-  </geoLocations>
+    </geoLocations>
 </radarDataset>
