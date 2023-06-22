@@ -37,7 +37,7 @@
         {% endfor %}
     </re:rights>
     <re:rightsHolders>
-        {# for now: first author or organization name #}
+        {# for now: first author or organization name, could potentially also be V-FOR-WaTer -> already publisher! #}
         {% if authors[0].last_name and authors[0].first_name %}
         <re:rightsHolder>{{ authors[0].first_name }}, {{ authors[0].last_name }}</re:rightsHolder>
         {% elif authors[0].organisation_name %}
