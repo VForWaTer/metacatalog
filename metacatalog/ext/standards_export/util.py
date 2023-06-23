@@ -352,12 +352,16 @@ def _get_details(rs: ImmutableResultSet) -> List[str]:
 def _get_details_table(rs: ImmutableResultSet) -> List[str]:
     """
     Returns the details of the ImmutableResultSet as markdown tables.
-    Details are written to XML as Markdown tables along the abstracts 
+    Details are written to XML as Markdown table along the abstracts 
     of ImmutableResultSet members.
+
+    .. versionchanged:: 0.8.4
+        Now returns a table for all member details instead of a list
+        of tables for individual members.
 
     Returns
     ----------
-    details_tables: list[str]
+    details_table: str
         Details as a markdown table.
 
         * DataCite: ``<description descriptionType="Abstract">``
@@ -365,10 +369,10 @@ def _get_details_table(rs: ImmutableResultSet) -> List[str]:
     """
     # create list with details_table for all entries in ImmutableResultSet
     details_tables = []
-    _details = {}
 
-    # if there is only one entry in the ImmutableResultSet, a list details is returned by rs.get('authors')
+    # if there is only one entry in the ImmutableResultSet, a list details is returned by rs.get('details')
     if isinstance(rs.get('details'), list):
+        _details = {}
         for detail_dict in rs.get('details'):
             # nested details
                 if isinstance(detail_dict['value'], dict):
@@ -400,11 +404,12 @@ def _get_details_table(rs: ImmutableResultSet) -> List[str]:
         df = pd.DataFrame(_details).T
 
         # append markdown table to details
-        details_tables.append(df.to_markdown())
+        details_tables.append(df)
 
     # if there are more than one entries in the ImmutableResultSet, a entry_uuid-indexed dictionary of details is returned
     elif isinstance(rs.get('details'), dict):
         for entry_uuid, entry_details_list in rs.get('details').items():
+            _details = {}
             for detail_dict in entry_details_list:
                 # nested details
                 if isinstance(detail_dict['value'], dict):
@@ -436,9 +441,15 @@ def _get_details_table(rs: ImmutableResultSet) -> List[str]:
             df = pd.DataFrame(_details).T
 
             # append markdown table to details
-            details_tables.append(df.to_markdown())
+            details_tables.append(df)
 
-    return details_tables
+    # concatenate details tables into one table
+    details_table = pd.concat(details_tables)
+
+    # transform to markdown
+    details_table = details_table.to_markdown()
+    
+    return details_table
 
 
 def _get_keywords(rs: ImmutableResultSet) -> List[Dict]:
@@ -820,7 +831,7 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
     details = _get_details(rs)
 
     # details_tables
-    details_tables = _get_details_table(rs)
+    details_table = _get_details_table(rs)
 
     # keywords (full_path, thesaurusName.title)
     keywords = _get_keywords(rs)
@@ -834,7 +845,7 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
     # save everything to dict
     export_information = {
         'uuid': uuid, 'lastUpdate': lastUpdate, 'publication': publication, 'version': version, 'title': title, 
-        'authors': authors, 'abstract': abstract, 'details': details, 'details_tables': details_tables,
+        'authors': authors, 'abstract': abstract, 'details': details, 'details_table': details_table,
         'keywords': keywords, 'licenses': licenses, 'temporal_scales': temporal_scales, 
         'bbox_locations': bbox_locations, 'polygon_locations': polygon_locations, 'spatial_resolutions': spatial_resolutions
         }
