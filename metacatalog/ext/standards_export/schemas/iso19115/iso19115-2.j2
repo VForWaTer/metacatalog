@@ -163,13 +163,10 @@
                 Abstract: 
                 {{abstract | indent(16)}}
 
-                {% for details_table in details %}
                 {% if details_table %}
                 Details:
                 {{details_table | indent(16)}}
-
                 {% endif %}
-                {% endfor %}
                 </gco:CharacterString>
             </gmd:abstract>
             {# first author again as pointOfContact (like GFZ) #}
