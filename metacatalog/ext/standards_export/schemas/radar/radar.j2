@@ -45,7 +45,13 @@
         {% endif %}
     </re:rightsHolders>
     <re:descriptions>
-        <re:description descriptionType="Abstract">{{ abstract }}</re:description>
+        <re:description descriptionType="Abstract">
+        {{ abstract | indent(8) }}
+        </re:description>
+        <re:description descriptionType="Other">
+        Details:
+        {{ details_table | indent(8) }}
+        </re:description>
     </re:descriptions>
     {% if keywords %}
     <re:keywords>
