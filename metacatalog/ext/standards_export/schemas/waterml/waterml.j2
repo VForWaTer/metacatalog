@@ -20,11 +20,14 @@
     <!--  no local dictionary  -->
     <!--  no sampling feature. inline  -->
 
-    {# loop over all members of ImmutableResultSet here, as we put timeseries here, we can loop over temporal_scales -> all timeseries data will be included #}
-    {% for temporal_scale in temporal_scales %}
+    {# loop over all members of ImmutableResultSet here -> all timeseries data are be included #}
+
+    {# member with timeseries with multiple variable / columns?? -> e.g. 3D-wind: 3 timeseries -> u,v,w but same tstamps#}
+
+    {% for member_uuid, member_dict in by_uuid.items() %}
     <wml2:observationMember>
         <om:OM_Observation gml:id="observation.1">
-            <gml:identifier codeSpace="http://www.example.com/observations">EX.OB.B.1</gml:identifier>
+            <gml:identifier codeSpace="http://www.example.com/observations">{{ member_dict.uuid }}</gml:identifier>
             <om:metadata>
             <!--  If you want to include the ObservationMetadata properties
                 * intendedObservationSpacing
@@ -40,7 +43,7 @@
                 <wml2:ObservationMetadata>
                     <gmd:contact xlink:href="http://www.example.com" xlink:title="Example Pty Ltd"/>
                     <gmd:dateStamp>
-                        <gco:DateTime>2011-11-28T10:01:00+10:00</gco:DateTime>
+                        <gco:DateTime>{{ member_dict.datsource.spatial_scale.resolution }}2011-11-28T10:01:00+10:00</gco:DateTime>
                     </gmd:dateStamp>
                     <gmd:identificationInfo xlink:href="http://www.example.com/observations/C.1" xlink:title="Observation C.1"/>
                     <wml2:intendedObservationSpacing>PT15M</wml2:intendedObservationSpacing>
@@ -48,6 +51,12 @@
                     <wml2:sampledMedium xlink:href="http://www.opengis.net/def/medium/WalterML/2.0/Water" xlink:title="Water"/>
                 </wml2:ObservationMetadata>
             </om:metadata>
+            <om:phenomenonTime>
+                <gml:TimePeriod gml:id="Ki.ObsTime.1">
+                    <gml:beginPosition>{{ member_dict.datasource.temporal_scale.extent[0].isoformat() }}</gml:beginPosition>
+                    <gml:endPosition>{{ member_dict.datasource.temporal_scale.extent[1].isoformat() }}</gml:endPosition>
+                </gml:TimePeriod>
+            </om:phenomenonTime>
             <om:phenomenonTime xlink:href="#time-period.1" xlink:title="Temporal Extent"/>
             <om:resultTime>
                 <gml:TimeInstant gml:id="time-instant.1">
