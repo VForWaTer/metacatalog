@@ -235,6 +235,8 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                 raise NotImplementedError("You want to use strict mode for the generation of ISO 19115 metadata, the generated XML structure is well-formed but its content currently cannot be validated.")
             elif 'waterml' in template_path.lower(): 
                 raise NotImplementedError("You want to use strict mode for the generation of WaterML metadata, the generated XML structure is well-formed but its content currently cannot be validated.")
+            elif 'radar' in template_path.lower(): 
+                raise NotImplementedError("You want to use strict mode for the generation of RADAR metadata, the generated XML structure is well-formed but its content currently cannot be validated.")
             elif 'datacite' in template_path.lower():
                 raise ValueError("You want to use strict mode for the generation of DataCite metadata, as metacatalog currently does not provide DOIs, the content of the generated XML file is not valid, as the DOI field is empty. Set strict=False to generate the XML nevertheless.")
             
@@ -266,6 +268,12 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             ET.register_namespace('gco', 'http://www.isotc211.org/2005/gco')
             ET.register_namespace('sam', 'http://www.opengis.net/sampling/2.0')
             ET.register_namespace('sams', 'http://www.opengis.net/samplingSpatial/2.0')
+
+        elif 'radar' in template_path.lower():
+            ET.register_namespace('radar', 'http://radar-service.eu/schemas/descriptive/radar/v09/radar-dataset')
+            ET.register_namespace('re', 'http://radar-service.eu/schemas/descriptive/radar/v09/radar-elements')
+            ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+            
 
         # convert to ElementTree and return
         return ET.ElementTree(ET.fromstring(xml_str))
@@ -373,7 +381,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             if not entry:
                 raise NoResultFound(f"No entry with uuid={id_or_uuid} was found.")
 
-        # create xml etree entry, standard
+        # create xml etree for the entry
         xml_etree = entry.standards_export(config_dict=config_dict, template_path=template_path, strict=strict)
 
         if not path:
@@ -394,7 +402,9 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
                 elif 'datacite' in template_path.lower():
                     path += f"/datacite_{irs_uuid}.xml"
                 elif 'waterml' in template_path.lower():
-                    path += f"/waterml_{irs_uuid}"
+                    path += f"/waterml_{irs_uuid}.xml"
+                elif 'radar' in template_path.lower():
+                    path += f"/radar_{irs_uuid}.xml"
 
             # write XML file
             with open(path, 'wb') as f:
