@@ -12,7 +12,17 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
 		http://kit.edu/schema/radar-v4w
-		file:///C:/temp/radar-v4w/radar-v4w-extension_Korrektur.xsd">
+		file:/home/alexander/Github/metacatalog/metacatalog/ext/standards_export/schemas/radar/radar-v4w-extension.xsd">
+    {% for variable in variables %}
+    <v4w:variables>
+		<v4w:variable>
+			<v4w:variableName>{{ variable.name }}</v4w:variableName>
+			<v4w:variableSymbol>{{ variable.symbol }}</v4w:variableSymbol>
+			<v4w:unitName>{{ variable.unit.name }}</v4w:unitName>
+			<v4w:unitSymbol>{{ variable.unit.symbol }}</v4w:unitSymbol>
+		</v4w:variable>
+	</v4w:variables>
+    {% endfor %}
     <radarDataset>
         <re:identifier identifierType="DOI"><!--V-FOR-WaTer does not currently offer DOIs, this feature will be added in a future release--></re:identifier>
         {% for author in authors %}

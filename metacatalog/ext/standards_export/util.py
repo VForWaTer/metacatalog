@@ -725,6 +725,62 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
     return temporal_scales, bbox_locations, polygon_locations, spatial_resolutions
 
 
+def _get_variables(rs: ImmutableResultSet) -> List[dict]:
+    """
+    Return the variables with units of the ImmutableResultSet.
+
+    Returns
+    ----------
+    variables: list[dict]
+        List of dictionaries containing information about associated variables, 
+        mandatory keys are ``name``, ``symbol`` and ``unit`` with sub-keys
+        ``name`` and ``symbol``.
+
+        * RADAR: ``<v4w:variables>``
+
+    """
+    variables = []
+
+    # if there is only one variable in the ImmutableResultSet, there are no nested dicts
+    if not any(isinstance(val, dict) for val in rs.get('variable').values()):
+        # variable
+        variable_name = rs.get('variable')['name']
+        variable_symbol = rs.get('variable')['symbol']
+
+        # unit
+        unit_name = rs.get('variable')['unit']['name']
+        unit_symbol = rs.get('variable')['unit']['symbol']
+
+        variables.append({
+            'name': variable_name,
+            'symbol': variable_symbol,
+            'unit': {
+                'name': unit_name,
+                'symbol': unit_symbol
+            }})
+
+    #  if there is more than one variable in ImmutableResultSet, a uuid-indexed dict of variables is returned
+    elif any(isinstance(val, dict) for val in rs.get('variable').values()):
+        for entry_uuid, variable_dict in rs.get('variable').items():
+            # variable
+            variable_name = variable_dict['name']
+            variable_symbol = variable_dict['symbol']
+
+            # unit
+            unit_name = variable_dict['unit']['name']
+            unit_symbol = variable_dict['unit']['symbol']
+
+            variables.append({
+                'name': variable_name,
+                'symbol': variable_symbol,
+                'unit': {
+                    'name': unit_name,
+                    'symbol': unit_symbol
+                }})
+
+    return variables
+
+
 def _get_member_export_information(rs: ImmutableResultSet, include_groups: bool = True, include_timeseries_data: bool = False) -> dict:
     """
     Return uuid-indexed dictionary of ImmutableResultSet members
@@ -842,12 +898,16 @@ def _parse_export_information(entry_or_resultset: Union[Entry, ImmutableResultSe
     ### datasource (spatial_scale.resolution, spatial_scale.extent/bbox_location, temporal_scale.extent, temporal_scale.resolution)
     temporal_scales, bbox_locations, polygon_locations, spatial_resolutions = _get_datasource_information(rs)
 
+    ### variables and units (variable.name, variable.symbol, variable.unit.name, variable.unit.symbol)
+    variables = _get_variables(rs)
+
     # save everything to dict
     export_information = {
         'uuid': uuid, 'lastUpdate': lastUpdate, 'publication': publication, 'version': version, 'title': title, 
         'authors': authors, 'abstract': abstract, 'details': details, 'details_table': details_table,
         'keywords': keywords, 'licenses': licenses, 'temporal_scales': temporal_scales, 
-        'bbox_locations': bbox_locations, 'polygon_locations': polygon_locations, 'spatial_resolutions': spatial_resolutions
+        'bbox_locations': bbox_locations, 'polygon_locations': polygon_locations, 'spatial_resolutions': spatial_resolutions,
+        'variables': variables
         }
     
     # check for data arguments in kwargs -> get ImmutableResultSet member metadata and timeseries data for waterml export
