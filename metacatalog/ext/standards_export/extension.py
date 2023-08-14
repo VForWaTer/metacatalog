@@ -270,6 +270,7 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
             ET.register_namespace('sams', 'http://www.opengis.net/samplingSpatial/2.0')
 
         elif 'radar' in template_path.lower():
+            ET.register_namespace('v4w', 'http://kit.edu/schema/radar-v4w')
             ET.register_namespace('radar', 'http://radar-service.eu/schemas/descriptive/radar/v09/radar-dataset')
             ET.register_namespace('re', 'http://radar-service.eu/schemas/descriptive/radar/v09/radar-elements')
             ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
