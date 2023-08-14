@@ -1,89 +1,105 @@
-<radarDataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:radar="http://radar-service.eu/schemas/descriptive/radar/v09/radar-dataset" xmlns:re="http://radar-service.eu/schemas/descriptive/radar/v09/radar-elements">
-    <re:identifier identifierType="DOI"><!--V-FOR-WaTer does not currently offer DOIs, this feature will be added in a future release--></re:identifier>
-    {% for author in authors %}
-    <re:creators>
-        <re:creator>
-            <re:creatorName>{{ author.last_name }}, {{ author.first_name }}</re:creatorName>
-            {% if author.organisation_name %}
-            <re:creatorAffiliation>{{ author.organisation_name }}</re:creatorAffiliation>
-            {% endif %}
-        </re:creator>
-    </re:creators>
-    {% endfor %}
-    <re:title>{{ title }}</re:title>
-    <re:publishers>
-        <re:publisher>{{ publisher.organisation_name }}</re:publisher>
-    </re:publishers>
-    {% if temporal_scales %}
-    {% set temporal_extent_values = temporal_scales | get_temporal_extent_values %}
-    {% if temporal_extent_values[0][0:4] == temporal_extent_values[1][0:4] %}
-    <re:productionYear>{{ temporal_extent_values[0][0:4] }}</re:productionYear>
-    {% elif temporal_extent_values[0][0:4] != temporal_extent_values[1][0:4] %}
-    <re:productionYear>{{ temporal_extent_values[0][0:4] }} - {{ temporal_extent_values[1][0:4] }}</re:productionYear>
-    {% endif %}
-    {% else %}
-    <re:productionYear>"unknown"</re:productionYear>
-    {% endif %}
-    <re:publicationYear>{{ publication[0:4] }}</re:publicationYear>
-    <re:subjectAreas>
-        <re:subjectArea>
-            <re:controlledSubjectAreaName>Environmental Science and Ecology</re:controlledSubjectAreaName>
-        </re:subjectArea>
-    </re:subjectAreas>
-    <re:resource resourceType="Dataset"/>
-    <re:rights>
-        {% for license in licenses %}
-        <re:controlledRights>{{ license.short_title }}</re:controlledRights>
+<?xml version="1.0" encoding="utf-8"?>
+<v4w:v4w-content
+    xmlns:v4w="http://kit.edu/schema/radar-v4w"
+	xmlns:datacite="http://datacite.org/schema/kernel-3"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:dcmitype="http://purl.org/dc/dcmitype/"
+	xmlns:dct="http://purl.org/dc/terms/"
+	xmlns:file="http://radar-service.eu/schemas/descriptive/radar/v09/radar-file"
+	xmlns:radar="http://radar-service.eu/schemas/descriptive/radar/v09/radar-dataset"
+	xmlns:re="http://radar-service.eu/schemas/descriptive/radar/v09/radar-elements"
+	xmlns:rtype="http://radar-service.eu/schemas/descriptive/radar/v09/radar-types"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://kit.edu/schema/radar-v4w
+		file:///C:/temp/radar-v4w/radar-v4w-extension_Korrektur.xsd">
+    <radarDataset>
+        <re:identifier identifierType="DOI"><!--V-FOR-WaTer does not currently offer DOIs, this feature will be added in a future release--></re:identifier>
+        {% for author in authors %}
+        <re:creators>
+            <re:creator>
+                <re:creatorName>{{ author.last_name }}, {{ author.first_name }}</re:creatorName>
+                {% if author.organisation_name %}
+                <re:creatorAffiliation>{{ author.organisation_name }}</re:creatorAffiliation>
+                {% endif %}
+            </re:creator>
+        </re:creators>
         {% endfor %}
-    </re:rights>
-    <re:rightsHolders>
-        {# for now: first author or organization name, could potentially also be V-FOR-WaTer -> already publisher! #}
-        {% if authors[0].last_name and authors[0].first_name %}
-        <re:rightsHolder>{{ authors[0].first_name }}, {{ authors[0].last_name }}</re:rightsHolder>
-        {% elif authors[0].organisation_name %}
-        <re:rightsHolder>{{ authors[0].organisation_name }}</re:rightsHolder>
+        <re:title>{{ title }}</re:title>
+        <re:publishers>
+            <re:publisher>{{ publisher.organisation_name }}</re:publisher>
+        </re:publishers>
+        {% if temporal_scales %}
+        {% set temporal_extent_values = temporal_scales | get_temporal_extent_values %}
+        {% if temporal_extent_values[0][0:4] == temporal_extent_values[1][0:4] %}
+        <re:productionYear>{{ temporal_extent_values[0][0:4] }}</re:productionYear>
+        {% elif temporal_extent_values[0][0:4] != temporal_extent_values[1][0:4] %}
+        <re:productionYear>{{ temporal_extent_values[0][0:4] }} - {{ temporal_extent_values[1][0:4] }}</re:productionYear>
         {% endif %}
-    </re:rightsHolders>
-    <re:descriptions>
-        <re:description descriptionType="Abstract">
-        {{ abstract | indent(8) }}
-        </re:description>
-        <re:description descriptionType="Other">
-        Details:
-        {{ details_table | indent(8) }}
-        </re:description>
-    </re:descriptions>
-    {% if keywords %}
-    <re:keywords>
-        {% for keyword in keywords %}
-        {% if keyword.thesaurusName == "NASA/GCMD Earth Science Keywords" %}
-        <re:keyword keywordScheme="GCMD" schemeURI="https://www.earthdata.nasa.gov/learn/find-data/idn/gcmd-keywords/">{{ keyword.full_path }}</re:keyword>
         {% else %}
-        <re:keyword keywordScheme="Other">{{ keyword.full_path }}</re:keyword>
+        <re:productionYear>"unknown"</re:productionYear>
         {% endif %}
-        {% endfor %}
-    </re:keywords>
-    {% endif %}
-    <geoLocations>
-        {% for bbox_location in bbox_locations %}
-        <geoLocation>
-            {% if bbox_location.min_lon == bbox_location.max_lon and bbox_location.min_lat == bbox_location.max_lat %}
-            <geoLocationPoint>
-                <latitude>{{ bbox_location.min_lat }}</latitude>
-                <longitude>{{ bbox_location.min_lon }}</longitude>
-            </geoLocationPoint> {% else %}
-            <geoLocationBox>
-                <southWestPoint>
+        <re:publicationYear>{{ publication[0:4] }}</re:publicationYear>
+        <re:subjectAreas>
+            <re:subjectArea>
+                <re:controlledSubjectAreaName>Environmental Science and Ecology</re:controlledSubjectAreaName>
+            </re:subjectArea>
+        </re:subjectAreas>
+        <re:resource resourceType="Dataset"/>
+        <re:rights>
+            {% for license in licenses %}
+            <re:controlledRights>{{ license.short_title }}</re:controlledRights>
+            {% endfor %}
+        </re:rights>
+        <re:rightsHolders>
+            {# for now: first author or organization name, could potentially also be V-FOR-WaTer -> already publisher! #}
+            {% if authors[0].last_name and authors[0].first_name %}
+            <re:rightsHolder>{{ authors[0].first_name }}, {{ authors[0].last_name }}</re:rightsHolder>
+            {% elif authors[0].organisation_name %}
+            <re:rightsHolder>{{ authors[0].organisation_name }}</re:rightsHolder>
+            {% endif %}
+        </re:rightsHolders>
+        <re:descriptions>
+            <re:description descriptionType="Abstract">
+            {{ abstract | indent(8) }}
+            </re:description>
+            <re:description descriptionType="Other">
+            Details:
+            {{ details_table | indent(8) }}
+            </re:description>
+        </re:descriptions>
+        {% if keywords %}
+        <re:keywords>
+            {% for keyword in keywords %}
+            {% if keyword.thesaurusName == "NASA/GCMD Earth Science Keywords" %}
+            <re:keyword keywordScheme="GCMD" schemeURI="https://www.earthdata.nasa.gov/learn/find-data/idn/gcmd-keywords/">{{ keyword.full_path }}</re:keyword>
+            {% else %}
+            <re:keyword keywordScheme="Other">{{ keyword.full_path }}</re:keyword>
+            {% endif %}
+            {% endfor %}
+        </re:keywords>
+        {% endif %}
+        <geoLocations>
+            {% for bbox_location in bbox_locations %}
+            <geoLocation>
+                {% if bbox_location.min_lon == bbox_location.max_lon and bbox_location.min_lat == bbox_location.max_lat %}
+                <geoLocationPoint>
                     <latitude>{{ bbox_location.min_lat }}</latitude>
                     <longitude>{{ bbox_location.min_lon }}</longitude>
-                </southWestPoint>
-                <northEastPoint>
-                    <latitude>{{ bbox_location.max_lat }}</latitude>
-                    <longitude>{{ bbox_location.max_lon }}</longitude>
-                </northEastPoint>
-            </geoLocationBox>
-            {% endif %}        
-        </geoLocation>
-        {% endfor %}
-    </geoLocations>
-</radarDataset>
+                </geoLocationPoint> {% else %}
+                <geoLocationBox>
+                    <southWestPoint>
+                        <latitude>{{ bbox_location.min_lat }}</latitude>
+                        <longitude>{{ bbox_location.min_lon }}</longitude>
+                    </southWestPoint>
+                    <northEastPoint>
+                        <latitude>{{ bbox_location.max_lat }}</latitude>
+                        <longitude>{{ bbox_location.max_lon }}</longitude>
+                    </northEastPoint>
+                </geoLocationBox>
+                {% endif %}        
+            </geoLocation>
+            {% endfor %}
+        </geoLocations>
+    </radarDataset>
+</v4w:v4w-content>
