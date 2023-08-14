@@ -23,6 +23,15 @@
 		</v4w:variable>
 	</v4w:variables>
     {% endfor %}
+    {% for temporal_scale in temporal_scales %}
+    <v4w:temporalScales>
+        <v4w:temporalScale>
+            <temporalExtentStart>{{ temporal_scale.temporal_extent_start }}</temporalExtentStart>
+            <temporalExtentEnd>{{ temporal_scale.temporal_extent_end }}</temporalExtentEnd>
+            <temporalResolution>{{ temporal_scale.temporal_resolution_iso }}</temporalResolution>
+        </v4w:temporalScale>
+    </v4w:temporalScales>
+    {% endfor %}
     <radarDataset>
         <re:identifier identifierType="DOI"><!--V-FOR-WaTer does not currently offer DOIs, this feature will be added in a future release--></re:identifier>
         {% for author in authors %}
