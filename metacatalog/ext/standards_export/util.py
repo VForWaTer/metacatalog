@@ -582,7 +582,8 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
     temporal_scales: list[dict]
         List of dictionaries containing information about the temporal scale(s), mandatory 
         keys are ``temporal_extent_start``, 
-        ``temporal_extent_end`` and ``temporal_resolution``
+        ``temporal_extent_end``, ``temporal_resolution`` (in seconds), ``temporal_resolution_iso``
+        (in ISO 8601 duration format).
 
         * ISO 19115: ``<gmd:temporalElement>``,  repeatable.
 
@@ -619,14 +620,15 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
             # extent
             temporal_extent_start = rs.get('datasource')['temporal_scale']['extent'][0].isoformat()
             temporal_extent_end = rs.get('datasource')['temporal_scale']['extent'][1].isoformat()
-            # resolution in seconds
-            temporal_resolution = rs.get('datasource')['temporal_scale']['resolution']
-            temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
+            # resolution in ISO 8601 duration and seconds
+            temporal_resolution_iso = rs.get('datasource')['temporal_scale']['resolution']
+            temporal_resolution = pd.to_timedelta(temporal_resolution_iso).total_seconds()
 
             temporal_scales = [{
                 "temporal_extent_start": temporal_extent_start,
                 "temporal_extent_end": temporal_extent_end,
-                "temporal_resolution": temporal_resolution
+                "temporal_resolution": temporal_resolution,
+                "temporal_resolution_iso": temporal_resolution_iso
                 }]
 
         # spatial extent, bounding box for ISO export, polygon for datacite export
@@ -658,14 +660,15 @@ def _get_datasource_information(rs: ImmutableResultSet) -> Tuple[List[Dict], Lis
                 # extent
                 temporal_extent_start = ds_dict['temporal_scale']['extent'][0].isoformat()
                 temporal_extent_end = ds_dict['temporal_scale']['extent'][1].isoformat()
-                # resolution in seconds
-                temporal_resolution = ds_dict['temporal_scale']['resolution']
-                temporal_resolution = pd.to_timedelta(temporal_resolution).total_seconds()
+                # resolution in ISO 8601 duration and seconds
+                temporal_resolution_iso = ds_dict['temporal_scale']['resolution']
+                temporal_resolution = pd.to_timedelta(temporal_resolution_iso).total_seconds()
 
                 temporal_scales.append({
                     "temporal_extent_start": temporal_extent_start,
                     "temporal_extent_end": temporal_extent_end,
-                    "temporal_resolution": temporal_resolution
+                    "temporal_resolution": temporal_resolution,
+                    "temporal_resolution_iso": temporal_resolution_iso
                 })
             # spatial_scale / bbox_location, polygon_location & spatial_resolution
             if ds_dict.get('spatial_scale'):
