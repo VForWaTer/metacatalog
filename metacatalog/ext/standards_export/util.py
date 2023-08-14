@@ -741,8 +741,8 @@ def _get_variables(rs: ImmutableResultSet) -> List[dict]:
     """
     variables = []
 
-    # if there is only one variable in the ImmutableResultSet, there are no nested dicts
-    if not any(isinstance(val, dict) for val in rs.get('variable').values()):
+    # one variable in ImmutableResultSet -> variable_dict is returned directly
+    if not all(isinstance(val, dict) for val in rs.get('variable').values()):
         # variable
         variable_name = rs.get('variable')['name']
         variable_symbol = rs.get('variable')['symbol']
@@ -759,8 +759,8 @@ def _get_variables(rs: ImmutableResultSet) -> List[dict]:
                 'symbol': unit_symbol
             }})
 
-    #  if there is more than one variable in ImmutableResultSet, a uuid-indexed dict of variables is returned
-    elif any(isinstance(val, dict) for val in rs.get('variable').values()):
+    # more than one variable in ImmutableResultSet -> uuid-indexed dictionaries -> all values are dicts
+    elif all(isinstance(val, dict) for val in rs.get('variable').values()):
         for entry_uuid, variable_dict in rs.get('variable').items():
             # variable
             variable_name = variable_dict['name']
