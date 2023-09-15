@@ -13,26 +13,28 @@
 	xsi:schemaLocation="
 		http://kit.edu/schema/radar-v4w
 		file:///home/alexander/Github/metacatalog/metacatalog/ext/standards_export/schemas/radar/radar-v4w-extension.xsd">
-    {% for variable in variables %}
     <v4w:variables>
+        {% for variable in variables %}
 		<v4w:variable>
 			<v4w:variableName>{{ variable.name }}</v4w:variableName>
 			<v4w:variableSymbol>{{ variable.symbol }}</v4w:variableSymbol>
 			<v4w:unitName>{{ variable.unit.name }}</v4w:unitName>
 			<v4w:unitSymbol>{{ variable.unit.symbol }}</v4w:unitSymbol>
 		</v4w:variable>
+        {% endfor %}
 	</v4w:variables>
-    {% endfor %}
-    {% for temporal_scale in temporal_scales %}
+    {% if temporal_scales %}
     <v4w:temporalScales>
+        {% for temporal_scale in temporal_scales %}
         <v4w:temporalScale>
-            <temporalExtentStart>{{ temporal_scale.temporal_extent_start }}</temporalExtentStart>
-            <temporalExtentEnd>{{ temporal_scale.temporal_extent_end }}</temporalExtentEnd>
-            <temporalResolution>{{ temporal_scale.temporal_resolution_iso }}</temporalResolution>
+            <v4w:temporalExtentStart>{{ temporal_scale.temporal_extent_start }}</v4w:temporalExtentStart>
+            <v4w:temporalExtentEnd>{{ temporal_scale.temporal_extent_end }}</v4w:temporalExtentEnd>
+            <v4w:temporalResolution>{{ temporal_scale.temporal_resolution_iso }}</v4w:temporalResolution>
         </v4w:temporalScale>
+        {% endfor %}
     </v4w:temporalScales>
-    {% endfor %}
-    <radarDataset>
+    {% endif %}
+    <radar:radarDataset>
         <re:identifier identifierType="DOI"><!--V-FOR-WaTer does not currently offer DOIs, this feature will be added in a future release--></re:identifier>
         {% for author in authors %}
         <re:creators>
@@ -93,7 +95,7 @@
         <re:keywords>
             {% for keyword in keywords %}
             {% if keyword.thesaurusName == "NASA/GCMD Earth Science Keywords" %}
-            <re:keyword keywordScheme="GCMD" schemeURI="https://www.earthdata.nasa.gov/learn/find-data/idn/gcmd-keywords/">{{ keyword.full_path }}</re:keyword>
+            <re:keyword keywordScheme="Other" schemeURI="https://www.earthdata.nasa.gov/learn/find-data/idn/gcmd-keywords/">{{ keyword.full_path }}</re:keyword>
             {% else %}
             <re:keyword keywordScheme="Other">{{ keyword.full_path }}</re:keyword>
             {% endif %}
@@ -121,5 +123,5 @@
             </geoLocation>
             {% endfor %}
         </geoLocations>
-    </radarDataset>
+    </radar:radarDataset>
 </v4w:v4w-content>
