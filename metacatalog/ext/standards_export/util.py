@@ -17,44 +17,44 @@ from metacatalog.api.catalog import get_uuid
 
 
 def _init_jinja(template_path: str) -> Template:
-        """
-        Initialize jinja environment for metadata export
-        and return the template.
+    """
+    Initialize jinja environment for metadata export
+    and return the template.
 
-        Parameters
-        ----------
-        template_path : str
-            Location of the jinja2 template for metadata export.
+    Parameters
+    ----------
+    template_path : str
+        Location of the jinja2 template for metadata export.
 
-        Returns
-        ----------
-        template : jinja2.environment.Template
-            The jinja2 template object which will be rendered.
+    Returns
+    ----------
+    template : jinja2.environment.Template
+        The jinja2 template object which will be rendered.
 
-        """
-        # get absolute path of template
-        template_path = os.path.abspath(template_path)
-        
-        # get the template name
-        template_name = os.path.basename(template_path)
+    """
+    # get absolute path of template
+    template_path = os.path.abspath(template_path)
+    
+    # get the template name
+    template_name = os.path.basename(template_path)
 
-        # get the template directory
-        template_dir = os.path.dirname(template_path)
+    # get the template directory
+    template_dir = os.path.dirname(template_path)
 
-        # initialite environment
-        env = Environment(loader=FileSystemLoader(searchpath=template_dir))
-        
-        # prevent whitespaces / newlines from jinja blocks in template
-        env.trim_blocks = True
-        env.lstrip_blocks = True
+    # initialite environment
+    env = Environment(loader=FileSystemLoader(searchpath=template_dir), autoescape=True)
+    
+    # prevent whitespaces / newlines from jinja blocks in template
+    env.trim_blocks = True
+    env.lstrip_blocks = True
 
-        # add custom functions and filters to the environment
-        env = _add_custom_functions_and_filters(env)
-        
-        # get template
-        template = env.get_template(template_name)
-        
-        return template
+    # add custom functions and filters to the environment
+    env = _add_custom_functions_and_filters(env)
+    
+    # get template
+    template = env.get_template(template_name)
+    
+    return template
 
 
 def _add_custom_functions_and_filters(env: Environment) -> Environment:
@@ -75,11 +75,26 @@ def _add_custom_functions_and_filters(env: Environment) -> Environment:
         temporal_extent_end_values = [temporal_scale['temporal_extent_end'] for temporal_scale in temporal_scales]
         return (min(temporal_extent_start_values), max(temporal_extent_end_values))
     
+    def license_to_radar_license(license):
+        # map v4w license names to radar license names
+        license_mapping = {
+            "ODbL": "Open Database License (ODC-ODbL)",
+            "ODC-by": "Attribution License (ODC-By)",
+            "CC BY 4.0": "CC BY 4.0 Attribution",
+            "CC BY-SA 4.0": "CC BY-SA 4.0 Attribution-ShareAlike",
+            "CC BY-NC 4.0": "CC BY-NC 4.0 Attribution-NonCommercial",
+            "CC BY-NC-SA 4.0": "CC BY-NC-SA 4.0 Attribution-NonCommercial-ShareAlike"
+        }
+
+        # return the license name alowed by RADAR, if license is not in mapping, return "Other"
+        return license_mapping.get(license, "Other")
+
     # add the custom functions to the environment
     env.globals['now'] = current_datetime
 
     # add custom filters to the environment
     env.filters['get_temporal_extent_values'] = get_temporal_extent_values
+    env.filters['license_to_radar_license'] = license_to_radar_license
 
     return env
 

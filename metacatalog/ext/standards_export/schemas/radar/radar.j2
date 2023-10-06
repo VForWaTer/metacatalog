@@ -55,7 +55,7 @@
         {% if temporal_extent_values[0][0:4] == temporal_extent_values[1][0:4] %}
         <re:productionYear>{{ temporal_extent_values[0][0:4] }}</re:productionYear>
         {% elif temporal_extent_values[0][0:4] != temporal_extent_values[1][0:4] %}
-        <re:productionYear>{{ temporal_extent_values[0][0:4] }} - {{ temporal_extent_values[1][0:4] }}</re:productionYear>
+        <re:productionYear>{{ temporal_extent_values[0][0:4] }}-{{ temporal_extent_values[1][0:4] }}</re:productionYear>
         {% endif %}
         {% else %}
         <re:productionYear>"unknown"</re:productionYear>
@@ -69,7 +69,12 @@
         <re:resource resourceType="Dataset"/>
         <re:rights>
             {% for license in licenses %}
-            <re:controlledRights>{{ license.short_title }}</re:controlledRights>
+            {% if license.short_title in ("ODbL", "ODC-by", "CC BY 4.0", "CC BY-SA 4.0", "CC BY-NC 4.0", "CC BY-NC-SA 4.0") %}
+            <re:controlledRights>{{ license.short_title | license_to_radar_license }}</re:controlledRights>
+            {% else %}
+            <re:controlledRights>{{ license.short_title | license_to_radar_license }}</re:controlledRights>
+            <re:additionalRights>{{ license.short_title }}</re:additionalRights>
+            {% endif %}
             {% endfor %}
         </re:rights>
         <re:rightsHolders>
