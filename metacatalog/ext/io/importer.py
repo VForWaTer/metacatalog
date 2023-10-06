@@ -307,9 +307,6 @@ def import_to_local_tiff_file(entry: Entry, datasource: DataSource, data: str, *
     # always use absolute paths
     path = os.path.abspath(path)
 
-    # check if path is a directory
-
-
     # raise Exception if not a tif file or not a folder of tif files
     if os.path.isdir(path):
         # check if folder contains tif files
