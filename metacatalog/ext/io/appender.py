@@ -8,7 +8,7 @@
 """
 from metacatalog.models import Entry, DataSource
 
-from .importer import import_to_internal_table, import_to_local_csv_file, import_to_local_netcdf_file
+from .importer import import_to_internal_table, import_to_local_csv_file, import_to_local_netcdf_file, import_to_local_tiff_file
 
 
 def append_to_internal_table(entry: Entry, datasource: DataSource, data, **kwargs):
@@ -26,3 +26,8 @@ def append_to_local_netcdf_file(entry: Entry, datasource: DataSource, data, **kw
     # force append
     kwargs['if_exists'] = 'append'
     return import_to_local_netcdf_file(entry=entry, datasource=DataSource, data=data, **kwargs)
+
+def append_to_local_tiff_file(entry: Entry, datasource: DataSource, data, **kwargs):
+    # force append
+    kwargs['if_exists'] = 'append'
+    return import_to_local_tiff_file(entry=entry, datasource=DataSource, data=data, **kwargs)
