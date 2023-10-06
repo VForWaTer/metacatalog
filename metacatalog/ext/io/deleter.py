@@ -117,7 +117,49 @@ def delete_from_local_netcdf(entry: Entry, datasource: DataSource, delete_source
         In case not all data is deleted, you **have to** 
         set :attr:`delete_source` to `False`, otherwise the 
         :class:`DataSource <metacatalog.models.DataSource>` is deleted and the data 
-        itself it not reachable anymore.
+        itself is not reachable anymore.
+
+    Parameters
+    ----------
+    entry : Entry
+        The :class:`Entry <metacatalog.models.Entry>`, which requested the deletion.
+    datasource : DataSource
+        The :class:`DataSource <metacatalog.models.DataSource>`, which should be
+        deleted.
+    delete_source : bool
+        If True (default) the :class:`DataSource <metacatalog.models.DataSource>` 
+        will be deleted from the database.
+    kwargs : keyword arguments
+
+    """
+    assert Entry.is_valid(entry)
+
+    # get the filepath
+    filepath = datasource.path
+
+    # delete the file 
+    os.remove(filepath)
+    
+    # check if the datasource should be deleted
+    if delete_source:
+        try:
+            session = object_session(entry)
+            session.delete(datasource)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
+        
+
+def delete_from_local_tiff(entry: Entry, datasource: DataSource, delete_source=True, **kwargs):
+    """
+    Deletes the entire associated TIFF file.
+    
+    .. warning::
+        In case not all data is deleted, you **have to** 
+        set :attr:`delete_source` to `False`, otherwise the 
+        :class:`DataSource <metacatalog.models.DataSource>` is deleted and the data 
+        itself is not reachable anymore.
 
     Parameters
     ----------
