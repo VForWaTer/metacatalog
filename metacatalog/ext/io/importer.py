@@ -8,6 +8,7 @@ from sqlalchemy.orm import object_session
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from metacatalog.models.entry import Entry
+from metacatalog.models import DataSource
 
 
 def import_to_internal_table(entry, datasource, data, precision=None, force_data_names=False, **kwargs):
@@ -19,6 +20,7 @@ def import_to_internal_table(entry, datasource, data, precision=None, force_data
     the datasource, otherwise the standard column names in
     entry.variable.column_names are used. The column names in
     datasource.data_names are used when exporting the data.
+
     """
     # check that entry is valid
     assert Entry.is_valid(entry)
@@ -211,7 +213,7 @@ def import_to_local_netcdf_file(entry, datasource, data, **kwargs):
     The default location can be overwritten using the path keyword.
 
     Parameters
-        ----------
+    ----------
     entry : metacatlog.models.Entry
         Metacatalog entry for which the data is to be uploaded.
     datasource : metacatalog.models.Datasource
@@ -271,6 +273,69 @@ def import_to_local_netcdf_file(entry, datasource, data, **kwargs):
                 data.to_netcdf(path, mode='w')
             else:
                 shutil.copy(data, path)
+    else:
+        raise ValueError("if_exists has to be one of ['fail', 'append', 'replace']")
+
+
+def import_to_local_tiff_file(entry: Entry, datasource: DataSource, data: str, **kwargs) -> None:
+    """
+    .. versionadded:: 0.8.4
+
+    Import to TIFF
+    Saves data to a local TIFF file.
+    Any existing file will be overwritten.
+    The default location can be overwritten using the path keyword.
+
+    Parameters
+    ----------
+    entry : metacatlog.models.Entry
+        Metacatalog entry for which the data is to be uploaded.
+    datasource : metacatalog.models.Datasource
+        Datasource of the given entry.
+    data : str
+        Path to your locally saved TIFF file.
+
+    """
+    assert Entry.is_valid(entry)
+
+    # get the path
+    if datasource.path is None:
+        path = os.path.join(os.path.expanduser('~'))
+    else:
+        path = datasource.path
+
+    # always use absolute paths
+    path = os.path.abspath(path)
+
+    # check if path is a directory
+
+
+    # raise Exception if not a tif file or not a folder of tif files
+    if os.path.isdir(path):
+        # check if folder contains tif files
+        if not any([os.path.splitext(file)[1] in ['.tif', '.tiff'] for file in os.listdir(path)]):
+            raise Exception(f"The given folder {path} does not contain any tif files.")
+    if not os.path.splitext(path)[1] in ['.tif', '.tiff']:
+        raise Exception(f"{path} is not a tif file or a folder of tif files.")
+
+    if_exists = kwargs.get('if_exists', 'replace')
+
+    # check type of data
+    if type(data) != str:
+        raise TypeError("The type of data has to be str (path to your tif file(s))")
+
+    # save the data
+    if if_exists == 'replace':
+        shutil.copy(data, path)
+
+    elif if_exists == 'append':
+        raise NotImplementedError("Appending to TIFF files is not implemented.")
+
+    elif if_exists == 'fail':
+        if os.path.exists(path):
+            raise ValueError('%s already exists.' % path)
+        else:
+            shutil.copy(data, path)
     else:
         raise ValueError("if_exists has to be one of ['fail', 'append', 'replace']")
 
