@@ -24,6 +24,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
     an interface class can be defined for each Entry and data-source,
     data-type and metadata-specific operations can be executed from
     a common interface.
+    
     """
     READER = dict(
         internal={

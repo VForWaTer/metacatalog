@@ -114,4 +114,20 @@ def read_from_local_netcdf(entry, datasource, **kwargs):
         data = xr.open_mfdataset(f"{fname}/*", engine=engine)
 
     return data
+
+
+def read_from_local_tiff(entry, datasource, **kwargs):
+    # check validity
+    assert Entry.is_valid(entry)
+
+    # get the filename
+    fname = datasource.path
+
+    # check if fname is a folder
+    if os.path.isdir(fname):
+        # get all files in the folder
+        fnames = glob.glob(f"{fname}/*")
+    else:
+        # get the filename
+        fnames = [fname]
     
