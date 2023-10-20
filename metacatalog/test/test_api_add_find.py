@@ -185,6 +185,7 @@ def check_composite_raises_error(session):
     
     return "has to be of type 'Project'" in str(excinfo.value)
 
+
 def find_by_project(session):
     dummies = api.find_group(session, title="Dumm%")[0]
     # create a project
@@ -328,6 +329,31 @@ def mutate_details(session):
     return True
 
 
+def add_variable(session):
+    """
+    Check add variable and also add a unit.
+    
+    """
+    # add unit
+    unit = api.add_unit(session, name='best_unit', symbol='bu', si='kg*m*s*1')
+
+    # add variable
+    variable = api.add_variable(session, name='best_variable', symbol='bv', unit=unit.id, column_names=['best_variable'], 
+                                keyword='EARTH SCIENCE > * > ATMOSPHERIC/OCEAN INDICATORS > * > BIVARIATE ENSO TIMESERIES INDEX > BEST')
+
+    # find unit and variable
+    find_unit = api.find_unit(session, name='best_unit')[0]
+    find_variable = api.find_variable(session, name='best_variable')[0]
+
+    # assert
+    assert find_unit.symbol == 'bu'
+    assert find_variable.symbol == 'bv'
+    assert find_variable.unit.symbol == 'bu'
+    assert find_variable.keyword.full_path == 'EARTH SCIENCE > CLIMATE INDICATORS > ATMOSPHERIC/OCEAN INDICATORS > TELECONNECTIONS > BIVARIATE ENSO TIMESERIES INDEX > BEST'
+
+    return True
+
+
 @pytest.mark.depends(on=['db_init'], name='add_find')
 def test_add_and_find():
     """
@@ -354,3 +380,4 @@ def test_add_and_find():
     assert check_get_by_uuid(session)
     assert find_by_author(session)
     assert check_find_person(session)
+    assert add_variable(session)
