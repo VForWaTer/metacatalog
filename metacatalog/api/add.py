@@ -121,7 +121,7 @@ def add_unit(session: 'Session', name: str, symbol: str, si: str = None) -> mode
     return add_record(session=session, tablename='units', **attrs)
 
 
-def add_variable(session: 'Session', name: str, symbol: str, column_names: List[str], unit: Union[int, str]) -> models.Variable:
+def add_variable(session: 'Session', name: str, symbol: str, column_names: List[str], unit: Union[int, str], keyword: Union[int, str] = None) -> models.Variable:
     r"""
     Add a new variable to the database.
 
@@ -142,6 +142,12 @@ def add_variable(session: 'Session', name: str, symbol: str, column_names: List[
     unit : int, str
         Either the id or **full** name of the unit to be
         linked to this variable.
+    keyword: int, str
+        .. versionadded:: 0.8.4
+        Either the id or **full** path of the keyword to be
+        linked to this variable.  
+        It is strongly recommended to add a keyword from a controlled thesaurus to a 
+        newly created variable to improve the findability of the variable.
 
     Returns
     -------
@@ -159,8 +165,19 @@ def add_variable(session: 'Session', name: str, symbol: str, column_names: List[
         unit = api.find_unit(session=session,name=unit, return_iterator=True).first()
     else:
         raise AttributeError('unit has to be of type integer or string.')
-
+    
     attrs['unit_id'] = unit.id
+
+    # get the keyword
+    if keyword:
+        if isinstance(keyword, int):
+            keyword = api.find_keyword(session=session, id=keyword, return_iterator=True).one()
+        elif isinstance(keyword, str):
+            keyword = api.find_keyword(session=session, full_path=keyword, return_iterator=True).first()
+        else:
+            raise AttributeError('keyword has to be of type integer or string.')
+
+        attrs['keyword_id'] = keyword.id
 
     # add the variable
     return add_record(session=session, tablename='variables', **attrs)
