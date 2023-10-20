@@ -104,7 +104,7 @@ def find_keyword(session: 'Session', id: Optional[int] = None, uuid: Optional[st
         Value of the requested keyword(s). Multiple record
         return is possible.
     full_path : str
-        .. versionadded:: 0.1.13
+        .. versionadded:: 0.8.4
 
         Full path of the requested keyword.
     thesaurus_name : str
