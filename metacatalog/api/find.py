@@ -138,7 +138,7 @@ def find_keyword(session: 'Session', id: Optional[int] = None, uuid: Optional[st
     if id is not None:
         query = query.filter(models.Keyword.id==id)
     if full_path is not None:
-        query = query.filter(models.Keyword.full_path==full_path)
+        query = query.filter(_match(models.Keyword.full_path, full_path))
     if value is not None:
         query = query.filter(_match(models.Keyword.value, value))
     if thesaurus_name is not None:
