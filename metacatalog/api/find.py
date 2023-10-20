@@ -83,7 +83,7 @@ def _match(column_instance: InstrumentedAttribute, compare_value: str, invert: b
 def find_keyword(return_iterator: Literal[False] = False) -> List['Keyword']: ...
 @overload
 def find_keyword(return_iterator: Literal[True] = False) -> 'Query': ...
-def find_keyword(session: 'Session', id: Optional[int] = None, uuid: Optional[str] = None, value: Optional[str] = None, thesaurus_name: Optional[str] = None, return_iterator: bool = False) -> List['Keyword'] | 'Query':
+def find_keyword(session: 'Session', id: Optional[int] = None, uuid: Optional[str] = None, value: Optional[str] = None, full_path: Optional[str] = None, thesaurus_name: Optional[str] = None, return_iterator: bool = False) -> List['Keyword'] | 'Query':
     """
     Return one or many keyword entries from the database on
     exact matches.
@@ -103,6 +103,10 @@ def find_keyword(session: 'Session', id: Optional[int] = None, uuid: Optional[st
     value : str
         Value of the requested keyword(s). Multiple record
         return is possible.
+    full_path : str
+        .. versionadded:: 0.8.4
+
+        Full path of the requested keyword.
     thesaurus_name : str
         .. versionadded:: 0.1.10
 
@@ -133,6 +137,8 @@ def find_keyword(session: 'Session', id: Optional[int] = None, uuid: Optional[st
     # add needed filter
     if id is not None:
         query = query.filter(models.Keyword.id==id)
+    if full_path is not None:
+        query = query.filter(_match(models.Keyword.full_path, full_path))
     if value is not None:
         query = query.filter(_match(models.Keyword.value, value))
     if thesaurus_name is not None:
