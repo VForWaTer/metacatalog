@@ -1,6 +1,7 @@
 from metacatalog.models import Entry
 
 import shutil
+import os
 
 
 def set_data(entry: Entry, data_path: str, **kwargs):
@@ -21,6 +22,10 @@ def set_data(entry: Entry, data_path: str, **kwargs):
     """
     # get the datasource path of the entry
     datasource_path = entry.datasource.path
+
+    # use absolute paths
+    data_path = os.path.abspath(data_path)
+    datasource_path = os.path.abspath(datasource_path)
 
     # validate netcdf file / folder
     validate(data_path)
@@ -43,8 +48,19 @@ def get_data(entry: Entry, output_path: str, start, end, bbox, **kwargs):
         Path to the file or folder where the data is to be saved.
 
     """
+    # get the datasource path of the entry
+    datasource_path = entry.datasource.path
+
+    # use absolute paths
+    output_path = os.path.abspath(output_path)
+    datasource_path = os.path.abspath(datasource_path)
+
+    # filter data if start, end or bbox are given
+    if start or end or bbox:
+        datasource_path = filter_data(start, end, bbox)
+
     # copy the data from the datasource path of the entry to output_path
-    shutil.copy(entry.datasource.path, output_path)
+    shutil.copy(datasource_path, output_path)
 
     return None
 
@@ -73,3 +89,28 @@ def validate(data_path: str) -> bool:
     # check temporal and spatial scale? -> open with xarray and check?
 
     # check if data naming is consistent with the naming pattern saved to datasource.args?
+
+
+def filter_data(start, end, bbox):
+    """
+    Filtering data based on temporal and spatial extent is based on
+    file naming.  
+    The naming pattern is saved to datasource.args under the key 
+    `naming_pattern`. If no naming pattern is defined here, filtering
+    is not possible.  
+    Filtering is done by adjusting the datasource path to only include
+    the data that is within the given temporal and spatial extent.
+
+    """
+    raise NotImplementedError()
+
+    # check if naming pattern is defined in datasource.args
+    # if not, raise ValueError
+
+    # check if start, end, bbox are consistent with naming pattern
+    # if not, raise ValueError
+
+    # filter data based on naming pattern
+    # if no data is left, raise ValueError
+
+    # return datasource_path
