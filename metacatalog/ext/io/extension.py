@@ -3,7 +3,9 @@ from sqlalchemy import event
 from .interface import IOExtensionInterface
 from metacatalog.models import Entry
 from metacatalog.util.exceptions import MetadataMissingError
-from. netcdf import set_data_netcdf, get_data_netcdf
+from . import driver
+
+import os
 
 
 class IOExtension(IOExtensionInterface):
@@ -38,16 +40,21 @@ class IOExtension(IOExtensionInterface):
             Path to the file or folder containing the data.
 
         """
+        assert Entry.is_valid(entry)
+
         # get the datasource type and path
         if not entry.datasource:
             raise MetadataMissingError('No datasource information for the given Entry.')
         else:
             datasource_type = entry.datasource.type.name
-            datasource_path = entry.datasource.path
 
-        # set the data based on the datasource type
-        if datasource_type == 'netcdf':
-            set_data_netcdf(entry, data_path, **kwargs)
+        # get the correct driver based on the datasource type
+        type_driver = getattr(driver, datasource_type)
+        data_setter = getattr(type_driver, 'set_data')
+
+        # set the data
+        return data_setter(entry, data_path, **kwargs)
+
 
     @classmethod
     def get_data(cls, entry: Entry, output_path: str, **kwargs):
@@ -63,13 +70,18 @@ class IOExtension(IOExtensionInterface):
             Path to the file or folder where the data is to be saved.
         
         """
+        assert Entry.is_valid(entry)
+
         # get the datasource type and path
         if not entry.datasource:
             raise MetadataMissingError('No datasource information for the given Entry.')
         else:
             datasource_type = entry.datasource.type.name
-            datasource_path = entry.datasource.path
+
+        # get the correct driver based on the datasource type
+        type_driver = getattr(driver, datasource_type)
+        data_getter = getattr(type_driver, 'get_data')
         
-        # get the data based on the datasource type
-        if datasource_type == 'netcdf':
-            get_data_netcdf(entry, output_path, **kwargs)
+        # get the data
+        return data_getter(entry, output_path, **kwargs)
+    
