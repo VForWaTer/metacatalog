@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:radar="http://radar-service.eu/schemas/descriptive/radar/v09/radar-dataset" xmlns:file="http://radar-service.eu/schemas/descriptive/radar/v09/radar-file"
+	xmlns:v4w="http://kit.edu/schema/radar-v4w"
+	targetNamespace="http://kit.edu/schema/radar-v4w">
+	<xs:import namespace="http://radar-service.eu/schemas/descriptive/radar/v09/radar-dataset" schemaLocation="https://www.radar-service.eu/schemas/descriptive/radar/v09/radar-dataset"/>
+	<xs:import namespace="http://radar-service.eu/schemas/descriptive/radar/v09/radar-file" schemaLocation="https://www.radar-service.eu/schemas/descriptive/radar/v09/radar-file"/>
+	<xs:element name="v4w-content">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="v4w:variables" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="v4w:temporalScales" minOccurs="0" maxOccurs="1"/>
+				<xs:choice>
+					<xs:element ref="radar:radarDataset"/>
+					<xs:element ref="file:radarFile"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="variables">
+		<xs:annotation>
+			<xs:documentation>Variables described / measured in the dataset.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="v4w:variable" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="temporalScales">
+		<xs:annotation>
+			<xs:documentation>Temporal scale(s) of dataset(s).</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="v4w:temporalScale" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="variable">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="variableName" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Full name of the variable.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="variableSymbol" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Symbol that is commonly used to represent the variable.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="unitName" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Full name of the variable's unit.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="unitSymbol" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Commonly used symbol of the variable's unit.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="temporalScale">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="xs:string" name="temporalExtentStart" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Point in time, when the first observation was made,
+										ISO 8601 format (YYYY-MM-DDThh:mm:ss).</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="temporalExtentEnd" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Point in time, when the last observation was made,
+										ISO 8601 format (YYYY-MM-DDThh:mm:ss).</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element type="xs:string" name="temporalResolution" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Resolution has to be given as an 
+										ISO 8601 duration (P(n)Y(n)M(n)DT(n)H(n)M(n)S)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>
