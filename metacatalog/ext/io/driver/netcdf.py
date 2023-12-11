@@ -89,6 +89,7 @@ def validate(data_path: str) -> bool:
     # check temporal and spatial scale? -> open with xarray and check?
 
     # check if data naming is consistent with the naming pattern saved to datasource.args?
+    # check also if the data in netCDF files is consistent (-> open each file, see if naming_pattern is correct -> really from January 1st to January 31st?)
 
 
 def filter_data(start, end, bbox):

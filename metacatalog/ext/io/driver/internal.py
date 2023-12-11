@@ -16,7 +16,12 @@ def set_data(entry: Entry, data_path: str, **kwargs):
     # get the datasource path of the entry
     datasource_path = entry.datasource.path
 
-    # TODO: new schema (one table for each entry) -> alter datasource_path automatically with the tablename?
+    # TODO: 
+    # new schema (one table for each entry) -> alter datasource_path automatically with the tablename?
+    # -> entry_id column is not needed anymore, backwards kompatibel: column names checken, wenn entry_id vorhanden, dann
+    # nach entry_id filtern, ansonsten ganz Tabelle nehmen3
+
+    # Spalte entry_id behalten wir
 
     # use absolute paths
     data_path = os.path.abspath(data_path)
@@ -24,7 +29,8 @@ def set_data(entry: Entry, data_path: str, **kwargs):
     # load the data
     data = pd.read_csv(data_path)
 
-    # TODO: should we still handle precision column?
+    # TODO: should we still handle precision column? -> keine precision column mehr, aber tstamp column
+    # datetime index immer in tstamp umbenennen
 
     validate(data)
 
