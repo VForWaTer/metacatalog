@@ -12,7 +12,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
 		http://kit.edu/schema/radar-v4w
-		file:///home/alexander/Github/metacatalog/metacatalog/ext/standards_export/schemas/radar/radar-v4w-extension.xsd">
+		radar-v4w-extension.xsd">
     <v4w:variables>
         {% for variable in variables %}
 		<v4w:variable>
@@ -35,56 +35,21 @@
     </v4w:temporalScales>
     {% endif %}
     <radar:radarDataset>
-        <re:identifier identifierType="DOI"><!--V-FOR-WaTer does not currently offer DOIs, this feature will be added in a future release--></re:identifier>
         {% for author in authors %}
         <re:creators>
             <re:creator>
+                {% if author.last_name and author.first_name %}
                 <re:creatorName>{{ author.last_name }}, {{ author.first_name }}</re:creatorName>
                 {% if author.organisation_name %}
                 <re:creatorAffiliation>{{ author.organisation_name }}</re:creatorAffiliation>
+                {% endif %}
+                {% elif author.organisation_name %}
+                <re:creatorName>{{ author.organisation_name }}</re:creatorName>
                 {% endif %}
             </re:creator>
         </re:creators>
         {% endfor %}
         <re:title>{{ title }}</re:title>
-        <re:publishers>
-            <re:publisher>{{ publisher.organisation_name }}</re:publisher>
-        </re:publishers>
-        {% if temporal_scales %}
-        {% set temporal_extent_values = temporal_scales | get_temporal_extent_values %}
-        {% if temporal_extent_values[0][0:4] == temporal_extent_values[1][0:4] %}
-        <re:productionYear>{{ temporal_extent_values[0][0:4] }}</re:productionYear>
-        {% elif temporal_extent_values[0][0:4] != temporal_extent_values[1][0:4] %}
-        <re:productionYear>{{ temporal_extent_values[0][0:4] }}-{{ temporal_extent_values[1][0:4] }}</re:productionYear>
-        {% endif %}
-        {% else %}
-        <re:productionYear>"unknown"</re:productionYear>
-        {% endif %}
-        <re:publicationYear>{{ publication[0:4] }}</re:publicationYear>
-        <re:subjectAreas>
-            <re:subjectArea>
-                <re:controlledSubjectAreaName>Environmental Science and Ecology</re:controlledSubjectAreaName>
-            </re:subjectArea>
-        </re:subjectAreas>
-        <re:resource resourceType="Dataset"/>
-        <re:rights>
-            {% for license in licenses %}
-            {% if license.short_title in ("ODbL", "ODC-by", "CC BY 4.0", "CC BY-SA 4.0", "CC BY-NC 4.0", "CC BY-NC-SA 4.0") %}
-            <re:controlledRights>{{ license.short_title | license_to_radar_license }}</re:controlledRights>
-            {% else %}
-            <re:controlledRights>{{ license.short_title | license_to_radar_license }}</re:controlledRights>
-            <re:additionalRights>{{ license.short_title }}</re:additionalRights>
-            {% endif %}
-            {% endfor %}
-        </re:rights>
-        <re:rightsHolders>
-            {# for now: first author or organization name, could potentially also be V-FOR-WaTer -> already publisher! #}
-            {% if authors[0].last_name and authors[0].first_name %}
-            <re:rightsHolder>{{ authors[0].first_name }}, {{ authors[0].last_name }}</re:rightsHolder>
-            {% elif authors[0].organisation_name %}
-            <re:rightsHolder>{{ authors[0].organisation_name }}</re:rightsHolder>
-            {% endif %}
-        </re:rightsHolders>
         <re:descriptions>
             <re:description descriptionType="Abstract">
             {{ abstract | indent(12) }}
@@ -107,6 +72,26 @@
             {% endfor %}
         </re:keywords>
         {% endif %}
+        <re:publishers>
+            <re:publisher>{{ publisher.organisation_name }}</re:publisher>
+        </re:publishers>
+        {% if temporal_scales %}
+        {% set temporal_extent_values = temporal_scales | get_temporal_extent_values %}
+        {% if temporal_extent_values[0][0:4] == temporal_extent_values[1][0:4] %}
+        <re:productionYear>{{ temporal_extent_values[0][0:4] }}</re:productionYear>
+        {% elif temporal_extent_values[0][0:4] != temporal_extent_values[1][0:4] %}
+        <re:productionYear>{{ temporal_extent_values[0][0:4] }}-{{ temporal_extent_values[1][0:4] }}</re:productionYear>
+        {% endif %}
+        {% else %}
+        <re:productionYear>"unknown"</re:productionYear>
+        {% endif %}
+        <re:publicationYear>{{ publication[0:4] }}</re:publicationYear>
+        <re:subjectAreas>
+            <re:subjectArea>
+                <re:controlledSubjectAreaName>Environmental Science and Ecology</re:controlledSubjectAreaName>
+            </re:subjectArea>
+        </re:subjectAreas>
+        <re:resource resourceType="Dataset"/>
         <geoLocations>
             {% for bbox_location in bbox_locations %}
             <geoLocation>
@@ -128,5 +113,23 @@
             </geoLocation>
             {% endfor %}
         </geoLocations>
+        <re:rights>
+            {% for license in licenses %}
+            {% if license.short_title in ("ODbL", "ODC-by", "CC BY 4.0", "CC BY-SA 4.0", "CC BY-NC 4.0", "CC BY-NC-SA 4.0") %}
+            <re:controlledRights>{{ license.short_title | license_to_radar_license }}</re:controlledRights>
+            {% else %}
+            <re:controlledRights>{{ license.short_title | license_to_radar_license }}</re:controlledRights>
+            <re:additionalRights>{{ license.short_title }}</re:additionalRights>
+            {% endif %}
+            {% endfor %}
+        </re:rights>
+        <re:rightsHolders>
+            {# for now: first author or organization name, could potentially also be V-FOR-WaTer -> already publisher! #}
+            {% if authors[0].last_name and authors[0].first_name %}
+            <re:rightsHolder>{{ authors[0].first_name }}, {{ authors[0].last_name }}</re:rightsHolder>
+            {% elif authors[0].organisation_name %}
+            <re:rightsHolder>{{ authors[0].organisation_name }}</re:rightsHolder>
+            {% endif %}
+        </re:rightsHolders>
     </radar:radarDataset>
 </v4w:v4w-content>
