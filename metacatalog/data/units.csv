@@ -37,4 +37,4 @@ id,name,symbol,si
 112,percent,%,10^-2
 113,cm3/cm3,cm3/cm3,1
 114,kg/kg,kg/kg,1
-115,watt per sqauaremeter,W/m2,kg*m^2*s^-3*m^-2
+115,watt per squaremeter,W/m2,kg*m^2*s^-3*m^-2
