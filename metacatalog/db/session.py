@@ -1,19 +1,20 @@
+from typing import Optional
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
-from metacatalog import config
 from metacatalog import models
+from metacatalog.config import config
 
 
-def get_engine(*args, **kwargs):
+def get_engine(connection: Optional[str] = None, **kwargs):
+    # check if a connection is given
+    url = connection or str(config.connection)
+
     # set an application name
     kwargs.setdefault('connect_args', {'application_name': 'metacatalog_session'})
 
-    # set the connection uri from the config object
-    kwargs.setdefault('url', config.connection)
-
     # create a connection
-    engine = create_engine(*args, **kwargs)
+    engine = create_engine(url, **kwargs)
 
     return engine
     
