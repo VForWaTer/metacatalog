@@ -3,14 +3,10 @@ The migration bla
 
 write this
 """
-import os
 from os.path import join as pjoin
-import glob
-import importlib
 from datetime import datetime as dt
 
 from sqlalchemy.orm import Session
-import numpy as np
 
 from metacatalog import BASEPATH, __version__
 from metacatalog import models

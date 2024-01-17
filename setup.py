@@ -4,10 +4,6 @@ from setuptools.command.install import install
 import os
 import json
 
-USERDATAPATH = os.path.abspath(os.path.join(os.path.expanduser('~'), '.metacatalog', 'user_data'))
-CONFIGFILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
-
-
 def requirements():
     with open('requirements.txt') as f:
         return f.read().split('\n')
@@ -25,16 +21,6 @@ def version():
 def readme():
     with open('README.md') as f:
         return f.read()
-
-
-def create_config_file():
-    if not os.path.exists(os.path.dirname(CONFIGFILE)):
-        os.mkdir(os.path.dirname(CONFIGFILE))
-    if not os.path.exists(USERDATAPATH):
-        os.mkdir(USERDATAPATH)
-    if not os.path.exists(CONFIGFILE):
-        with open(CONFIGFILE, 'w') as f:
-            json.dump(dict(), f, indent=4)
 
 
 def migrate_database():
@@ -78,7 +64,6 @@ def add_default_extensions():
 class PostDevelopCommand(develop):
     def run(self):
         # create config and migrate the database
-        create_config_file() 
         migrate_database()
 
         # default develop
@@ -90,8 +75,7 @@ class PostDevelopCommand(develop):
 
 class PostInstallCommand(install):
     def run(self):
-        # create config and migrate the database
-        create_config_file()
+        # create config and migrate the databas
         migrate_database()
 
         # default install
