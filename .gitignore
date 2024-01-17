@@ -109,6 +109,7 @@ DBNAME
 tutorials
 Playground.ipynb
 Test.ipynb
+pg_data
 
 # macOS .DS_Store
 .DS_Store
