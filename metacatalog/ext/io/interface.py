@@ -1,3 +1,4 @@
+from typing import Dict, Callable
 from abc import abstractmethod
 
 from .importer import import_to_internal_table, import_to_local_csv_file, import_to_local_netcdf_file
@@ -9,6 +10,7 @@ from metacatalog.util.exceptions import IOOperationNotFoundError
 from metacatalog.models import DataSource, Entry
 from metacatalog.ext import MetacatalogExtensionInterface
 
+LOOKUP = Dict[str, Dict[str, Callable]]
 
 class IOExtensionInterface(MetacatalogExtensionInterface):
     """
@@ -25,7 +27,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
     data-type and metadata-specific operations can be executed from
     a common interface.
     """
-    READER = dict(
+    READER: LOOKUP = dict(
         internal={
             'array': read_from_internal_table,
             'ndarray': read_from_internal_table
@@ -38,7 +40,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
             'raster': read_from_local_netcdf
         }
     )
-    IMPORTER = dict(
+    IMPORTER: LOOKUP = dict(
         internal={
             'array': import_to_internal_table,
             'ndarray': import_to_internal_table
@@ -51,7 +53,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
             'raster': import_to_local_netcdf_file
         }
     )
-    APPENDER = dict(
+    APPENDER: LOOKUP = dict(
         internal={
             'iarray': append_to_internal_table,
             'timeseries': append_to_internal_table,
@@ -68,7 +70,7 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
             'raster': append_to_local_netcdf_file
         }
     )
-    DELETER = dict(
+    DELETER: LOOKUP = dict(
         internal={
             'array': delete_from_internal_table,
             'ndarray': delete_from_internal_table

@@ -29,7 +29,6 @@ import nltk
 import pandas as pd
 import numpy as np
 
-from metacatalog import config
 from metacatalog.db.base import Base
 from metacatalog import models
 from metacatalog import api
@@ -749,6 +748,8 @@ class Entry(Base):
         >> entry.export(path='testfile.json', fmt='json', indent=2)
 
         """
+        # load the config module
+        from metacatalog import config
         # load the extension
         try:
             Export = config.extension(f'export-{fmt.lower()}').interface
