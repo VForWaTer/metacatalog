@@ -31,7 +31,7 @@ class Extension(BaseModel):
             mod = importlib.import_module(import_path)
             interface = getattr(mod, interface_name)
         except ImportError as e:
-            raise ExtensionLoadError(f"Could not load Extension {name}. Please install: {str(e)}")
+            raise ExtensionLoadError(f"Could not load Extension {name}. Error: {str(e)}")
         except AttributeError as e:
             raise ExtensionLoadError(f"Could not find interface {interface_name} in {import_path}. Message: {str(e)}")
         except Exception as e:

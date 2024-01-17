@@ -8,7 +8,7 @@ from .appender import append_to_internal_table, append_to_local_csv_file, append
 
 from metacatalog.util.exceptions import IOOperationNotFoundError
 from metacatalog.models import DataSource, Entry
-from metacatalog.ext import MetacatalogExtensionInterface
+from metacatalog.ext.base import MetacatalogExtensionInterface
 
 LOOKUP = Dict[str, Dict[str, Callable]]
 
