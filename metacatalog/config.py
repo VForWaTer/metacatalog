@@ -16,9 +16,35 @@ DEFAULT_EXTENSIONS = ','.join([
 ])
 
 
+class ExtensionLoadError(RuntimeError):
+    pass
+
 class Extension(BaseModel):
     name: str
-    interface: Field(MetacatalogExtensionInterface, repr=False)
+    interface = Field(MetacatalogExtensionInterface, repr=False)
+
+    @classmethod
+    def from_interface_path(cls, name: str, path: str) -> 'Extension':
+        try:
+            [*import_path, interface_name] = path.split('.')
+            mod = importlib.import_module('.'.join(import_path))
+            interface = getattr(mod, interface_name)
+        except ImportError as e:
+            raise ExtensionLoadError(f"Could not load Extension {name}. Please install: {str(e)}")
+        except AttributeError as e:
+            raise ExtensionLoadError(f"Could not find interface {interface_name} in {import_path}. Message: {str(e)}")
+        except Exception as e:
+            raise ExtensionLoadError(f"Error on loading Extension: {str(e)}.")
+        
+        # return the instance
+        return Extension(name=name, interface=interface)
+
+    def init(self):
+        self.interface.init_extension()
+    
+    def init_extension(self):
+        self.init()
+
 
 class  Config(BaseSettings):
     connection: PostgresDsn = Field(default='postgresql://postgres:postgres@localhost:5432/metacatalog', alias='METACATALOG_URI')
@@ -50,28 +76,19 @@ class  Config(BaseSettings):
         # if the interface path is a string, import it
         if isinstance(interface_path, str):
             try:
-                [*import_path, interface_name] = interface_path.split('.')
-                mod = importlib.import_module('.'.join(import_path))
-                interface = getattr(mod, interface_name)
-            except ImportError as e:
-                warnings.warn(f"Could not load Extension {name}. Please install: {str(e)}")
-                return
-            except AttributeError as e:
-                warnings.warn(f"Could not find interface {interface_name} in {import_path}. Message: {str(e)}")
-                return
-            except Exception as e:
-                warnings.warn(f"Error on loading Extension: {str(e)}.")
-                return
+                extension = Extension.from_interface_path(name, interface_path)
+            except ExtensionLoadError as e:
+                warnings.warn(str(e))
         else:
-            interface = interface_path
+            extension = Extension(name=name, interface=interface_path)
         
         # init the interface
-        interface.init_extension()
+        extension = extension.init()
 
         # add to the extensions
-        self.active_extensions[name] = interface
+        self.active_extensions[name] = extension
 
-    def extension(self, name: str) -> MetacatalogExtensionInterface:
+    def extension(self, name: str) -> Extension:
         if name not in self.extensions:
             raise AttributeError(f"'{name}' is not a known metacatalog extension.")
         return self.extensions[name]

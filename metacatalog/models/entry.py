@@ -29,6 +29,7 @@ import nltk
 import pandas as pd
 import numpy as np
 
+from metacatalog import config
 from metacatalog.db.base import Base
 from metacatalog import models
 from metacatalog import api
@@ -743,18 +744,17 @@ class Entry(Base):
         
         You can activate and use it like:
 
-        >> from metacatalog import ext
-        >> ext.extension('export', RawJSONEXtension)
+        >> from metacatalog import config
+        >> config.load_extension('export', RawJSONEXtension)
         >> entry.export(path='testfile.json', fmt='json', indent=2)
 
         """
         # load the extension
-        from metacatalog import ext
         try:
-            Export = ext.extension(f'export-{fmt.lower()}')
+            Export = config.extension(f'export-{fmt.lower()}').interface
         except AttributeError:
             try:
-                Export = ext.extension('export')
+                Export = config.extension('export').interface
             except AttributeError:
                 from metacatalog.ext.export import ExportExtension as Export
         

@@ -75,7 +75,7 @@ class PostDevelopCommand(develop):
 
 class PostInstallCommand(install):
     def run(self):
-        # create config and migrate the databas
+        # create config and migrate the database
         migrate_database()
 
         # default install
