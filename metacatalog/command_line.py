@@ -1,6 +1,5 @@
 import argparse
 import codecs
-import os
 import traceback
 
 def unescaped(arg_str):
@@ -11,7 +10,6 @@ from metacatalog.cmd import (
     empty, 
     create, 
     populate, 
-    connection, 
     init,
     find,
     show,
@@ -48,12 +46,6 @@ def main():
     # init parser
     init_parser = subparsers.add_parser('init', parents=[pop_parser], add_help=False, help="Runs the create and and the populate command.")
     init_parser.set_defaults(func=init)
-
-    # connection parser
-    conn_parser = subparsers.add_parser('connection', parents=[default_options], add_help=True, help="Manage stored connections")
-    conn_parser.add_argument("--save", help="Saves the given connection string. Follows the syntax:\ndriver://user:password@host:port/database")
-    conn_parser.add_argument("--name", help="If used with --save, specifies the name for the connection string. Else, only this string will be returned.")
-    conn_parser.set_defaults(func=connection)
 
     # find parser
     find_parser = subparsers.add_parser('find', parents=[default_options], add_help=True, help="Find records in the database on exact matches.")
