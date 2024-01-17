@@ -1,4 +1,4 @@
-from typing import Any, Dict, Union
+from typing import Any, Dict, Union, Type
 from pydantic import BaseModel, PostgresDsn, Field
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
@@ -21,13 +21,14 @@ class ExtensionLoadError(RuntimeError):
 
 class Extension(BaseModel):
     name: str
-    interface = Field(MetacatalogExtensionInterface, repr=False)
+    interface: Type[MetacatalogExtensionInterface] = Field(repr=False)
 
     @classmethod
     def from_interface_path(cls, name: str, path: str) -> 'Extension':
         try:
             [*import_path, interface_name] = path.split('.')
-            mod = importlib.import_module('.'.join(import_path))
+            import_path = '.'.join(import_path)
+            mod = importlib.import_module(import_path)
             interface = getattr(mod, interface_name)
         except ImportError as e:
             raise ExtensionLoadError(f"Could not load Extension {name}. Please install: {str(e)}")
@@ -48,7 +49,7 @@ class Extension(BaseModel):
 
 class  Config(BaseSettings):
     connection: PostgresDsn = Field(default='postgresql://postgres:postgres@localhost:5432/metacatalog', alias='METACATALOG_URI')
-    extensions: Field(default='', alias='METACATALOG_EXTENSIONS')
+    extensions: str = Field(default='', alias='METACATALOG_EXTENSIONS')
     active_extensions: Dict[str, Extension] = Field(default_factory=dict)
 
     def model_post_init(self, __context: Any) -> None:
@@ -64,10 +65,10 @@ class  Config(BaseSettings):
             name, interface = req.split(':')
             self.load_extension(name, interface)
 
-
+        # super the model_post_init
         return super().model_post_init(__context)
 
-    def load_extension(self, name: str, interface_path: Union[str, MetacatalogExtensionInterface]):
+    def load_extension(self, name: str, interface_path: Union[str, Type[MetacatalogExtensionInterface]]):
         """
         Load an extension by name and interface. 
         The interface is a class that inherits from 
@@ -75,15 +76,12 @@ class  Config(BaseSettings):
         """
         # if the interface path is a string, import it
         if isinstance(interface_path, str):
-            try:
-                extension = Extension.from_interface_path(name, interface_path)
-            except ExtensionLoadError as e:
-                warnings.warn(str(e))
+            extension = Extension.from_interface_path(name, interface_path)
         else:
             extension = Extension(name=name, interface=interface_path)
         
         # init the interface
-        extension = extension.init()
+        extension.init()
 
         # add to the extensions
         self.active_extensions[name] = extension
