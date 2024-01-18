@@ -14,8 +14,11 @@ def empty():
 
 
 def connect(args):
+    # prevent circular import, do not move up
+    from metacatalog import config
+    
     # check if a connection string was set
-    conn = args.connection if args.connection is not None else 'default'
+    conn = args.connection or str(config.connection)
     echo = args.dev
     
     session = connect_database(conn, echo=echo)

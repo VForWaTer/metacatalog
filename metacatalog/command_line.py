@@ -21,7 +21,7 @@ from metacatalog.cmd import (
 def main():
     default_options = argparse.ArgumentParser(add_help=False)
     default_options.add_argument("--version", "-v", action="store_true", help="Returns the module version")
-    default_options.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database")
+    default_options.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance. Follows the syntax:\ndriver://user:password@host:port/database")
     default_options.add_argument("--verbose", "-V", action="store_true", help="Activate extended output.")
     default_options.add_argument("--quiet", '-q', action="store_true", help="Suppress any kind of output.")
     default_options.add_argument("--dev", action="store_true", help="Development mode.\nUnexpected errors will not be handled and the full traceback is printed to the screen.")
@@ -91,10 +91,10 @@ def main():
     migration_parser.set_defaults(func=migrate)
 
     # check extensions for CLI registers
-    from metacatalog.ext import EXTENSIONS
-    for extension in EXTENSIONS.values():
-        if hasattr(extension, 'init_cli'):
-            extension.init_cli(subparsers=subparsers, defaults=default_options)
+    from metacatalog import config
+    for extension in config.active_extensions.values():
+        if hasattr(extension.interface, 'init_cli'):
+            extension.interface.init_cli(subparsers=subparsers, defaults=default_options)
 
     # parse the arguments
     args = parser.parse_args()
