@@ -1,5 +1,5 @@
 from typing import Any, Dict, Union, Type
-from pydantic import BaseModel, PostgresDsn, Field
+from pydantic import BaseModel, PostgresDsn, Field, ConfigDict
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 import importlib
@@ -13,6 +13,7 @@ load_dotenv()
 
 DEFAULT_EXTENSIONS = ','.join([
     'io:metacatalog.ext.io.extension.IOExtension',
+#    'standards_export:metacatalog.ext.standards_export.extension.StandardsExportExtension',
 ])
 
 
@@ -20,6 +21,7 @@ class ExtensionLoadError(RuntimeError):
     pass
 
 class Extension(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     name: str
     interface: Type[MetacatalogExtensionInterface] = Field(repr=False)
 
