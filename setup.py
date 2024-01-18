@@ -1,8 +1,6 @@
 from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-import os
-import json
 
 def requirements():
     with open('requirements.txt') as f:
@@ -45,22 +43,6 @@ def migrate_database():
         pass
 
 
-def add_default_extensions():
-    """
-    Activate the Export and IO extension by default
-    """
-    try:
-        from metacatalog import ext
-
-        # activate IOExtension
-        ext.activate_extension('io', 'metacatalog.ext.io', 'IOExtension')
-
-        # activate export extension
-        ext.activate_extension('export', 'metacatalog.ext.export', 'ExportExtension')
-    except ModuleNotFoundError:
-        # this is first install. Not sure how to overcome this problem
-        pass
-
 class PostDevelopCommand(develop):
     def run(self):
         # create config and migrate the database
@@ -68,9 +50,6 @@ class PostDevelopCommand(develop):
 
         # default develop
         develop.run(self)
-
-        # activate extensions
-        add_default_extensions()
 
 
 class PostInstallCommand(install):
@@ -80,9 +59,6 @@ class PostInstallCommand(install):
 
         # default install
         install.run(self)
-
-        # activate extensions
-        add_default_extensions()
 
 
 setup(

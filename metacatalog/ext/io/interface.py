@@ -1,4 +1,4 @@
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional
 from abc import abstractmethod
 
 from .importer import import_to_internal_table, import_to_local_csv_file, import_to_local_netcdf_file
@@ -27,6 +27,9 @@ class IOExtensionInterface(MetacatalogExtensionInterface):
     data-type and metadata-specific operations can be executed from
     a common interface.
     """
+
+    # instances of this class are later bound to a specific Entry each
+    entry: Optional[Entry] = None
     READER: LOOKUP = dict(
         internal={
             'array': read_from_internal_table,

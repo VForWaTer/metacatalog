@@ -189,23 +189,25 @@ class StandardsExportExtension(MetacatalogExtensionInterface):
         a useful metadata export.
 
         """
-        from metacatalog import CONFIGFILE
-
         # use dummy values for contact as default
         contact_config = DEFAULT_CONTACT.copy()
 
         # get contact config from metacatalog CONFIGFILE if specified
-        with open(CONFIGFILE, 'r') as f:
-            config = json.load(f)
+        #with open(CONFIGFILE, 'r') as f:
+        #    config = json.load(f)
+        
+        # TODO refactor this to use the metacatalog.config object
+        # there should be a METACATALOG_INFO environment variable or somethin
+        config = dict()
 
-            # get base_config path from CONFIGFILE: path to user generated .json with contact info
-            base_config_path = config.get('extra', {}).get('standards_export_contact', '')
+        # get base_config path from CONFIGFILE: path to user generated .json with contact info
+        base_config_path = config.get('extra', {}).get('standards_export_contact', '')
 
-            if base_config_path:
-                with open(base_config_path, 'r') as f:
-                    base_config = json.load(f)
-            else:
-                base_config = {}
+        if base_config_path:
+            with open(base_config_path, 'r') as f:
+                base_config = json.load(f)
+        else:
+            base_config = {}
 
         # update default config with contact info from CONFIGFILE
         contact_config.update(base_config)

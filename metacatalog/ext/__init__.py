@@ -5,3 +5,4 @@ features. The package itself uses it to add data I/O operations
 and export functionality.
 
 """
+from .base import MetacatalogExtensionInterface

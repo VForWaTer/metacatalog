@@ -62,10 +62,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from argparse import _SubParsersAction, ArgumentParser
 
-from pydantic import BaseModel
 
-
-class MetacatalogExtensionInterface(BaseModel, abc.ABC):
+class MetacatalogExtensionInterface(abc.ABC):
     """
     Abstract Base Class for Metacatalog extensions.
 
@@ -77,6 +75,7 @@ class MetacatalogExtensionInterface(BaseModel, abc.ABC):
     function. 
 
     """
+    
     @abc.abstractclassmethod
     def init_extension(cls) -> None:
         pass
