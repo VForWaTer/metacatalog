@@ -1,4 +1,4 @@
-sqlalchemy<2
+sqlalchemy<2.0
 geoalchemy2
 pandas
 xarray
@@ -10,6 +10,7 @@ shapely
 pyproj
 requests
 dicttoxml>=1.7.5
+lxml
 tqdm
 pydantic>=2.2.0
 pydantic_settings
