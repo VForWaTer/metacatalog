@@ -50,6 +50,7 @@ jobs:
     - name: e2e Tests
       run: pytest --cov-config=.coveragerc --cov=./ --cov-report=xml
       env:
+        METACATALOG_URI: postgresql://postgres:postgres@localhost:${{ job.services.postgis.ports[5432] }}/postgres
         POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}  
     
     - name: Upload coverage to Codecov
