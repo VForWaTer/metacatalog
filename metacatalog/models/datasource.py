@@ -16,7 +16,6 @@ from sqlalchemy.dialects.postgresql import ARRAY
 import pandas as pd
 
 from metacatalog.db.base import Base
-from metacatalog.ext import extension
 from metacatalog.util.exceptions import MetadataMissingError
 
 

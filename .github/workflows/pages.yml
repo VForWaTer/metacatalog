@@ -27,10 +27,6 @@ jobs:
         run: |
           pip install metacatalog-corr metacatalog-search
           pip install jinja2 lxml
-          python -c "from metacatalog import ext; ext.activate_extension('io', 'metacatalog.ext.io', 'IOExtension')"
-          python -c "from metacatalog import ext; ext.activate_extension('standards_export', 'metacatalog.ext.standards_export', 'StandardsExportExtension')"
-          python -c "from metacatalog import ext; ext.activate_extension('search', 'metacatalog_search.extension', 'SearchExtension')"
-          python -c "from metacatalog import ext; ext.activate_extension('corr', 'metacatalog_corr.extension', 'CorrExtension')"
       
       - name: Build Sphinx
         run: |

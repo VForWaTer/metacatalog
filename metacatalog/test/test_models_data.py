@@ -11,8 +11,7 @@ import pandas as pd
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 
-from metacatalog import models, ext
-from metacatalog.ext.io import IOExtension
+from metacatalog import models
 from ._util import connect
 
 
@@ -97,10 +96,6 @@ def test_data_crud_operations():
     new_chunk = pd.DataFrame({'tstamp': pd.date_range('201309280913', freq='15min', periods=50), 'value': np.random.normal(0, 1, size=50)})
     new_chunk.set_index('tstamp', inplace=True)
     all_data = pd.concat([timeseries, new_chunk], axis='rows')
-
-    # activate the IOExtension
-    # TODO fix this in tests
-    ext.extension('io', IOExtension)
 
     # run the tests
     assert create_datasource(session, entry, timeseries)

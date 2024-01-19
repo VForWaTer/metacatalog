@@ -1,10 +1,13 @@
 import os
 import io
+import re
 
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
+
+from metacatalog import config
 
 PATH = os.path.abspath(os.path.dirname(__file__))
 DBFILE = os.path.abspath(os.path.join(PATH, 'DBNAME'))
@@ -17,28 +20,19 @@ def connect(mode='string'):
     else:
         DB = 'postgres'
     
-    # read environment variables or use defaults
-    SETTINGS = dict(
-        HOST=os.environ.get('POSTGRES_HOST', 'localhost'),
-        DB=os.environ.get('POSTGRES_TESTDB', DB),
-        USER=os.environ.get('POSTGRES_USER', 'postgres'),
-        PWD=os.environ.get('POSTGRES_PASSWORD', 'postgres'),
-        PORT=os.environ.get('POSTGRES_PORT', '5432')
-    )
-
-    # build db uri
-    URI = 'postgresql://{USER}:{PWD}@{HOST}:{PORT}/{DB}'.format(**SETTINGS)
+    # use the configured connection string
+    URI = re.sub(config.connection.path + r'$', f"/{DB}", str(config.connection))
     
     # return mode
     if mode.lower() == 'string':
         return URI
-    elif mode.lower() == 'dict':
-        return SETTINGS
     elif mode.lower() == 'engine':
         return create_engine(URI, poolclass=NullPool)
     elif mode.lower() == 'session':
         Session = sessionmaker(bind=create_engine(URI, poolclass=NullPool))
         return Session()
+    else:
+        raise AttributeError("Mode '%s' not known." % mode)
 
 
 def read_to_df(s):

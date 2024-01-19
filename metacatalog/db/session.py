@@ -1,74 +1,20 @@
-import os, json
-
+from typing import Optional
 from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker, object_session
+from sqlalchemy.orm import sessionmaker
 
 from metacatalog import models
-from metacatalog.db.migration import check_database_version
-
-CONFIG_FILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
+from metacatalog.config import config
 
 
-def save_connection(connection,name=None):
-    # load file
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'r') as f:
-            config = json.load(f)
-    else:
-        config = dict()
-        
-    # set default name
-    if name is None:
-        name = 'default'
-    
-    # create engine section is needed
-    if not 'engine' in config:
-        config['engine'] = dict()
-
-    # save connection
-    config['engine'][name] = connection
-
-    # save file
-    with open(CONFIG_FILE, 'w') as f:
-        json.dump(config, f, indent=4)
-
-
-def load_connection(name):
-    # load file
-    with open(CONFIG_FILE, 'r') as f:
-        config = json.load(f)
-    
-    if not 'engine' in config:
-        return None 
-    return config['engine'].get(name)
-
-
-def get_connection_names():
-    # load file
-    with open(CONFIG_FILE, 'r') as f:
-        config = json.load(f)
-
-    if not 'engine' in config:
-        return []
-    return list(config['engine'].keys())
-
-
-def get_engine(*args, **kwargs):
-    if len(args) == 1 and args[0] in get_connection_names():
-        args = [load_connection(name=args[0])]
-
-    elif 'connection_name' in kwargs:
-        args = [load_connection(name=kwargs['connection_name'])]
-        del kwargs['connection_name']
-    
-    elif len(args) == 0 and len(kwargs.keys()) == 0:
-        args = [load_connection('default')]
+def get_engine(connection: Optional[str] = None, **kwargs):
+    # check if a connection is given
+    url = connection or str(config.connection)
 
     # set an application name
     kwargs.setdefault('connect_args', {'application_name': 'metacatalog_session'})
 
     # create a connection
-    engine = create_engine(*args, **kwargs)
+    engine = create_engine(url, **kwargs)
 
     return engine
     
@@ -85,7 +31,6 @@ def get_session(*args, **kwargs):
     else:
         MISMATCH = False
 
-
     # else build a new engine
     engine = get_engine(*args, **kwargs)
 
@@ -94,19 +39,6 @@ def get_session(*args, **kwargs):
 
     # create the instance
     session = Session()
-
-    # TODO with next version this has to be uncommented to use the new migration system
-    """    
-    # check las migration log
-    try:
-        check_database_version(session=session)
-    except RuntimeError as e:
-        # no missmatch allowed
-        if not MISMATCH:
-            raise e
-        elif MISMATCH == 'print':
-            print(str(e))    
-    """
 
     # hook up some event listeners
     @event.listens_for(session, 'before_flush')

@@ -11,18 +11,17 @@ jobs:
     strategy:
       matrix:
         py_version: ['3.7', '3.8', '3.9', '3.10']
-        pg_version: ['10-2.5', '13-3.3', '15-3.3']
     
     # create the postgis service - the version is hardcoded atm
     services:
       postgis:
-        image: postgis/postgis:${{ matrix.pg_version }}
+        image: postgis/postgis:15-3.3
+        ports:
+          - 5432:5432
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
-        ports:
-          - 5432/tcp
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     
     steps:
@@ -38,19 +37,9 @@ jobs:
     # e2e-tests rely on pytest and pytest-depends so far 
     - name: Install dependencies
       run: | 
-        pip install -r requirements.txt
-        python setup.py develop
+        pip install -e .
         pip install pytest pytest-depends pytest-cov
-      
-    # activate the IO extension
-    - name: Activate builtin IOExtension
-      run: python -c "from metacatalog import ext; ext.activate_extension('io', 'metacatalog.ext.io', 'IOExtension')"
-    
-    - name: Activate builtin StandardsExportExtension, install additional dependencies
-      run: |
-        pip install jinja2 lxml
-        python -c "from metacatalog import ext; ext.activate_extension('standards_export', 'metacatalog.ext.standards_export', 'StandardsExportExtension')"
-
+  
     # run the actual tests
     # they need the arbitrary port number which is mapped to 5432
     # in the VM host 
@@ -59,10 +48,10 @@ jobs:
     - name: e2e Tests
       run: pytest --cov-config=.coveragerc --cov=./ --cov-report=xml
       env:
-        POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}  
+        METACATALOG_URI: postgresql://postgres:postgres@localhost:5432/postgres
     
     - name: Upload coverage to Codecov
-      if: ${{ matrix.py_version }} == '3.9' && ${{ matrix.pg_version == '10.2-5' }}
+      if: ${{ matrix.py_version }} == '3.9'
       uses: codecov/codecov-action@v3.1.1
       with:
         file: ./coverage.xml

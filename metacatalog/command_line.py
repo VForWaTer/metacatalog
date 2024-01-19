@@ -1,6 +1,5 @@
 import argparse
 import codecs
-import os
 import traceback
 
 def unescaped(arg_str):
@@ -11,7 +10,6 @@ from metacatalog.cmd import (
     empty, 
     create, 
     populate, 
-    connection, 
     init,
     find,
     show,
@@ -23,7 +21,7 @@ from metacatalog.cmd import (
 def main():
     default_options = argparse.ArgumentParser(add_help=False)
     default_options.add_argument("--version", "-v", action="store_true", help="Returns the module version")
-    default_options.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance.Follows the syntax:\ndriver://user:password@host:port/database")
+    default_options.add_argument("--connection", "-C",  type=str, help="Connection string to the database instance. Follows the syntax:\ndriver://user:password@host:port/database")
     default_options.add_argument("--verbose", "-V", action="store_true", help="Activate extended output.")
     default_options.add_argument("--quiet", '-q', action="store_true", help="Suppress any kind of output.")
     default_options.add_argument("--dev", action="store_true", help="Development mode.\nUnexpected errors will not be handled and the full traceback is printed to the screen.")
@@ -48,12 +46,6 @@ def main():
     # init parser
     init_parser = subparsers.add_parser('init', parents=[pop_parser], add_help=False, help="Runs the create and and the populate command.")
     init_parser.set_defaults(func=init)
-
-    # connection parser
-    conn_parser = subparsers.add_parser('connection', parents=[default_options], add_help=True, help="Manage stored connections")
-    conn_parser.add_argument("--save", help="Saves the given connection string. Follows the syntax:\ndriver://user:password@host:port/database")
-    conn_parser.add_argument("--name", help="If used with --save, specifies the name for the connection string. Else, only this string will be returned.")
-    conn_parser.set_defaults(func=connection)
 
     # find parser
     find_parser = subparsers.add_parser('find', parents=[default_options], add_help=True, help="Find records in the database on exact matches.")
@@ -99,10 +91,10 @@ def main():
     migration_parser.set_defaults(func=migrate)
 
     # check extensions for CLI registers
-    from metacatalog.ext import EXTENSIONS
-    for extension in EXTENSIONS.values():
-        if hasattr(extension, 'init_cli'):
-            extension.init_cli(subparsers=subparsers, defaults=default_options)
+    from metacatalog import config
+    for extension in config.active_extensions.values():
+        if hasattr(extension.interface, 'init_cli'):
+            extension.interface.init_cli(subparsers=subparsers, defaults=default_options)
 
     # parse the arguments
     args = parser.parse_args()

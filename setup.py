@@ -1,12 +1,6 @@
 from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-import os
-import json
-
-USERDATAPATH = os.path.abspath(os.path.join(os.path.expanduser('~'), '.metacatalog', 'user_data'))
-CONFIGFILE = os.path.join(os.path.expanduser('~'), '.metacatalog', 'config.json')
-
 
 def requirements():
     with open('requirements.txt') as f:
@@ -25,16 +19,6 @@ def version():
 def readme():
     with open('README.md') as f:
         return f.read()
-
-
-def create_config_file():
-    if not os.path.exists(os.path.dirname(CONFIGFILE)):
-        os.mkdir(os.path.dirname(CONFIGFILE))
-    if not os.path.exists(USERDATAPATH):
-        os.mkdir(USERDATAPATH)
-    if not os.path.exists(CONFIGFILE):
-        with open(CONFIGFILE, 'w') as f:
-            json.dump(dict(), f, indent=4)
 
 
 def migrate_database():
@@ -59,46 +43,22 @@ def migrate_database():
         pass
 
 
-def add_default_extensions():
-    """
-    Activate the Export and IO extension by default
-    """
-    try:
-        from metacatalog import ext
-
-        # activate IOExtension
-        ext.activate_extension('io', 'metacatalog.ext.io', 'IOExtension')
-
-        # activate export extension
-        ext.activate_extension('export', 'metacatalog.ext.export', 'ExportExtension')
-    except ModuleNotFoundError:
-        # this is first install. Not sure how to overcome this problem
-        pass
-
 class PostDevelopCommand(develop):
     def run(self):
         # create config and migrate the database
-        create_config_file() 
         migrate_database()
 
         # default develop
         develop.run(self)
 
-        # activate extensions
-        add_default_extensions()
-
 
 class PostInstallCommand(install):
     def run(self):
         # create config and migrate the database
-        create_config_file()
         migrate_database()
 
         # default install
         install.run(self)
-
-        # activate extensions
-        add_default_extensions()
 
 
 setup(

@@ -1,6 +1,6 @@
 from sqlalchemy import event
 
-from .interface import IOExtensionInterface
+from metacatalog.ext.io.interface import IOExtensionInterface
 from metacatalog.models import Entry
 
 
