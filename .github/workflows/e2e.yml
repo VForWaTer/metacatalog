@@ -11,12 +11,13 @@ jobs:
     strategy:
       matrix:
         py_version: ['3.7', '3.8', '3.9', '3.10']
-        pg_version: ['13-3.3', '15-3.3']
     
     # create the postgis service - the version is hardcoded atm
     services:
       postgis:
-        image: postgis/postgis:${{ matrix.pg_version }}
+        image: postgis/postgis:15-3.3
+        ports:
+          - 5432:5432
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -47,10 +48,10 @@ jobs:
     - name: e2e Tests
       run: pytest --cov-config=.coveragerc --cov=./ --cov-report=xml
       env:
-        METACATALOG_URI: postgresql://postgres:postgres@postgis:5432/postgres
+        METACATALOG_URI: postgresql://postgres:postgres@localhost:5432/postgres
     
     - name: Upload coverage to Codecov
-      if: ${{ matrix.py_version }} == '3.9' && ${{ matrix.pg_version == '15.3-3' }}
+      if: ${{ matrix.py_version }} == '3.9'
       uses: codecov/codecov-action@v3.1.1
       with:
         file: ./coverage.xml
