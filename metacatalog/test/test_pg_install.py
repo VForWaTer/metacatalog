@@ -40,7 +40,6 @@ def test_database_install():
         con.execute('CREATE DATABASE %s' % name)
 
     # export the db name
-    os.putenv("POSTGRES_TESTDB", name)
     with open(os.path.join(PATH, 'DBNAME'), 'w') as f:
         f.write(name)
 

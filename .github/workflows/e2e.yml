@@ -21,8 +21,6 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
-        ports:
-          - 5432/tcp
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     
     steps:
@@ -50,7 +48,6 @@ jobs:
       run: pytest --cov-config=.coveragerc --cov=./ --cov-report=xml
       env:
         METACATALOG_URI: postgresql://postgres:postgres@postgis:5432/postgres
-        POSTGRES_PORT: ${{ job.services.postgis.ports[5432] }}  
     
     - name: Upload coverage to Codecov
       if: ${{ matrix.py_version }} == '3.9' && ${{ matrix.pg_version == '15.3-3' }}
