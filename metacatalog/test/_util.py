@@ -1,5 +1,6 @@
 import os
 import io
+import re
 
 import pandas as pd
 from sqlalchemy import create_engine
@@ -20,7 +21,7 @@ def connect(mode='string'):
         DB = 'postgres'
     
     # use the configured connection string
-    URI = str(config.connection).replace(config.connection.path, f"/{DB}")
+    URI = re.sub(config.connection.path + r'$', f"/{DB}", str(config.connection))
     
     # return mode
     if mode.lower() == 'string':
