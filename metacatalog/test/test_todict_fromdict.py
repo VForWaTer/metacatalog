@@ -55,7 +55,7 @@ def check_to_json(session, tmp_path):
 
     """
     # test for all entries in test database
-    for entry in api.find_entries(session):
+    for entry in api.find_entry(session):
         # create a temporary file
         tmp_file = tmp_path / "entry.json"
 
@@ -68,7 +68,7 @@ def check_to_json(session, tmp_path):
             loaded_dict = json.load(f)
 
     assert loaded_dict['title'] == entry.title
-    assert isinstance(loaded_dict[id], int)
+    assert isinstance(loaded_dict['id'], int)
     assert isinstance(loaded_dict['author'], dict)
     assert isinstance(loaded_dict['authors'], list)
     assert isinstance(loaded_dict['embargo'], bool)
@@ -77,7 +77,7 @@ def check_to_json(session, tmp_path):
 
 
 @pytest.mark.depends(on=['add_find'], name='dict_methods')
-def test_fromdict_todict():
+def test_fromdict_todict(tmp_path):
     """
     Currently tests Entry.to_dict() and Entry.from_dict()
     """
@@ -105,3 +105,4 @@ def test_fromdict_todict():
     # run single tests
     assert check_to_dict_persons(session)
     assert check_from_dict(session)
+    assert check_to_json(session, tmp_path=tmp_path)
