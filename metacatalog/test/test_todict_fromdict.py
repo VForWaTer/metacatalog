@@ -3,6 +3,7 @@ import pytest
 from metacatalog import api
 from metacatalog.models import Entry
 from ._util import connect
+import json
 
 
 def check_to_dict_persons(session):
@@ -42,6 +43,35 @@ def check_from_dict(session):
     with pytest.raises(NotImplementedError):
         # run Entry.from_dict()
         entry_fromdict = Entry.from_dict(session=session, data=entry_dict)
+
+    return True
+
+
+def check_to_json(session, tmp_path):
+    """
+    Check Entry.to_json().
+    This also checks if the output is a valid json by trying to load 
+    it with json.load().
+
+    """
+    # test for all entries in test database
+    for entry in api.find_entries(session):
+        # create a temporary file
+        tmp_file = tmp_path / "entry.json"
+
+        # write JSON to the temporary file
+        entry.to_json(path=str(tmp_file))
+
+        # load the JSON from the file, if the JSON is not valid, the test fails with a JSONDecodeError
+
+        with open(tmp_file, 'r') as f:
+            loaded_dict = json.load(f)
+
+    assert loaded_dict['title'] == entry.title
+    assert isinstance(loaded_dict[id], int)
+    assert isinstance(loaded_dict['author'], dict)
+    assert isinstance(loaded_dict['authors'], list)
+    assert isinstance(loaded_dict['embargo'], bool)
 
     return True
 
