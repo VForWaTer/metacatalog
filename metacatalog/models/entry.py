@@ -18,6 +18,7 @@ from dateutil.relativedelta import relativedelta as rd
 from uuid import uuid4
 import warnings
 from collections import defaultdict
+from decimal import Decimal
 
 from sqlalchemy import Column, ForeignKey, event
 from sqlalchemy import Integer, String, Boolean, DateTime
@@ -399,9 +400,40 @@ class Entry(Base):
 
         return entry
 
+
     @classmethod
     def is_valid(cls, entry: 'Entry') -> bool:
         return isinstance(entry, Entry) and entry.id is not None
+
+
+    def to_json(self, path: str) -> None:
+        """
+        Exports the Entry metadata (from the to_dict method) to a serializable 
+        JSON.
+        
+        .. versionadded:: 0.9.1
+
+        Parameters
+        ----------
+        path : str
+            Path to the file to write the JSON to.
+
+        """
+        # custom encoder for datetime and Decimal data types
+        class DictToSerializableJsonEncoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, Decimal):
+                    return str(obj)
+                if isinstance(obj, dt):
+                    return obj.isoformat()
+                return super().default(obj)
+        
+        # get the dict
+        entry_dict = self.to_dict()
+
+        # write
+        with open(path, 'w') as f:
+            json.dump(entry_dict, f, indent=4, cls=DictToSerializableJsonEncoder)
 
     @property
     def checksum(self) -> str:
