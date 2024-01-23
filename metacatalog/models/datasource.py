@@ -455,9 +455,19 @@ class DataSource(Base):
         Can be used instead of setting``type_id``.
     data_names : list
         .. versionadded:: 0.3.0
+        .. deprecated:: 0.9.1
 
         List of column names that will be displayed when exporting the data.
         The columns are named in the same order as they appear in the list.
+    variable_names : list[str]
+        .. versionadded:: 0.9.1
+
+        List of variable names that store the data of the datasource of the entry.
+        In tabular data, this is usually the column name(s) of the variable that
+        is referenced by the Entry. In case of a netCDF file, this is the variable
+        name(s) of the variable(s) that is/are referenced by the Entry.  
+        More generally, variable_names describes how a datasource would be indexed
+        to retrieve the data of the entry.
 
     Example
     -------
@@ -478,6 +488,7 @@ class DataSource(Base):
     encoding = Column(String(64), default='utf-8')
     path = Column(String, nullable=False)
     data_names = Column(ARRAY(String(128)), nullable=True)
+    variable_names = Column(ARRAY(String(128)), nullable=True)
     args = Column(String)
 
     # scales
@@ -527,6 +538,8 @@ class DataSource(Base):
         # set optionals
         if self.data_names is not None:
             d['data_names'] = self.data_names
+        if self.variable_names is not None:
+            d['variable_names'] = self.variable_names
         if self.args is not None:
             d['args'] = self.load_args()
         if self.encoding is not None:
