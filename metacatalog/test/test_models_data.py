@@ -17,7 +17,11 @@ from ._util import connect
 
 def create_datasource(session, entry: models.Entry, data):
     # create the datasource
-    datasource = entry.create_datasource('timeseries_1d', 'internal', 'timeseries', commit=True)
+    datasource = entry.create_datasource(path='timeseries_1d', 
+                                         type='internal', 
+                                         datatype='timeseries', 
+                                         variable_names=['air_pressure'], 
+                                         commit=True)
     assert datasource is not None
 
     # check
@@ -29,7 +33,8 @@ def create_datasource(session, entry: models.Entry, data):
         resolution=index.inferred_freq,
         extent=[index[0].isoformat(), index[-1].isoformat()],
         support=1.0,
-        scale_dimension='temporal'
+        scale_dimension='temporal',
+        dimension_name='tstamp'
     )
 
     session.add(datasource)
@@ -55,6 +60,12 @@ def read_data(session, entry, data):
         data.value.values,
         decimal=3
     )
+
+    datasource_var_name = entry.datasource.variable_names[0]
+    datasource_dim_name = entry.datasource.temporal_scale.dimension_name
+
+    assert db_data.index.name == datasource_dim_name
+    assert db_data.columns[0] == datasource_var_name # here we actually test for the old data_names that we want to get rid of, get here when test fails in the future
 
     return True
 
