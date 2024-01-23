@@ -639,7 +639,7 @@ class DataSource(Base):
                 session.rollback()
                 raise e
 
-    def create_scale(self, resolution, extent, support, scale_dimension, commit: bool = False) -> None:
+    def create_scale(self, resolution, extent, support, scale_dimension, dimension_name: str = None, commit: bool = False) -> None:
         """
         Create a new scale for the dataset
         """
@@ -656,7 +656,7 @@ class DataSource(Base):
             raise AttributeError("scale_dimension has to be in ['temporal', 'spatial']")
 
         # build the scale and append
-        scale = Cls(resolution=resolution, extent=extent, support=support)
+        scale = Cls(resolution=resolution, extent=extent, support=support, dimension_name=dimension_name)
         setattr(self, '%s_scale' % scale_dimension.lower(), scale)
 
         if commit:
