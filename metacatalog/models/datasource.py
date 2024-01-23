@@ -248,6 +248,17 @@ class TemporalScale(Base):
         would **not** be exhaustive.
         Defaults to ``support=1.0``, which would make a temporal exhaustive
         dataset, but may not apply to each dataset.
+    dimension_name : str
+        versionadded:: 0.9.1
+
+        Name of the temporal dimension.  
+        In case of tabular data, this is usually the column name of the column
+        that stores the temporal information of the dataset. In case of a netCDF
+        file, this is the dimension name of the dimension that stores the temporal
+        information of the dataset.
+        More generally, dimension_name describes how a datasource would be indexed
+        to retrieve the temporal axis of the entry.
+
 
     """
     __tablename__ = 'temporal_scales'
@@ -259,6 +270,7 @@ class TemporalScale(Base):
     observation_start = Column(DateTime, nullable=False)
     observation_end = Column(DateTime, nullable=False)
     support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
+    dimension_name = Column(String(128), nullable=True)
 
     # relationships
     sources: List['DataSource'] = relationship("DataSource", back_populates='temporal_scale')
@@ -324,6 +336,10 @@ class TemporalScale(Base):
             support=self.support,
             support_iso = self.support_timedelta.isoformat()
         )
+
+        # set optionals
+        if self.dimension_name is not None:
+            d['dimension_name'] = self.dimension_name
 
         if deep:
             d['datasources'] = [s.to_dict(deep=False) for s in self.sources]
