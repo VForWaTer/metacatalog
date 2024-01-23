@@ -257,7 +257,7 @@ class TemporalScale(Base):
         file, this is the dimension name of the dimension that stores the temporal
         information of the dataset.
         More generally, dimension_name describes how a datasource would be indexed
-        to retrieve the temporal axis of the entry.
+        to retrieve the temporal axis of the entry (e.g. 'time', 'date', 'datetime').
 
 
     """
@@ -377,6 +377,18 @@ class SpatialScale(Base):
         available, the actual footprint fraction of observations can be
         given here.
         Defaults to ``support=1.0``.
+    dimension_name : List[str]
+        versionadded:: 0.9.1
+
+        Names of the spatial dimension in x, y and optionally z-direction.  
+        Put the names in a list in the order x, y(, z).
+        In case of tabular data, this is usually the column name of the column
+        that stores the spatial information of the dataset.  
+        In case of a netCDF file, this is the dimension name of the dimension 
+        that stores the spatial information of the dataset.  
+        More generally, dimension_name describes how a datasource would be indexed
+        to retrieve the spatial axis of the entry in x-direction 
+        (e.g. ['x', 'y', 'z'], ['lat', 'lon'], ['latitude', 'longitude']).
 
     """
     __tablename__ = 'spatial_scales'
@@ -387,6 +399,7 @@ class SpatialScale(Base):
     resolution = Column(Integer, nullable=False)
     extent = Column(Geometry(geometry_type='POLYGON', srid=4326), nullable=False)
     support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
+    dimension_name = Column(ARRAY(String(32)), nullable=True)
 
     # relationships
     sources: List['DataSource'] = relationship("DataSource", back_populates='spatial_scale')
@@ -436,6 +449,10 @@ class SpatialScale(Base):
             support=self.support,
             support_str = self.support_str
         )
+
+        # set optionals
+        if self.dimension_name is not None:
+            d['dimension_name'] = self.dimension_name
 
         if deep:
             d['datasources'] = [s.to_dict(deep=False) for s in self.sources]
@@ -503,7 +520,7 @@ class DataSource(Base):
     datatype_id = Column(Integer, ForeignKey('datatypes.id'), nullable=False)
     encoding = Column(String(64), default='utf-8')
     path = Column(String, nullable=False)
-    data_names = Column(ARRAY(String(128)), nullable=True)
+    data_names = Column(ARRAY(String(128)), nullable=True) # deprecated
     variable_names = Column(ARRAY(String(128)), nullable=True)
     args = Column(String)
 
