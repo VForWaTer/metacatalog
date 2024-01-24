@@ -34,7 +34,7 @@ def create_datasource(session, entry: models.Entry, data):
         extent=[index[0].isoformat(), index[-1].isoformat()],
         support=1.0,
         scale_dimension='temporal',
-        dimension_name='tstamp'
+        dimension_names=['tstamp']
     )
 
     session.add(datasource)
@@ -62,7 +62,7 @@ def read_data(session, entry, data):
     )
 
     datasource_var_name = entry.datasource.variable_names[0]
-    datasource_dim_name = entry.datasource.temporal_scale.dimension_name
+    datasource_dim_name = entry.datasource.temporal_scale.dimension_names[0]
 
     assert db_data.index.name == datasource_dim_name
     assert db_data.columns[0] == datasource_var_name # here we actually test for the old data_names that we want to get rid of, get here when test fails in the future
