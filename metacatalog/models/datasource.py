@@ -388,7 +388,7 @@ class SpatialScale(Base):
         that stores the spatial information of the dataset.  
         More generally, dimension_names describes how a datasource would be indexed
         to retrieve the spatial axis of the entry in x-direction 
-        (e.g. ['x', 'y', 'z'], ['lat', 'lon'], ['latitude', 'longitude']).
+        (e.g. ['x', 'y', 'z'], ['lon', 'lat'], ['longitude', 'latitude']).
 
     """
     __tablename__ = 'spatial_scales'
