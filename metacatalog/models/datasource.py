@@ -248,7 +248,7 @@ class TemporalScale(Base):
         would **not** be exhaustive.
         Defaults to ``support=1.0``, which would make a temporal exhaustive
         dataset, but may not apply to each dataset.
-    dimension_name : str
+    dimension_names : List[str]
         versionadded:: 0.9.1
 
         Name of the temporal dimension.  
@@ -256,7 +256,7 @@ class TemporalScale(Base):
         that stores the temporal information of the dataset. In case of a netCDF
         file, this is the dimension name of the dimension that stores the temporal
         information of the dataset.
-        More generally, dimension_name describes how a datasource would be indexed
+        More generally, dimension_names describes how a datasource would be indexed
         to retrieve the temporal axis of the entry (e.g. 'time', 'date', 'datetime').
 
 
@@ -270,7 +270,7 @@ class TemporalScale(Base):
     observation_start = Column(DateTime, nullable=False)
     observation_end = Column(DateTime, nullable=False)
     support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
-    dimension_name = Column(String(128), nullable=True)
+    dimension_names = Column(ARRAY(String(32)), nullable=True)
 
     # relationships
     sources: List['DataSource'] = relationship("DataSource", back_populates='temporal_scale')
@@ -338,8 +338,8 @@ class TemporalScale(Base):
         )
 
         # set optionals
-        if self.dimension_name is not None:
-            d['dimension_name'] = self.dimension_name
+        if self.dimension_names is not None:
+            d['dimension_names'] = self.dimension_names
 
         if deep:
             d['datasources'] = [s.to_dict(deep=False) for s in self.sources]
@@ -377,7 +377,7 @@ class SpatialScale(Base):
         available, the actual footprint fraction of observations can be
         given here.
         Defaults to ``support=1.0``.
-    dimension_name : List[str]
+    dimension_names : List[str]
         versionadded:: 0.9.1
 
         Names of the spatial dimension in x, y and optionally z-direction.  
@@ -386,7 +386,7 @@ class SpatialScale(Base):
         that stores the spatial information of the dataset.  
         In case of a netCDF file, this is the dimension name of the dimension 
         that stores the spatial information of the dataset.  
-        More generally, dimension_name describes how a datasource would be indexed
+        More generally, dimension_names describes how a datasource would be indexed
         to retrieve the spatial axis of the entry in x-direction 
         (e.g. ['x', 'y', 'z'], ['lat', 'lon'], ['latitude', 'longitude']).
 
@@ -399,7 +399,7 @@ class SpatialScale(Base):
     resolution = Column(Integer, nullable=False)
     extent = Column(Geometry(geometry_type='POLYGON', srid=4326), nullable=False)
     support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
-    dimension_name = Column(ARRAY(String(32)), nullable=True)
+    dimension_names = Column(ARRAY(String(32)), nullable=True)
 
     # relationships
     sources: List['DataSource'] = relationship("DataSource", back_populates='spatial_scale')
@@ -451,8 +451,8 @@ class SpatialScale(Base):
         )
 
         # set optionals
-        if self.dimension_name is not None:
-            d['dimension_name'] = self.dimension_name
+        if self.dimension_names is not None:
+            d['dimension_names'] = self.dimension_names
 
         if deep:
             d['datasources'] = [s.to_dict(deep=False) for s in self.sources]
@@ -639,7 +639,7 @@ class DataSource(Base):
                 session.rollback()
                 raise e
 
-    def create_scale(self, resolution, extent, support, scale_dimension, dimension_name: str = None, commit: bool = False) -> None:
+    def create_scale(self, resolution, extent, support, scale_dimension, dimension_names: List[str] = None, commit: bool = False) -> None:
         """
         Create a new scale for the dataset
         """
@@ -655,8 +655,12 @@ class DataSource(Base):
         else:
             raise AttributeError("scale_dimension has to be in ['temporal', 'spatial']")
 
+        # check that dimension_names is a list
+        if isinstance(dimension_names, str):
+            dimension_names = [dimension_names]
+
         # build the scale and append
-        scale = Cls(resolution=resolution, extent=extent, support=support, dimension_name=dimension_name)
+        scale = Cls(resolution=resolution, extent=extent, support=support, dimension_names=dimension_names)
         setattr(self, '%s_scale' % scale_dimension.lower(), scale)
 
         if commit:
