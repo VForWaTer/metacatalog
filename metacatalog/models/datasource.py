@@ -248,6 +248,17 @@ class TemporalScale(Base):
         would **not** be exhaustive.
         Defaults to ``support=1.0``, which would make a temporal exhaustive
         dataset, but may not apply to each dataset.
+    dimension_names : List[str]
+        versionadded:: 0.9.1
+
+        Name of the temporal dimension.  
+        In case of tabular data, this is usually the column name of the column
+        that stores the temporal information of the dataset. In case of a netCDF
+        file, this is the dimension name of the dimension that stores the temporal
+        information of the dataset.
+        More generally, dimension_names describes how a datasource would be indexed
+        to retrieve the temporal axis of the entry (e.g. 'time', 'date', 'datetime').
+
 
     """
     __tablename__ = 'temporal_scales'
@@ -259,6 +270,7 @@ class TemporalScale(Base):
     observation_start = Column(DateTime, nullable=False)
     observation_end = Column(DateTime, nullable=False)
     support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
+    dimension_names = Column(ARRAY(String(32)), nullable=True)
 
     # relationships
     sources: List['DataSource'] = relationship("DataSource", back_populates='temporal_scale')
@@ -325,6 +337,10 @@ class TemporalScale(Base):
             support_iso = self.support_timedelta.isoformat()
         )
 
+        # set optionals
+        if self.dimension_names is not None:
+            d['dimension_names'] = self.dimension_names
+
         if deep:
             d['datasources'] = [s.to_dict(deep=False) for s in self.sources]
 
@@ -361,6 +377,18 @@ class SpatialScale(Base):
         available, the actual footprint fraction of observations can be
         given here.
         Defaults to ``support=1.0``.
+    dimension_names : List[str]
+        versionadded:: 0.9.1
+
+        Names of the spatial dimension in x, y and optionally z-direction.  
+        Put the names in a list in the order x, y(, z).
+        In case of tabular data, this is usually the column name of the column
+        that stores the spatial information of the dataset.  
+        In case of a netCDF file, this is the dimension name of the dimension 
+        that stores the spatial information of the dataset.  
+        More generally, dimension_names describes how a datasource would be indexed
+        to retrieve the spatial axis of the entry in x-direction 
+        (e.g. ['x', 'y', 'z'], ['lon', 'lat'], ['longitude', 'latitude']).
 
     """
     __tablename__ = 'spatial_scales'
@@ -371,6 +399,7 @@ class SpatialScale(Base):
     resolution = Column(Integer, nullable=False)
     extent = Column(Geometry(geometry_type='POLYGON', srid=4326), nullable=False)
     support = Column(Numeric, CheckConstraint('support >= 0'), nullable=False, default=1.0)
+    dimension_names = Column(ARRAY(String(32)), nullable=True)
 
     # relationships
     sources: List['DataSource'] = relationship("DataSource", back_populates='spatial_scale')
@@ -421,6 +450,10 @@ class SpatialScale(Base):
             support_str = self.support_str
         )
 
+        # set optionals
+        if self.dimension_names is not None:
+            d['dimension_names'] = self.dimension_names
+
         if deep:
             d['datasources'] = [s.to_dict(deep=False) for s in self.sources]
 
@@ -455,9 +488,19 @@ class DataSource(Base):
         Can be used instead of setting``type_id``.
     data_names : list
         .. versionadded:: 0.3.0
+        .. deprecated:: 0.9.1
 
         List of column names that will be displayed when exporting the data.
         The columns are named in the same order as they appear in the list.
+    variable_names : list[str]
+        .. versionadded:: 0.9.1
+
+        List of variable names that store the data of the datasource of the entry.
+        In tabular data, this is usually the column name(s) of the variable that
+        is referenced by the Entry. In case of a netCDF file, this is the variable
+        name(s) of the variable(s) that is/are referenced by the Entry.  
+        More generally, variable_names describes how a datasource would be indexed
+        to retrieve the data of the entry.
 
     Example
     -------
@@ -477,7 +520,8 @@ class DataSource(Base):
     datatype_id = Column(Integer, ForeignKey('datatypes.id'), nullable=False)
     encoding = Column(String(64), default='utf-8')
     path = Column(String, nullable=False)
-    data_names = Column(ARRAY(String(128)), nullable=True)
+    data_names = Column(ARRAY(String(128)), nullable=True) # deprecated
+    variable_names = Column(ARRAY(String(128)), nullable=True)
     args = Column(String)
 
     # scales
@@ -527,6 +571,8 @@ class DataSource(Base):
         # set optionals
         if self.data_names is not None:
             d['data_names'] = self.data_names
+        if self.variable_names is not None:
+            d['variable_names'] = self.variable_names
         if self.args is not None:
             d['args'] = self.load_args()
         if self.encoding is not None:
@@ -593,7 +639,7 @@ class DataSource(Base):
                 session.rollback()
                 raise e
 
-    def create_scale(self, resolution, extent, support, scale_dimension, commit: bool = False) -> None:
+    def create_scale(self, resolution, extent, support, scale_dimension, dimension_names: List[str] = None, commit: bool = False) -> None:
         """
         Create a new scale for the dataset
         """
@@ -609,8 +655,12 @@ class DataSource(Base):
         else:
             raise AttributeError("scale_dimension has to be in ['temporal', 'spatial']")
 
+        # check that dimension_names is a list
+        if isinstance(dimension_names, str):
+            dimension_names = [dimension_names]
+
         # build the scale and append
-        scale = Cls(resolution=resolution, extent=extent, support=support)
+        scale = Cls(resolution=resolution, extent=extent, support=support, dimension_names=dimension_names)
         setattr(self, '%s_scale' % scale_dimension.lower(), scale)
 
         if commit:

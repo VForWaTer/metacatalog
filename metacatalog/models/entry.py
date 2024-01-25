@@ -875,7 +875,7 @@ class Entry(Base):
         else:
             return filter_query.all()
 
-    def create_datasource(self, path: str, type: Union[int, str], datatype: Union[int, str], commit: bool = False, **args) -> 'DataSource':
+    def create_datasource(self, path: str, type: Union[int, str], datatype: Union[int, str], variable_names: List[str] = None, commit: bool = False, **args) -> 'DataSource':
         """
         Create a :class:`DataCource <metacatalog.models.DataSource>` for this
         Entry. The data-source holds specific metadata about the actual type 
@@ -890,12 +890,21 @@ class Entry(Base):
             type of the datasource
         datatype : metacatalog.models.DataType
             Data Type of the referenced source
+        variable_names : list, optional
+            .. versionadded:: 0.9.1
+
+            List of variable names that store the data of the datasource of the entry.
+            In tabular data, this is usually the column name(s) of the variable that
+            is referenced by the Entry. In case of a netCDF file, this is the variable
+            name(s) of the variable(s) that is/are referenced by the Entry.  
+            More generally, variable_names describes how a datasource would be indexed
+            to retrieve the data of the entry.        
         commit : bool, optional
             If true, the created datasource will directly be commited to the
             database. If false (default) the model will be created and linked
             to this Entry, but you still need to add it to a database session
             and commit the session.
-        
+
         Returns
         -------
         datasource : metacatalog.models.DataSource
@@ -922,7 +931,7 @@ class Entry(Base):
         dtype = session.query(models.DataType).filter(models.DataType.name==datatype).one()
 
         # build the datasource object
-        ds = models.DataSource(type=ds_type, datatype=dtype, path=path)
+        ds = models.DataSource(type=ds_type, datatype=dtype, path=path, variable_names=variable_names)
 
         # add the args
         ds.save_args_from_dict(args)

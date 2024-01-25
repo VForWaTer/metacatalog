@@ -1,6 +1,6 @@
 sqlalchemy<2.0
 geoalchemy2
-pandas
+pandas<2.2
 xarray
 numpy
 psycopg2-binary
