@@ -88,6 +88,12 @@ def delete_data(session, entry):
     return entry.datasource is None
 
 
+def check_dimension_names(entry: models.Entry):
+    # check that the datasource has the expected list of dimension names
+    names = entry.datasource.dimension_names
+
+    return names == ['tstamp', 'air_pressure']
+
 
 @pytest.mark.depends(on=['add_find'], name='data_crud')
 def test_data_crud_operations():
@@ -115,3 +121,4 @@ def test_data_crud_operations():
     assert append_data(session, entry, new_chunk)
     read_data(session, entry, all_data)
     assert delete_data(session, entry)
+    assert check_dimension_names(entry)
