@@ -541,6 +541,28 @@ class DataSource(Base):
     @classmethod
     def is_valid(cls, ds: 'DataSource') -> bool:
         return hasattr(ds, 'path') and isinstance(ds, DataSource)
+    
+    @property
+    def dimension_names(self) -> List[str]:
+        """
+        .. versionadded:: 0.9.1
+
+        Returns a flat list of all dimensions needed to identify a datapoint in the dataset.
+        The order is [temporal, spatial, variable].
+
+        Returns
+        -------
+        dimension_names : List[str]
+            List of dimension names
+
+        """
+        # get the single dimensions
+        temporal = self.temporal_scale.dimension_names if self.temporal_scale is not None else []
+        spatial = self.spatial_scale.dimension_names if self.spatial_scale is not None else []
+        variable = self.variable_names if self.variable_names is not None else []
+
+        # build the flat list
+        return [*temporal, *spatial, *variable]
 
     def to_dict(self, deep: bool = False) -> dict:
         """To dict
