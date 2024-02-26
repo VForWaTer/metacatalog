@@ -1,7 +1,8 @@
 CREATE OR REPLACE VIEW locations AS
 select 
 	t.*,
-	st_area(t.geom::geography) as "area_sqm"
+	st_area(t.geom::geography) as "area_sqm",
+	st_asewkt(t.point_location) AS point_location_st_asewkt
 from 
 (SELECT 
 entries.id,
