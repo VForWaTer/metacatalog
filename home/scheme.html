@@ -1,0 +1,770 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Metadata Overview &#8212; Metacatalog 0.9.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'home/scheme';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Getting Started" href="getting_started.html" />
+    <link rel="prev" title="Installation" href="install.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/brand.png" class="logo__image only-light" alt="Metacatalog 0.9.2 documentation - Home"/>
+    <script>document.write(`<img src="../_static/brand.png" class="logo__image only-dark" alt="Metacatalog 0.9.2 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models/models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models/models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Metadata Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="home.html" class="nav-link">Home</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Metadata Overview</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="metadata-overview">
+<h1>Metadata Overview<a class="headerlink" href="#metadata-overview" title="Permalink to this heading">#</a></h1>
+<section id="available-metdata-entities">
+<h2>Available metdata entities<a class="headerlink" href="#available-metdata-entities" title="Permalink to this heading">#</a></h2>
+<p>The following table sumamrizes all Metadata information that can be stored in metacatalog.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Metadata descriptions</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 60.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>header</p></td>
+<td><p>description</p></td>
+<td><p>user_provided</p></td>
+<td><p>mandatory</p></td>
+</tr>
+<tr class="row-even"><td><p>external_id</p></td>
+<td><p>If the metadata is referencing the dataset in another system (i.e. on export), the external id should identify the original metadata set</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>uuid</p></td>
+<td><p>Version 4 universal unique identifier, that is assigned by the system.</p></td>
+<td><p>no</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>title</p></td>
+<td><p>The title of the dataset. It should delimit the dataset from similar, i.e. within the same campain. Use ie. IDs, or variable names</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>citation</p></td>
+<td><p>Citation information, how the dataset should be cited. If empty, a default standard citation style will be applied on export.</p></td>
+<td><p>optional</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>abstract</p></td>
+<td><p>Detailed description of the dataset. Give as much information as possible in a natural english text. The abstract is full-text searchable. Please do also include any information about data proovenance and quality if available</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>author</p></td>
+<td><p>The one main author of the dataset.</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>coAuthors</p></td>
+<td><p>List of additional co-authors to the dataset. They have the same structure as the first author but hold an additional order key to set the order of coAuthors.
+Note: Technically, other relationships than coAuthor can be set. On export to DataCite or ISO19115, anyone, who is not an author will become a coAuthor.</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>author.first_name</p></td>
+<td><p>First name for real persons</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>author.last_name</p></td>
+<td><p>Last name for real persons</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>author.affiliation</p></td>
+<td><p>The persons affiliation if applicable.</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>author.order</p></td>
+<td><p>only applies to coAuthors. Can be used to set the order of contributors</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>contributors, editors, publishers, rightHolders, owners, originators</p></td>
+<td><p>All lists of persons, just like coAuthors, but of different relationship. All are optional, one or more can be set. Persons can be in more than one list, except for contributors, which is mutually exclusive. Please note that all lists will be transformed to coAuthors on metadata export.</p></td>
+<td><p>optional</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>location</p></td>
+<td><p>WGS84 coordinates of the dataset. Important: this is only used as a reference location, thus only POINT geometry is allowed. If not applicable use the geometric center of the original geometry</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>geom</p></td>
+<td><p>WGS84 multi-geometry collection if the geometry of the dataset cannot be represented by a POINT (location) properly. Add a description to the abstract if used</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>variable</p></td>
+<td><p>The name of the used variable. Note, that the main design decision of the metadata scheme is that each dataset has only one variable. If more than one variable is contained in a dataset, you need to split them and create a ‘Composite’ dataset-group.</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>unit</p></td>
+<td><p>The unit of the variable. Use SI or derived SI units, wherever possible.</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>license</p></td>
+<td><p>Data license: Each dataset must contain usage information represented by a license. Available licenses are:
+- ODbL (Open Data COmmons Open Database License)
+- ODC-by  (Open data COmmons Attribution License v1.0)
+- CC BY 4.0  (Creative Commons Attribution 4.0 International)
+CC BY-NC 4.0  (Creative Commons Attribution-NonCommercial 4.0 International)
+Important: The usage of CC BY-NC is discouraged as it not an open license</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>comment</p></td>
+<td><p>general comments, which are of more technical nature. Usually not used</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>temporalScale</p></td>
+<td><p>the Scale triplet for temporal scaled data. If you set a scale, you need to specify all three components</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>temporalScale.resolution</p></td>
+<td><p>The temporal resolution of one time-step in the dataset. Please use ISO 8601 Durations to decribe the resolution</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>temporalScale.extent</p></td>
+<td><p>The temporal extent of the dataset. Provide a list of [start, end] for XML or JSON format or observation_start, observation_end for columnar metadata formats</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>temporalScale.support</p></td>
+<td><p>The ratio of the specified resolution that is actually supported by an observation. Defaults to 1.0, which means the full-timestep. Use smaller numbers if observations do not support the full resolution. I.e. if support is 0.5 and resolution 1hour, means the observation is only representative for the 30min up to the observation timestamp.</p></td>
+<td><p>optional</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>spatialScale</p></td>
+<td><p>the Scale triplet for spatially scaled datasets. If you set a scale, you need to specify all three components</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>spatialScale.resolution</p></td>
+<td><p>Spatial resolution in meter. Please estimate or approximate, if the datasource does not use a meter based CRS.</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>spatialScale.extent</p></td>
+<td><p>The extent of the dataset. Whenever possible use bounding boxes here. If not applicable, a POLYGON can be used.</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>spatialScale.support</p></td>
+<td><p>The ratio of the resolution that is supported by an observation. The support is usually always 1.0 for remote sensing products. If ground truthing is available, the support can be set to the share of resolution covered by ground truthing.</p></td>
+<td><p>optional</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>data_names</p></td>
+<td><p>The database stores default (column) names for the data on export. data_names can overwrite these settings. If used, you must describe the names in the abstract or via details keywords</p></td>
+<td><p>optional</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>encoding</p></td>
+<td><p>If the dataset is exported to a file-based format, it will by default be UTF-8 endcoded. If another encoding is needed for technical reasons, the encoding can be overwritten.</p></td>
+<td><p>optional</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>embargo</p></td>
+<td><p>The dataset can be kept private for the first two years after uploading, while i.e. a publication is in preparation. After this period, the dataset will be public under the specified license</p></td>
+<td><p>optional</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>keywords</p></td>
+<td><p>The database implements the NASA GCMD Earth Science keywords (<a class="reference external" href="https://earthdata.nasa.gov/earth-observation-data/find-data/idn/gcmd-keywords">https://earthdata.nasa.gov/earth-observation-data/find-data/idn/gcmd-keywords</a>). You can tag the dataset by as many as needed. As they are hierachical, only the uuid of the last element is needed.</p></td>
+<td><p>optional</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p>details</p></td>
+<td><p>A dataset can be described by an arbitrary amount of additonal information as key-value pairs. The keys should be short and descriptive. The values can be literals or nested structures like lists. Details can be provided as a key=value list of as nested structures ie. JSON: {“mykey”: {“value”: “foobar”, “description”: “Text what mykey and foobar is all about”}}. Additinally, keys should be described in the abstract.</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>groups</p></td>
+<td><p>In the metadata sheme, groups are used to model relations between datasets. There are three important groups, that can be specified, if applicable:
+- Split-dataset:  If the metadata changes for one dataset, it has to be split up into two datasets, with their own metadata. A Split-dataset group will merge the data together again on export.
+- Composite-dataset: If this variables must not or cannot be used without another dataset, you can indicate a composite dataset, that will always export siblings along with the data.
+- Labeled-dataset: If there is any structuring within the Project, that groups datasets together, but not in a strict sense like a composite, a Label can be used. This is usually a Site or a place name, that makes working with the data more convenient</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>group.title</p></td>
+<td><p>The title of the group. For Composites and Split-datasets, the same title for the group and each dataset is commonly used.</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>group.description</p></td>
+<td><p>If necessary, an additional description for the group</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>project</p></td>
+<td><p>Any number of datasets, that were collected within the same context can be grouped together by a project. Technically, this is also a group, but it does not cause any lazy-loading of other datasets and has only descriptive character. If not specified, the original network is used as project, if applicable</p></td>
+<td><p>optional</p></td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="install.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Installation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="getting_started.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Getting Started</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-metdata-entities">Available metdata entities</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/home/scheme.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022, Mirko Mälicke, Alexander Dolich.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

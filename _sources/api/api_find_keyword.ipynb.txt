@@ -1,0 +1,95 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Find Keyword"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Help"
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "metadata": {
+    "raw_mimetype": "text/restructuredtext"
+   },
+   "source": [
+    ".. autofunction:: metacatalog.api.find_keyword"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Example"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "CommandError",
+     "evalue": "Path doesn't exist: '/home/mirko/Dropbox/python/metacatalog/docs/source/api/alembic'.  Please use the 'init' command to create a new scripts folder.",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mCommandError\u001b[0m                              Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-1-f0273587aace>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mmetacatalog\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mapi\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 3\u001b[0;31m \u001b[0msession\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mapi\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mconnect_database\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m~/Dropbox/python/metacatalog/metacatalog/api/db.py\u001b[0m in \u001b[0;36mconnect_database\u001b[0;34m(*args, **kwargs)\u001b[0m\n\u001b[1;32m     55\u001b[0m     \"\"\"\n\u001b[1;32m     56\u001b[0m     \u001b[0;31m# get session\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 57\u001b[0;31m     \u001b[0msession\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mget_session\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0margs\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m**\u001b[0m\u001b[0mkwargs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     58\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     59\u001b[0m     \u001b[0;32mreturn\u001b[0m \u001b[0msession\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/Dropbox/python/metacatalog/metacatalog/db/session.py\u001b[0m in \u001b[0;36mget_session\u001b[0;34m(*args, **kwargs)\u001b[0m\n\u001b[1;32m     98\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     99\u001b[0m     \u001b[0;31m# else build a new engine\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 100\u001b[0;31m     \u001b[0mengine\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mget_engine\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0margs\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m**\u001b[0m\u001b[0mkwargs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    101\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    102\u001b[0m     \u001b[0;31m# create the Session class\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/Dropbox/python/metacatalog/metacatalog/db/session.py\u001b[0m in \u001b[0;36mget_engine\u001b[0;34m(*args, **kwargs)\u001b[0m\n\u001b[1;32m     81\u001b[0m     \u001b[0;31m# check alembic version\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     82\u001b[0m     \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 83\u001b[0;31m         \u001b[0mcheck_database_version\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mengine\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mengine\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     84\u001b[0m     \u001b[0;32mexcept\u001b[0m \u001b[0mRuntimeError\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0me\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     85\u001b[0m         \u001b[0;31m# no missmatch allowed\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/Dropbox/python/metacatalog/metacatalog/db/migration.py\u001b[0m in \u001b[0;36mcheck_database_version\u001b[0;34m(engine)\u001b[0m\n\u001b[1;32m     31\u001b[0m     \u001b[0;31m# get the alembic config file\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     32\u001b[0m     \u001b[0mconfig\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mConfig\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mjoin\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mBASEPATH\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'..'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'alembic.ini'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 33\u001b[0;31m     \u001b[0mscript_\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mscript\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mScriptDirectory\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfrom_config\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mconfig\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     34\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     35\u001b[0m     \u001b[0;31m# connect to database\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/miniconda3/envs/py37/lib/python3.7/site-packages/alembic-1.4.2-py3.7.egg/alembic/script/base.py\u001b[0m in \u001b[0;36mfrom_config\u001b[0;34m(cls, config)\u001b[0m\n\u001b[1;32m    147\u001b[0m             \u001b[0mversion_locations\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mversion_locations\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    148\u001b[0m             \u001b[0mtimezone\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mconfig\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget_main_option\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"timezone\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 149\u001b[0;31m             \u001b[0mhook_config\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mconfig\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget_section\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"post_write_hooks\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m{\u001b[0m\u001b[0;34m}\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    150\u001b[0m         )\n\u001b[1;32m    151\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/miniconda3/envs/py37/lib/python3.7/site-packages/alembic-1.4.2-py3.7.egg/alembic/script/base.py\u001b[0m in \u001b[0;36m__init__\u001b[0;34m(self, dir, file_template, truncate_slug_length, version_locations, sourceless, output_encoding, timezone, hook_config)\u001b[0m\n\u001b[1;32m     68\u001b[0m                 \u001b[0;34m\"Path doesn't exist: %r.  Please use \"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     69\u001b[0m                 \u001b[0;34m\"the 'init' command to create a new \"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 70\u001b[0;31m                 \u001b[0;34m\"scripts folder.\"\u001b[0m \u001b[0;34m%\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpath\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mabspath\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdir\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     71\u001b[0m             )\n\u001b[1;32m     72\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mCommandError\u001b[0m: Path doesn't exist: '/home/mirko/Dropbox/python/metacatalog/docs/source/api/alembic'.  Please use the 'init' command to create a new scripts folder."
+     ]
+    }
+   ],
+   "source": [
+    "from metacatalog import api\n",
+    "\n",
+    "session = api.connect_database()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for kw in api.find_keyword(session, value='*TEMPERATURE*'):\n",
+    "    print(kw.full_path)"
+   ]
+  }
+ ],
+ "metadata": {
+  "celltoolbar": "Raw Cell Format",
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

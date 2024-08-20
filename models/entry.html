@@ -1,0 +1,1550 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Entry &#8212; Metacatalog 0.9.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'models/entry';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ResultSet" href="result.html" />
+    <link rel="prev" title="Database Models" href="models.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/brand.png" class="logo__image only-light" alt="Metacatalog 0.9.2 documentation - Home"/>
+    <script>document.write(`<img src="../_static/brand.png" class="logo__image only-dark" alt="Metacatalog 0.9.2 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Models:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Entry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="result.html">ResultSet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="location.html">Location Filter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keyword.html">Controlled Keywords</a></li>
+<li class="toctree-l1"><a class="reference internal" href="person.html">Authors &amp; Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variable.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasource.html">DataSource</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Data Licenses</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="models.html" class="nav-link">Database Models</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Entry</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-metacatalog.models.entry">
+<span id="entry"></span><h1>Entry<a class="headerlink" href="#module-metacatalog.models.entry" title="Permalink to this heading">#</a></h1>
+<p>The Entry is the core class of metacatalog. It represents the core logical unit of the meta data model.
+In principle, an Entry needs a first Author, a title, position and a license to describe
+one type of environmental variable. It can hold a reference and interface to the actual data.
+If a supported data format is used, Entry can load the data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.models.entry.</span></span><span class="sig-name descname"><span class="pre">Entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entry.Entry" title="Permalink to this definition">#</a></dt>
+<dd><p>The Entry is the main entity in metacatalog. An object instance models a
+set of metadata needed to store and manage a datasource. The Entry is not
+the actual data.
+The Entry is designed to store all necessary information to be exportable
+in ISO19115 in the scope of metacatalog. That means, Properties which are
+always the same across metacatalog, or can be derived from the actual
+implementation, are not part of an Entry.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.id" title="Permalink to this definition">#</a></dt>
+<dd><p>Unique id of the record. If not specified, the database will assign it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.uuid">
+<span class="sig-name descname"><span class="pre">uuid</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.uuid" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.9.</span></p>
+</div>
+<p>Version 4 UUID string to identify the Entry across installations.
+This field is read-only and will be assigned on creation. It is primarily
+used to export Entry into ISO19115 metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.title">
+<span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.title" title="Permalink to this definition">#</a></dt>
+<dd><p>A full title (512) to describe the datasource as well as possible.
+The truncated title (first 25 signs) is usually used to print an
+Entry object to the console.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.abstract">
+<span class="sig-name descname"><span class="pre">abstract</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.abstract" title="Permalink to this definition">#</a></dt>
+<dd><p>Full abstract of the datasource. The abstract should include all
+necessary information that is needed to fully understand the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.external_id">
+<span class="sig-name descname"><span class="pre">external_id</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.external_id" title="Permalink to this definition">#</a></dt>
+<dd><p>Any kind of OID that was used to identify the data in the first place.
+Usually an unque ID field of other data-storage solutions. The
+exernal_id is only stored for reference reasons.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.location">
+<span class="sig-name descname"><span class="pre">location</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.location" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.6.1.</span></p>
+</div>
+<p>A POINT location should be specified here if there is a physical measurement
+point that is different from the centroid of the spatial extent (e.g.,
+discharge measurement with the extent of the catchment).Otherwise,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Datasource.spatial_scale.extent</span></code>
+should be used to specify the location of the measured data.</p>
+<p>The location as a POINT Geometry in unprojected WGS84 (EPSG: 4326).
+The location is primarily used to show all Entry objects on a map, or
+perform geo-searches.
+The location can be passed as WKT or a tuple of (x, y) coordinates.
+Note that it will be returned and stored as WKB. The output value will
+be reworked in a future release</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.creation">
+<span class="sig-name descname"><span class="pre">creation</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.creation" title="Permalink to this definition">#</a></dt>
+<dd><p>Following the ISO19115 the <em>creation</em> date is referring to the creation
+date of the <strong>data resource</strong> described by the Entry, not the Entry
+itself. If creation date is not set, it is assumed, that yet no data
+resource is connected to the Entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.end">
+<span class="sig-name descname"><span class="pre">end</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.end" title="Permalink to this definition">#</a></dt>
+<dd><p>The last date the data source described by this Entry has data for.
+The end date is <strong>not</strong> ISO19115-compliant and will be reworked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datimetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.version" title="Permalink to this definition">#</a></dt>
+<dd><p>The version of this Entry. Usually metacatalog will handle the version
+itself and there is not need to set the version manually.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.latest_version_id">
+<span class="sig-name descname"><span class="pre">latest_version_id</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.latest_version_id" title="Permalink to this definition">#</a></dt>
+<dd><p>Foreign key to <code class="docutils literal notranslate"><span class="pre">Entry.id</span></code>. This key is self-referencing the another
+Entry. This has to be set if the current Entry is not the latest one.
+If latest_version_id is None, the Entry is the most recent one and
+database operations that find multiple entries will in a future release
+filter to ‘version duplicates’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.is_partial">
+<span class="sig-name descname"><span class="pre">is_partial</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.is_partial" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.10.</span></p>
+</div>
+<p>If an Entry is partial, it is not self-contained and <strong>has</strong> to be part
+of a <code class="xref py py-class docutils literal notranslate"><span class="pre">EntryGroup</span></code> of type
+composite.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To make it possbile to add partial Entrys via the models submodule,
+The Entry class itself will  <strong>not</strong> check integrity. This has to
+be done on adding partial Entry records, or by checking the database</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.comment" title="Permalink to this definition">#</a></dt>
+<dd><p>Arbitrary free-text comment to the Entry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.citation">
+<span class="sig-name descname"><span class="pre">citation</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.citation" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.13.</span></p>
+</div>
+<p>Citation informatio for this Entry. Note, that metacatalog does not
+assign DOIs and thus a citation is only useful if the associated
+data has a DOI and the bibliographic information applies to the Entry
+as well.
+.. note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Metacatalog</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">manage</span> <span class="n">bibliography</span><span class="o">.</span> <span class="n">Thus</span> <span class="n">it</span> <span class="ow">is</span> <span class="n">highly</span>
+<span class="n">recommended</span> <span class="n">to</span> <span class="n">use</span> <span class="n">thrid</span> <span class="n">party</span> <span class="n">software</span> <span class="k">for</span> <span class="n">management</span> <span class="ow">and</span> <span class="n">only</span>
+<span class="n">export</span> <span class="n">the</span> <span class="n">reference</span> <span class="n">to</span> <span class="n">the</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">common</span> <span class="n">citation</span> <span class="n">style</span><span class="o">.</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.license">
+<span class="sig-name descname"><span class="pre">license</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.license" title="Permalink to this definition">#</a></dt>
+<dd><p>Data License associated to the data and the metadata. You can pass
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">License</span></code> itself, or use the
+license_id attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>metacatalog.models.License</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.license_id">
+<span class="sig-name descname"><span class="pre">license_id</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.license_id" title="Permalink to this definition">#</a></dt>
+<dd><p>Foreign key to the data license.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.author">
+<span class="sig-name descname"><span class="pre">author</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.author" title="Permalink to this definition">#</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code> that acts as first author
+for the given entry. Only one first author is possible, co-authors can
+be requested from either the contributors list or the
+<a class="reference internal" href="#metacatalog.models.entry.Entry.authors" title="metacatalog.models.entry.Entry.authors"><code class="xref py py-attr docutils literal notranslate"><span class="pre">authors</span></code></a> property. <code class="docutils literal notranslate"><span class="pre">author</span></code> is a property and setting a
+new author using this property is not supported.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>metacatalog.models.Person</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.authors">
+<span class="sig-name descname"><span class="pre">authors</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.authors" title="Permalink to this definition">#</a></dt>
+<dd><p>List of <code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code>. The first element
+is the first author, see <a class="reference internal" href="#metacatalog.models.entry.Entry.author" title="metacatalog.models.entry.Entry.author"><code class="xref py py-attr docutils literal notranslate"><span class="pre">author</span></code></a>. The others are
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Person</span></code> of <code class="docutils literal notranslate"><span class="pre">'coAuthor'</span> <span class="pre">``.</span>
+<span class="pre">The</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">authors</span> <span class="pre">is</span> <span class="pre">sorted</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">``order</span></code> attribute.
+<code class="docutils literal notranslate"><span class="pre">authors</span></code> is a property and setting a new list of authors using this
+property is not supported.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>One Entry object instance is always described by exactly one variable.
+If a datasource is a composite of many datasources, there are two
+strategies. Either a new table can be implemented and an abstract
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code> be added. This is done with
+Eddy-Covariance data. Secondly, Each variable of the datasource can be
+represented by its own Entry, which get then grouped by an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EntryGroup</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">EntryGroupType</span></code> <code class="docutils literal notranslate"><span class="pre">'composite'</span></code>.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><cite>EntryGroup</cite>
+<a href="#id1"><span class="problematic" id="id2">`</span></a>EntryGroupType</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.add_details">
+<span class="sig-name descname"><span class="pre">add_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">details</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.add_details" title="Permalink to this definition">#</a></dt>
+<dd><p>Adds arbitrary key-value pairs to this entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>details</strong> (<em>list</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.8.</span></p>
+</div>
+<p>List of dict of structure:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[{
+    &#39;key&#39;: &#39;&#39;,
+    &#39;value&#39;: &#39;&#39;,
+    &#39;description&#39;: &#39;&#39;
+}]
+</pre></div>
+</div>
+<p>where the <code class="docutils literal notranslate"><span class="pre">description</span></code> is optional and can be omitted.
+If no descriptions are passed at all, you can also use <cite>**kwargs</cite>
+to pass <code class="docutils literal notranslate"><span class="pre">key=value</span></code> pairs.</p>
+</p></li>
+<li><p><strong>commit</strong> (<em>bool</em>) – If True, the Entry session will be added to the
+current session and the transaction is commited.
+Can have side-effects. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.append_data">
+<span class="sig-name descname"><span class="pre">append_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entry.Entry.append_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Append data. This is only possible if a datasource is specified and
+any kind of IOExtension or IOInterface is activated. By default,
+the builtin <a class="reference internal" href="../ext/io.html#metacatalog.ext.io.IOExtension" title="metacatalog.ext.io.extension.IOExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOExtension</span></code></a>
+is activated since version 0.1.12.</p>
+<p>For the default interface, the datasource type and data type determine
+where the data will be stored and how the data has to look like.
+You can easily inherit from the
+<a class="reference internal" href="../ext/io.html#metacatalog.ext.io.IOExtension" title="metacatalog.ext.io.extension.IOExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOExtension</span></code></a> to
+customize read and write behaviour. If you import i.e. a timeseries to
+the same database as metacatalog, you will need to prepared data to
+to only hold an datetime index and the data to be stored.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.12.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.checksum">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">checksum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#metacatalog.models.entry.Entry.checksum" title="Permalink to this definition">#</a></dt>
+<dd><p>MD5 checksum of this entry. The checksum will change if any of the linked
+Metadata changes. This can be used in application built on metacatalog to
+verify integrity.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.3.8.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.create_datasource">
+<span class="sig-name descname"><span class="pre">create_datasource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="datasource.html#metacatalog.models.datasource.DataSource" title="metacatalog.models.datasource.DataSource"><span class="pre">DataSource</span></a></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.create_datasource" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataCource</span></code> for this
+Entry. The data-source holds specific metadata about the actual type
+of source, the data resides in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – The path to the data. This depends on the type of datasource used.
+This can be a URI, database table, local path etc.</p></li>
+<li><p><strong>type</strong> (<em>metacatalog.models.DataSourceType</em>) – type of the datasource</p></li>
+<li><p><strong>datatype</strong> (<em>metacatalog.models.DataType</em>) – Data Type of the referenced source</p></li>
+<li><p><strong>variable_names</strong> (<em>list</em><em>, </em><em>optional</em>) – <div class="versionadded">
+<p><span class="versionmodified added">New in version 0.9.1.</span></p>
+</div>
+<p>List of variable names that store the data of the datasource of the entry.
+In tabular data, this is usually the column name(s) of the variable that
+is referenced by the Entry. In case of a netCDF file, this is the variable
+name(s) of the variable(s) that is/are referenced by the Entry.
+More generally, variable_names describes how a datasource would be indexed
+to retrieve the data of the entry.</p>
+</p></li>
+<li><p><strong>commit</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, the created datasource will directly be commited to the
+database. If false (default) the model will be created and linked
+to this Entry, but you still need to add it to a database session
+and commit the session.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>datasource</strong> – Returns the newly created Datasource, which is also available as
+<code class="docutils literal notranslate"><span class="pre">Entry.datasource</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>metacatalog.models.DataSource</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.delete_data">
+<span class="sig-name descname"><span class="pre">delete_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delete_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entry.Entry.delete_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete data. This is only possible if a datasource is specified and
+any kind of IOExtension or IOInterface is activated. By default,
+the builtin <a class="reference internal" href="../ext/io.html#metacatalog.ext.io.IOExtension" title="metacatalog.ext.io.extension.IOExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOExtension</span></code></a>
+is activated since version 0.1.12.</p>
+<p>For the default interface, the datasource type and data type determine
+where the data is stored and how the data will be delted.
+You can easily inherit from the
+<a class="reference internal" href="../ext/io.html#metacatalog.ext.io.IOExtension" title="metacatalog.ext.io.extension.IOExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOExtension</span></code></a> to
+customize read and write behaviour.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.12.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>delete_source</strong> (<em>bool</em>) – If True, the DataSource will be deleted as well after the data
+has been deleted.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.details_dict">
+<span class="sig-name descname"><span class="pre">details_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.details_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the associated details as dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>full</strong> (<em>bool</em>) – If True (default) the keywords will contain the
+full info including key description, ids and
+stemmed key. If false, it will be truncated to a
+plain key:value dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.details_table">
+<span class="sig-name descname"><span class="pre">details_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'html'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.details_table" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the associated details as table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fmt</strong> (<em>string</em>) – <p>Can be one of:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">html</span></code> to return a HTML table</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latex</span></code> to return LaTeX table</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">markdown</span></code> to return Markdown table</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'JSON'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entry.Entry.export" title="Permalink to this definition">#</a></dt>
+<dd><p>Export the Entry. Exports the data using a metacatalog extension.
+Refer to the note below to learn more about export extensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – If set, the export will be written into a file at the given
+location.</p></li>
+<li><p><strong>fmt</strong> (<em>str</em>) – Export format. Each export extension should at least support
+json and XML export.</p></li>
+<li><p><strong>**kwargs</strong> – Any other argument given will be passed down to the actual
+export function.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses any extension prefixed with ‘export-’ activated, by passing
+itself to the extension. If not format-specific extension is activated,
+the default <a class="reference internal" href="../ext/export.html#metacatalog.ext.export.ExportExtension" title="metacatalog.ext.export.ExportExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportExtension</span></code></a>
+will be used. A method of same name as <code class="docutils literal notranslate"><span class="pre">fmt</span></code> on the extension will be used.
+If such a method is not present, the ‘export’ method is used and the fmt
+attribute will be passed along. This can be used for format specific
+extensions.
+Refer to the notes about <a class="reference internal" href="../ext/custom.html#module-metacatalog.ext.base" title="metacatalog.ext.base"><code class="xref any py py-mod docutils literal notranslate"><span class="pre">custom</span> <span class="pre">extensions</span></code></a>
+to learn more about writing your own export extension.</p>
+<p>Consider this example:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">metacatalog.ext</span> <span class="kn">import</span> <span class="n">MetacatalogExtensionInterface</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">class</span> <span class="nc">RawJSONExtension</span><span class="p">(</span><span class="n">MetacatalogExtensionInterface</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">init_extension</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># get the dict</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">stringify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;indent&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can activate and use it like:</p>
+<p>&gt;&gt; from metacatalog import config
+&gt;&gt; config.load_extension(‘export’, RawJSONEXtension)
+&gt;&gt; entry.export(path=’testfile.json’, fmt=’json’, indent=2)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.from_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a <em>new</em> Entry in the database from the given dict.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.4.8.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.7.4: </span>PersonRoles other than ‘author’ and ‘coAuthor’ can be
+imported as well.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – The dictionary to create the Entry from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>entry</strong> – The newly created Entry.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry">Entry</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Currently, uploading data sources and data records is not supported.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entry.Entry.get_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Read the data. This is only possible if a datasource is specified and
+any kind of IOExtension or IOInterface is activated. By default,
+the builtin <a class="reference internal" href="../ext/io.html#metacatalog.ext.io.IOExtension" title="metacatalog.ext.io.extension.IOExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOExtension</span></code></a>
+is activated since version 0.1.12.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.1.12.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.import_data">
+<span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entry.Entry.import_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Import data. This is only possible if a datasource is specified and
+any kind of IOExtension or IOInterface is activated. By default,
+the builtin <a class="reference internal" href="../ext/io.html#metacatalog.ext.io.IOExtension" title="metacatalog.ext.io.extension.IOExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOExtension</span></code></a>
+is activated since version 0.1.12.</p>
+<p>For the default interface, the datasource type and data type determine
+where the data will be stored and how the data has to look like.
+You can easily inherit from the
+<a class="reference internal" href="../ext/io.html#metacatalog.ext.io.IOExtension" title="metacatalog.ext.io.extension.IOExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOExtension</span></code></a> to
+customize read and write behaviour. If you import i.e. a timeseries to
+the same database as metacatalog, you will need to prepared data to
+to only hold an datetime index and the data to be stored.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.1.12.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.io_interface">
+<span class="sig-name descname"><span class="pre">io_interface</span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.io_interface" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <a class="reference internal" href="../ext/io.html#metacatalog.ext.io.IOExtension" title="metacatalog.ext.io.extension.IOExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOExtension</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.keyword_list">
+<span class="sig-name descname"><span class="pre">keyword_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.keyword_list" title="Permalink to this definition">#</a></dt>
+<dd><p>List of tagged keywords associated to this instance.
+The keywords are related via the association table.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.keywords_dict">
+<span class="sig-name descname"><span class="pre">keywords_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entry.Entry.keywords_dict" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.make_composite">
+<span class="sig-name descname"><span class="pre">make_composite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">others</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Entry'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#metacatalog.models.entrygroup.EntryGroup" title="metacatalog.models.entrygroup.EntryGroup"><span class="pre">EntryGroup</span></a></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.make_composite" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a composite EntryGroup from this Entry. A composite marks
+stand-alone (<a class="reference internal" href="#metacatalog.models.entry.Entry.is_partial" title="metacatalog.models.entry.Entry.is_partial"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_partial</span></code></a> <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">False</span></code>) entries as inseparable.
+A composite can also contain a partial Entry
+(<a class="reference internal" href="#metacatalog.models.entry.Entry.is_partial" title="metacatalog.models.entry.Entry.is_partial"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_partial</span></code></a> <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">True</span></code>), whichs  data only makes sense in the
+context of the composite group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>others</strong> (<em>list</em><em> of </em><a class="reference internal" href="#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><em>Entry</em></a>) – The other <code class="xref py py-class docutils literal notranslate"><span class="pre">Entries</span></code> that
+should be part of the composite.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – Optional title of the composite, if applicable</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Optional description of the composite if applicable</p></li>
+<li><p><strong>commit</strong> (<em>bool</em>) – If True, the newly created Group will be persisted in the
+database. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>composite</strong> – The newly created EntryGroup of EntryGroupType.name == ‘Composite’</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>metacatalog.models.EntryGroup</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.neighbors">
+<span class="sig-name descname"><span class="pre">neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'meter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_epsg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3857</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_sql</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.neighbors" title="Permalink to this definition">#</a></dt>
+<dd><p>Find neighboring <code class="xref py py-class docutils literal notranslate"><span class="pre">Entries</span></code> around the
+location of this instance. You can return the result, or the sqlalchemy
+Query object, which can be printed as plain SQL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>distance</strong> (<em>int</em><em>, </em><em>float</em>) – The maximum distance at which another Entry is still considered to be a neighbor.</p></li>
+<li><p><strong>unit</strong> (<em>str</em>) – Has to be one of [‘meter’, ‘km’, ‘mile’, ‘nautic’] to specify the unit
+of the given distance. Note that the distance will always be transformed
+into meter.</p></li>
+<li><p><strong>buffer_epsg</strong> (<em>int</em>) – <p>The EPSG identification number of any projected cartesian coordinate
+reference system that uses meter as unit. This CRS will be used to
+apply the search distance (in meter).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The default system is the transversal Mercartor projection, which is
+a global system. Thus, it can always be applied, but may introduce
+large uncertainties in small areas. Replace this attribute by a
+local CRS wherever possible.</p>
+</div>
+</p></li>
+<li><p><strong>as_sql</strong> (<em>bool</em>) – If False (default) the SQL query for neighbors will be executed and
+the result is returned. Else, the SQL query itself will be returned.</p></li>
+<li><p><strong>kwargs</strong> (<em>keyword arguments</em>) – Any passed keyword argument will be passed down to the
+<a class="reference internal" href="../api/api_find_entry.html#metacatalog.api.find_entry" title="metacatalog.api.find_entry"><code class="xref py py-func docutils literal notranslate"><span class="pre">api.find_entry</span></code></a> function to further
+filter the results.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="location.html#metacatalog.util.location.around" title="metacatalog.util.location.around"><code class="xref py py-func docutils literal notranslate"><span class="pre">around</span></code></a>
+<a class="reference internal" href="../api/api_find_entry.html#metacatalog.api.find_entry" title="metacatalog.api.find_entry"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_entry</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.plain_keywords_dict">
+<span class="sig-name descname"><span class="pre">plain_keywords_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.plain_keywords_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a list of dictionaries containing a dict representation
+of each associated keyword to this Entry.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.plain_keywords_list">
+<span class="sig-name descname"><span class="pre">plain_keywords_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.plain_keywords_list" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns list of controlled keywords associated with this
+instance of meta data.
+The List only includes the full path</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.set_new_author">
+<span class="sig-name descname"><span class="pre">set_new_author</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_author</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="person.html#metacatalog.models.person.Person" title="metacatalog.models.person.Person"><span class="pre">Person</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entry.Entry.set_new_author" title="Permalink to this definition">#</a></dt>
+<dd><p>Set a new first Author for this entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_author</strong> (<em>metacatalog.models.Person</em>) – The new first author. As of now the new author has to be passed as a
+model instance. Passing the ID or query parameter is not yet supported.</p></li>
+<li><p><strong>commit</strong> (<em>boolean</em>) – <p>If True, the whole <code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code> will commit
+and persist itself to the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This will also affect other uncommited edits to the Entry.</p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entry.Entry.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stringify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.entry.Entry.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the model as a python dictionary.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.7.4: </span>The dictionary now contains all persons roles</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deep</strong> (<em>bool</em>) – If True, all related objects will be included as
+dictionary. Defaults to False</p></li>
+<li><p><strong>stringify</strong> (<em>bool</em>) – If True, all values will be turned into a string,
+to make the object serializable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>obj</strong> – The Model as dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-metacatalog.models.entrygroup"></span><dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.models.entrygroup.</span></span><span class="sig-name descname"><span class="pre">EntryGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup" title="Permalink to this definition">#</a></dt>
+<dd><p>An EntryGroup is an association object between any number of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code> records. The type
+of association is further described by
+<a class="reference internal" href="#metacatalog.models.entrygroup.EntryGroupType" title="metacatalog.models.entrygroup.EntryGroupType"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntryGroupType</span></code></a>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.id" title="Permalink to this definition">#</a></dt>
+<dd><p>Unique id of the record. If not specified, the database will assign it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.uuid">
+<span class="sig-name descname"><span class="pre">uuid</span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.uuid" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.9.</span></p>
+</div>
+<p>Version 4 UUID string to identify the Entry across installations.
+This field is read-only and will be assigned on creation. It is primarily
+used to export Entry into ISO19115 metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.type" title="Permalink to this definition">#</a></dt>
+<dd><p>The type is most important to give meaning to a group of
+entries. Three types ship with metacatalog <code class="docutils literal notranslate"><span class="pre">'Project'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Composite'</span></code> and <code class="docutils literal notranslate"><span class="pre">'Split</span> <span class="pre">dataset'</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>metacatalog.models.EntryGroupType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.type_id">
+<span class="sig-name descname"><span class="pre">type_id</span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.type_id" title="Permalink to this definition">#</a></dt>
+<dd><p>Foreign key to the EntryGroupType</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.title">
+<span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.title" title="Permalink to this definition">#</a></dt>
+<dd><p>A descriptive title for the Group. Maximum of 40 letters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.description" title="Permalink to this definition">#</a></dt>
+<dd><p>An optional full text description of the EntryGroup. This
+description should contain all information necessary to
+understand the grouping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.publication">
+<span class="sig-name descname"><span class="pre">publication</span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.publication" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.9.</span></p>
+</div>
+<p>Autogenerated field giving the UTC timestamp of record creation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.lastUpdate">
+<span class="sig-name descname"><span class="pre">lastUpdate</span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.lastUpdate" title="Permalink to this definition">#</a></dt>
+<dd><p>Autogenerated field giving the UTC timestamp of last edit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.checksum">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">checksum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.checksum" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.3.9.</span></p>
+</div>
+<p>MD5 checksum of this entry. The checksum will change if any of the linked
+Entries’ checksum changes. This can be used in application built on metacatalog to
+verify integrity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'JSON'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.export" title="Permalink to this definition">#</a></dt>
+<dd><p>Export the EntryGroup. Exports the data using a metacatalog extension.
+Refer to the note below to learn more about export extensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – If set, the export will be written into a file at the given
+location.</p></li>
+<li><p><strong>fmt</strong> (<em>str</em>) – Export format. Each export extension should at least support
+json and XML export.</p></li>
+<li><p><strong>**kwargs</strong> – Any other argument given will be passed down to the actual
+export function.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses any extension prefixed with ‘export-’ activated, by passing
+itself to the extension. If not format-specific extension is activated,
+the default <a class="reference internal" href="../ext/export.html#metacatalog.ext.export.ExportExtension" title="metacatalog.ext.export.ExportExtension"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportExtension</span></code></a>
+will be used. A method of same name as <code class="docutils literal notranslate"><span class="pre">fmt</span></code> on the extension will be used.
+If such a method is not present, the ‘export’ method is used and the fmt
+attribute will be passed along. This can be used for format specific
+extensions.
+Refer to the notes about <a class="reference internal" href="../ext/custom.html#module-metacatalog.ext.base" title="metacatalog.ext.base"><code class="xref any py py-mod docutils literal notranslate"><span class="pre">custom</span> <span class="pre">extensions</span></code></a>
+to learn more about writing your own export extension.</p>
+<p>Consider this example:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">metacatalog.ext</span> <span class="kn">import</span> <span class="n">MetacatalogExtensionInterface</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">class</span> <span class="nc">RawJSONExtension</span><span class="p">(</span><span class="n">MetacatalogExtensionInterface</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">init_extension</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># get the dict</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">stringify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;indent&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can activate and use it like:</p>
+<p>&gt;&gt; from metacatalog import ext
+&gt;&gt; ext.extension(‘export’, RawJSONEXtension)
+&gt;&gt; group.export(path=’testfile.json’, fmt=’json’, indent=2)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroup.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stringify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroup.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>To dict</p>
+<p>Return the model as a python dictionary.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.3.8: </span>added stringify option</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deep</strong> (<em>bool</em>) – If True, all related objects will be included as
+dictionary. Defaults to False</p></li>
+<li><p><strong>stringify</strong> (<em>bool</em>) – If True, all values will be turned into a string,
+to make the object serializable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>obj</strong> – The Model as dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroupAssociation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.models.entrygroup.</span></span><span class="sig-name descname"><span class="pre">EntryGroupAssociation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroupAssociation" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroupType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.models.entrygroup.</span></span><span class="sig-name descname"><span class="pre">EntryGroupType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroupType" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.entrygroup.EntryGroupType.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.entrygroup.EntryGroupType.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>To dict</p>
+<p>Return the model as a python dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em>) – If True, all related objects will be included as
+dictionary. Defaults to False</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>obj</strong> – The Model as dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="models.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Database Models</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="result.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">ResultSet</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry"><code class="docutils literal notranslate"><span class="pre">Entry</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.id"><code class="docutils literal notranslate"><span class="pre">Entry.id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.uuid"><code class="docutils literal notranslate"><span class="pre">Entry.uuid</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.title"><code class="docutils literal notranslate"><span class="pre">Entry.title</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.abstract"><code class="docutils literal notranslate"><span class="pre">Entry.abstract</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.external_id"><code class="docutils literal notranslate"><span class="pre">Entry.external_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.location"><code class="docutils literal notranslate"><span class="pre">Entry.location</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.creation"><code class="docutils literal notranslate"><span class="pre">Entry.creation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.end"><code class="docutils literal notranslate"><span class="pre">Entry.end</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.version"><code class="docutils literal notranslate"><span class="pre">Entry.version</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.latest_version_id"><code class="docutils literal notranslate"><span class="pre">Entry.latest_version_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.is_partial"><code class="docutils literal notranslate"><span class="pre">Entry.is_partial</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.comment"><code class="docutils literal notranslate"><span class="pre">Entry.comment</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.citation"><code class="docutils literal notranslate"><span class="pre">Entry.citation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.license"><code class="docutils literal notranslate"><span class="pre">Entry.license</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.license_id"><code class="docutils literal notranslate"><span class="pre">Entry.license_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.author"><code class="docutils literal notranslate"><span class="pre">Entry.author</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.authors"><code class="docutils literal notranslate"><span class="pre">Entry.authors</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.add_details"><code class="docutils literal notranslate"><span class="pre">Entry.add_details()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.append_data"><code class="docutils literal notranslate"><span class="pre">Entry.append_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.checksum"><code class="docutils literal notranslate"><span class="pre">Entry.checksum</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.create_datasource"><code class="docutils literal notranslate"><span class="pre">Entry.create_datasource()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.delete_data"><code class="docutils literal notranslate"><span class="pre">Entry.delete_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.details_dict"><code class="docutils literal notranslate"><span class="pre">Entry.details_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.details_table"><code class="docutils literal notranslate"><span class="pre">Entry.details_table()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.export"><code class="docutils literal notranslate"><span class="pre">Entry.export()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.from_dict"><code class="docutils literal notranslate"><span class="pre">Entry.from_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.get_data"><code class="docutils literal notranslate"><span class="pre">Entry.get_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.import_data"><code class="docutils literal notranslate"><span class="pre">Entry.import_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.io_interface"><code class="docutils literal notranslate"><span class="pre">Entry.io_interface</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.keyword_list"><code class="docutils literal notranslate"><span class="pre">Entry.keyword_list()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.keywords_dict"><code class="docutils literal notranslate"><span class="pre">Entry.keywords_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.make_composite"><code class="docutils literal notranslate"><span class="pre">Entry.make_composite()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.neighbors"><code class="docutils literal notranslate"><span class="pre">Entry.neighbors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.plain_keywords_dict"><code class="docutils literal notranslate"><span class="pre">Entry.plain_keywords_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.plain_keywords_list"><code class="docutils literal notranslate"><span class="pre">Entry.plain_keywords_list()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.set_new_author"><code class="docutils literal notranslate"><span class="pre">Entry.set_new_author()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entry.Entry.to_dict"><code class="docutils literal notranslate"><span class="pre">Entry.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup"><code class="docutils literal notranslate"><span class="pre">EntryGroup</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.id"><code class="docutils literal notranslate"><span class="pre">EntryGroup.id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.uuid"><code class="docutils literal notranslate"><span class="pre">EntryGroup.uuid</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.type"><code class="docutils literal notranslate"><span class="pre">EntryGroup.type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.type_id"><code class="docutils literal notranslate"><span class="pre">EntryGroup.type_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.title"><code class="docutils literal notranslate"><span class="pre">EntryGroup.title</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.description"><code class="docutils literal notranslate"><span class="pre">EntryGroup.description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.publication"><code class="docutils literal notranslate"><span class="pre">EntryGroup.publication</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.lastUpdate"><code class="docutils literal notranslate"><span class="pre">EntryGroup.lastUpdate</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.checksum"><code class="docutils literal notranslate"><span class="pre">EntryGroup.checksum</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.export"><code class="docutils literal notranslate"><span class="pre">EntryGroup.export()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroup.to_dict"><code class="docutils literal notranslate"><span class="pre">EntryGroup.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroupAssociation"><code class="docutils literal notranslate"><span class="pre">EntryGroupAssociation</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroupType"><code class="docutils literal notranslate"><span class="pre">EntryGroupType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.entrygroup.EntryGroupType.to_dict"><code class="docutils literal notranslate"><span class="pre">EntryGroupType.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/models/entry.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022, Mirko Mälicke, Alexander Dolich.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

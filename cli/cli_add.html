@@ -1,0 +1,859 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Add command &#8212; Metacatalog 0.9.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'cli/cli_add';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Find Command" href="cli_find.html" />
+    <link rel="prev" title="Init command" href="cli_init.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/brand.png" class="logo__image only-light" alt="Metacatalog 0.9.2 documentation - Home"/>
+    <script>document.write(`<img src="../_static/brand.png" class="logo__image only-dark" alt="Metacatalog 0.9.2 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models/models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models/models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Command Overview</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="cli_create.html">Create Command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_populate.html">Populate command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_init.html">Init command</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Add command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_find.html">Find Command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_show.html">Show command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_uuid.html">Uuid command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Command Overview</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="cli_uuid.html">Uuid command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_show.html">Show command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_populate.html">Populate command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_init.html">Init command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_find.html">Find Command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_create.html">Create Command</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Add command</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="cli.html" class="nav-link">CLI</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Add command</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Add-command">
+<h1>Add command<a class="headerlink" href="#Add-command" title="Permalink to this heading">#</a></h1>
+<section id="Help">
+<h2>Help<a class="headerlink" href="#Help" title="Permalink to this heading">#</a></h2>
+<p>The help text for the <code class="docutils literal notranslate"><span class="pre">add</span></code> subcommand can be shown by passing the <code class="docutils literal notranslate"><span class="pre">-h</span></code> flag.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>add<span class="w"> </span>-h
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: metacatalog add [-h] [--version] [--connection CONNECTION] [--verbose]
+                       [--quiet] [--dev] [--logfile LOGFILE] [--csv CSV]
+                       [--txt TXT] [--json JSON]
+                       entity
+
+positional arguments:
+  entity                Name of the record entity to be added.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version, -v         Returns the module version
+  --connection CONNECTION, -C CONNECTION
+                        Connection string to the database instance.Follows the
+                        syntax: driver://user:password@host:port/database
+  --verbose, -V         Activate extended output.
+  --quiet, -q           Suppress any kind of output.
+  --dev                 Development mode. Unexpected errors will not be
+                        handled and the full traceback is printed to the
+                        screen.
+  --logfile LOGFILE     If a file is given, output will be written to that
+                        file instead of printed to StdOut.
+  --csv CSV             Data Origin Flag. Pass a CSV filename or content
+                        containing the data. Column header have to match the
+                        ADD API keywords.
+  --txt TXT             Data Origin Flag. Pass a text filename or content
+                        containing whitespace separated key=value pairs where
+                        key has to match the ADD API keywords. If used
+                        directly remember to quote accordingly.
+  --json JSON           Data Origin Flag. Pass a JSON filename or content
+                        containing the data. Must contain a list of objects
+                        matchin the ADD API keywords.
+</pre></div></div>
+</div>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">add</span></code> command assumes that either <code class="docutils literal notranslate"><span class="pre">`create</span></code> &lt;cli_create.ipynb&gt;`__ and <code class="docutils literal notranslate"><span class="pre">`populate</span></code> &lt;cli_populate.ipynb&gt;`__ or <code class="docutils literal notranslate"><span class="pre">`init</span></code> &lt;cli_init.ipynb&gt;`__ were executed successfully.</p>
+</section>
+<section id="Usage">
+<h2>Usage<a class="headerlink" href="#Usage" title="Permalink to this heading">#</a></h2>
+<section id="entity">
+<h3>entity<a class="headerlink" href="#entity" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">add</span></code> command has one positional argument <code class="docutils literal notranslate"><span class="pre">entity</span></code> that has to be provided. This is the name of the record entitiy that should be added. There is a dictionary in <code class="docutils literal notranslate"><span class="pre">metacatalog</span></code> that maps enitity names to database models:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>from metacatalog.api._mapping import ENTITY_MAPPING
+from pprint import pprint
+pprint(ENTITY_MAPPING)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;author&#39;: &lt;class &#39;metacatalog.models.person.Person&#39;&gt;,
+ &#39;contributor&#39;: &lt;class &#39;metacatalog.models.person.Person&#39;&gt;,
+ &#39;datasource&#39;: &lt;class &#39;metacatalog.models.datasource.DataSource&#39;&gt;,
+ &#39;datasource_type&#39;: &lt;class &#39;metacatalog.models.datasource.DataSourceType&#39;&gt;,
+ &#39;datasourcetype&#39;: &lt;class &#39;metacatalog.models.datasource.DataSourceType&#39;&gt;,
+ &#39;entry&#39;: &lt;class &#39;metacatalog.models.entry.Entry&#39;&gt;,
+ &#39;keyword&#39;: &lt;class &#39;metacatalog.models.keyword.Keyword&#39;&gt;,
+ &#39;license&#39;: &lt;class &#39;metacatalog.models.license.License&#39;&gt;,
+ &#39;person&#39;: &lt;class &#39;metacatalog.models.person.Person&#39;&gt;,
+ &#39;person_role&#39;: &lt;class &#39;metacatalog.models.person.PersonRole&#39;&gt;,
+ &#39;personrole&#39;: &lt;class &#39;metacatalog.models.person.PersonRole&#39;&gt;,
+ &#39;unit&#39;: &lt;class &#39;metacatalog.models.variable.Unit&#39;&gt;,
+ &#39;variable&#39;: &lt;class &#39;metacatalog.models.variable.Variable&#39;&gt;}
+</pre></div></div>
+</div>
+<p>Many entities map to the same model. This is either due to different spelling, or because the API creates database records in different contexts. E.g. the API forces the user to pass at least one <em>person</em> as the first author of an <em>Entry</em> on creation. The <em>contributors</em> are optional and can be added if applicable. All <em>person</em>s will, however, be saved into the same table.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The CLI is operating at a much lower level than the Python API. Many semantical workflows which add data to the database include way more individual steps using the CLI.</p>
+</div>
+</section>
+<section id="connection">
+<h3>connection<a class="headerlink" href="#connection" title="Permalink to this heading">#</a></h3>
+<p>In case no default connection was created and saved, you have to supply a connection string to the database using the <code class="docutils literal notranslate"><span class="pre">--connection</span></code> flag. See <code class="docutils literal notranslate"><span class="pre">`connection</span></code> &lt;cli_connection.ipynb&gt;`__ command.</p>
+</section>
+<section id="passing-arguments">
+<h3>passing arguments<a class="headerlink" href="#passing-arguments" title="Permalink to this heading">#</a></h3>
+<p>Obviously, you need to pass the actual metadata, that should be stored in metacatalog. There are three data origin flags available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--csv</span></code> - comma separated</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--txt</span></code> - key=value pairs</p></li>
+<li><p>–<code class="docutils literal notranslate"><span class="pre">json</span></code> - JSON</p></li>
+</ul>
+<p>All three flags accept either a filename (including path) to a file in the specified format, or the content itself. Instead of creating a file and passing the filename:</p>
+<div class="highlight-csv notranslate"><div class="highlight"><pre><span></span>name,symbol
+foo,F
+Bar,B
+</pre></div>
+</div>
+<p>you can can also use the flag like: <code class="docutils literal notranslate"><span class="pre">--csv</span> <span class="pre">'name,symbol\nnfoo,F\nbar,B'</span></code>. This might be the easier approach if only one or two records are added.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can inspect entities using the <cite>show</cite> command.</p>
+</div>
+</section>
+</section>
+<section id="Operations">
+<h2>Operations<a class="headerlink" href="#Operations" title="Permalink to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This section assumes that you are familiar with the metacatalog data model. As the CLI just uses the Python API under the hood, you will have to refer to the API documentation for a full reference.</p>
+</div>
+<p>Most metadata creation task cannot be done with one call to add. Furthermore, some entities relate to records, that have to be added in the first place, to not violate relation constraints. A prior example is that a person has to exist in the database, before it can be placed as an author.</p>
+<p>A typical workflow is to add missing lookup data, which includes <code class="docutils literal notranslate"><span class="pre">variables,units,licenses,keywords</span></code> and <code class="docutils literal notranslate"><span class="pre">details</span></code>. Then, you create all <code class="docutils literal notranslate"><span class="pre">person</span></code>s involved. Finally, the metadata <code class="docutils literal notranslate"><span class="pre">Entry</span></code> can be added. For most lookup data, a <code class="docutils literal notranslate"><span class="pre">1:n</span></code> relation is modelled and you can pass anything accepted by the <code class="docutils literal notranslate"><span class="pre">find</span></code> api or the ID. <code class="docutils literal notranslate"><span class="pre">keyword</span></code>s and <code class="docutils literal notranslate"><span class="pre">person</span></code>s are, however, modelled in a <code class="docutils literal notranslate"><span class="pre">m:n</span></code> relation, which has to be specified in a second step.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">details</span></code> entity is not reflected in the CLI or API yet.</p>
+<p>The usage of passing other identifiers to <cite>find</cite> than the ID, is experimental and not fully functions. It might also change in a future release</p>
+</div>
+</section>
+<section id="Example">
+<h2>Example<a class="headerlink" href="#Example" title="Permalink to this heading">#</a></h2>
+<p>The following example should illustrate a workflow for adding new meta-data. At first we add a unit of <code class="docutils literal notranslate"><span class="pre">awesomeness</span></code> and a variable of <code class="docutils literal notranslate"><span class="pre">awesome</span></code> - because most of our data is awesome.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>add<span class="w"> </span>unit<span class="w"> </span>--csv<span class="w"> </span><span class="s1">&#39;name,symbol,si\nawesomeness,a,m&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+Added 1 unit records.
+Done.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+<span class="c1">#metacatalog show attributes variables</span>
+metacatalog<span class="w"> </span>add<span class="w"> </span>variable<span class="w"> </span>--csv<span class="w"> </span><span class="s1">&#39;name,symbol,unit\nawesome,A,awesomeness&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+Added 1 variable records.
+Done.
+</pre></div></div>
+</div>
+<p>Here, we passed the new newly created unit name to the <code class="docutils literal notranslate"><span class="pre">add</span> <span class="pre">variable</span></code> endpoint.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>add<span class="w"> </span>person<span class="w"> </span>--json<span class="w"> </span><span class="s1">&#39;[{&quot;first_name&quot;: &quot;Alfred, E.&quot;, &quot;last_name&quot;: &quot;Neumann&quot;, &quot;affiliation&quot;: &quot;Institute of Awesomeness&quot;}]&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+Added 1 person records.
+Done.
+</pre></div></div>
+</div>
+<p>Finally, we can create the Entries of Alfred, E.’s data from a json file:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import json
+
+meta = dict(
+    title=&quot;Alfred data&quot;,
+    abstract=&quot;A dummy test entry, which Alfred created&quot;,
+    location=(37.422051, -122.084615),
+    license=2,
+    embargo=True,
+    variable=&quot;awesome&quot;,
+    author=&quot;Neumann&quot;
+)
+with open(&#39;alfred.json&#39;, &#39;w&#39;) as js:
+    json.dump([meta], js)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>add<span class="w"> </span>entry<span class="w"> </span>--json<span class="w"> </span>alfred.json
+rm<span class="w"> </span>alfred.json
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+Added 1 entry records.
+Done.
+</pre></div></div>
+</div>
+<p>And finally, using the <code class="docutils literal notranslate"><span class="pre">`find</span></code> &lt;cli_find.ipynb&gt;`__ and <code class="docutils literal notranslate"><span class="pre">`show</span></code> &lt;cli_show.ipynb&gt;`__ command we can inspect the newly created entry:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>find<span class="w"> </span>entry<span class="w"> </span>--by<span class="w"> </span>title<span class="w"> </span><span class="s2">&quot;Alfred data&quot;</span>
+metacatalog<span class="w"> </span>show<span class="w"> </span>records<span class="w"> </span>entries<span class="w"> </span>--where<span class="w"> </span><span class="s2">&quot;id=20&quot;</span><span class="w"> </span>-T
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+&lt;ID=20 Alfred data [awesome] &gt;
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+  id  title           abstract         external_id    location         geom    creation    end      version  latest_version_id    comment      license_id    variable_id  datasource_id    embargo    embargo_end                 publication                 lastUpdate
+----  --------------  ---------------  -------------  ---------------  ------  ----------  -----  ---------  -------------------  ---------  ------------  -------------  ---------------  ---------  --------------------------  --------------------------  --------------------------
+  20  Alfred data...  A dummy test...                 01010000003F...                                     1                                             2             15                   True       2022-05-22 05:45:24.827462  2020-05-22 05:45:24.827531  2020-05-22 05:45:24.827539
+</pre></div></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In a future release, a set of flags will be added to the <code class="docutils literal notranslate"><span class="pre">find</span></code> command. These will make the export of found records into a file or as output to StdOut possbile. The <code class="docutils literal notranslate"><span class="pre">show</span></code> command is intended for raw table inspections only and just a workaround here.</p>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="cli_init.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Init command</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="cli_find.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Find Command</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Help">Help</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Usage">Usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#entity">entity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connection">connection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#passing-arguments">passing arguments</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Operations">Operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Example">Example</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/cli/cli_add.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022, Mirko Mälicke, Alexander Dolich.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

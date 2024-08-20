@@ -1,0 +1,1220 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>DataSource &#8212; Metacatalog 0.9.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'models/datasource';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Tables" href="data.html" />
+    <link rel="prev" title="Variables" href="variable.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/brand.png" class="logo__image only-light" alt="Metacatalog 0.9.2 documentation - Home"/>
+    <script>document.write(`<img src="../_static/brand.png" class="logo__image only-dark" alt="Metacatalog 0.9.2 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Models:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="entry.html">Entry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="result.html">ResultSet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="location.html">Location Filter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keyword.html">Controlled Keywords</a></li>
+<li class="toctree-l1"><a class="reference internal" href="person.html">Authors &amp; Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variable.html">Variables</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">DataSource</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Data Licenses</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="models.html" class="nav-link">Database Models</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">DataSource</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-metacatalog.models.datasource">
+<span id="datasource"></span><h1>DataSource<a class="headerlink" href="#module-metacatalog.models.datasource" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.models.datasource.</span></span><span class="sig-name descname"><span class="pre">DataSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.datasource.DataSource" title="Permalink to this definition">#</a></dt>
+<dd><p>Model to represent a datasource of a specific
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code>. The datasource further specifies
+an <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSourceType</span></code>
+by setting a <code class="docutils literal notranslate"><span class="pre">path</span></code> and <code class="docutils literal notranslate"><span class="pre">args</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.id" title="Permalink to this definition">#</a></dt>
+<dd><p>Unique id of the record. If not specified, the database will assign it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.path" title="Permalink to this definition">#</a></dt>
+<dd><p>Path to the actual data. Depending on type, this can be a filepath, SQL
+tablename or URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.encoding" title="Permalink to this definition">#</a></dt>
+<dd><p>The encoding of the file or database representation of the actual
+data. Defaults to <code class="docutils literal notranslate"><span class="pre">'utf-8'</span></code>. Do only change if necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.args">
+<span class="sig-name descname"><span class="pre">args</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.args" title="Permalink to this definition">#</a></dt>
+<dd><p>Optional. If the I/O classes need further arguments, these can be stored
+as a JSON-serializable str. Will be parsed into a dict and passed to the
+I/O functions as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.type_id">
+<span class="sig-name descname"><span class="pre">type_id</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.type_id" title="Permalink to this definition">#</a></dt>
+<dd><p>Foreign key referencing the :<code class="xref py py-class docutils literal notranslate"><span class="pre">DataSourceType</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.type" title="Permalink to this definition">#</a></dt>
+<dd><p>The referenced <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSourceType</span></code>.
+Can be used instead of setting``type_id``.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>metacatalog.models.DataSourceType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.data_names">
+<span class="sig-name descname"><span class="pre">data_names</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.data_names" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.3.0.</span></p>
+</div>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.9.1.</span></p>
+</div>
+<p>List of column names that will be displayed when exporting the data.
+The columns are named in the same order as they appear in the list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.variable_names">
+<span class="sig-name descname"><span class="pre">variable_names</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.variable_names" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.9.1.</span></p>
+</div>
+<p>List of variable names that store the data of the datasource of the entry.
+In tabular data, this is usually the column name(s) of the variable that
+is referenced by the Entry. In case of a netCDF file, this is the variable
+name(s) of the variable(s) that is/are referenced by the Entry.
+More generally, variable_names describes how a datasource would be indexed
+to retrieve the data of the entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<p>There is a <a class="reference internal" href="#metacatalog.models.datasource.DataSourceType" title="metacatalog.models.datasource.DataSourceType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSourceType</span></code></a> of <code class="docutils literal notranslate"><span class="pre">name='internal'</span></code>, which handles
+I/O operations on tables in the same database. The datasource itself
+will then store the tablename as <code class="docutils literal notranslate"><span class="pre">path</span></code>. It can be linked to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code> in a 1:n relationship.
+This way, the admin has the full control over data-tables, while still using
+common I/O classes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.create_scale">
+<span class="sig-name descname"><span class="pre">create_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolution</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_dimension</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.create_scale" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a new scale for the dataset</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.dimension_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimension_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#metacatalog.models.datasource.DataSource.dimension_names" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.9.1.</span></p>
+</div>
+<p>Returns a flat list of all dimensions needed to identify a datapoint in the dataset.
+The order is [temporal, spatial, variable].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dimension_names</strong> – List of dimension names</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.load_args">
+<span class="sig-name descname"><span class="pre">load_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.load_args" title="Permalink to this definition">#</a></dt>
+<dd><p>Load the stored arguments from the <code class="docutils literal notranslate"><span class="pre">'args'</span></code> column.
+It was filled by a JSON string and will be converted as dict before.
+This dict is usually used for I/O operations and passed as keyword arguments.
+Therefore this is only useful for a DB admin and should not be exposed to the end-user.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.11.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.save_args_from_dict">
+<span class="sig-name descname"><span class="pre">save_args_from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.save_args_from_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Save all given keyword arguments to the database.
+These are passed to the importer/adder functions as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args_dict</strong> (<em>dict</em>) – Dictionary of JSON-serializable keyword arguments that
+will be stored as a JSON string in the database.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All kwargs need to be json encodeable. This function is only useful
+for a DB admin and should not be exposed to the end-user</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#metacatalog.models.datasource.DataSource.load_args" title="metacatalog.models.datasource.DataSource.load_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_args</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSource.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSource.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>To dict</p>
+<p>Return the model as a python dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em>) – If True, all related objects will be included as
+dictionary. Defaults to False</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>obj</strong> – The Model as dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSourceType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.models.datasource.</span></span><span class="sig-name descname"><span class="pre">DataSourceType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.datasource.DataSourceType" title="Permalink to this definition">#</a></dt>
+<dd><p>Model to represent a type of datasource.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSourceType.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSourceType.id" title="Permalink to this definition">#</a></dt>
+<dd><p>Unique id of the record. If not specified, the database will assign it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSourceType.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSourceType.name" title="Permalink to this definition">#</a></dt>
+<dd><p>A short (64) name for the Type. Should not contain any whitespaces</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSourceType.title">
+<span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSourceType.title" title="Permalink to this definition">#</a></dt>
+<dd><p>The full title of this Type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSourceType.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSourceType.description" title="Permalink to this definition">#</a></dt>
+<dd><p>Optional description about this type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While it is possible to add more records to the table,
+this is the only Class that needs actual Python functions to
+handle the database input. Usually, each type of datasource
+relies on a specific <code class="xref py py-mod docutils literal notranslate"><span class="pre">importer</span></code>
+and reader <code class="xref py py-mod docutils literal notranslate"><span class="pre">reader</span></code> that can use
+the information saved in a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSource</span></code>
+to perform I/O operations.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataSourceType.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.datasource.DataSourceType.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the model as a python dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em>) – If True, all related objects will be included as
+dictionary as well and deep will be passed down.
+Defaults to False</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>obj</strong> – The Model as dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.models.datasource.</span></span><span class="sig-name descname"><span class="pre">DataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.datasource.DataType" title="Permalink to this definition">#</a></dt>
+<dd><p>DataType is describing the type of the actual data.
+The metacatalog documentation includes several default abstract
+types. Each combination of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DataType</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DataSourceType</span></code> can be
+assigned with custom reader and writer functions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataType.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataType.id" title="Permalink to this definition">#</a></dt>
+<dd><p>Unique id of the record. If not specified, the database will assign it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataType.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataType.name" title="Permalink to this definition">#</a></dt>
+<dd><p>A short (64) name for the DataType. Should not contain any whitespaces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataType.title">
+<span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataType.title" title="Permalink to this definition">#</a></dt>
+<dd><p>The full title of this DataType.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataType.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#metacatalog.models.datasource.DataType.description" title="Permalink to this definition">#</a></dt>
+<dd><p>Optional description about this DataType.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataType.children_list">
+<span class="sig-name descname"><span class="pre">children_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#metacatalog.models.datasource.DataType" title="metacatalog.models.datasource.DataType"><span class="pre">DataType</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#metacatalog.models.datasource.DataType.children_list" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns an dependency tree for the current datatype.
+If the list is empty, there are no child (inheriting)
+datatypes for the current datatype.
+Otherwise, the list contains all child datatypes that
+are inheriting the current datatype.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataType.parent_list">
+<span class="sig-name descname"><span class="pre">parent_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#metacatalog.models.datasource.DataType" title="metacatalog.models.datasource.DataType"><span class="pre">DataType</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#metacatalog.models.datasource.DataType.parent_list" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns an inheritance tree for the current datatype.
+If the list is empty, the current datatype is a
+top-level datatype.
+Otherwise, the list contains all parent datatypes
+that the current one inherits from.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.DataType.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.datasource.DataType.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the model as a python dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em>) – If True, all related objects will be included as
+dictionary as well and deep will be passed down.
+Defaults to False</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>obj</strong> – The Model as dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.SpatialScale">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.models.datasource.</span></span><span class="sig-name descname"><span class="pre">SpatialScale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.datasource.SpatialScale" title="Permalink to this definition">#</a></dt>
+<dd><p>The SpatialScale is used to commonly describe the spatial scale at which
+the data described is valid. metacatalog uses the scale triplet
+(spacing, extent, support), but renames <code class="docutils literal notranslate"><span class="pre">'spacing'</span></code> to <code class="docutils literal notranslate"><span class="pre">'resolution'</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.SpatialScale.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#metacatalog.models.datasource.SpatialScale.id" title="Permalink to this definition">#</a></dt>
+<dd><p>Unique id of the record. If not specified, the database will assign it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.SpatialScale.resolution">
+<span class="sig-name descname"><span class="pre">resolution</span></span><a class="headerlink" href="#metacatalog.models.datasource.SpatialScale.resolution" title="Permalink to this definition">#</a></dt>
+<dd><p>Spatial resoultion in meter. The resolution usually describes a grid
+cell size, which only applies to gridded datasets. Use the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">resolution_str</span></code> property for a string representation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.SpatialScale.extent">
+<span class="sig-name descname"><span class="pre">extent</span></span><a class="headerlink" href="#metacatalog.models.datasource.SpatialScale.extent" title="Permalink to this definition">#</a></dt>
+<dd><p>The spatial extent of the dataset is given as a <code class="docutils literal notranslate"><span class="pre">'POLYGON'</span></code>.
+.. versionchanged:: 0.6.1
+From this <code class="docutils literal notranslate"><span class="pre">POLYGON</span></code>, a bounding box and the centroid are internally
+calculated.
+To specify a point location here, use the same value for easting and
+westing and the same value for northing and southing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>geoalchemy2.Geometry</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.SpatialScale.support">
+<span class="sig-name descname"><span class="pre">support</span></span><a class="headerlink" href="#metacatalog.models.datasource.SpatialScale.support" title="Permalink to this definition">#</a></dt>
+<dd><p>The support gives the spatial validity for a single observation.
+It specifies the spatial extent at which an observed value is valid.
+It is given as a fraction of resolution. For gridded datasets, it is
+common to set support to 1, as the observations are validated to
+represent the whole grid cell. In case ground truthing data is
+available, the actual footprint fraction of observations can be
+given here.
+Defaults to <code class="docutils literal notranslate"><span class="pre">support=1.0</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.SpatialScale.dimension_names">
+<span class="sig-name descname"><span class="pre">dimension_names</span></span><a class="headerlink" href="#metacatalog.models.datasource.SpatialScale.dimension_names" title="Permalink to this definition">#</a></dt>
+<dd><p>versionadded:: 0.9.1</p>
+<p>Names of the spatial dimension in x, y and optionally z-direction.
+Put the names in a list in the order x, y(, z).
+In case of tabular data, this is usually the column name of the column
+that stores the spatial information of the dataset.
+In case of a netCDF file, this is the dimension name of the dimension
+that stores the spatial information of the dataset.
+More generally, dimension_names describes how a datasource would be indexed
+to retrieve the spatial axis of the entry in x-direction
+(e.g. [‘x’, ‘y’, ‘z’], [‘lon’, ‘lat’], [‘longitude’, ‘latitude’]).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.SpatialScale.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.datasource.SpatialScale.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the model as a python dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em>) – If True, all related objects will be included as
+dictionary. Defaults to False</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>obj</strong> – The Model as dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.TemporalScale">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.models.datasource.</span></span><span class="sig-name descname"><span class="pre">TemporalScale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.models.datasource.TemporalScale" title="Permalink to this definition">#</a></dt>
+<dd><p>The TemporalScale is used to commonly describe the temporal scale at which
+the data described is valid. metacatalog uses the scale triplet
+(spacing, extent, support), but renames <code class="docutils literal notranslate"><span class="pre">'spacing'</span></code> to <code class="docutils literal notranslate"><span class="pre">'resolution'</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.TemporalScale.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#metacatalog.models.datasource.TemporalScale.id" title="Permalink to this definition">#</a></dt>
+<dd><p>Unique id of the record. If not specified, the database will assign it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.TemporalScale.resolution">
+<span class="sig-name descname"><span class="pre">resolution</span></span><a class="headerlink" href="#metacatalog.models.datasource.TemporalScale.resolution" title="Permalink to this definition">#</a></dt>
+<dd><p>Temporal resolution. The resolution has to be given as an ISO 8601
+Duration, or a fraction of it. You can substitute standalone minutes can
+be identified by non-ISO <code class="docutils literal notranslate"><span class="pre">'min'</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">resolution</span> <span class="o">=</span> <span class="s1">&#39;15min&#39;</span>
+</pre></div>
+</div>
+<p>defines a temporal resolution of 15 Minutes. The ISO 8601 is built like:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&#39;P[n]Y[n]M[n]DT[n]H[n]M[n]S&#39;
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.TemporalScale.observation_start">
+<span class="sig-name descname"><span class="pre">observation_start</span></span><a class="headerlink" href="#metacatalog.models.datasource.TemporalScale.observation_start" title="Permalink to this definition">#</a></dt>
+<dd><p>Point in time, when the first observation was made.
+Forms the temporal extent toghether with <cite>observation_end</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.TemporalScale.observation_end">
+<span class="sig-name descname"><span class="pre">observation_end</span></span><a class="headerlink" href="#metacatalog.models.datasource.TemporalScale.observation_end" title="Permalink to this definition">#</a></dt>
+<dd><p>Point in time, when the last available observation was made.
+Forms the temporal extent toghether with <cite>observation_start</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.TemporalScale.support">
+<span class="sig-name descname"><span class="pre">support</span></span><a class="headerlink" href="#metacatalog.models.datasource.TemporalScale.support" title="Permalink to this definition">#</a></dt>
+<dd><p>The support gives the temporal validity for a single observation.
+It specifies the time before an observation, that is still
+represented by the observation.
+It is given as a fraction of resolution.
+I.e. if <code class="docutils literal notranslate"><span class="pre">support=0.5</span></code> at <code class="docutils literal notranslate"><span class="pre">resolution='10min'</span></code>, the observation
+supports <code class="docutils literal notranslate"><span class="pre">5min</span></code> (5min before the timestamp) and the resulting dataset
+would <strong>not</strong> be exhaustive.
+Defaults to <code class="docutils literal notranslate"><span class="pre">support=1.0</span></code>, which would make a temporal exhaustive
+dataset, but may not apply to each dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.TemporalScale.dimension_names">
+<span class="sig-name descname"><span class="pre">dimension_names</span></span><a class="headerlink" href="#metacatalog.models.datasource.TemporalScale.dimension_names" title="Permalink to this definition">#</a></dt>
+<dd><p>versionadded:: 0.9.1</p>
+<p>Name of the temporal dimension.
+In case of tabular data, this is usually the column name of the column
+that stores the temporal information of the dataset. In case of a netCDF
+file, this is the dimension name of the dimension that stores the temporal
+information of the dataset.
+More generally, dimension_names describes how a datasource would be indexed
+to retrieve the temporal axis of the entry (e.g. ‘time’, ‘date’, ‘datetime’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.models.datasource.TemporalScale.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.models.datasource.TemporalScale.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the model as a python dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em>) – If True, all related objects will be included as
+dictionary. Defaults to False</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>obj</strong> – The Model as dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="variable.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Variables</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="data.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Data Tables</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource"><code class="docutils literal notranslate"><span class="pre">DataSource</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.id"><code class="docutils literal notranslate"><span class="pre">DataSource.id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.path"><code class="docutils literal notranslate"><span class="pre">DataSource.path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.encoding"><code class="docutils literal notranslate"><span class="pre">DataSource.encoding</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.args"><code class="docutils literal notranslate"><span class="pre">DataSource.args</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.type_id"><code class="docutils literal notranslate"><span class="pre">DataSource.type_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.type"><code class="docutils literal notranslate"><span class="pre">DataSource.type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.data_names"><code class="docutils literal notranslate"><span class="pre">DataSource.data_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.variable_names"><code class="docutils literal notranslate"><span class="pre">DataSource.variable_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.create_scale"><code class="docutils literal notranslate"><span class="pre">DataSource.create_scale()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.dimension_names"><code class="docutils literal notranslate"><span class="pre">DataSource.dimension_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.load_args"><code class="docutils literal notranslate"><span class="pre">DataSource.load_args()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.save_args_from_dict"><code class="docutils literal notranslate"><span class="pre">DataSource.save_args_from_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSource.to_dict"><code class="docutils literal notranslate"><span class="pre">DataSource.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSourceType"><code class="docutils literal notranslate"><span class="pre">DataSourceType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSourceType.id"><code class="docutils literal notranslate"><span class="pre">DataSourceType.id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSourceType.name"><code class="docutils literal notranslate"><span class="pre">DataSourceType.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSourceType.title"><code class="docutils literal notranslate"><span class="pre">DataSourceType.title</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSourceType.description"><code class="docutils literal notranslate"><span class="pre">DataSourceType.description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataSourceType.to_dict"><code class="docutils literal notranslate"><span class="pre">DataSourceType.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataType"><code class="docutils literal notranslate"><span class="pre">DataType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataType.id"><code class="docutils literal notranslate"><span class="pre">DataType.id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataType.name"><code class="docutils literal notranslate"><span class="pre">DataType.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataType.title"><code class="docutils literal notranslate"><span class="pre">DataType.title</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataType.description"><code class="docutils literal notranslate"><span class="pre">DataType.description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataType.children_list"><code class="docutils literal notranslate"><span class="pre">DataType.children_list()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataType.parent_list"><code class="docutils literal notranslate"><span class="pre">DataType.parent_list()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.DataType.to_dict"><code class="docutils literal notranslate"><span class="pre">DataType.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.SpatialScale"><code class="docutils literal notranslate"><span class="pre">SpatialScale</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.SpatialScale.id"><code class="docutils literal notranslate"><span class="pre">SpatialScale.id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.SpatialScale.resolution"><code class="docutils literal notranslate"><span class="pre">SpatialScale.resolution</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.SpatialScale.extent"><code class="docutils literal notranslate"><span class="pre">SpatialScale.extent</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.SpatialScale.support"><code class="docutils literal notranslate"><span class="pre">SpatialScale.support</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.SpatialScale.dimension_names"><code class="docutils literal notranslate"><span class="pre">SpatialScale.dimension_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.SpatialScale.to_dict"><code class="docutils literal notranslate"><span class="pre">SpatialScale.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.TemporalScale"><code class="docutils literal notranslate"><span class="pre">TemporalScale</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.TemporalScale.id"><code class="docutils literal notranslate"><span class="pre">TemporalScale.id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.TemporalScale.resolution"><code class="docutils literal notranslate"><span class="pre">TemporalScale.resolution</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.TemporalScale.observation_start"><code class="docutils literal notranslate"><span class="pre">TemporalScale.observation_start</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.TemporalScale.observation_end"><code class="docutils literal notranslate"><span class="pre">TemporalScale.observation_end</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.TemporalScale.support"><code class="docutils literal notranslate"><span class="pre">TemporalScale.support</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.TemporalScale.dimension_names"><code class="docutils literal notranslate"><span class="pre">TemporalScale.dimension_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.models.datasource.TemporalScale.to_dict"><code class="docutils literal notranslate"><span class="pre">TemporalScale.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/models/datasource.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022, Mirko Mälicke, Alexander Dolich.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,812 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Export Extenstion &#8212; Metacatalog 0.9.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ext/export';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Standards Export Extension" href="standards_export.html" />
+    <link rel="prev" title="Read / Write Extension" href="io.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/brand.png" class="logo__image only-light" alt="Metacatalog 0.9.2 documentation - Home"/>
+    <script>document.write(`<img src="../_static/brand.png" class="logo__image only-dark" alt="Metacatalog 0.9.2 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models/models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="ext.html">
+    Extensions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models/models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="ext.html">
+    Extensions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="io.html">Read / Write Extension</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Export Extenstion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="standards_export.html">Standards Export Extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom.html">Custom Extensions</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="ext.html" class="nav-link">Extensions</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Export Extenstion</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-metacatalog.ext.export">
+<span id="export-extenstion"></span><h1>Export Extenstion<a class="headerlink" href="#module-metacatalog.ext.export" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.ext.export.ExportExtension">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.ext.export.</span></span><span class="sig-name descname"><span class="pre">ExportExtension</span></span><a class="headerlink" href="#metacatalog.ext.export.ExportExtension" title="Permalink to this definition">#</a></dt>
+<dd><p>Export functions.</p>
+<p>The default ExportExtension can be used to produce raw export
+functionality. The <code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code> has
+a <code class="xref py py-func docutils literal notranslate"><span class="pre">export</span></code> function, that
+will translate the requested format to a activated extension of
+this name or fall back to this extension and call a function
+of same name.
+Raw export means, that the given Entry will be translated into a
+Python dictionary and then implemented into the given file-format
+as natively as possible. This does not follow any specified
+standards or rules. Standard metadata formats are implemented
+in separate extensions.</p>
+<p>Currently, the following exports are supported:</p>
+<ul class="simple">
+<li><p>JSON</p></li>
+<li><p>XML (called fast_XML)</p></li>
+<li><p>pickle</p></li>
+<li><p>netCDF</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The XML export is currently done with another package
+(<code class="docutils literal notranslate"><span class="pre">dicttoxml</span></code>). This works great, but it is not possible to
+adjust the exported XML to i.e. ISO19115 standard requirements.
+This will be implemented with an export via <code class="docutils literal notranslate"><span class="pre">lxml</span></code>.
+Thus, for the base version of that export, the function <code class="docutils literal notranslate"><span class="pre">xml</span></code>
+is reserved.</p>
+</div>
+<p>If no path is specified, the native Python object that will be used
+to create the file is returned. This can be very useful to pack more
+than one Entry together. With <code class="docutils literal notranslate"><span class="pre">path=None</span></code>, the export function will
+return the following objects:</p>
+<ul class="simple">
+<li><p>JSON     -&gt; str:    the JSON object as string</p></li>
+<li><p>fast_XML -&gt; str:    the XML representation as (decoded UTF-8) string</p></li>
+<li><p>pickle   -&gt; dict:   the dict underlying all export functions</p></li>
+<li><p>netCDF   -&gt; xarray: the xarray used to build the netCDF file</p></li>
+</ul>
+<p>Note that the export of <code class="docutils literal notranslate"><span class="pre">'pickle'</span></code> and <code class="docutils literal notranslate"><span class="pre">'netCDF'</span></code> can be particularly
+useful without setting the path.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.ext.export.ExportExtension.fast_xml">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fast_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../models/entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.ext.export.ExportExtension.fast_xml" title="Permalink to this definition">#</a></dt>
+<dd><p>Export an <code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code> to XML.
+If a path is given, a new file will be created. This is the fast
+XML version, which will convert the metadata to custom XML tags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> (<em>metacatalog.models.Entry</em>) – The entry instance to be exported</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – If given, a file location for export.</p></li>
+<li><p><strong>no_data</strong> (<em>bool</em>) – If set to True, the actual data will not be loaded and included.
+This can be helpful if the data is not serializable or very large.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – The the XML str if path is None, else None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The content of the file will be created using a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableResultSet</span></code>.
+This will lazy-load sibling Entries and parent groups as needed for
+an useful Metadata export.
+The list of exported properties is hardcoded into this extension, but can
+be overwritten. You can also import the list:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">metacatalog.ext.export.extension</span> <span class="kn">import</span> <span class="n">ENTRY_KEYS</span>
+</pre></div>
+</div>
+<p>A updated list can then be passed as kwargs:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">use_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ENTRY_KEYS</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;embargo&#39;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Export</span> <span class="o">=</span> <span class="n">metacatalog</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s1">&#39;export&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Export</span><span class="o">.</span><span class="n">fast_xml</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s1">&#39;/temp/metadata.xml&#39;</span><span class="p">,</span> <span class="n">use_keys</span><span class="o">=</span><span class="n">use_keys</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.ext.export.ExportExtension.flat_keys">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flat_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.ext.export.ExportExtension.flat_keys" title="Permalink to this definition">#</a></dt>
+<dd><p>Turn nested dictionaries into flat dictionaries by expanding
+nested keys using the given delimiter</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.ext.export.ExportExtension.get_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../models/entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.ext.export.ExportExtension.get_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the data as UUID indexed dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.ext.export.ExportExtension.json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../models/entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.ext.export.ExportExtension.json" title="Permalink to this definition">#</a></dt>
+<dd><p>Export an <code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code> to JSON.
+If a path is given, a new file will be created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> (<em>metacatalog.models.Entry</em>) – The entry instance to be exported</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – If given, a file location for export.</p></li>
+<li><p><strong>flat</strong> (<em>bool</em>) – If True, the resulting JSON will be un-nested and build formerly
+nested keys like <em>parent.child</em>, where the delimiter defaults to
+‘.’ but can be changed.
+Defaults to False.</p></li>
+<li><p><strong>indent</strong> (<em>int</em>) – The default indentation for the JSON file</p></li>
+<li><p><strong>no_data</strong> (<em>bool</em>) – If set to True, the actual data will not be loaded and included.
+This can be helpful if the data is not serializable or very large.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – The JSON string if path is None, else None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The content of the file will be created using a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableResultSet</span></code>.
+This will lazy-load sibling Entries and parent groups as needed for
+an useful Metadata export.
+The list of exported properties is hardcoded into this extension, but can
+be overwritten. You can also import the list:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">metacatalog.ext.export.extension</span> <span class="kn">import</span> <span class="n">ENTRY_KEYS</span>
+</pre></div>
+</div>
+<p>A updated list can then be passed as kwargs:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">use_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ENTRY_KEYS</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;embargo&#39;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Export</span> <span class="o">=</span> <span class="n">metacatalog</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s1">&#39;export&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Export</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s1">&#39;/temp/metadata.json&#39;</span><span class="p">,</span> <span class="n">use_keys</span><span class="o">=</span><span class="n">use_keys</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.ext.export.ExportExtension.netcdf">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">netcdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../models/entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.ext.export.ExportExtension.netcdf" title="Permalink to this definition">#</a></dt>
+<dd><p>Export an <code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code> to netCDF or xarray.
+If a path is given, a new netCDF file will be created, if path is None,
+the xarray used for building the netCDF is returned.</p>
+<p>Note that the common attribute no_data, which is available for the
+other export functions, is not available for netCDF export.
+Furthermore, the flat flag is always true, as the Python netCDF
+implementation does not support nested attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> (<em>metacatalog.models.Entry</em>) – The entry instance to be exported</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – If given, a file location for export.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – The the XML str if path is None, else None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The content of the file will be created using a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableResultSet</span></code>.
+This will lazy-load sibling Entries and parent groups as needed for
+an useful Metadata export.
+The list of exported properties is hardcoded into this extension, but can
+be overwritten. You can also import the list:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">metacatalog.ext.export.extension</span> <span class="kn">import</span> <span class="n">ENTRY_KEYS</span>
+</pre></div>
+</div>
+<p>A updated list can then be passed as kwargs:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">use_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ENTRY_KEYS</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;embargo&#39;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Export</span> <span class="o">=</span> <span class="n">metacatalog</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s1">&#39;export&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Export</span><span class="o">.</span><span class="n">netCDF</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s1">&#39;/temp/metadata.xml&#39;</span><span class="p">,</span> <span class="n">use_keys</span><span class="o">=</span><span class="n">use_keys</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.ext.export.ExportExtension.pickle">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pickle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../models/entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.ext.export.ExportExtension.pickle" title="Permalink to this definition">#</a></dt>
+<dd><p>Export an <code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code> to Python dict.
+If a path is given, a new file will be created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> (<em>metacatalog.models.Entry</em>) – The entry instance to be exported</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – If given, a file location for export.</p></li>
+<li><p><strong>flat</strong> (<em>bool</em>) – If True, the resulting JSON will be un-nested and build formerly
+nested keys like <em>parent.child</em>, where the delimiter defaults to
+‘.’ but can be changed.
+Defaults to False.</p></li>
+<li><p><strong>serialize</strong> (<em>bool</em>) – If True, all output data will be converted to serializable types,
+if possible. This may not work for all data formats.
+If no path is given, it is recommended to set serializable to False.
+Defaults to False</p></li>
+<li><p><strong>no_data</strong> (<em>bool</em>) – If set to True, the actual data will not be loaded and included.
+This can be helpful if the data is not serializable or very large.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – The native Python dict if path is None, else None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The content of the file will be created using a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableResultSet</span></code>.
+This will lazy-load sibling Entries and parent groups as needed for
+an useful Metadata export.
+The list of exported properties is hardcoded into this extension, but can
+be overwritten. You can also import the list:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">metacatalog.ext.export.extension</span> <span class="kn">import</span> <span class="n">ENTRY_KEYS</span>
+</pre></div>
+</div>
+<p>A updated list can then be passed as kwargs:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">use_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ENTRY_KEYS</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;embargo&#39;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Export</span> <span class="o">=</span> <span class="n">metacatalog</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s1">&#39;export&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Export</span><span class="o">.</span><span class="n">pickle</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s1">&#39;/temp/metadata.pickle&#39;</span><span class="p">,</span> <span class="n">use_keys</span><span class="o">=</span><span class="n">use_keys</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.ext.export.ExportExtension.to_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../models/entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('uuid',</span> <span class="pre">'external_id',</span> <span class="pre">'title',</span> <span class="pre">'authors',</span> <span class="pre">'abstract',</span> <span class="pre">'citation',</span> <span class="pre">'location_shape',</span> <span class="pre">'variable',</span> <span class="pre">'license',</span> <span class="pre">'datasource',</span> <span class="pre">'details',</span> <span class="pre">'embargo',</span> <span class="pre">'embargo_end',</span> <span class="pre">'version',</span> <span class="pre">'latest_version',</span> <span class="pre">'plain_keyword_dict',</span> <span class="pre">'publication',</span> <span class="pre">'lastUpdate',</span> <span class="pre">'comment',</span> <span class="pre">'associated_groups')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serialize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.ext.export.ExportExtension.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Return as dict to finally export.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="io.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Read / Write Extension</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="standards_export.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Standards Export Extension</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.ext.export.ExportExtension"><code class="docutils literal notranslate"><span class="pre">ExportExtension</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.ext.export.ExportExtension.fast_xml"><code class="docutils literal notranslate"><span class="pre">ExportExtension.fast_xml()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.ext.export.ExportExtension.flat_keys"><code class="docutils literal notranslate"><span class="pre">ExportExtension.flat_keys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.ext.export.ExportExtension.get_data"><code class="docutils literal notranslate"><span class="pre">ExportExtension.get_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.ext.export.ExportExtension.json"><code class="docutils literal notranslate"><span class="pre">ExportExtension.json()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.ext.export.ExportExtension.netcdf"><code class="docutils literal notranslate"><span class="pre">ExportExtension.netcdf()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.ext.export.ExportExtension.pickle"><code class="docutils literal notranslate"><span class="pre">ExportExtension.pickle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.ext.export.ExportExtension.to_dict"><code class="docutils literal notranslate"><span class="pre">ExportExtension.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/ext/export.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022, Mirko Mälicke, Alexander Dolich.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

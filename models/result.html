@@ -1,0 +1,783 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>ResultSet &#8212; Metacatalog 0.9.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'models/result';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Location Filter" href="location.html" />
+    <link rel="prev" title="Entry" href="entry.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/brand.png" class="logo__image only-light" alt="Metacatalog 0.9.2 documentation - Home"/>
+    <script>document.write(`<img src="../_static/brand.png" class="logo__image only-dark" alt="Metacatalog 0.9.2 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Models:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="entry.html">Entry</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">ResultSet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="location.html">Location Filter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keyword.html">Controlled Keywords</a></li>
+<li class="toctree-l1"><a class="reference internal" href="person.html">Authors &amp; Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variable.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasource.html">DataSource</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Data Licenses</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="models.html" class="nav-link">Database Models</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">ResultSet</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-metacatalog.util.results">
+<span id="resultset"></span><h1>ResultSet<a class="headerlink" href="#module-metacatalog.util.results" title="Permalink to this heading">#</a></h1>
+<p>The ImmutableResultSet class can be used to wrap a list of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code> or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EntryGroup</span></code> instances
+a deliver a unified interface to load metadata from nested
+and / or grouped results.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">session</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">connect_database</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">entry</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">find_entry</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">ImmutableResultSet</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will load all sibling Entries into the result set. I.e., if
+the composite entry has three members, the Composite EntryGroup
+and two child Entries, the ImmutableResultSet will have three
+UUIDs</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uuid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>&gt;&gt;    [‘c1087040-5566-44b9-9852-ea600f73ae0c’,
+&gt;&gt;    ‘0350c985-4e43-4876-a03a-7b6fb2a3a4b6’,
+&gt;&gt;    ‘c6d6301b-8e1c-478f-9407-ce9a0c38dbb8’]</p>
+<p>At the same time, if all members share a property, like their <code class="docutils literal notranslate"><span class="pre">title</span></code>
+the ImmutableResultSet will merge matching content:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>&gt;&gt;    ‘Awesome Composite Dataset’</p>
+<p>Note that the return type is string, like the original <code class="docutils literal notranslate"><span class="pre">title</span></code>,
+not a list.</p>
+<p>Alternatively, the API can return ImmutableResultSets if the
+API has a <code class="docutils literal notranslate"><span class="pre">as_result</span></code> arugment. The example above can be reproduced
+like:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">find_entry</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">as_result</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacatalog.util.results.</span></span><span class="sig-name descname"><span class="pre">ImmutableResultSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="entry.html#metacatalog.models.entrygroup.EntryGroup" title="metacatalog.models.entrygroup.EntryGroup"><span class="pre">EntryGroup</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#metacatalog.util.results.ImmutableResultSet" title="metacatalog.util.results.ImmutableResultSet"><span class="pre">ImmutableResultSet</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.checksum">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">checksum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.checksum" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the md5 checksum for this result set to easily
+tell it appart from others.
+The checksum is the md5 hash of all contained member checksums.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.3.8: </span>now hashing md5 of members instead of uuids</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.checksums">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">checksums</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.checksums" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.3.8.</span></p>
+</div>
+<p>Return all checksums of all members</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.contains_uuid">
+<span class="sig-name descname"><span class="pre">contains_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.contains_uuid" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if the given Entry or EntryGroup is
+present in this result set</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.empty">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">empty</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.empty" title="Permalink to this definition">#</a></dt>
+<dd><div class="versionadded">
+<p><span class="versionmodified added">New in version 0.4.1.</span></p>
+</div>
+<p>Returns True if there is no <code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code>
+associated to this result.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.entry_set">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entry_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.entry_set" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a set of entries to remove duplicates</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.3.8: </span>Can now handle nested ResultSets</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.expand_entry">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expand_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.expand_entry" title="Permalink to this definition">#</a></dt>
+<dd><p>Expand this Entry to all siblings.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.3.8: </span>Split datasets are now nested</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.6.11: </span>the calling entry is now always part of the expansion set.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.get" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the given property from the result set.
+This function will iterate all member and nested
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Entries</span></code> and return
+the values for the given property from all childs.
+It will return the set of all properties to remove
+duplicated metadata (i.e. for composites and split-
+datasets). If the set has a length of 1, the value
+itself will be returned</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.3.8: </span>get can now handle nested ImmutableResultSets</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name (key) of the requested parameter</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>result</strong> – The value for the requested property. If more than
+one value is present, the of all values
+will be returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>set, any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.get_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the data as a checksum indexed dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.load_base_group">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_base_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entry.html#metacatalog.models.entry.Entry" title="metacatalog.models.entry.Entry"><span class="pre">Entry</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.load_base_group" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the base EntryGroup of the given Entry.
+The base EntryGroup is the strongest grouping that requires expanding
+of the result set, to load all siblings.
+If there are no matching groups, None will be returned</p>
+<p>Currently the order of importance is:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'Composite'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'Split</span> <span class="pre">dataset'</span></code></p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dict'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate a full dictionary output of this result set.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.6.8: </span>Parameter <cite>orient</cite> added. The default value is <cite>‘dict’</cite>, which returns
+a dictionary with unique keys.
+The value <cite>‘uuids’</cite> gives the dictionary with uuids as keys, this
+should make it easier to i.e. loop over the uuids / entities of an
+ImmutableResultSet.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.to_short_info">
+<span class="sig-name descname"><span class="pre">to_short_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.to_short_info" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a short unified version of the results.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.uuid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uuid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.uuid" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the first uuid in the ImmutableResultSet.
+This is the uuid of the base group, if it exists or the uuid
+of the first member. As uuids of members are sorted in
+<code class="docutils literal notranslate"><span class="pre">uuids(self)</span></code>, <code class="docutils literal notranslate"><span class="pre">self.uuids[0]</span></code> always returns the same
+uuid for the same ImmutableResultSet.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="metacatalog.util.results.ImmutableResultSet.uuids">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uuids</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#metacatalog.util.results.ImmutableResultSet.uuids" title="Permalink to this definition">#</a></dt>
+<dd><p>Return all uuids that form this result set</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.6.8: </span>If a member in in _members is an ImmutableResultSet, call this
+method recursively</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.7.5: </span>Members of ImmutableResultSets cannot be ImmutableResultSets
+again, reverted recursive method call from version 0.6.8</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="entry.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Entry</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="location.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Location Filter</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.checksum"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.checksum</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.checksums"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.checksums</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.contains_uuid"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.contains_uuid()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.empty"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.empty</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.entry_set"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.entry_set()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.expand_entry"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.expand_entry()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.get"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.get()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.get_data"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.get_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.load_base_group"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.load_base_group()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.to_dict"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.to_dict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.to_short_info"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.to_short_info()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.uuid"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.uuid</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metacatalog.util.results.ImmutableResultSet.uuids"><code class="docutils literal notranslate"><span class="pre">ImmutableResultSet.uuids</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/models/result.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022, Mirko Mälicke, Alexander Dolich.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

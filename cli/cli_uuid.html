@@ -1,0 +1,764 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Uuid command &#8212; Metacatalog 0.9.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'cli/cli_uuid';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API" href="../api/api.html" />
+    <link rel="prev" title="Show command" href="cli_show.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/brand.png" class="logo__image only-light" alt="Metacatalog 0.9.2 documentation - Home"/>
+    <script>document.write(`<img src="../_static/brand.png" class="logo__image only-dark" alt="Metacatalog 0.9.2 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models/models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../home/home.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models/models.html">
+    Database Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ext/ext.html">
+    Extensions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dev/dev.html">
+    Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/VForWaTer/metacatalog" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Command Overview</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="cli_create.html">Create Command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_populate.html">Populate command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_init.html">Init command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_add.html">Add command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_find.html">Find Command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_show.html">Show command</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Uuid command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Command Overview</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Uuid command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_show.html">Show command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_populate.html">Populate command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_init.html">Init command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_find.html">Find Command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_create.html">Create Command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_add.html">Add command</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="cli.html" class="nav-link">CLI</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Uuid command</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Uuid-command">
+<h1>Uuid command<a class="headerlink" href="#Uuid-command" title="Permalink to this heading">#</a></h1>
+<section id="Help">
+<h2>Help<a class="headerlink" href="#Help" title="Permalink to this heading">#</a></h2>
+<p>The help text for the <code class="docutils literal notranslate"><span class="pre">uuid</span></code> subcommand can be shown by passing the <code class="docutils literal notranslate"><span class="pre">-h</span></code> flag.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>uuid<span class="w"> </span>-h
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: metacatalog uuid [-h] [--version] [--connection CONNECTION] [--verbose]
+                        [--quiet] [--dev] [--logfile LOGFILE] [--json]
+                        uuid
+
+positional arguments:
+  uuid                  Version 4 UUID of the requested resource
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version, -v         Returns the module version
+  --connection CONNECTION, -C CONNECTION
+                        Connection string to the database instance.Follows the
+                        syntax: driver://user:password@host:port/database
+  --verbose, -V         Activate extended output.
+  --quiet, -q           Suppress any kind of output.
+  --dev                 Development mode. Unexpected errors will not be
+                        handled and the full traceback is printed to the
+                        screen.
+  --logfile LOGFILE     If a file is given, output will be written to that
+                        file instead of printed to StdOut.
+  --json                If set, the object will be returned as JSON
+</pre></div></div>
+</div>
+</section>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">uuid</span></code> command assumes that metadata records have been added using <code class="docutils literal notranslate"><span class="pre">`add</span></code> &lt;cli_add.ipynb&gt;`__.</p>
+</section>
+<section id="Usage">
+<h2>Usage<a class="headerlink" href="#Usage" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">uuid</span></code> command can be used to search the database for an object of given UUID. <code class="docutils literal notranslate"><span class="pre">metacatalog</span></code> always refers to UUID version 4. The command will search records across models for the reqeusted resource. Currently, the following model instances can be found:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Entry</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EntryGroup</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Keyword</span></code></p></li>
+</ul>
+</section>
+<section id="Example">
+<h2>Example<a class="headerlink" href="#Example" title="Permalink to this heading">#</a></h2>
+<p>The following example shows how a keyword can be found by UUID and related keywords can be searched. If the database included the GCMD <code class="docutils literal notranslate"><span class="pre">Keywords</span></code> on <code class="docutils literal notranslate"><span class="pre">`init</span></code> &lt;cli_init.ipynb&gt;`__, there will be an controlled keyword of UUID <code class="docutils literal notranslate"><span class="pre">885735f3-121e-4ca0-ac8b-f37dbc972f03</span></code>, which tags the hydrosphere.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>uuid<span class="w"> </span>885735f3-121e-4ca0-ac8b-f37dbc972f03
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+EARTH SCIENCE &gt; TERRESTRIAL HYDROSPHERE
+</pre></div></div>
+</div>
+<p>By passing the <code class="docutils literal notranslate"><span class="pre">--json</span></code> flag, the output can be transformed to json, giving us more information</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>uuid<span class="w"> </span>--json<span class="w"> </span>885735f3-121e-4ca0-ac8b-f37dbc972f03
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+{
+    &#34;id&#34;: 25,
+    &#34;uuid&#34;: &#34;885735f3-121e-4ca0-ac8b-f37dbc972f03&#34;,
+    &#34;value&#34;: &#34;TERRESTRIAL HYDROSPHERE&#34;,
+    &#34;path&#34;: &#34;EARTH SCIENCE &gt; TERRESTRIAL HYDROSPHERE&#34;,
+    &#34;children&#34;: [
+        &#34;099ab1ae-f4d2-48cc-be2f-86bd58ffc4ca&#34;,
+        &#34;734f8f27-6976-4b67-8794-c7fc79d6161e&#34;,
+        &#34;50b8fe04-9149-4b7f-a8b2-b33b1e3aa192&#34;,
+        &#34;5debb283-51e4-435e-b2a2-e8e2a977220d&#34;,
+        &#34;8c02f5d1-ce86-4bf5-84d5-b3496cdba6ad&#34;
+    ],
+    &#34;thesaurus_id&#34;: 1
+}
+</pre></div></div>
+</div>
+<p>Now we can easily check the children keywords:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>uuid<span class="w"> </span>--json<span class="w"> </span>5debb283-51e4-435e-b2a2-e8e2a977220d
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+{
+    &#34;id&#34;: 214,
+    &#34;uuid&#34;: &#34;5debb283-51e4-435e-b2a2-e8e2a977220d&#34;,
+    &#34;value&#34;: &#34;SURFACE WATER&#34;,
+    &#34;path&#34;: &#34;EARTH SCIENCE &gt; TERRESTRIAL HYDROSPHERE &gt; SURFACE WATER&#34;,
+    &#34;children&#34;: [
+        &#34;1baa552d-c563-43fb-b618-54651f8b07e6&#34;,
+        &#34;959f1861-a776-41b1-ba6b-d23c71d4d1eb&#34;,
+        &#34;9d86cd70-062a-4c39-b3f3-226abebc07f7&#34;,
+        &#34;c84b61fe-720a-4240-b6c8-8dcc9ae24a36&#34;
+    ],
+    &#34;thesaurus_id&#34;: 1
+}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+metacatalog<span class="w"> </span>uuid<span class="w"> </span>--json<span class="w"> </span>9d86cd70-062a-4c39-b3f3-226abebc07f7
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Using session: Engine(postgresql://postgres:***@localhost:5432/metacatalog)
+{
+    &#34;id&#34;: 6220,
+    &#34;uuid&#34;: &#34;9d86cd70-062a-4c39-b3f3-226abebc07f7&#34;,
+    &#34;value&#34;: &#34;SURFACE WATER PROCESSES/MEASUREMENTS&#34;,
+    &#34;path&#34;: &#34;EARTH SCIENCE &gt; TERRESTRIAL HYDROSPHERE &gt; SURFACE WATER &gt; SURFACE WATER PROCESSES/MEASUREMENTS&#34;,
+    &#34;children&#34;: [
+        &#34;3609b843-d840-460c-b1a3-d4fcc69a32f6&#34;,
+        &#34;36a2999b-2255-4d4e-a249-40df3b7b3aaf&#34;,
+        &#34;269c7277-fa8f-4c1c-bd8b-ab772c1df4e5&#34;,
+        &#34;7fdc339e-017f-4e4b-89a3-12e441a40bad&#34;,
+        &#34;960037c5-57b1-4cdf-84be-4542beee7d5a&#34;,
+        &#34;d4e8b5c5-9203-4982-82bc-2611b517ffdb&#34;,
+        &#34;c6c0c5dd-c0ca-4670-bbaa-c22d39e73570&#34;,
+        &#34;5cb5d5b9-0c0b-497f-a4ea-a8cece52d13d&#34;,
+        &#34;6f52de55-f5f2-45c0-b83f-59dbfb1fe221&#34;,
+        &#34;42aa1fa1-56a9-4e96-8063-077bd7ba88d8&#34;,
+        &#34;84784fef-5b76-45a0-91e0-28788e09fea6&#34;,
+        &#34;04922ba6-8f00-4f54-b80c-ce2414c91e2e&#34;,
+        &#34;f6a54329-486b-4d5f-b105-c639cec42351&#34;
+    ],
+    &#34;thesaurus_id&#34;: 1
+}
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="cli_show.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Show command</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api/api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Help">Help</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Usage">Usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Example">Example</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/cli/cli_uuid.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022, Mirko Mälicke, Alexander Dolich.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
