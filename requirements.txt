@@ -15,4 +15,5 @@ jinja2
 tqdm
 pydantic>=2.2.0
 pydantic_settings
+pydantic-geojson
 python-dotenv
